@@ -4,7 +4,7 @@ This record separates local observations from the mandatory release workflow. Pu
 must pass fresh checks in the same [workflow](../.github/workflows/workflow.yml) that uploads them.
 Historical reports, unavailable infrastructure and skipped tests cannot authorize publication.
 
-## Current source checks
+## Local audit baseline and final regression
 
 | Environment | Python | Unit, contract, property and adapter tests |
 |---|---|---|
@@ -22,7 +22,12 @@ was **100% (465/465)** and branch coverage **98.53% (67/68)**. Five selected mut
 expiry, verification capacity, fencing and duplicate accounting were detected. This is bounded
 test evidence, not a correctness proof.
 
-The agent suite includes 28 gateway/initial protocol cases and 43 expanded protocol cases.
+After the final RPC outcome regression was added, the Windows 3.12 source check passed
+**158 tests** with the same coverage and static/fault checks. The table preserves the earlier
+six-environment local baseline; the tagged release workflow reruns the final source on all six
+Windows/Linux and Python 3.12–3.14 combinations.
+
+The final agent suite includes 29 gateway/initial protocol cases and 43 expanded protocol cases.
 The latter cover all A2A operations, real TCP JSON-RPC/HTTP+JSON streaming, authenticated gRPC,
 durable journal restart and clock rollback, cursor binding, cancellation quorum, push policy,
 DNS pinning, in-flight callback replacement, MCP HTTP/SSE, templates, prompts, completion,
@@ -69,7 +74,11 @@ One later local qualification ran seven cases successfully but failed the format
 CometBFT timed out waiting to notify a committed start transaction. The RPC boundary now labels
 such errors `OUTCOME_UNKNOWN` without retry; the laboratory wait was raised from 10 to 20 seconds
 within the client's 30-second limit. A dedicated regression checks this classification. Release
-qualification must rerun all eight cases; that failed run is not treated as a pass.
+qualification must rerun all eight cases; that failed run is not treated as a pass. The subsequent
+local source qualification executed and passed all eight cases in 289.70 seconds, with no skips.
+The [initial hosted workflow](https://github.com/kadubon/checkedflow/actions/runs/36147318095)
+also passed its six-platform checks and all eight real infrastructure cases. Publication still
+requires the final tagged source and its exact built wheel to pass a fresh workflow.
 The source scan reported zero personal-path/credential findings. Locked third-party runtime
 dependencies and the installed development environment reported no known advisories on the audit
 date. These scanners do not detect every secret format or unknown vulnerability.

@@ -39,7 +39,8 @@ uvx pip-audit --path .venv/lib/python3.12/site-packages
 On Windows the audit path is `.venv/Lib/site-packages`. The release workflow exports all runtime
 extras with hashes and audits those locked third-party requirements. The local review of the
 development environment found no reported advisories in installed third-party packages on
-2026-09-25. The unpublished CheckedFlow package itself was excluded by the advisory service;
+2026-09-25. CheckedFlow itself was not yet published at the time of that dependency scan and
+was excluded by the advisory service;
 its code is covered by source inspection, Bandit and regression tests. Advisory results are a
 time-limited database observation, not a guarantee that no vulnerability exists.
 
