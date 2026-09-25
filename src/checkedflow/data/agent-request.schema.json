@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:agent-request:v1",
+  "oneOf": [
+    {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "const": "profile"
+        }
+      },
+      "required": [
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "enum": [
+            "submit",
+            "task"
+          ]
+        },
+        "envelopeJson": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1048576
+        }
+      },
+      "required": [
+        "operation",
+        "envelopeJson"
+      ],
+      "additionalProperties": false
+    },
+    {
+      "type": "object",
+      "properties": {
+        "operation": {
+          "const": "inspect"
+        },
+        "kind": {
+          "enum": [
+            "mission",
+            "tasks",
+            "task",
+            "capability",
+            "residual"
+          ]
+        },
+        "identity": {
+          "type": "string",
+          "maxLength": 256
+        }
+      },
+      "required": [
+        "operation",
+        "kind",
+        "identity"
+      ],
+      "additionalProperties": false
+    }
+  ]
+}

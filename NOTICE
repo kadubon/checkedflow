@@ -1,0 +1,13 @@
+CheckedFlow
+Copyright 2026 K. Takahashi
+
+Original CheckedFlow software and documentation are licensed under Apache-2.0.
+Research sources are identified in the packaged research registry. Their papers
+retain their own licenses and are not redistributed as CheckedFlow software.
+CometBFT protobuf definitions retain the upstream Apache-2.0 license and attribution.
+
+Gogoproto protobuf definitions retain their upstream BSD-3-Clause notices.
+See checkedflow/distributed/proto/LICENSE-gogoproto in the installed package.
+
+The upstream CometBFT NOTICE is preserved as
+checkedflow/distributed/proto/NOTICE-CometBFT in the installed package.

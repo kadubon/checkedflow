@@ -1,0 +1,142 @@
+name: Check and manually publish CheckedFlow
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Publish the tested artifacts from the selected version tag
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checkedflow-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: '0.11.28'
+      - run: uv sync --frozen --all-extras --group dev
+      - run: uv build
+      - run: uv run twine check dist/*.whl dist/*.tar.gz
+      - run: uv run python scripts/package_check.py
+      - run: uv run python scripts/security_audit.py --dist dist
+      - run: mkdir -p reports
+      - run: uv export --frozen --all-extras --no-dev --no-emit-project --output-file reports/runtime-requirements.txt
+      - run: uvx pip-audit==2.10.1 --require-hashes -r reports/runtime-requirements.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: distributions
+          path: dist/
+          if-no-files-found: error
+
+  checks:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    env:
+      UV_PYTHON: ${{ matrix.python }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+        python: ['3.12', '3.13', '3.14']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: '1.25.0'
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: '0.11.28'
+      - run: uv sync --frozen --all-extras --group dev --python ${{ matrix.python }}
+      - run: go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.7
+      - run: uv run python scripts/check.py
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: distributions
+          path: dist/
+      - run: uv run python scripts/package_check.py --python ${{ matrix.python }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: checks-${{ matrix.os }}-${{ matrix.python }}
+          path: reports/
+
+  qualification:
+    needs: build
+    # Fresh hosted VM: no credentials or persistent operator daemon are exposed to test code.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CHECKEDFLOW_REQUIRE_INFRA: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: '1.25.0'
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: '0.11.28'
+      - run: uv sync --frozen --all-extras --group dev
+      - run: uv run python scripts/provision_ci.py
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: distributions
+          path: dist/
+      - name: Install the exact built wheel for qualification
+        run: uv pip install --reinstall --no-deps dist/*.whl
+      - run: uv run --no-sync pytest -m qualification --junitxml=reports/qualification.xml -q
+      - run: uv run --no-sync python scripts/qualification_gate.py reports/qualification.xml
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: qualification
+          path: reports/
+
+  publish:
+    needs: [build, checks, qualification]
+    if: >-
+      github.event_name == 'workflow_dispatch' && inputs.publish &&
+      github.repository == 'kadubon/checkedflow' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    environment:
+      name: pypi
+      url: https://pypi.org/p/checkedflow
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: distributions
+          path: dist/
+      - run: python scripts/release_gate.py
+      - run: python scripts/security_audit.py --dist dist
+      - name: Pass only tested wheel and sdist to PyPA
+        run: |
+          mkdir publish-dist
+          cp dist/*.whl dist/*.tar.gz publish-dist/
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
+        with:
+          packages-dir: publish-dist/
+          attestations: true

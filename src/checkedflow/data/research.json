@@ -1,0 +1,2001 @@
+{
+  "schema_version": "1",
+  "source_index": "https://kadubon.github.io/github.io/collective-intelligence-index.json",
+  "index_sha256": "1b18e86b56aeb0da21bb7e883f27ac1317852b9f13f8e562bb7e13f8ae6c75ac",
+  "evidence_sha256": "09cf0590d7e4e990f3a9268e8e67de8308a8200965517da4cf18cc9133966383",
+  "counts": {
+    "software": 18,
+    "papers": 19
+  },
+  "boundary": "Hashes identify reviewed bytes, not correctness. Local newer software snapshots are distinguished from catalogue revisions. No runtime dependency or copied implementation from these resources.",
+  "resources": [
+    {
+      "id": "paper-growth",
+      "kind": "paper",
+      "title": "Observing and Accelerating Collective Capability Growth",
+      "source": "https://doi.org/10.5281/zenodo.22604358",
+      "catalogue_summary": "Joint task/research service, interaction ablation, evidence costs and funded continuation.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Observing and Accelerating Collective Capability Growth.zip",
+          "sha256": "15f92f446573e458f19943520bd0d88822346c48c5e6edbfd689e31f0d32c62a",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Observing%20and%20Accelerating%20Collective%20Capability%20Growth.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "15f92f446573e458f19943520bd0d88822346c48c5e6edbfd689e31f0d32c62a",
+          "locator": "Observing and Accelerating Collective Capability Growth.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Charge formation and verification; compare a finite matched scratch condition.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "accounting"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Finite horizon; matched information/resources; calibration and model premises. Synthetic examples do not establish deployed acceleration.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-vet",
+      "kind": "paper",
+      "title": "Verifier Ecology Theory: Packetized Self-Verification Under Residual Accountability",
+      "source": "https://doi.org/10.5281/zenodo.21147093",
+      "catalogue_summary": "Scoped verifier packets preserve residuals and revisable boundaries when verification is the bottleneck.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Verifier Ecology Theory.zip",
+          "sha256": "91d763c7b2b9569067166c6b1dcfe5c2e957e450e744226df24c2d23a1d82c34",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Verifier%20Ecology%20Theory.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "91d763c7b2b9569067166c6b1dcfe5c2e957e450e744226df24c2d23a1d82c34",
+          "locator": "Verifier Ecology Theory.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Keep verifier scope, unresolved obligations and paid verification slots.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_vote"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Structural claims concern the declared transition model; packet acceptance is not external truth.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-ecpt",
+      "kind": "paper",
+      "title": "Executable Capability Percolation Theory",
+      "source": "https://doi.org/10.5281/zenodo.20535654",
+      "catalogue_summary": "Executable packet hypergraphs connect finite capability formation, queues and typed phase diagnostics.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Executable Capability Percolation Theory.zip",
+          "sha256": "ddc7010445b66032535ac3480a5a04f8b6349ac684447508ced7ab81f4543e2d",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Executable%20Capability%20Percolation%20Theory.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "ddc7010445b66032535ac3480a5a04f8b6349ac684447508ced7ab81f4543e2d",
+          "locator": "Executable Capability Percolation Theory.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Represent executable dependencies as a finite acyclic capability graph.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_eligible"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Quotients, response laws, baselines and certificates require their own witnesses; reachability alone is insufficient.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-alt",
+      "kind": "paper",
+      "title": "Abstraction Liquidity Theory",
+      "source": "https://doi.org/10.5281/zenodo.20476200",
+      "catalogue_summary": "Receiver-relative search-cost reduction is charged for formation, transfer, verification and lifecycle costs.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Abstraction Liquidity Theory.zip",
+          "sha256": "341d79591e082ec222671d0a707156e23105ea4d79af6973dd84e5f43ebf6b92",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Abstraction%20Liquidity%20Theory.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "341d79591e082ec222671d0a707156e23105ea4d79af6973dd84e5f43ebf6b92",
+          "locator": "Abstraction Liquidity Theory.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Bind reusable abstractions to the receiving contract and charge construction.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_eligible"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Positive certified surplus needs compatible measurement, transport, authority and finality premises; compression is insufficient.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-cait",
+      "kind": "paper",
+      "title": "Certified Autocatalytic Intelligence Theory: Net-Growth Certificate Algebra for Verified Capability Capital",
+      "source": "https://doi.org/10.5281/zenodo.20061296",
+      "catalogue_summary": "Typed partial certificates separate endogenous verified capital reproduction from copied outputs and external inputs.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Certified Autocatalytic Intelligence Theory.zip",
+          "sha256": "6c31fe2a31f549df574899b9620f31a2f3d01d795a8ce104f55f902930c0962f",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Certified%20Autocatalytic%20Intelligence%20Theory.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "6c31fe2a31f549df574899b9620f31a2f3d01d795a8ce104f55f902930c0962f",
+          "locator": "Certified Autocatalytic Intelligence Theory.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Separate unique finite behaviors, copies, external inputs and withdrawn records.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "accounting"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Composition needs domain witnesses; spectral diagnostics and accepted arrival-shaped records do not detect real ASI.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-loscr",
+      "kind": "paper",
+      "title": "Layered Online Service and Replay Control for Verified AI R and D Acceleration",
+      "source": "https://doi.org/10.5281/zenodo.19836225",
+      "catalogue_summary": "Online ledgers, service obligations and replay libraries determine the strongest supported R&D claim.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Layered Online Service and Replay Control for Verified AI R and D Acceleration.zip",
+          "sha256": "c1d87ca19aab8e2ef4909a14bf853e68e557c8ae247a8afe0a72fa49debf7f7d",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Layered%20Online%20Service%20and%20Replay%20Control%20for%20Verified%20AI%20R%20and%20D%20Acceleration.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "c1d87ca19aab8e2ef4909a14bf853e68e557c8ae247a8afe0a72fa49debf7f7d",
+          "locator": "Layered Online Service and Replay Control for Verified AI R and D Acceleration.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Keep service attempts and evidence replayable without promoting a model claim.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "replay"
+      },
+      "verification": [
+        "tests/test_abci.py"
+      ],
+      "not_implemented_or_claimed": "Estimator, evaluator, baseline and maintenance evidence remain premises; a claim checker cannot manufacture them.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-collective-phase",
+      "kind": "paper",
+      "title": "Collective Phase Transitions beyond Individual Saturation",
+      "source": "https://doi.org/10.5281/zenodo.17853555",
+      "catalogue_summary": "A Gibbs-model construction separates individual saturation from collective advantage and local evaluability.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Collective_Phase_Transitions_beyond_Individual_Saturation.zip",
+          "sha256": "7f3792a7732f533492db3d747959e3c77098b53c6a114bdb08d360100ef8c92a",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Collective_Phase_Transitions_beyond_Individual_Saturation.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "7f3792a7732f533492db3d747959e3c77098b53c6a114bdb08d360100ef8c92a",
+          "locator": "main.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Separate independent organization coordination from individual skill execution.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_admin"
+      },
+      "verification": [
+        "tests/test_abci.py"
+      ],
+      "not_implemented_or_claimed": "Statistical-mechanical model assumptions, mixing and a scalar proxy are explicit; no empirical AI phase transition follows.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-audit-closed",
+      "kind": "paper",
+      "title": "Audit-Closed AI Scientist Protocol",
+      "source": "https://doi.org/10.5281/zenodo.18728589",
+      "catalogue_summary": "Transparency logs, sequential e-processes and alpha accounting constrain adaptive research decisions.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Audit-Closed AI Scientist Protocol.zip",
+          "sha256": "e3d71ea23a89924d36d7254612bb9d82bf384ec84e6347ff7814423a2c3234af",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Audit-Closed%20AI%20Scientist%20Protocol.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "e3d71ea23a89924d36d7254612bb9d82bf384ec84e6347ff7814423a2c3234af",
+          "locator": "Audit-Closed AI Scientist Protocol.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Tie acceptance to a predeclared checker and retain failed observations.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_vote"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Statistical guarantees require the declared observation and sampling assumptions; synthetic benchmarks are bounded.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-consequence",
+      "kind": "paper",
+      "title": "Reusable Consequence States Under Partial Support and Model Uncertainty",
+      "source": "https://doi.org/10.5281/zenodo.22170023",
+      "catalogue_summary": "Reusable update states retain globally coupled model uncertainty across later actions and observations.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Reusable Consequence States Under Partial Support and Model Uncertainty.zip",
+          "sha256": "e6fae9d4858aa822706518d4ad1da23af210aa0b3b1cbde8ac185a8d5b74221e",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Reusable%20Consequence%20States%20Under%20Partial%20Support%20and%20Model%20Uncertainty.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "e6fae9d4858aa822706518d4ad1da23af210aa0b3b1cbde8ac185a8d5b74221e",
+          "locator": "Reusable Consequence States Under Partial Support and Model Uncertainty.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Represent unknown consequences explicitly and prohibit automatic retry.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_reconcile"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Finite dynamics/programs; local rectangular envelopes can be conservative. This is conceptual support, not a CPCF implementation identity.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-operational-claims",
+      "kind": "paper",
+      "title": "Evidence-Carrying Operational Claims in Open Systems: Physical Ledgers, Typed Interfaces, and One-Sided Deployment Guarantees",
+      "source": "https://doi.org/10.5281/zenodo.21531413",
+      "catalogue_summary": "Typed evidence connects physical/resource ledgers, uncertainty and one-sided finite-horizon deployment claims.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Evidence-Carrying Operational Claims in Open Systems.zip",
+          "sha256": "8bc9aca3e569fee035132b0fc45764a415594587d4b3e68c2b045bbe5d2db171",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Evidence-Carrying%20Operational%20Claims%20in%20Open%20Systems.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "8bc9aca3e569fee035132b0fc45764a415594587d4b3e68c2b045bbe5d2db171",
+          "locator": "Evidence-Carrying Operational Claims in Open Systems.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Separate signed claims from execution authority and committed state.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "transition"
+      },
+      "verification": [
+        "tests/test_abci.py"
+      ],
+      "not_implemented_or_claimed": "Provenance and finite record checking do not establish evidence truth, causal identification or physical safety.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-bit",
+      "kind": "paper",
+      "title": "Bottleneck Inversion Theory: Machine-Readable Witness Calculus for Unlockable Potential",
+      "source": "https://doi.org/10.5281/zenodo.20545356",
+      "catalogue_summary": "Unit-typed intervention witnesses bound unlockable target value and resource displacement.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Bottleneck Inversion Theory.zip",
+          "sha256": "c05b8fbaff534c15e8c439dc4c8b01aa27ae21ed2370d98b7e1ddd3858e7ef53",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Bottleneck%20Inversion%20Theory.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "c05b8fbaff534c15e8c439dc4c8b01aa27ae21ed2370d98b7e1ddd3858e7ef53",
+          "locator": "Bottleneck Inversion Theory.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Expose verification as a protected capacity constraint; defer inversion analysis.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_lease"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Unsupported coordinates remain unreported; compatible ledgers and resource-matched comparisons are required.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-sqot",
+      "kind": "paper",
+      "title": "Salience-Queue Occupation Theory",
+      "source": "https://doi.org/10.5281/zenodo.20526451",
+      "catalogue_summary": "Finite attention, diagnostic reserves and verification queues expose opportunity and audit costs.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Salience-Queue Occupation Theory.zip",
+          "sha256": "6f903a5fdd56ad34ae01edf62cab1ba8de45eba57b3be1bb6a60a728ebd07cc0",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Salience-Queue%20Occupation%20Theory.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "6f903a5fdd56ad34ae01edf62cab1ba8de45eba57b3be1bb6a60a728ebd07cc0",
+          "locator": "Salience-Queue Occupation Theory.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Reserve verification capacity before admitting more candidate work.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_propose"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Protocol-relative diagnostics allow abstention and quarantine; attention priorities are not a universal objective.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-cgt",
+      "kind": "paper",
+      "title": "Constraint Generative Theory: Typed Constraint Effects and Scientific Availability",
+      "source": "https://doi.org/10.5281/zenodo.20199440",
+      "catalogue_summary": "Typed constraint effects distinguish identical final reports from different generation and verification conditions.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Constraint Generative Theory.zip",
+          "sha256": "2f97b2c5e5b7fbc42425553bc43e5a6526c8d7c2d56474ca1ac2a7d6d29b81cf",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Constraint%20Generative%20Theory.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "2f97b2c5e5b7fbc42425553bc43e5a6526c8d7c2d56474ca1ac2a7d6d29b81cf",
+          "locator": "Constraint Generative Theory.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Make admissibility constraints explicit in portable command contracts.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "transition"
+      },
+      "verification": [
+        "tests/test_boundaries.py"
+      ],
+      "not_implemented_or_claimed": "The catalogue record identifies this work only; related CGT source manuscripts sharing series metadata are not collapsed into it. Concept/series DOI: catalogue date 2026-05-15 differs from DataCite issued 2026-05-28; exact TeX/version binding unresolved.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-conversion",
+      "kind": "paper",
+      "title": "Certified Conversion Networks for AI Workflows",
+      "source": "https://doi.org/10.5281/zenodo.19994795",
+      "catalogue_summary": "Certified value throughput includes validation, authorization, queue capacity and maintenance bottlenecks.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Certified Conversion Networks for AI Workflows.zip",
+          "sha256": "a04dc352e239e8b20ac3e74bd67d38af8ac68f211f1ebc0d80fc809fc7e89eb7",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Certified%20Conversion%20Networks%20for%20AI%20Workflows.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "a04dc352e239e8b20ac3e74bd67d38af8ac68f211f1ebc0d80fc809fc7e89eb7",
+          "locator": "Certified Conversion Networks for AI Workflows.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Charge all phase conversions to a bounded common mission ledger.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_finish"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Uniform or held-out certification, uncertainty contracts and hard gates are required.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-continuity",
+      "kind": "paper",
+      "title": "Certified Service Is Not Enough for Long-Running AGI",
+      "source": "https://doi.org/10.5281/zenodo.19719004",
+      "catalogue_summary": "Recovery, authority, identity and memory integrity remain obligations beyond certified task service.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Certified Service Is Not Enough for Long-Running AGI.zip",
+          "sha256": "7a46407bdb4e82fded734f486c8923ff6cabf3e512fe946587fe40cf85bcedc4",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Certified%20Service%20Is%20Not%20Enough%20for%20Long-Running%20AGI.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "7a46407bdb4e82fded734f486c8923ff6cabf3e512fe946587fe40cf85bcedc4",
+          "locator": "Certified Service Is Not Enough for Long-Running AGI.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Expire memory and carry unresolved obligations across attempts.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "advance"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Conditional assurance depends on trusted bases and non-erasing violation histories, not an AGI finding.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-workflow-library",
+      "kind": "paper",
+      "title": "Controller Scale Is Not Enough for Long-Running AGI: A Workflow Theory with Reusable Certified Libraries",
+      "source": "https://doi.org/10.5281/zenodo.19690749",
+      "catalogue_summary": "Reusable audited workflow libraries are compared with resource-matched flat control under replay ceilings.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Controller Scale Is Not Enough for Long-Running AGI.zip",
+          "sha256": "cf6cfdaa376d2422ccfa7e4b57b4a59c675b2821ab255bd7f43593daff650ca4",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Controller%20Scale%20Is%20Not%20Enough%20for%20Long-Running%20AGI.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "cf6cfdaa376d2422ccfa7e4b57b4a59c675b2821ab255bd7f43593daff650ca4",
+          "locator": "Controller Scale Is Not Enough for Long-Running AGI.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Reuse checked procedures as dependencies in subsequent bounded synthesis.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_propose"
+      },
+      "verification": [
+        "tests/test_boundaries.py"
+      ],
+      "not_implemented_or_claimed": "Bounded typed families, trusted checkers and maintenance envelopes limit the constructive result.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-split-inference",
+      "kind": "paper",
+      "title": "When Should Inference Be Split? A Fixed-Budget Theory of Predictable Multi-Agent Advantage under Local Context Ceilings",
+      "source": "https://doi.org/10.5281/zenodo.18932509",
+      "catalogue_summary": "Fixed-budget inference splitting asks when local context limits permit a multi-agent advantage.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "When Should Inference Be Split.zip",
+          "sha256": "4e14c227486eef4971c03c3d980bc188cb7beab24e9601c72756d31f7580dbd7",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/When%20Should%20Inference%20Be%20Split.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "4e14c227486eef4971c03c3d980bc188cb7beab24e9601c72756d31f7580dbd7",
+          "locator": "When Should Inference Be Split.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Compare work under the same declared resource ceiling; defer advantage bounds.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "accounting"
+      },
+      "verification": [
+        "tests/test_integration.py"
+      ],
+      "not_implemented_or_claimed": "Communication and verification costs and a strong single-agent comparator must be retained.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-pcs",
+      "kind": "paper",
+      "title": "Stop Recomputing for AI/LLMs: Proof-Carrying Skills for Compute-Saving Inference Reuse",
+      "source": "https://doi.org/10.5281/zenodo.18490939",
+      "catalogue_summary": "Bounded observable predicates and invocation-bound receipts support reuse without full recomputation.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "Stop Recomputing for AILLMs Proof-Carrying Skills for Compute-Saving Inference Reuse.zip",
+          "sha256": "aa653e1bfaac45379fa36cee3d397d0acc332e894dff79bf1830b8e6390e7023",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/Stop%20Recomputing%20for%20AILLMs%20Proof-Carrying%20Skills%20for%20Compute-Saving%20Inference%20Reuse.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "aa653e1bfaac45379fa36cee3d397d0acc332e894dff79bf1830b8e6390e7023",
+          "locator": "Stop Recomputing for AILLMs Proof-Carrying Skills for Compute-Saving Inference Reuse.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Require evidence and receiver compatibility before reusing a skill.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_eligible"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Trust is limited to the minimal checker and declared anchors; receipts are not unrestricted semantic truth.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "paper-verification-limited",
+      "kind": "paper",
+      "title": "Verification-Limited Intelligence Acceleration: Observable-Only Laws, Bounded Derivation, and Diagnostics under No-Meta Constraints",
+      "source": "https://doi.org/10.5281/zenodo.18436828",
+      "catalogue_summary": "Strict observable progress credit prevents missing evidence from inflating reported progress.",
+      "reviewed_version": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Abstract and section structure; operational definitions and limitations where relevant. No independent theorem proof audit.",
+      "observed_content": [
+        {
+          "file": "verification_limited_intelligence_acceleration.zip",
+          "sha256": "47fc273acd404467aa819bf3c013073e87f4f0c0089452b874eb6e4e77bf719f",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/paper-tex-backup/blob/7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd/verification_limited_intelligence_acceleration.zip",
+          "revision": "7bd9fe246ae0f5a4bf6564b588c0426b5b7f29bd",
+          "sha256": "47fc273acd404467aa819bf3c013073e87f4f0c0089452b874eb6e4e77bf719f",
+          "locator": "verification_limited_intelligence_acceleration.tex; abstract, scope/limitations and relevant definitions"
+        }
+      ],
+      "adopted_principle": "Bound candidates and verification work; leave acceleration unidentified.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "accounting"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Conditional acceleration envelopes require observable premises and a semantic adequacy link to capability.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-ccr",
+      "kind": "software",
+      "title": "collective-capability-runtime",
+      "source": "https://github.com/kadubon/collective-capability-runtime",
+      "catalogue_summary": "Coordinate leased tasks, independent workcells, disagreements and verification-aware growth accounting.",
+      "reviewed_version": "1.9.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "21a0e489356825247a85f6d68fc3530c6a1aabaf5197c0186cc2d6cbb6fe5f63",
+          "matches_catalogue": true
+        },
+        {
+          "file": "README.md",
+          "sha256": "e10a966c93dc41db8edc2123eccaa6a013bd5cb4d4a70515ec276ab2968eb251",
+          "matches_catalogue": false
+        },
+        {
+          "file": "docs/verified-growth.md",
+          "sha256": "e6bf6a3a71f5420297747290ce83422e2f9f89049b49b76f5b61eb6b59f5a02c",
+          "matches_catalogue": false
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "e27bc52ea0f6ac3302627e4b37d66d9c1c2fdf5c4b31ecd877f355faff608512",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/collective-capability-runtime/blob/3b4702454f732c7a0a9f30d87483384dc8a281eb/README.md",
+          "revision": "3b4702454f732c7a0a9f30d87483384dc8a281eb",
+          "sha256": "2bfe358021ac6a3b1c045074c0e36284d7db09578b112a747e78066c99a98a8d",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/collective-capability-runtime/blob/3b4702454f732c7a0a9f30d87483384dc8a281eb/docs/verified-growth.md",
+          "revision": "3b4702454f732c7a0a9f30d87483384dc8a281eb",
+          "sha256": "392def333b12ea1a5a3d9ff1520ddd6aa728a148483d882385ec31a71c4d127b",
+          "locator": "Contract and limitations"
+        },
+        {
+          "url": "https://github.com/kadubon/collective-capability-runtime/blob/3b4702454f732c7a0a9f30d87483384dc8a281eb/LICENSE",
+          "revision": "3b4702454f732c7a0a9f30d87483384dc8a281eb",
+          "sha256": "21a0e489356825247a85f6d68fc3530c6a1aabaf5197c0186cc2d6cbb6fe5f63",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/collective-capability-runtime/blob/3b4702454f732c7a0a9f30d87483384dc8a281eb/pyproject.toml",
+          "revision": "3b4702454f732c7a0a9f30d87483384dc8a281eb",
+          "sha256": "af2cfb44fb64982f6d31b65145b270308568c7dea71b1d60d485d4f854ca93a7",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Use committed leases, fencing, disagreement records and separate growth coordinates.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_lease"
+      },
+      "verification": [
+        "tests/test_abci.py"
+      ],
+      "not_implemented_or_claimed": "Synthetic growth examples; accepted evidence is not settlement. Dispatch requires separate approval.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-pic",
+      "kind": "software",
+      "title": "percolation-inversion-compiler",
+      "source": "https://github.com/kadubon/percolation-inversion-compiler",
+      "catalogue_summary": "Compile finite agent outputs into checked packets and preserve unknown output obligations.",
+      "reviewed_version": "1.1.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "37fe03b235eee4dc5cabf6d6be8901dd92062cdf3650d1368cc592af1c0115d9",
+          "matches_catalogue": true
+        },
+        {
+          "file": "README.md",
+          "sha256": "9e0aa0f4fd1427d6ac8d6ae1fcbafa35ce85af548337c2963e28488730490b23",
+          "matches_catalogue": true
+        },
+        {
+          "file": "docs/resource-matched-measurement.md",
+          "sha256": "f082704a5c539fe524ce70cf72a6237c128d23bd84725dd97f2a4d2f0c6b0f33",
+          "matches_catalogue": true
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "596e7905de3cb66715b5dd506f6230044514361036eeca30383add3d2e7105dc",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/percolation-inversion-compiler/blob/55cd5f219d02f02927e247317156e757b1d5d6da/README.md",
+          "revision": "55cd5f219d02f02927e247317156e757b1d5d6da",
+          "sha256": "9e0aa0f4fd1427d6ac8d6ae1fcbafa35ce85af548337c2963e28488730490b23",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/percolation-inversion-compiler/blob/55cd5f219d02f02927e247317156e757b1d5d6da/docs/resource-matched-measurement.md",
+          "revision": "55cd5f219d02f02927e247317156e757b1d5d6da",
+          "sha256": "f082704a5c539fe524ce70cf72a6237c128d23bd84725dd97f2a4d2f0c6b0f33",
+          "locator": "Contract and limitations"
+        },
+        {
+          "url": "https://github.com/kadubon/percolation-inversion-compiler/blob/55cd5f219d02f02927e247317156e757b1d5d6da/LICENSE",
+          "revision": "55cd5f219d02f02927e247317156e757b1d5d6da",
+          "sha256": "37fe03b235eee4dc5cabf6d6be8901dd92062cdf3650d1368cc592af1c0115d9",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/percolation-inversion-compiler/blob/55cd5f219d02f02927e247317156e757b1d5d6da/pyproject.toml",
+          "revision": "55cd5f219d02f02927e247317156e757b1d5d6da",
+          "sha256": "596e7905de3cb66715b5dd506f6230044514361036eeca30383add3d2e7105dc",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Carry evidence across explicit dependency boundaries; defer compiler witnesses.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_eligible"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Hints are inert; finite certificate acceptance is not execution, truth or physical success.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-vek",
+      "kind": "software",
+      "title": "verification-ecology-kit",
+      "source": "https://github.com/kadubon/verification-ecology-kit",
+      "catalogue_summary": "Record verifier packets and allocate finite verification work with explicit shared resources.",
+      "reviewed_version": "1.3.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "1770cfcb240a5c593a822a1b93d32ff2027cd9386f82e0cbb4dd892d69084be4",
+          "matches_catalogue": true
+        },
+        {
+          "file": "README.md",
+          "sha256": "ea33881e32334966c7f18dcdb3911d1ab8024b5d5a7e95951ad0440d0d4cd05f",
+          "matches_catalogue": true
+        },
+        {
+          "file": "docs/capacity.md",
+          "sha256": "d8dece51e05b7d4c61395d8f55e3f6c0d9647735055cafe56eae1f93ddd8c7b8",
+          "matches_catalogue": true
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "07415d2d8de3d15572fb2f60a2fb6d32726889a1f93231e34e3679cc8ae28c76",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/verification-ecology-kit/blob/4008e311ceb16edd6e74d9f71341a90120c0d046/README.md",
+          "revision": "4008e311ceb16edd6e74d9f71341a90120c0d046",
+          "sha256": "ea33881e32334966c7f18dcdb3911d1ab8024b5d5a7e95951ad0440d0d4cd05f",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/verification-ecology-kit/blob/4008e311ceb16edd6e74d9f71341a90120c0d046/docs/capacity.md",
+          "revision": "4008e311ceb16edd6e74d9f71341a90120c0d046",
+          "sha256": "d8dece51e05b7d4c61395d8f55e3f6c0d9647735055cafe56eae1f93ddd8c7b8",
+          "locator": "Contract and limitations"
+        },
+        {
+          "url": "https://github.com/kadubon/verification-ecology-kit/blob/4008e311ceb16edd6e74d9f71341a90120c0d046/LICENSE",
+          "revision": "4008e311ceb16edd6e74d9f71341a90120c0d046",
+          "sha256": "1770cfcb240a5c593a822a1b93d32ff2027cd9386f82e0cbb4dd892d69084be4",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/verification-ecology-kit/blob/4008e311ceb16edd6e74d9f71341a90120c0d046/pyproject.toml",
+          "revision": "4008e311ceb16edd6e74d9f71341a90120c0d046",
+          "sha256": "07415d2d8de3d15572fb2f60a2fb6d32726889a1f93231e34e3679cc8ae28c76",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Fund verifier work and preserve residual obligations.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_propose"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Experimental local capacity profile: at most 12 work/actions and 16 slots; synthetic/model accounting only. Observed and guaranteed service remain null.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-alt",
+      "kind": "software",
+      "title": "alt-foundry-kernel",
+      "source": "https://github.com/kadubon/alt-foundry-kernel",
+      "catalogue_summary": "Qualify bounded reusable candidates for named receivers and compare full costs with solving from scratch.",
+      "reviewed_version": "0.5.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "44ba3cb6326a97bfae6eeb046322a9295179315a4cf30c909d469bda531bd1f9",
+          "matches_catalogue": true
+        },
+        {
+          "file": "README.md",
+          "sha256": "2064def4f4cecdb1b66f7b6a706e22adfed2912d665ed4b4bef8d373720751b8",
+          "matches_catalogue": true
+        },
+        {
+          "file": "docs/collective-reuse.md",
+          "sha256": "d9260e3149131fb2a8f58d434f531b61d8de69668c49e707cc15c35585e028f0",
+          "matches_catalogue": true
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "ebc1628760520cca14a9cfc3db6bbf9941c67ccd3a072a8b30820ff7a60ffb1f",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/alt-foundry-kernel/blob/e0296486bb568fdeeda449dada3bc67753ddfe7f/README.md",
+          "revision": "e0296486bb568fdeeda449dada3bc67753ddfe7f",
+          "sha256": "2064def4f4cecdb1b66f7b6a706e22adfed2912d665ed4b4bef8d373720751b8",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/alt-foundry-kernel/blob/e0296486bb568fdeeda449dada3bc67753ddfe7f/docs/collective-reuse.md",
+          "revision": "e0296486bb568fdeeda449dada3bc67753ddfe7f",
+          "sha256": "d9260e3149131fb2a8f58d434f531b61d8de69668c49e707cc15c35585e028f0",
+          "locator": "Contract and limitations"
+        },
+        {
+          "url": "https://github.com/kadubon/alt-foundry-kernel/blob/e0296486bb568fdeeda449dada3bc67753ddfe7f/LICENSE",
+          "revision": "e0296486bb568fdeeda449dada3bc67753ddfe7f",
+          "sha256": "44ba3cb6326a97bfae6eeb046322a9295179315a4cf30c909d469bda531bd1f9",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/alt-foundry-kernel/blob/e0296486bb568fdeeda449dada3bc67753ddfe7f/pyproject.toml",
+          "revision": "e0296486bb568fdeeda449dada3bc67753ddfe7f",
+          "sha256": "ebc1628760520cca14a9cfc3db6bbf9941c67ccd3a072a8b30820ff7a60ffb1f",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Track receiver-relative reusable procedure formation and dependencies.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_propose"
+      },
+      "verification": [
+        "tests/test_boundaries.py"
+      ],
+      "not_implemented_or_claimed": "Alpha collective-reuse profile; receiver qualification grants no settlement or execution. GitHub Release assets, not an assumed PyPI distribution.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-cait",
+      "kind": "software",
+      "title": "cait-certificate-schema",
+      "source": "https://github.com/kadubon/cait-certificate-schema",
+      "catalogue_summary": "Replay finite accounting histories to separate unique stock, service reuse, copies and unresolved origin.",
+      "reviewed_version": "0.2.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+          "matches_catalogue": false
+        },
+        {
+          "file": "README.md",
+          "sha256": "a359186b12d3ab1c0691f5ac14a6ad7c116abba46e348cdfc7ef0cbd7f5ef186",
+          "matches_catalogue": true
+        },
+        {
+          "file": "docs/accounting.md",
+          "sha256": "4fd01df25e9459fdde2dda7581a6ad3442535858bf423f735f2bd9a3f6080db0",
+          "matches_catalogue": true
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "3444b154a5dc871735c47cd0ef1c5dd71bd27422e6a0c075919a88615cfbef1a",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/cait-certificate-schema/blob/0ecb3afd2ea1d99cedcabd7a9e01e405ae1808a7/README.md",
+          "revision": "0ecb3afd2ea1d99cedcabd7a9e01e405ae1808a7",
+          "sha256": "a359186b12d3ab1c0691f5ac14a6ad7c116abba46e348cdfc7ef0cbd7f5ef186",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/cait-certificate-schema/blob/0ecb3afd2ea1d99cedcabd7a9e01e405ae1808a7/docs/accounting.md",
+          "revision": "0ecb3afd2ea1d99cedcabd7a9e01e405ae1808a7",
+          "sha256": "4fd01df25e9459fdde2dda7581a6ad3442535858bf423f735f2bd9a3f6080db0",
+          "locator": "Contract and limitations"
+        },
+        {
+          "url": "https://github.com/kadubon/cait-certificate-schema/blob/0ecb3afd2ea1d99cedcabd7a9e01e405ae1808a7/LICENSE",
+          "revision": "0ecb3afd2ea1d99cedcabd7a9e01e405ae1808a7",
+          "sha256": "6d1d968fb225eca367cb7f0b8831ab012a35d92b547e945e17ef8e7b05c3e5cc",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/cait-certificate-schema/blob/0ecb3afd2ea1d99cedcabd7a9e01e405ae1808a7/pyproject.toml",
+          "revision": "0ecb3afd2ea1d99cedcabd7a9e01e405ae1808a7",
+          "sha256": "3444b154a5dc871735c47cd0ef1c5dd71bd27422e6a0c075919a88615cfbef1a",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Keep novelty, copies, external input and losses separately typed.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "accounting"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Experimental accounting; copies are not new assets. VEK counters are supplied, not reconstructed from the absent original journal.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-cpcf",
+      "kind": "software",
+      "title": "collective-phase-control-fabric",
+      "source": "https://github.com/kadubon/collective-phase-control-fabric",
+      "catalogue_summary": "Choose finite information gathering and paid capability investment while preserving coupled model uncertainty.",
+      "reviewed_version": "1.0.1",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "5a6e1dc8b602b4c6643576fe637a945a66a468c9a1983b4efb985b13d8d08d07",
+          "matches_catalogue": true
+        },
+        {
+          "file": "README.md",
+          "sha256": "1565a14c6c8ba461b8445e73cea36bce107808087b68d004fcde1b461444c545",
+          "matches_catalogue": true
+        },
+        {
+          "file": "docs/epistemic-growth-control.md",
+          "sha256": "b54c2ef50915bf44ddf936c1f77c7c25b03544927d11bc6bddb36de4ba0462ae",
+          "matches_catalogue": true
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "3a4f8d81aecddf8d835baae203b3ae4a4e15a63d5571148f18fb5125156c31d3",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/collective-phase-control-fabric/blob/340b4899d5b0892e06d7d2c1ab1f1d48df15e981/README.md",
+          "revision": "340b4899d5b0892e06d7d2c1ab1f1d48df15e981",
+          "sha256": "1565a14c6c8ba461b8445e73cea36bce107808087b68d004fcde1b461444c545",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/collective-phase-control-fabric/blob/340b4899d5b0892e06d7d2c1ab1f1d48df15e981/docs/epistemic-growth-control.md",
+          "revision": "340b4899d5b0892e06d7d2c1ab1f1d48df15e981",
+          "sha256": "b54c2ef50915bf44ddf936c1f77c7c25b03544927d11bc6bddb36de4ba0462ae",
+          "locator": "Contract and limitations"
+        },
+        {
+          "url": "https://github.com/kadubon/collective-phase-control-fabric/blob/340b4899d5b0892e06d7d2c1ab1f1d48df15e981/LICENSE",
+          "revision": "340b4899d5b0892e06d7d2c1ab1f1d48df15e981",
+          "sha256": "5a6e1dc8b602b4c6643576fe637a945a66a468c9a1983b4efb985b13d8d08d07",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/collective-phase-control-fabric/blob/340b4899d5b0892e06d7d2c1ab1f1d48df15e981/pyproject.toml",
+          "revision": "340b4899d5b0892e06d7d2c1ab1f1d48df15e981",
+          "sha256": "3a4f8d81aecddf8d835baae203b3ae4a4e15a63d5571148f18fb5125156c31d3",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Apply finite governance changes independently of workcell execution.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_admin"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Beta research; finite model demonstrations only. Signed observations do not certify causal models. No empirical acceleration experiment.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-oawm",
+      "kind": "software",
+      "title": "observable-agent-workflow-memory",
+      "source": "https://github.com/kadubon/observable-agent-workflow-memory",
+      "catalogue_summary": "Promote verified procedures through evidence manifests and explicit promotion receipts.",
+      "reviewed_version": "0.2.0b0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "e40d49fcaca5e814e96202670308c2bfa2d94dc318394dc48999956ab8b5168f",
+          "matches_catalogue": false
+        },
+        {
+          "file": "README.md",
+          "sha256": "a9f9382b8097b9cb3152635b6dd40897cea4ee4c94229e97d5a3c2e039daf598",
+          "matches_catalogue": false
+        },
+        {
+          "file": "docs/theory_mapping.md",
+          "sha256": "87ed92368564faae6a579377219eb4fc9e213d00fa426bb89c9a837e161aee0d",
+          "matches_catalogue": false
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "a04d742efac1e417fa2f3e38e73bc1f538e023390f50c38d1926ef916e401e67",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/observable-agent-workflow-memory/blob/414299d4d15b5de434f5fb1ccbb4ba17df9155ff/README.md",
+          "revision": "414299d4d15b5de434f5fb1ccbb4ba17df9155ff",
+          "sha256": "1e34021bb46421ced7125d1e23ca3e6473e2a85b3dae652ccaaafd7f38fbe5af",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/observable-agent-workflow-memory/blob/414299d4d15b5de434f5fb1ccbb4ba17df9155ff/docs/theory_mapping.md",
+          "revision": "414299d4d15b5de434f5fb1ccbb4ba17df9155ff",
+          "sha256": "f4b53cf492cf49968d8e3de0330919628430606a945f3821e7a6eb042001b2c7",
+          "locator": "Contract and limitations"
+        },
+        {
+          "url": "https://github.com/kadubon/observable-agent-workflow-memory/blob/414299d4d15b5de434f5fb1ccbb4ba17df9155ff/LICENSE",
+          "revision": "414299d4d15b5de434f5fb1ccbb4ba17df9155ff",
+          "sha256": "4b2fe926998c207f8e64090068b2446dd08077a619dd89b3787d5bb519c4e36b",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/observable-agent-workflow-memory/blob/414299d4d15b5de434f5fb1ccbb4ba17df9155ff/pyproject.toml",
+          "revision": "414299d4d15b5de434f5fb1ccbb4ba17df9155ff",
+          "sha256": "575eeac45a0be3587f944464de93f795379762b6da27e99d7b276cba512edc19",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Keep workflow memory observable and replayable.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "replay"
+      },
+      "verification": [
+        "tests/test_abci.py"
+      ],
+      "not_implemented_or_claimed": "Procedural admissibility is not factual truth; no GitHub release was found. Source declares 0.1.0 beta.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-oasg",
+      "kind": "software",
+      "title": "oasg",
+      "source": "https://github.com/kadubon/oasg",
+      "catalogue_summary": "Trial bounded local workflow-policy changes and promote only receipt-backed non-regression.",
+      "reviewed_version": "1.2.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "10b266fbed0d77f25ab03f87019c16e0b976b11dd92c5e283c3aa6fc12f77311",
+          "matches_catalogue": false
+        },
+        {
+          "file": "README.md",
+          "sha256": "d9d417c7b032e8a24779ba1b206d3e5ae52e17ddccdd4ac0ce8bb41861948700",
+          "matches_catalogue": false
+        },
+        {
+          "file": "docs/architecture.md",
+          "sha256": "0972f70ec30f3542682f2bf56c32aeab89073f4e370b6e00c7009c3e425d271d",
+          "matches_catalogue": false
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "429057ffcc5bc030740d7dab0acfeb9003894a13cf2d9bdf52937411c4dc913b",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/oasg/blob/7593f74b5d6a4701865dc97b079c3e725c4fd7ee/README.md",
+          "revision": "7593f74b5d6a4701865dc97b079c3e725c4fd7ee",
+          "sha256": "7d38028fcdf6626ff50c9e14a8f89d011e92ed034981607951915124b18e110f",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/oasg/blob/7593f74b5d6a4701865dc97b079c3e725c4fd7ee/docs/architecture.md",
+          "revision": "7593f74b5d6a4701865dc97b079c3e725c4fd7ee",
+          "sha256": "55bbb8dc902a26ec393a834b134d73cd0d1b4c15f3b285ef8978c1c943803119",
+          "locator": "Contract and limitations"
+        },
+        {
+          "url": "https://github.com/kadubon/oasg/blob/7593f74b5d6a4701865dc97b079c3e725c4fd7ee/LICENSE",
+          "revision": "7593f74b5d6a4701865dc97b079c3e725c4fd7ee",
+          "sha256": "6fbe7126f73d042f5f3951032154a5f8bb85eab0cf56cda910f227d1e35d0ab0",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/oasg/blob/7593f74b5d6a4701865dc97b079c3e725c4fd7ee/pyproject.toml",
+          "revision": "7593f74b5d6a4701865dc97b079c3e725c4fd7ee",
+          "sha256": "a468f2c8c43bc031343f009c3125026b0456784f6efdd794ce7f1b18688c03d4",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Admit generated procedures only through a fixed validation boundary.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_vote"
+      },
+      "verification": [
+        "tests/test_integration.py"
+      ],
+      "not_implemented_or_claimed": "Reference/alpha production status; changes workflow policy, not model weights. Runtime trials can execute local commands under host policy.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-audit",
+      "kind": "software",
+      "title": "audit-closed-ai-scientist",
+      "source": "https://github.com/kadubon/audit-closed-ai-scientist",
+      "catalogue_summary": "Benchmark adaptive scientific discovery with committed logs and sequential testing.",
+      "reviewed_version": "0.2.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "ce439f1760a238bab9de6b0baad38d2b969b91db2293dc99d361709e951149f5",
+          "matches_catalogue": false
+        },
+        {
+          "file": "README.md",
+          "sha256": "ccf6ccd7de0e04e5f359307dc985f8a048847c58032fcb142d2003a99bf9232e",
+          "matches_catalogue": false
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "3e67ca530c6e197a76f111fe454ecfd640ebf0dbb6040f3b2fcde0d38a410e20",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/audit-closed-ai-scientist/blob/1e844d1bca18d7bb298aa198e1250bb07bd7ea44/README.md",
+          "revision": "1e844d1bca18d7bb298aa198e1250bb07bd7ea44",
+          "sha256": "86deafdc64da364bb7271257323c4226af2918fd6e5706fedf5c72c30b235dd2",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/audit-closed-ai-scientist/blob/1e844d1bca18d7bb298aa198e1250bb07bd7ea44/LICENSE",
+          "revision": "1e844d1bca18d7bb298aa198e1250bb07bd7ea44",
+          "sha256": "1cfb87b1945680f4cd3236a8c05824e2f6a242a1a7bf66ada94ba6f783ccb0c9",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/audit-closed-ai-scientist/blob/1e844d1bca18d7bb298aa198e1250bb07bd7ea44/pyproject.toml",
+          "revision": "1e844d1bca18d7bb298aa198e1250bb07bd7ea44",
+          "sha256": "8e60b57eecac0ba6b6804f44c24297bdd532fea1674d823a481c828be6c8c5e8",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Fix the validation contract before generation, recording rejection.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_register_verifier"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Benchmarks do not certify arbitrary laboratories or agents; every benchmark writes output artifacts. Software Apache-2.0; bundled paper CC BY 4.0.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-loscr",
+      "kind": "software",
+      "title": "loscr",
+      "source": "https://github.com/kadubon/loscr",
+      "catalogue_summary": "Downgrade or quarantine strong R&D claims when replay, service, evaluator or dependency evidence fails.",
+      "reviewed_version": "0.1.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "908fd05086ab8e168f07ea4411d00d69eaa7b04aa6aed0d876f7b66ef93b7bc7",
+          "matches_catalogue": false
+        },
+        {
+          "file": "README.md",
+          "sha256": "45e8d92ba46c621782c84ac1218b4f69fcc38d66d831f1e7d963173ba01ffdf2",
+          "matches_catalogue": false
+        },
+        {
+          "file": "docs/theory-map.md",
+          "sha256": "9d15bf33c9898738c0b4fede7caca7fe1d9da93a53e23678c9212fb4a2728aeb",
+          "matches_catalogue": false
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "12614c406377823b4b82d8b8bdfe62511a0d127377acbd60d66c5415651203c3",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/loscr/blob/334307b59a4870b90f6162705c793bb5615a555a/README.md",
+          "revision": "334307b59a4870b90f6162705c793bb5615a555a",
+          "sha256": "0ab33ed540f54eb8cbe89deb43e1965c17fa1aaafc3fa43dce56dd3d801dc3a7",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/loscr/blob/334307b59a4870b90f6162705c793bb5615a555a/docs/theory-map.md",
+          "revision": "334307b59a4870b90f6162705c793bb5615a555a",
+          "sha256": "ffc933d34a24601d5a48b7233e2987c22a2281c37cd31d408b8815aee2fc3a2e",
+          "locator": "Contract and limitations"
+        },
+        {
+          "url": "https://github.com/kadubon/loscr/blob/334307b59a4870b90f6162705c793bb5615a555a/LICENSE",
+          "revision": "334307b59a4870b90f6162705c793bb5615a555a",
+          "sha256": "0c96d235e85c26fedf1128e7dbf308605bd6d91d7a78145c37c595b3064c2037",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/loscr/blob/334307b59a4870b90f6162705c793bb5615a555a/pyproject.toml",
+          "revision": "334307b59a4870b90f6162705c793bb5615a555a",
+          "sha256": "f8d590af6868d4a03723d5dc88a3b052d1c0f87d0ea51619ef46582e7fe9c4bf",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Retain uncertainty and replay records without asserting acceleration.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_residual"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Structural claim checking requires external statistical premises. Even doctor may initialize local state.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-simulator",
+      "kind": "software",
+      "title": "asi-proxy-phase-growth-simulator",
+      "source": "https://github.com/kadubon/asi-proxy-phase-growth-simulator",
+      "catalogue_summary": "Explore verification, resource, coordination and memory shocks in conditional scenarios.",
+      "reviewed_version": "0.1.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "1d818527300fc3cd9ea18328244c2b96eeeb7ac48ff9540e2b29c592acf83fa9",
+          "matches_catalogue": false
+        },
+        {
+          "file": "README.md",
+          "sha256": "0b417cfd26e40865d81f4fb818658c6fc05ed5b000a22390eade8e41b78d5501",
+          "matches_catalogue": false
+        },
+        {
+          "file": "docs/model-reference.md",
+          "sha256": "b34372884dde58a95e5e52f43c35710e4b012aea98fabd9d912476ac2a6ebd6d",
+          "matches_catalogue": false
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "f57a574994c7690a6bdf52210d823125108b7b3ff975ea633de0fee80b2ad6a8",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/asi-proxy-phase-growth-simulator/blob/24690a225c86fde2a24de4d9f93e2a282789b67d/README.md",
+          "revision": "24690a225c86fde2a24de4d9f93e2a282789b67d",
+          "sha256": "c568391751400f573934d1318ed08949d4963cf2ec432e6db0dfe5ace350a96e",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/asi-proxy-phase-growth-simulator/blob/24690a225c86fde2a24de4d9f93e2a282789b67d/docs/model-reference.md",
+          "revision": "24690a225c86fde2a24de4d9f93e2a282789b67d",
+          "sha256": "96ca21b69b0ccaeef7dd86892a8f718d3a9c159f72390ec152b07aab347c8596",
+          "locator": "Contract and limitations"
+        },
+        {
+          "url": "https://github.com/kadubon/asi-proxy-phase-growth-simulator/blob/24690a225c86fde2a24de4d9f93e2a282789b67d/LICENSE",
+          "revision": "24690a225c86fde2a24de4d9f93e2a282789b67d",
+          "sha256": "ecb22ee749d3c97d73f60644cef0f07b94ef7c7559ef550dfaac22ec656159b9",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/asi-proxy-phase-growth-simulator/blob/24690a225c86fde2a24de4d9f93e2a282789b67d/pyproject.toml",
+          "revision": "24690a225c86fde2a24de4d9f93e2a282789b67d",
+          "sha256": "e78aacd28d61a5bd24e201533d875c149af2231553e0f68d45713aa4bf3fe151",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Label the bounded demonstration as a laboratory comparison, not a forecast.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "accounting"
+      },
+      "verification": [
+        "tests/test_integration.py"
+      ],
+      "not_implemented_or_claimed": "No world forecast, ASI date or probability; synthetic parameter choices are not measurements.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-skill",
+      "kind": "software",
+      "title": "asi-proxy-phase-skill",
+      "source": "https://github.com/kadubon/asi-proxy-phase-skill",
+      "catalogue_summary": "An installable skill supplies evidence-gated discovery and bounded intervention guidance.",
+      "reviewed_version": "1.1.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "7eff8ffa17ec9fd437bc54df711c0c5e46c5e04d33841faf537e361e9045ae8b",
+          "matches_catalogue": true
+        },
+        {
+          "file": "README.md",
+          "sha256": "7980de30692da29d8647870b3afe0fa519b1fef16f457241b9c561476b4d744d",
+          "matches_catalogue": false
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "ee6b4e54504245b8560b415326157362031822a3872826ca00c7d8b85ae5c79b",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/asi-proxy-phase-skill/blob/5706214a9a3d5e194f371f8ccc2eb71132f82270/README.md",
+          "revision": "5706214a9a3d5e194f371f8ccc2eb71132f82270",
+          "sha256": "e1baef7017312787117a13c1fb3accd2dcef1e0deb6254c7236a3aff8e79d014",
+          "locator": "Overview, interfaces, installation and boundaries"
+        },
+        {
+          "url": "https://github.com/kadubon/asi-proxy-phase-skill/blob/5706214a9a3d5e194f371f8ccc2eb71132f82270/LICENSE",
+          "revision": "5706214a9a3d5e194f371f8ccc2eb71132f82270",
+          "sha256": "7eff8ffa17ec9fd437bc54df711c0c5e46c5e04d33841faf537e361e9045ae8b",
+          "locator": "License grant"
+        },
+        {
+          "url": "https://github.com/kadubon/asi-proxy-phase-skill/blob/5706214a9a3d5e194f371f8ccc2eb71132f82270/pyproject.toml",
+          "revision": "5706214a9a3d5e194f371f8ccc2eb71132f82270",
+          "sha256": "a66532e76c0de4db66639aca9001b079deee77fbb6bc9d19b54869930f4a38e1",
+          "locator": "Project version, scripts, Python requirements"
+        }
+      ],
+      "adopted_principle": "Expose an offline machine-readable command and evidence vocabulary.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "transition"
+      },
+      "verification": [
+        "tests/test_boundaries.py"
+      ],
+      "not_implemented_or_claimed": "An advisory skill is not a running service; its bundled corpus is an older snapshot. Installation/execution needs host authorization.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-cmgl",
+      "kind": "software",
+      "title": "certified-memory-governance-layer",
+      "source": "https://github.com/kadubon/certified-memory-governance-layer",
+      "catalogue_summary": "Gate memory writes and retrieval using current versions, authority receipts, tombstones and contamination lanes.",
+      "reviewed_version": "1.1.2",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "0e82c030c53a6dfc70fe2cf590e6b358329d328d98412775ad8ede4bfac07020",
+          "matches_catalogue": true
+        },
+        {
+          "file": "README.md",
+          "sha256": "6daef955d7ee725cc7f77962a77ccbe09a53d2ac4923485c9d6f073a0885fa56",
+          "matches_catalogue": true
+        },
+        {
+          "file": "docs/current-view.md",
+          "sha256": "39f49781f863af9bd7b62b0d194d22ac400d8a4540828bad847759bdea6a7581",
+          "matches_catalogue": true
+        },
+        {
+          "file": "docs/proof-obligations.md",
+          "sha256": "d60f578a3d78d808cc8f830be881dd4f02e0514e9aff448ed4d5732308770139",
+          "matches_catalogue": true
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "7142860f1cd674780cd206234824efd9420de4a570782ee8d0b7ce96967bd64f",
+          "matches_catalogue": true
+        },
+        {
+          "file": "tests/test_compression.py",
+          "sha256": "d2010fe1fa95c5f913b33345dc530e569194a3e12f5d7d78e284cbae7ccf89ff",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/certified-memory-governance-layer/blob/2fc49b4df7bbe4a23265b8b2372432711740d00b/README.md",
+          "revision": "2fc49b4df7bbe4a23265b8b2372432711740d00b",
+          "sha256": "6daef955d7ee725cc7f77962a77ccbe09a53d2ac4923485c9d6f073a0885fa56",
+          "locator": "README.md"
+        },
+        {
+          "url": "https://github.com/kadubon/certified-memory-governance-layer/blob/2fc49b4df7bbe4a23265b8b2372432711740d00b/docs/proof-obligations.md",
+          "revision": "2fc49b4df7bbe4a23265b8b2372432711740d00b",
+          "sha256": "d60f578a3d78d808cc8f830be881dd4f02e0514e9aff448ed4d5732308770139",
+          "locator": "docs/proof-obligations.md"
+        },
+        {
+          "url": "https://github.com/kadubon/certified-memory-governance-layer/blob/2fc49b4df7bbe4a23265b8b2372432711740d00b/LICENSE",
+          "revision": "2fc49b4df7bbe4a23265b8b2372432711740d00b",
+          "sha256": "0e82c030c53a6dfc70fe2cf590e6b358329d328d98412775ad8ede4bfac07020",
+          "locator": "LICENSE"
+        },
+        {
+          "url": "https://github.com/kadubon/certified-memory-governance-layer/blob/2fc49b4df7bbe4a23265b8b2372432711740d00b/pyproject.toml",
+          "revision": "2fc49b4df7bbe4a23265b8b2372432711740d00b",
+          "sha256": "7142860f1cd674780cd206234824efd9420de4a570782ee8d0b7ce96967bd64f",
+          "locator": "pyproject.toml"
+        },
+        {
+          "url": "https://github.com/kadubon/certified-memory-governance-layer/blob/2fc49b4df7bbe4a23265b8b2372432711740d00b/docs/current-view.md",
+          "revision": "2fc49b4df7bbe4a23265b8b2372432711740d00b",
+          "sha256": "39f49781f863af9bd7b62b0d194d22ac400d8a4540828bad847759bdea6a7581",
+          "locator": "docs/current-view.md"
+        },
+        {
+          "url": "https://github.com/kadubon/certified-memory-governance-layer/blob/2fc49b4df7bbe4a23265b8b2372432711740d00b/tests/test_compression.py",
+          "revision": "2fc49b4df7bbe4a23265b8b2372432711740d00b",
+          "sha256": "d2010fe1fa95c5f913b33345dc530e569194a3e12f5d7d78e284cbae7ccf89ff",
+          "locator": "tests/test_compression.py"
+        }
+      ],
+      "adopted_principle": "Withdraw invalid memory and quarantine downstream procedures.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_invalidate"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Procedural admissibility only; no factual truth, model unlearning, backend deletion guarantee or prompt-injection immunity. Optional adapters remain application-owned.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-memoryflow",
+      "kind": "software",
+      "title": "memoryflow-agent-memory-auditor",
+      "source": "https://github.com/kadubon/memoryflow-agent-memory-auditor",
+      "catalogue_summary": "Audit declared memory telemetry for stale, deleted or superseded use, correction latency and non-comparable metrics.",
+      "reviewed_version": "0.1.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "bb3c9a3396951102e832bebdb0c14ff3eb1abcc835d3620b9af52e04777041b8",
+          "matches_catalogue": false
+        },
+        {
+          "file": "README.md",
+          "sha256": "bf9f4bd2e307ca96578598da43f6c6db7f25a88916b8b8f701fe037cd8f88d7a",
+          "matches_catalogue": false
+        },
+        {
+          "file": "docs/conformance-profiles.md",
+          "sha256": "6e1028143106ae3fc605c93ead3d19ffcb0cb936fbc8061de53bf864c2905bc8",
+          "matches_catalogue": false
+        },
+        {
+          "file": "docs/event-schema.md",
+          "sha256": "9bf94bc5b919f8767c82d21001901dc2f974cc2542b8af363f6dce5d37954335",
+          "matches_catalogue": false
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "d29ef43620c88a30fb493d1a8c5d37354a67fcf637ba336a20f299ad0412cecf",
+          "matches_catalogue": false
+        },
+        {
+          "file": "tests/unit/test_verifier_profiles.py",
+          "sha256": "651c6f18d89c559fb5ba7b787017d789bfeb9378f47e7ca5d6abfe8be81d26b7",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/memoryflow-agent-memory-auditor/blob/c8ee3f4c81f5303535ba2d2e9882c409f05e641e/README.md",
+          "revision": "c8ee3f4c81f5303535ba2d2e9882c409f05e641e",
+          "sha256": "c20192c18d7871033e8fb7386d6674789f89754f410ccb700d9a7b328e2a7f0f",
+          "locator": "README.md"
+        },
+        {
+          "url": "https://github.com/kadubon/memoryflow-agent-memory-auditor/blob/c8ee3f4c81f5303535ba2d2e9882c409f05e641e/docs/conformance-profiles.md",
+          "revision": "c8ee3f4c81f5303535ba2d2e9882c409f05e641e",
+          "sha256": "cdc3dd2572810039354fb5407c2d6c1a6c7dd8200a4ebdcf48cd863f22275dd1",
+          "locator": "docs/conformance-profiles.md"
+        },
+        {
+          "url": "https://github.com/kadubon/memoryflow-agent-memory-auditor/blob/c8ee3f4c81f5303535ba2d2e9882c409f05e641e/LICENSE",
+          "revision": "c8ee3f4c81f5303535ba2d2e9882c409f05e641e",
+          "sha256": "278f14359a2c6da12b7140acc5df5fb68386b0809a8dfaa8a726b53e63ff2107",
+          "locator": "LICENSE"
+        },
+        {
+          "url": "https://github.com/kadubon/memoryflow-agent-memory-auditor/blob/c8ee3f4c81f5303535ba2d2e9882c409f05e641e/pyproject.toml",
+          "revision": "c8ee3f4c81f5303535ba2d2e9882c409f05e641e",
+          "sha256": "eac4adffb181f7fbc3a684c242347724a5219dc5797660fadd56a41e5a95c35e",
+          "locator": "pyproject.toml"
+        },
+        {
+          "url": "https://github.com/kadubon/memoryflow-agent-memory-auditor/blob/c8ee3f4c81f5303535ba2d2e9882c409f05e641e/docs/event-schema.md",
+          "revision": "c8ee3f4c81f5303535ba2d2e9882c409f05e641e",
+          "sha256": "a12c07e560fe386872f67d50b33233a228171eea72f769159f0717f6a6728911",
+          "locator": "docs/event-schema.md"
+        },
+        {
+          "url": "https://github.com/kadubon/memoryflow-agent-memory-auditor/blob/c8ee3f4c81f5303535ba2d2e9882c409f05e641e/tests/unit/test_verifier_profiles.py",
+          "revision": "c8ee3f4c81f5303535ba2d2e9882c409f05e641e",
+          "sha256": "b44f296268d5083bed6071f1cdbdcd17a48d7239bec1d366501f44ebf95b6e5f",
+          "locator": "tests/unit/test_verifier_profiles.py"
+        }
+      ],
+      "adopted_principle": "Preserve memory provenance, expiry and reuse visibility.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "advance"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Cannot observe silent backend changes, fabricated events or source truth. Auditing deletion telemetry does not erase memory or model weights.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-pfg",
+      "kind": "software",
+      "title": "problem-frame-gate",
+      "source": "https://github.com/kadubon/problem-frame-gate",
+      "catalogue_summary": "Check finite action authority and atomically commit a five-row gate bundle before a separately controlled outbox dispatcher.",
+      "reviewed_version": "1.1.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "2410c178aba5db04286a5b7419a3490f8a1fa2d5af03798aa9d0165ff3c349ea",
+          "matches_catalogue": false
+        },
+        {
+          "file": "README.md",
+          "sha256": "63f4fb7fd801e24a01f40c8003703a0cd40efe313f01e8089d29e9812c8dabe8",
+          "matches_catalogue": false
+        },
+        {
+          "file": "docs/operations.md",
+          "sha256": "3977144c551983f0269827de0b9751593247d5f15b92cd3396743d2bd9708b47",
+          "matches_catalogue": false
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "58f4a78a19ed003844efa880aa71b5b5967f01a1629104b04b37c50b42af2c8b",
+          "matches_catalogue": false
+        },
+        {
+          "file": "schemas/gate-request.schema.json",
+          "sha256": "c3682c53a6b635133ec8384e03e40ed425dc5ae62e9d4e573abd435974c247a9",
+          "matches_catalogue": false
+        },
+        {
+          "file": "tests/test_v1_1_hardening.py",
+          "sha256": "a67bd42e4c63b5633c43e3f994ce10efb77a33c5d5527d7a3ba43487b869a5ee",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/problem-frame-gate/blob/9449b338c4c8b959878704a48b2f16e291e2dfb8/README.md",
+          "revision": "9449b338c4c8b959878704a48b2f16e291e2dfb8",
+          "sha256": "d602f5ee66c0af78b97dbf69e40560d95b135531f2c72e023877b5a6b95d4265",
+          "locator": "README.md"
+        },
+        {
+          "url": "https://github.com/kadubon/problem-frame-gate/blob/9449b338c4c8b959878704a48b2f16e291e2dfb8/docs/operations.md",
+          "revision": "9449b338c4c8b959878704a48b2f16e291e2dfb8",
+          "sha256": "dc6bcf002f0581d4a5c26d81bcc5e51386df7a1628ebeaa57f17e043530f23a1",
+          "locator": "docs/operations.md"
+        },
+        {
+          "url": "https://github.com/kadubon/problem-frame-gate/blob/9449b338c4c8b959878704a48b2f16e291e2dfb8/LICENSE",
+          "revision": "9449b338c4c8b959878704a48b2f16e291e2dfb8",
+          "sha256": "6ab48b453e7242965a007be441ef49b6b341cf9d058a5935dc27dfbcdaa0e031",
+          "locator": "LICENSE"
+        },
+        {
+          "url": "https://github.com/kadubon/problem-frame-gate/blob/9449b338c4c8b959878704a48b2f16e291e2dfb8/pyproject.toml",
+          "revision": "9449b338c4c8b959878704a48b2f16e291e2dfb8",
+          "sha256": "eeea9c3038693e4b7e60269be7bc9f39bf49eee90d18b72a82d1986eac57b1c0",
+          "locator": "pyproject.toml"
+        },
+        {
+          "url": "https://github.com/kadubon/problem-frame-gate/blob/9449b338c4c8b959878704a48b2f16e291e2dfb8/schemas/gate-request.schema.json",
+          "revision": "9449b338c4c8b959878704a48b2f16e291e2dfb8",
+          "sha256": "2735493f382582c753295411a4d2391c0b43e6c90edb9b66aa6587e43e6b55ce",
+          "locator": "schemas/gate-request.schema.json"
+        },
+        {
+          "url": "https://github.com/kadubon/problem-frame-gate/blob/9449b338c4c8b959878704a48b2f16e291e2dfb8/tests/test_v1_1_hardening.py",
+          "revision": "9449b338c4c8b959878704a48b2f16e291e2dfb8",
+          "sha256": "447a754aac79d11c5ec17db4113faaea465f6150639eeaa683d56b0eb6386252",
+          "locator": "tests/test_v1_1_hardening.py"
+        }
+      ],
+      "adopted_principle": "Require an explicit problem specification and predeclared receiver scope.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_create_task"
+      },
+      "verification": [
+        "tests/test_core.py"
+      ],
+      "not_implemented_or_claimed": "Finite audit consistency is not OAuth infrastructure, external truth, physical outcome or exactly-once delivery. Deployment owns identities, durable storage, actuator monitoring and incident response.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-fost",
+      "kind": "software",
+      "title": "fost-agent-ledger",
+      "source": "https://github.com/kadubon/fost-agent-ledger",
+      "catalogue_summary": "Separate claimed completion from finite support, checked finality, unresolved obligations and environment changes.",
+      "reviewed_version": "2.0.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "a54c2d4572e21f3d1c0af96385fb6d768c42b90c71c4d05c177afa6544d9e2f6",
+          "matches_catalogue": false
+        },
+        {
+          "file": "README.md",
+          "sha256": "831dc6931ade2378b51f2a4ffa41996c6dc1b89e7f93a36827a0321623b00a12",
+          "matches_catalogue": false
+        },
+        {
+          "file": "docs/json_contract.md",
+          "sha256": "115b4956ea910cdd795451d17a0e734bf3d3a46cddd62d0103a8e531cb10dd23",
+          "matches_catalogue": false
+        },
+        {
+          "file": "docs/limitations.md",
+          "sha256": "08d11bcd1e674ca728343ca0ff9fab00ace6728cd910c813f6662f508e21dcab",
+          "matches_catalogue": false
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "175b9f14327ebfaa73e904f630c3fc5821c945d657fde8dd885c90ff94070135",
+          "matches_catalogue": false
+        },
+        {
+          "file": "tests/test_v20_strict_finality.py",
+          "sha256": "d1a3ce37aa58c1da321dc6d842f59c149b3e892ca0032e9b1940c93a107000c9",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/fost-agent-ledger/blob/e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa/README.md",
+          "revision": "e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa",
+          "sha256": "61f7c520ef6dc5b1b0757870aeb6e1d22df76aa7682dad24b13e8ae0627778ec",
+          "locator": "README.md"
+        },
+        {
+          "url": "https://github.com/kadubon/fost-agent-ledger/blob/e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa/docs/json_contract.md",
+          "revision": "e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa",
+          "sha256": "2dd85e1fc7c8536865b76faab177d6bab885cbfba5af15b990337cbaa8ad222a",
+          "locator": "docs/json_contract.md"
+        },
+        {
+          "url": "https://github.com/kadubon/fost-agent-ledger/blob/e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa/LICENSE",
+          "revision": "e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa",
+          "sha256": "308b1b965975f5b8c71c72a2d027c12613b8d98e861552cf09a96e433feaac02",
+          "locator": "LICENSE"
+        },
+        {
+          "url": "https://github.com/kadubon/fost-agent-ledger/blob/e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa/pyproject.toml",
+          "revision": "e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa",
+          "sha256": "f156ca76e87ea1127cf94d93929a4976b9d3f148758b88967694d4b410d1a778",
+          "locator": "pyproject.toml"
+        },
+        {
+          "url": "https://github.com/kadubon/fost-agent-ledger/blob/e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa/docs/limitations.md",
+          "revision": "e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa",
+          "sha256": "6c45c3bfae9868d9220a9a9097e5fc0f8c8da6b784deca369b2fec70ce8d0146",
+          "locator": "docs/limitations.md"
+        },
+        {
+          "url": "https://github.com/kadubon/fost-agent-ledger/blob/e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa/tests/test_v20_strict_finality.py",
+          "revision": "e3a937a4a3f28c4077b5f658d6bfb1fc67ddd8fa",
+          "sha256": "8e927651c695804fd5da4ef478df61e755dd779925a96775bbc16dc61aa59065",
+          "locator": "tests/test_v20_strict_finality.py"
+        }
+      ],
+      "adopted_principle": "Keep physical execution receipts distinct from claimed results.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_finish"
+      },
+      "verification": [
+        "tests/test_abci.py"
+      ],
+      "not_implemented_or_claimed": "A checked ledger is not a truth oracle or external outcome. Structural migration cannot invent evidence; project-specific modes and freshness policies remain necessary.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-atrb",
+      "kind": "software",
+      "title": "agent-trust-residual-benchmark",
+      "source": "https://github.com/kadubon/agent-trust-residual-benchmark",
+      "catalogue_summary": "Inspect positive/negative synthetic controls and near misses for authority, evidence scope, residuals and repeated model decisions.",
+      "reviewed_version": "0.2.0",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENSE",
+          "sha256": "a52cf934c5a518521971f5cb985d5f7ee5e40be4eb65b7c43b3889b099ac9408",
+          "matches_catalogue": true
+        },
+        {
+          "file": "README.md",
+          "sha256": "d470992dc4c039302fcbd0d44743304257f65760d14604aafd52fba6c3b08461",
+          "matches_catalogue": true
+        },
+        {
+          "file": "docs/V02_EXPERIMENT.md",
+          "sha256": "14622df63fd5c4ec3c014733800e724487e9eb1f9bfcfae4599d2e51179772e6",
+          "matches_catalogue": true
+        },
+        {
+          "file": "docs/V02_RESULTS.md",
+          "sha256": "d125d582368331a0accb143332d06dd7d4a18eb9bbd870d12d6211ce7787a677",
+          "matches_catalogue": true
+        },
+        {
+          "file": "pyproject.toml",
+          "sha256": "fa3fa3c805365b563bcdb391a9b53506d1fde2b7a1cfb98cfca24591b74122d2",
+          "matches_catalogue": true
+        },
+        {
+          "file": "tests/test_v02_positive_controls.py",
+          "sha256": "c183dfdb4431349b6a2d77cb1d765860ffcc9bee6a4e9c6fce31d9b507f3ae52",
+          "matches_catalogue": true
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/agent-trust-residual-benchmark/blob/eb21fda8ed7bfad9dc33becf2ffcc63285249495/README.md",
+          "revision": "eb21fda8ed7bfad9dc33becf2ffcc63285249495",
+          "sha256": "d470992dc4c039302fcbd0d44743304257f65760d14604aafd52fba6c3b08461",
+          "locator": "README.md"
+        },
+        {
+          "url": "https://github.com/kadubon/agent-trust-residual-benchmark/blob/eb21fda8ed7bfad9dc33becf2ffcc63285249495/docs/V02_EXPERIMENT.md",
+          "revision": "eb21fda8ed7bfad9dc33becf2ffcc63285249495",
+          "sha256": "14622df63fd5c4ec3c014733800e724487e9eb1f9bfcfae4599d2e51179772e6",
+          "locator": "docs/V02_EXPERIMENT.md"
+        },
+        {
+          "url": "https://github.com/kadubon/agent-trust-residual-benchmark/blob/eb21fda8ed7bfad9dc33becf2ffcc63285249495/LICENSE",
+          "revision": "eb21fda8ed7bfad9dc33becf2ffcc63285249495",
+          "sha256": "a52cf934c5a518521971f5cb985d5f7ee5e40be4eb65b7c43b3889b099ac9408",
+          "locator": "LICENSE"
+        },
+        {
+          "url": "https://github.com/kadubon/agent-trust-residual-benchmark/blob/eb21fda8ed7bfad9dc33becf2ffcc63285249495/pyproject.toml",
+          "revision": "eb21fda8ed7bfad9dc33becf2ffcc63285249495",
+          "sha256": "fa3fa3c805365b563bcdb391a9b53506d1fde2b7a1cfb98cfca24591b74122d2",
+          "locator": "pyproject.toml"
+        },
+        {
+          "url": "https://github.com/kadubon/agent-trust-residual-benchmark/blob/eb21fda8ed7bfad9dc33becf2ffcc63285249495/docs/V02_RESULTS.md",
+          "revision": "eb21fda8ed7bfad9dc33becf2ffcc63285249495",
+          "sha256": "d125d582368331a0accb143332d06dd7d4a18eb9bbd870d12d6211ce7787a677",
+          "locator": "docs/V02_RESULTS.md"
+        },
+        {
+          "url": "https://github.com/kadubon/agent-trust-residual-benchmark/blob/eb21fda8ed7bfad9dc33becf2ffcc63285249495/tests/test_v02_positive_controls.py",
+          "revision": "eb21fda8ed7bfad9dc33becf2ffcc63285249495",
+          "sha256": "c183dfdb4431349b6a2d77cb1d765860ffcc9bee6a4e9c6fce31d9b507f3ae52",
+          "locator": "tests/test_v02_positive_controls.py"
+        }
+      ],
+      "adopted_principle": "Use failures and unresolved obligations as retained test outcomes.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_residual"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Fixtures and validators were co-developed. Cumulative conditions do not isolate causal effects. Compatibility adapters do not establish equivalence with PIC/FOST/PFG/CCR; no real-world safety or generalization claim.",
+      "status": "principle_extraction_only"
+    },
+    {
+      "id": "sw-oversight",
+      "kind": "software",
+      "title": "Oversight-Centered-Metrology-PoC",
+      "source": "https://github.com/kadubon/Oversight-Centered-Metrology-PoC",
+      "catalogue_summary": "Examine retry, review cost and escalation load using bounded coding tasks and explicit claim margins.",
+      "reviewed_version": "undeclared",
+      "reviewed_on": "2026-09-25",
+      "review_scope": "Local README, package metadata and available referenced design documents; selected lease and verification reducers. Local checkout revision not attested.",
+      "observed_content": [
+        {
+          "file": "LICENCE",
+          "sha256": "f77c4b67532af4d93eabac09eb0741c3852aa91380193e705c36f26b267aa7f7",
+          "matches_catalogue": false
+        },
+        {
+          "file": "README.md",
+          "sha256": "daec0738cb338c4a7761d61dd7d1f1641041d470cfa56d8188531d750cf6aedc",
+          "matches_catalogue": false
+        },
+        {
+          "file": "experiment_manifest.yaml",
+          "sha256": "3fa16f98fca06967b821cf8809ead83dfca384898ef893e82446786257a42904",
+          "matches_catalogue": false
+        },
+        {
+          "file": "report/workflow_oversight_report.md",
+          "sha256": "c439686e9e4f80d2bb8b64fa76fed239143b59c9f5f30c45a132b1198e29c78e",
+          "matches_catalogue": true
+        },
+        {
+          "file": "src/oversight_poc/channels.py",
+          "sha256": "0109da2e8954f53f7199309aeedaa22e042b5f2e7566e36c5c345439e9d887c7",
+          "matches_catalogue": false
+        }
+      ],
+      "catalogue_evidence": [
+        {
+          "url": "https://github.com/kadubon/Oversight-Centered-Metrology-PoC/blob/a814d7e02e52d3c7e2a3ce268e2c1bcc0b5ba43b/README.md",
+          "revision": "a814d7e02e52d3c7e2a3ce268e2c1bcc0b5ba43b",
+          "sha256": "bcec7b7799d8999b6dc78a9c9eaad01431ba10bb213b05ff1a4c6963c340be12",
+          "locator": "README.md"
+        },
+        {
+          "url": "https://github.com/kadubon/Oversight-Centered-Metrology-PoC/blob/a814d7e02e52d3c7e2a3ce268e2c1bcc0b5ba43b/experiment_manifest.yaml",
+          "revision": "a814d7e02e52d3c7e2a3ce268e2c1bcc0b5ba43b",
+          "sha256": "7c0477415f7b27ebe206db95e4cba84f0a44095812d13021c8c1ed7fedb89746",
+          "locator": "experiment_manifest.yaml"
+        },
+        {
+          "url": "https://github.com/kadubon/Oversight-Centered-Metrology-PoC/blob/a814d7e02e52d3c7e2a3ce268e2c1bcc0b5ba43b/LICENCE",
+          "revision": "a814d7e02e52d3c7e2a3ce268e2c1bcc0b5ba43b",
+          "sha256": "1c6b8627eb8881474ad8e87f5fb9d662d46508ecc5320a47accaee70a8bea593",
+          "locator": "LICENCE"
+        },
+        {
+          "url": "https://github.com/kadubon/Oversight-Centered-Metrology-PoC/blob/a814d7e02e52d3c7e2a3ce268e2c1bcc0b5ba43b/report/workflow_oversight_report.md",
+          "revision": "a814d7e02e52d3c7e2a3ce268e2c1bcc0b5ba43b",
+          "sha256": "c439686e9e4f80d2bb8b64fa76fed239143b59c9f5f30c45a132b1198e29c78e",
+          "locator": "report/workflow_oversight_report.md"
+        },
+        {
+          "url": "https://github.com/kadubon/Oversight-Centered-Metrology-PoC/blob/a814d7e02e52d3c7e2a3ce268e2c1bcc0b5ba43b/src/oversight_poc/channels.py",
+          "revision": "a814d7e02e52d3c7e2a3ce268e2c1bcc0b5ba43b",
+          "sha256": "0ff3f7cb0fcdaf394ebca24c5dc411c6109b56808cb9722ea230a44c24829487",
+          "locator": "src/oversight_poc/channels.py"
+        }
+      ],
+      "adopted_principle": "Require independent oversight signatures; defer model-based truth estimation.",
+      "implementation": {
+        "file": "src/checkedflow/core/machine.py",
+        "symbol": "_vote"
+      },
+      "verification": [
+        "tests/test_residuals.py"
+      ],
+      "not_implemented_or_claimed": "Twelve synthetic tasks, one logged run per actual model, and scripted costly review do not measure human approval fatigue or establish production readiness. Positive comparative oversight claims remain fail-closed in the reported setup.",
+      "status": "principle_extraction_only"
+    }
+  ]
+}

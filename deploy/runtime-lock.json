@@ -1,0 +1,22 @@
+{
+  "schema_version": "1",
+  "purpose": "Versions observed in local qualification; operator-installed external tools.",
+  "cometbft": {
+    "module": "github.com/cometbft/cometbft",
+    "version": "v0.40.0",
+    "module_sum": "h1:0+zc7FlcnonFfMwzhyDCd5vK/fHZqz0RfRyTCxZsFPU=",
+    "source_sha256": "d90a3c33724746fdbdff2bfb40a966ba6b85b54e8dd2c24e38d880916b16a5cc",
+    "source_url": "https://proxy.golang.org/github.com/cometbft/cometbft/@v/v0.40.0.zip"
+  },
+  "gvisor": {
+    "version": "release-20260921.0",
+    "archive_sha512": "7c899979bed334f0987888c41e545cede8e1f7e67a257978c8de244c3867e32bc30d08491e9af36720273c502acd01d8d86c9844ebcbe125790c43fe6bdf563e",
+    "source_url": "https://storage.googleapis.com/gvisor/releases/release/20260921.0/x86_64/gvisor.tar.bz2"
+  },
+  "docker": {
+    "version": "29.8.1",
+    "url": "https://download.docker.com/linux/static/stable/x86_64/docker-29.8.1.tgz",
+    "sha256": "d8db66739d2e28d4933786d73e918d9be643a67fbd835db1bf740d650a259e70"
+  },
+  "python_image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9"
+}

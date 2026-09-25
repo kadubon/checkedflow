@@ -1,0 +1,101 @@
+{
+  "profile": "checkedflow-agents/v1",
+  "command_protocol": "checkedflow/v1",
+  "scope": "one configured chain and mission per gateway",
+  "signed_transport": "UTF-8 JSON string; parse strictly before authenticating",
+  "max_signed_bytes": 1048576,
+  "a2a": {
+    "version": "1.0",
+    "bindings": [
+      "JSONRPC",
+      "HTTP+JSON",
+      "GRPC"
+    ],
+    "card": "/.well-known/agent-card.json",
+    "endpoint": "/rpc",
+    "authentication": "operator bearer token; loopback or authenticated tunnel",
+    "methods": [
+      "SendMessage",
+      "SendStreamingMessage",
+      "GetTask",
+      "ListTasks",
+      "CancelTask",
+      "SubscribeToTask",
+      "CreateTaskPushNotificationConfig",
+      "GetTaskPushNotificationConfig",
+      "ListTaskPushNotificationConfigs",
+      "DeleteTaskPushNotificationConfig",
+      "GetExtendedAgentCard"
+    ],
+    "send_response": "submit/profile/inspect: direct Message; task: tracked Task",
+    "data_schema": "agent-request.schema.json",
+    "history": "at most 64 durable observed updates; default zero; not consensus time",
+    "pagination": "authenticated cursor; descending observed time; restart if changed",
+    "push": "allowlisted HTTPS; public DNS pinning; three attempts then reconfigure",
+    "tenant": "empty or the configured mission; no cross-mission routing",
+    "cancellation": "uncertain task; metadata.envelopeJson: signed abandonment"
+  },
+  "mcp": {
+    "version": "2026-07-28",
+    "transports": [
+      "stdio",
+      "streamable-http",
+      "legacy-sse"
+    ],
+    "legacy": "initialize handshake supported by the official SDK",
+    "tools": [
+      "checkedflow_inspect",
+      "checkedflow_submit"
+    ],
+    "resources": [
+      "checkedflow://profile",
+      "checkedflow://mission",
+      "checkedflow://schemas/envelope"
+    ],
+    "resource_templates": [
+      "checkedflow://tasks/{identity}",
+      "checkedflow://capabilities/{identity}",
+      "checkedflow://residuals/{identity}"
+    ],
+    "prompts": [
+      "checkedflow_review"
+    ],
+    "completion": "mission-visible identity prefixes for templates and review prompt",
+    "notifications": "subscriptions/listen resource updates; disconnect then refetch",
+    "authentication": "stdio process ownership; local bearer or OAuth resource server"
+  },
+  "inspection_kinds": [
+    "mission",
+    "tasks",
+    "task",
+    "capability",
+    "residual"
+  ],
+  "submit_kinds": [
+    "task.create",
+    "task.lease",
+    "task.start",
+    "task.heartbeat",
+    "task.finish",
+    "task.reconcile",
+    "capability.propose",
+    "capability.revoke",
+    "residual.resolve"
+  ],
+  "errors": {
+    "OUTCOME_UNKNOWN": "submission may have committed; inspect before retrying",
+    "REJECTED": "node reported rejection; do not retry unchanged conditions",
+    "UNAVAILABLE": "no state observation; no execution authority inferred",
+    "SCOPE": "wrong mission or unsupported global governance",
+    "NOT_FOUND": "record absent, outside scope or ambiguous",
+    "other": "underlying CheckedFlow contract error; no implicit permission"
+  },
+  "guarantees_not_provided": [
+    "arbitrary remote-node trust",
+    "signing",
+    "code execution",
+    "truth verification",
+    "consensus wall-clock task history",
+    "general A2A message interpretation"
+  ]
+}

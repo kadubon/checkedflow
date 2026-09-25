@@ -1,0 +1,12 @@
+{
+  "cometbft": "0.40.0",
+  "gogoproto": "1.7.2",
+  "sources": {
+    "gogoproto/gogo.proto": "a2bef0fb7e233ff2f442da08b3764be6ce59cc3f2df05cd1c9a44dbb5b55c18f",
+    "tendermint/abci/types.proto": "1b3944469fce574069cd465734cfbeea568f1f8c2a945a677f9f56dc0421e7de",
+    "tendermint/crypto/keys.proto": "5f650381a011fa7e98b12f2f94172497d0051bde143099a6ce4023aafe115b83",
+    "tendermint/crypto/proof.proto": "24ee9bb2ea75601e3562a7993641cfda28211078549c66e3cfd8d30892591980",
+    "tendermint/types/params.proto": "57db8a45197addaeaacd5828f8d6a216fd4a866de44385241a10a81eb08ae644",
+    "tendermint/types/validator.proto": "77814697e9cd97d3c8af160f9f4f7c8b2a9c15147cfe5a9fe0b906db9b438b06"
+  }
+}

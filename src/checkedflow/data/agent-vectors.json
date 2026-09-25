@@ -1,0 +1,108 @@
+{
+  "profile": "checkedflow-agents/v1",
+  "scope": "data-part shape and task projection; not envelope authentication",
+  "requests": [
+    {
+      "input": {
+        "operation": "profile"
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "operation": "inspect",
+        "kind": "mission",
+        "identity": ""
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "operation": "submit",
+        "envelopeJson": "{}"
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "operation": "task",
+        "envelopeJson": "{}"
+      },
+      "valid": true
+    },
+    {
+      "input": {
+        "operation": "submit",
+        "envelopeJson": {}
+      },
+      "valid": false
+    },
+    {
+      "input": {
+        "operation": "profile",
+        "extra": true
+      },
+      "valid": false
+    },
+    {
+      "input": {
+        "operation": "inspect",
+        "kind": "task"
+      },
+      "valid": false
+    },
+    {
+      "input": {
+        "operation": "inspect",
+        "kind": "task",
+        "identity": 1
+      },
+      "valid": false
+    },
+    {
+      "input": {
+        "operation": "inspect",
+        "kind": "worker",
+        "identity": "w0"
+      },
+      "valid": false
+    }
+  ],
+  "projections": [
+    {
+      "status": "ready",
+      "outcome": "",
+      "a2a": "TASK_STATE_SUBMITTED"
+    },
+    {
+      "status": "leased",
+      "outcome": "",
+      "a2a": "TASK_STATE_WORKING"
+    },
+    {
+      "status": "running",
+      "outcome": "",
+      "a2a": "TASK_STATE_WORKING"
+    },
+    {
+      "status": "uncertain",
+      "outcome": "unknown",
+      "a2a": "TASK_STATE_INPUT_REQUIRED"
+    },
+    {
+      "status": "abandoned",
+      "outcome": "unknown",
+      "a2a": "TASK_STATE_CANCELED"
+    },
+    {
+      "status": "finished",
+      "outcome": "reported",
+      "a2a": "TASK_STATE_COMPLETED"
+    },
+    {
+      "status": "finished",
+      "outcome": "fail",
+      "a2a": "TASK_STATE_FAILED"
+    }
+  ]
+}

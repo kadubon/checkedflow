@@ -1,0 +1,75 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "checkedflow"
+version = "0.1.0"
+description = "Evidence-preserving execution, verification and reuse across independent operators"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+authors = [{name = "K. Takahashi"}]
+dependencies = ["cryptography>=46,<51", "jsonschema>=4.25,<5", "rfc8785>=0.1.4,<1"]
+classifiers = ["Development Status :: 3 - Alpha", "Programming Language :: Python :: 3", "Programming Language :: Python :: 3.12", "Programming Language :: Python :: 3.13", "Programming Language :: Python :: 3.14", "Typing :: Typed"]
+
+[project.urls]
+Repository = "https://github.com/kadubon/checkedflow"
+Documentation = "https://github.com/kadubon/checkedflow/tree/main/docs"
+
+[project.optional-dependencies]
+distributed = ["grpcio>=1.84,<2", "protobuf>=7.36.2,<8", "httpx>=0.28,<1"]
+agents = [
+    "a2a-sdk[http-server,grpc]>=1.1.5,<2",
+    "mcp>=2.2,<3",
+    "uvicorn>=0.54,<1",
+    "PyJWT[crypto]>=2.10,<3",
+]
+
+[project.scripts]
+checkedflow = "checkedflow.cli:main"
+
+[dependency-groups]
+dev = ["ruff>=0.12", "mypy>=1.17", "bandit>=1.8", "pytest>=8.4", "pytest-cov>=6", "hypothesis>=6.135", "types-jsonschema>=4.25", "twine>=6", "grpcio-tools>=1.74", "types-protobuf>=6", "coverage>=7.10", "pyyaml>=6"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/checkedflow"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src", "/tests", "/scripts", "/docs", "/deploy", "/.agents", "/.github", "/README.md", "/skills.md", "/AGENTS.md", "/SECURITY.md", "/CHANGELOG.md", "/LICENSE", "/NOTICE", "/pyproject.toml", "/uv.lock", "/.python-version"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+exclude = ["src/checkedflow/distributed/proto"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src/checkedflow"]
+exclude = ["src/checkedflow/distributed/proto"]
+
+[[tool.mypy.overrides]]
+module = ["grpc", "grpc.*", "checkedflow.distributed.proto.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+markers = ["integration: requires real CometBFT nodes", "sandbox: requires Linux and gVisor", "qualification: full distributed and sandbox acceptance"]
+
+[tool.coverage.run]
+branch = true
+source = ["checkedflow.core"]
+
+[tool.coverage.report]
+show_missing = true
+precision = 2
+
+[tool.bandit]
+exclude_dirs = ["tests", "src/checkedflow/distributed/proto"]

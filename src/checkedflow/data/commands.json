@@ -1,0 +1,163 @@
+{
+  "api_version": "checkedflow/v1",
+  "commands": [
+    {
+      "kind": "worker.register",
+      "authority": "three_organizations",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "key",
+        "organization",
+        "roles"
+      ]
+    },
+    {
+      "kind": "worker.revoke",
+      "authority": "three_organizations",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "reason"
+      ]
+    },
+    {
+      "kind": "verifier.register",
+      "authority": "three_organizations",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "contract",
+        "image",
+        "argv",
+        "exhaustive"
+      ]
+    },
+    {
+      "kind": "mission.create",
+      "authority": "three_organizations",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "workers",
+        "budget",
+        "verification_reserve",
+        "verification_cost",
+        "expires",
+        "max_rounds",
+        "max_candidates",
+        "max_depth",
+        "max_attempts",
+        "verifier",
+        "receiver",
+        "contract",
+        "image"
+      ]
+    },
+    {
+      "kind": "task.create",
+      "authority": "mission_worker",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "mission",
+        "phase",
+        "spec",
+        "dependencies",
+        "cost",
+        "ttl",
+        "effect"
+      ]
+    },
+    {
+      "kind": "task.lease",
+      "authority": "mission_worker",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id"
+      ]
+    },
+    {
+      "kind": "task.start",
+      "authority": "mission_worker",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "fence"
+      ]
+    },
+    {
+      "kind": "task.heartbeat",
+      "authority": "mission_worker",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "fence"
+      ]
+    },
+    {
+      "kind": "task.finish",
+      "authority": "mission_worker",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "fence",
+        "result"
+      ]
+    },
+    {
+      "kind": "task.reconcile",
+      "authority": "three_organizations",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "retry",
+        "reason"
+      ]
+    },
+    {
+      "kind": "capability.propose",
+      "authority": "mission_worker",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "task",
+        "source",
+        "expires",
+        "origin"
+      ]
+    },
+    {
+      "kind": "capability.revoke",
+      "authority": "three_organizations",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "reason"
+      ]
+    },
+    {
+      "kind": "residual.resolve",
+      "authority": "three_organizations",
+      "mutates_state": true,
+      "executes_code": false,
+      "payload_fields": [
+        "id",
+        "evidence",
+        "reason"
+      ]
+    }
+  ]
+}
