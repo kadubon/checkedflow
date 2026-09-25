@@ -76,7 +76,10 @@ async def main():
         assert len((await client.list_resource_templates()).resource_templates) == 3
         assert (await client.list_prompts()).prompts[0].name == "checkedflow_review"
     app = create_app(gateway, "http://127.0.0.1/rpc", "test-only-installation-token-00000000")
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app)) as transport:
+    async with (
+        app.app.router.lifespan_context(app.app),
+        httpx.AsyncClient(transport=httpx.ASGITransport(app)) as transport,
+    ):
         card = await A2ACardResolver(transport, "http://127.0.0.1").get_agent_card()
         assert card.supported_interfaces[0].protocol_version == "1.0"
         assert card.capabilities.streaming and card.capabilities.push_notifications

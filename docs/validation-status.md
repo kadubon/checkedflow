@@ -88,6 +88,12 @@ fixtures now enter the application's startup/shutdown lifespan, and journal init
 its connection before propagating a failure. The journal-scope regression explicitly verifies the
 failed connection is closed. These changes preserve the 158-test count.
 
+The tagged `v0.1.0` matrix retained one resource warning from the crash-simulation test's own
+SQLite connection on Python 3.13/3.14; the production store already closes each connection.
+A subsequent test-only maintenance change closes that fixture explicitly and starts/stops the
+package-discovery application's lifespan. The release tag and its tested artifacts stay fixed;
+this warning did not represent a failed or skipped test or a production connection leak.
+
 ## Package and release evidence
 
 Wheel and sdist include contracts, vectors, examples, type information and license attribution.

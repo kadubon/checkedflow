@@ -3,6 +3,7 @@
 import ast
 import json
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
 import pytest
@@ -81,7 +82,7 @@ def test_atomic_store_recovery_and_conflicting_commit(h, tmp_path):
     assert Store(store.path, h.initial).load() == runtime.state
     with pytest.raises(Failure, match="STORAGE"):
         store.commit(runtime.state, [])
-    with sqlite3.connect(store.path) as db, pytest.raises(RuntimeError), db:
+    with closing(sqlite3.connect(store.path)) as db, pytest.raises(RuntimeError), db:
         db.execute("UPDATE snapshot SET hash='corrupt'")
         raise RuntimeError("crash before commit")
     assert encode(store.load()) == encode(runtime.state)
