@@ -177,6 +177,28 @@ def test_incomplete_node_responses_are_not_definite_rejection(reply, expected):
     assert caught.value.code == expected
 
 
+def test_node_submission_transport_errors_preserve_unknown_without_retry():
+    from checkedflow.distributed.client import Client as NodeClient
+
+    for error in (
+        Failure("RPC", "commit notification timed out"),
+        TimeoutError("lost"),
+        httpx.ReadTimeout("lost"),
+    ):
+        client = NodeClient("http://127.0.0.1:26657")
+        calls = []
+
+        def fail(method, params, *, calls=calls, error=error):
+            calls.append(method)
+            raise error
+
+        client.rpc = fail
+        with pytest.raises(Failure) as caught:
+            client.submit({})
+        assert caught.value.code == "OUTCOME_UNKNOWN"
+        assert calls == ["broadcast_tx_commit"]
+
+
 def test_a2a_official_client_and_mcp_observe_same_commit(h):
     async def scenario():
         gateway = Backend(h).gateway()

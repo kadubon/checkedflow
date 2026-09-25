@@ -65,6 +65,11 @@ signature checks remain active. The six-environment rerun passed. Malformed inne
 receive schema errors before projection rather than escaping as missing-key exceptions.
 
 The [security audit](security.md) also covers callback replacement races and publication leakage.
+One later local qualification ran seven cases successfully but failed the formation case when
+CometBFT timed out waiting to notify a committed start transaction. The RPC boundary now labels
+such errors `OUTCOME_UNKNOWN` without retry; the laboratory wait was raised from 10 to 20 seconds
+within the client's 30-second limit. A dedicated regression checks this classification. Release
+qualification must rerun all eight cases; that failed run is not treated as a pass.
 The source scan reported zero personal-path/credential findings. Locked third-party runtime
 dependencies and the installed development environment reported no known advisories on the audit
 date. These scanners do not detect every secret format or unknown vulnerability.

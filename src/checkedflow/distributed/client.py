@@ -7,7 +7,7 @@ from urllib.parse import urlparse
 import httpx
 
 from checkedflow.core.model import State
-from checkedflow.core.values import Object, obj, require, text
+from checkedflow.core.values import Failure, Object, obj, require, text
 from checkedflow.serialization import decode
 from checkedflow.wire import document, dumps
 
@@ -58,9 +58,12 @@ class Client:
         return decode(document(raw))
 
     def submit(self, envelope: Object) -> Object:
-        result = self.rpc(
-            "broadcast_tx_commit", {"tx": base64.b64encode(dumps(envelope)).decode("ascii")}
-        )
+        params: Object = {"tx": base64.b64encode(dumps(envelope)).decode("ascii")}
+        try:
+            result = self.rpc("broadcast_tx_commit", params)
+        except (Failure, httpx.HTTPError, OSError, ValueError, KeyError, TypeError) as exc:
+            # A timeout/error can arrive after commit. Do not mislabel it as rejection or retry.
+            raise Failure("OUTCOME_UNKNOWN", "query committed state before retrying") from exc
         check = obj(result.get("check_tx", {}))
         require(bool(check), "OUTCOME_UNKNOWN", "transaction admission response missing")
         require(check.get("code", 0) == 0, "REJECTED", str(check.get("codespace", "check failed")))

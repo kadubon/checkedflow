@@ -13,6 +13,9 @@ tokens/processes for separate mission visibility. Restore the private A2A journa
 to retain observation ordering, page tokens and callback configuration; consensus tasks remain
 in the own-node store. Back up SQLite consistently, including WAL state or using its backup API.
 After `OUTCOME_UNKNOWN`, inspect committed task/receipt state before authorizing another attempt.
+The laboratory's commit-notification wait is 20 seconds, below the RPC client's 30-second
+timeout. This only bounds response waiting; it cannot guarantee finality. A notification timeout
+may follow a committed command and is always reported as `OUTCOME_UNKNOWN`, without resubmission.
 
 For transport diagnosis: `401` means missing/invalid admission credentials, `403` can mean a
 rejected browser Origin or OAuth scope, `CURSOR` requires restarting a changed listing, and

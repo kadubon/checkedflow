@@ -104,6 +104,7 @@ class Cluster:
                 "allow_duplicate_ip = false": "allow_duplicate_ip = true",
                 'timeout_commit = "1s"': 'timeout_commit = "200ms"',
                 'timeout_propose = "3s"': 'timeout_propose = "1s"',
+                'timeout_broadcast_tx_commit = "10s"': 'timeout_broadcast_tx_commit = "20s"',
                 "max_tx_bytes = 4194304": "max_tx_bytes = 1048576",
                 "max_body_bytes = 1000000": "max_body_bytes = 2097152",
                 "create_empty_blocks = true": "create_empty_blocks = true",
