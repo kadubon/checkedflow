@@ -83,6 +83,11 @@ The source scan reported zero personal-path/credential findings. Locked third-pa
 dependencies and the installed development environment reported no known advisories on the audit
 date. These scanners do not detect every secret format or unknown vulnerability.
 
+Final log review identified SQLite resource warnings on Python 3.13 and 3.14. In-process HTTP
+fixtures now enter the application's startup/shutdown lifespan, and journal initialization closes
+its connection before propagating a failure. The journal-scope regression explicitly verifies the
+failed connection is closed. These changes preserve the 158-test count.
+
 ## Package and release evidence
 
 Wheel and sdist include contracts, vectors, examples, type information and license attribution.

@@ -4,6 +4,7 @@ import asyncio
 import copy
 import json
 import socket
+import sqlite3
 import time
 from contextlib import asynccontextmanager, contextmanager
 
@@ -86,7 +87,9 @@ def request(envelope, *, immediately=True):
     )
 
 
-def test_a2a_durable_pagination_filters_history_artifacts_and_cursor_binding(h, tmp_path):
+def test_a2a_durable_pagination_filters_history_artifacts_and_cursor_binding(
+    h, tmp_path, monkeypatch
+):
     async def scenario():
         gateway = Backend(h).gateway()
         journal = Journal(gateway, tmp_path / "observations.sqlite", clock=lambda: 100)
@@ -128,10 +131,14 @@ def test_a2a_durable_pagination_filters_history_artifacts_and_cursor_binding(h, 
             )
         assert journal.get("c")[1] > stamp
         journal.close()
+        connection = sqlite3.connect(tmp_path / "observations.sqlite")
+        monkeypatch.setattr(sqlite3, "connect", lambda *args, **kwargs: connection)
         with pytest.raises(Failure, match="another mission"):
             Journal(
                 Gateway(gateway.backend, gateway.chain, "other"), tmp_path / "observations.sqlite"
             )
+        with pytest.raises(sqlite3.ProgrammingError, match="closed"):
+            connection.execute("SELECT 1")
 
     asyncio.run(scenario())
 
@@ -410,12 +417,13 @@ def test_outer_json_security(raw):
 @pytest.mark.parametrize("path", ["/rpc", "/v1/tasks", "/v1/extendedAgentCard", "/m/v1/tasks"])
 def test_all_a2a_routes_require_auth_and_reject_browser_origin(h, path):
     async def scenario():
-        async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(
-                create_app(Backend(h).gateway(), "http://127.0.0.1/rpc", TOKEN)
-            ),
-            base_url="http://127.0.0.1",
-        ) as client:
+        app = create_app(Backend(h).gateway(), "http://127.0.0.1/rpc", TOKEN)
+        async with (
+            app.app.router.lifespan_context(app.app),
+            httpx.AsyncClient(
+                transport=httpx.ASGITransport(app), base_url="http://127.0.0.1"
+            ) as client,
+        ):
             assert (await client.get(path)).status_code == 401
             assert (
                 await client.get(

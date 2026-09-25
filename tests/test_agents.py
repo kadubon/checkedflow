@@ -203,11 +203,14 @@ def test_a2a_official_client_and_mcp_observe_same_commit(h):
     async def scenario():
         gateway = Backend(h).gateway()
         app = create_app(gateway, "http://127.0.0.1/rpc", TOKEN)
-        async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(app),
-            base_url="http://127.0.0.1",
-            headers={"Authorization": "Bearer " + TOKEN},
-        ) as transport:
+        async with (
+            app.app.router.lifespan_context(app.app),
+            httpx.AsyncClient(
+                transport=httpx.ASGITransport(app),
+                base_url="http://127.0.0.1",
+                headers={"Authorization": "Bearer " + TOKEN},
+            ) as transport,
+        ):
             card = await A2ACardResolver(transport, "http://127.0.0.1").get_agent_card()
             assert card.supported_interfaces[0].protocol_version == "1.0"
             client = ClientFactory(ClientConfig(httpx_client=transport, streaming=False)).create(
@@ -257,9 +260,12 @@ def test_a2a_authentication_versions_and_cancellation_authority(h):
     async def scenario():
         backend = Backend(h)
         app = create_app(backend.gateway(), "http://127.0.0.1/rpc", TOKEN)
-        async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(app), base_url="http://127.0.0.1"
-        ) as client:
+        async with (
+            app.app.router.lifespan_context(app.app),
+            httpx.AsyncClient(
+                transport=httpx.ASGITransport(app), base_url="http://127.0.0.1"
+            ) as client,
+        ):
             assert (await client.get("/.well-known/agent-card.json")).status_code == 200
             assert (await client.post("/rpc", json={})).status_code == 401
             client.headers["Authorization"] = "Bearer " + TOKEN
@@ -316,11 +322,14 @@ def test_a2a_lost_response_preserves_unknown_then_confirms_without_redispatch(h)
                 },
             },
         }
-        async with httpx.AsyncClient(
-            transport=httpx.ASGITransport(app),
-            base_url="http://127.0.0.1",
-            headers={"Authorization": "Bearer " + TOKEN, "A2A-Version": "1.0"},
-        ) as client:
+        async with (
+            app.app.router.lifespan_context(app.app),
+            httpx.AsyncClient(
+                transport=httpx.ASGITransport(app),
+                base_url="http://127.0.0.1",
+                headers={"Authorization": "Bearer " + TOKEN, "A2A-Version": "1.0"},
+            ) as client,
+        ):
             first = (await client.post("/rpc", json=request)).json()
             assert first["error"]["code"] == -32603
             detail = next(

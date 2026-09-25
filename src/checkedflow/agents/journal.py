@@ -26,6 +26,13 @@ class Journal:
         if path is not None:
             path.parent.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(str(path) if path else ":memory:", check_same_thread=False)
+        try:
+            self._initialize(path)
+        except BaseException:
+            self.db.close()
+            raise
+
+    def _initialize(self, path: Path | None) -> None:
         if path is not None:
             path.chmod(0o600)
         self.db.executescript("""
@@ -40,7 +47,7 @@ class Journal:
                 delivered TEXT NOT NULL DEFAULT '', attempts INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY(task,id));
         """)
-        binding = digest({"chain": gateway.chain, "mission": gateway.mission})
+        binding = digest({"chain": self.gateway.chain, "mission": self.gateway.mission})
         with self.db:
             self.db.execute("INSERT OR IGNORE INTO settings VALUES ('binding', ?)", (binding,))
             require(
