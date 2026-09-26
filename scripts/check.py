@@ -83,6 +83,7 @@ def main() -> None:
             "core/key_registry.py",
             "core/request_journal.py",
             "core/operational.py",
+            "core/work_budget.py",
         }
         found = set()
         for name, report in coverage["files"].items():

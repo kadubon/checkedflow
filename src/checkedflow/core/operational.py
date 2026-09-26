@@ -7,6 +7,8 @@ from checkedflow.core.key_registry import change as change_keys
 from checkedflow.core.request_journal import Archive, Journal, Limits, Receipt, admit, rollover
 from checkedflow.core.request_journal import genesis as journal_genesis
 from checkedflow.core.values import Object, fields, integer, obj, require, text
+from checkedflow.core.work_budget import Ledger
+from checkedflow.core.work_budget import change as change_budget
 
 
 @dataclass(frozen=True)
@@ -19,6 +21,7 @@ class State:
     height: int = 0
     mode: str = "paused"
     profile: str = "checkedflow/control-state/v2"
+    budget: Ledger = Ledger()
 
 
 def genesis(
@@ -108,12 +111,15 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
             "journal.rollover",
             "key.schedule",
             "key.revoke",
+            "budget.configure",
+            "budget.reserve",
+            "budget.settle",
         },
         "VERSION",
         "command not supported by the initial v2 control profile",
     )
     payload = obj(command["payload"])
-    if not kind.startswith("key."):
+    if not kind.startswith(("key.", "budget.")):
         fields(payload, "mission")
     require(payload.get("mission") == state.mission, "SCOPE", "mission mismatch")
     receipt = Receipt(
@@ -121,7 +127,7 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
         context.actor.identity,
         integer(command["nonce"], low=1),
         context.command_digest,
-        True,
+        kind != "budget.reserve",
     )
     if kind == "journal.rollover":
         journal, archive = rollover(state.journal, receipt)
@@ -129,6 +135,11 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
     journal, duplicate = admit(state.journal, receipt)
     if duplicate:
         return advance(state, context.height), None
+    if kind.startswith("budget."):
+        budget = change_budget(
+            state.budget, kind, payload, request=receipt.request, running=state.mode == "running"
+        )
+        return replace(state, budget=budget, journal=journal, height=context.height), None
     if kind.startswith("key."):
         credentials = change_keys(state.credentials, kind, payload, context)
         return replace(state, credentials=credentials, journal=journal, height=context.height), None

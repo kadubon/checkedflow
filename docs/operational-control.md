@@ -91,3 +91,12 @@ Before network deployment, the consensus adapter must bind ordering to the local
 verify archive availability and preserve all active work, budgets, fences, keys, dependencies and
 residuals across rollover. None may be dropped to make a checkpoint fit. These full-runtime
 obligations remain open in the [implementation ledger](implementation-0.2.0.json).
+
+
+## Governed funding extension
+
+The state also contains the [work-budget ledger](work-budget.md). `budget.configure`,
+`budget.reserve` and `budget.settle` require the same current administrative quorum.
+Reservation receipts use ordinary capacity; funding configuration and settlement use the
+administrative reserve. The ledger does not introduce task execution authority. Its required
+state member extends an unpublished v2 development format and leaves v1 replay unchanged.

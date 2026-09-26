@@ -2860,6 +2860,23 @@
         "docs/repository-patch.md"
       ],
       "scope": "Twelve protocol/fixture tests, 100% observer line/branch coverage, two new killed mutations, and development wheel/sdist import/inventory checks. Six real sandbox variants are mandatory and remain unqualified until an exact-source CI result is inspected. Not authenticated work admission, lint reports, evidence quorum, registration or reuse."
+    },
+    {
+      "id": "governed-work-budget",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/core/work_budget.py",
+        "src/checkedflow/core/operational.py",
+        "src/checkedflow/operational_codec.py",
+        "src/checkedflow/data/budget-command.schema.json"
+      ],
+      "tests": [
+        "tests/test_work_budget.py"
+      ],
+      "evidence": [
+        "docs/work-budget.md"
+      ],
+      "scope": "Governed fixed funding, target/phase reservations, protected verification allocation, conservative unknown charging, immutable terminal tickets and signed SQLite replay. Bounded at 128 retained tickets. Not task leases, automatic metering, full residual integration or sustained lifecycle archival."
     }
   ],
   "observations": [
@@ -2916,6 +2933,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36211761633",
       "conclusion": "failure",
       "scope": "Six matrix jobs and managed signer passed; nested-tree sandbox case passed. Infrastructure gate failed because the legacy demo reused a pre-barrier accounting snapshot (780 versus 779). Not a qualified run. A subsequent adapter-level reporting fix must be qualified; v1 consensus semantics remain frozen."
+    },
+    {
+      "source": "7abe55c7b9595048fddd636101232a2dbc70f2ca",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36212387543",
+      "conclusion": "success",
+      "scope": "Six platform/Python jobs, real Vault signer and infrastructure including six repository-observation variants and final accounting barrier correction. Predates work-budget ledger; not full G1-G7 qualification."
     }
   ]
 }

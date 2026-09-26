@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Governed budget command kind and payload",
+  "description": "Structural contract only; embed in a signed v2 command. Quorum, mission mode, reservation ceiling, terminal immutability and capacity are runtime checks. These commands do not authorize execution.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "budget.configure"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "budget",
+            "verification_reserve"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "budget": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "verification_reserve": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "budget.reserve"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "phase",
+            "ceiling",
+            "target"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "phase": {
+              "enum": [
+                "generate",
+                "execute",
+                "verify",
+                "repair"
+              ]
+            },
+            "ceiling": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "target": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "budget.settle"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "ticket",
+            "outcome",
+            "charged"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "ticket": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "outcome": {
+              "enum": [
+                "settled",
+                "unknown",
+                "released"
+              ]
+            },
+            "charged": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    }
+  ]
+}

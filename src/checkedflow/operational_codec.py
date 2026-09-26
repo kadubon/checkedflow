@@ -10,6 +10,8 @@ from checkedflow.core.key_registry import validate as validate_registry
 from checkedflow.core.operational import State, genesis
 from checkedflow.core.request_journal import Archive, Journal, Limits, Receipt, admit
 from checkedflow.core.values import JSON, Object, array, fields, integer, names, obj, require, text
+from checkedflow.core.work_budget import MAX_TICKETS, Ledger, Ticket
+from checkedflow.core.work_budget import validate as validate_budget
 from checkedflow.wire import document, dumps, validate
 
 MAX_STATE_BYTES = 4194304
@@ -52,7 +54,7 @@ def _receipt(value: JSON) -> Receipt:
 def decode(raw: bytes) -> State:
     require(len(raw) <= MAX_STATE_BYTES, "LIMIT", "control-state byte ceiling")
     value = document(raw)
-    fields(value, "chain mission organizations credentials journal height mode profile")
+    fields(value, "chain mission organizations credentials journal height mode profile budget")
     require(value["profile"] == "checkedflow/control-state/v2", "VERSION", "state profile")
     credentials = []
     for item in array(value["credentials"], limit=MAX_REVISIONS):
@@ -112,7 +114,6 @@ def decode(raw: bytes) -> State:
     receipts = tuple(_receipt(item) for item in array(journal["receipts"], limit=4160))
     prior_nonces = dict(slots)
     for receipt in reversed(receipts):
-        require(receipt.administrative, "STATE", "control profile contains ordinary work")
         require(
             prior_nonces.get(receipt.actor) == receipt.nonce, "NONCE", "receipt nonce continuity"
         )
@@ -125,8 +126,41 @@ def decode(raw: bytes) -> State:
         require(not duplicate, "STATE", "duplicate stored receipt")
     mode = text(value["mode"])
     require(mode in {"paused", "running", "draining"}, "STATE", "unsupported control mode")
+    budget_value = obj(value["budget"])
+    fields(budget_value, "budget tickets verification_reserve")
+    tickets = []
+    for item in array(budget_value["tickets"], limit=MAX_TICKETS):
+        ticket = obj(item)
+        fields(ticket, "identity phase ceiling target status charged")
+        tickets.append(
+            Ticket(
+                text(ticket["identity"], limit=80),
+                text(ticket["phase"]),
+                integer(ticket["ceiling"], low=1),
+                text(ticket["target"], limit=64),
+                text(ticket["status"]),
+                integer(ticket["charged"]),
+            )
+        )
+    budget = Ledger(
+        integer(budget_value["budget"]),
+        tuple(tickets),
+        integer(budget_value["verification_reserve"]),
+    )
+    validate_budget(budget)
+    ticket_ids = {ticket.identity for ticket in budget.tickets}
+    require(
+        all(receipt.administrative == (receipt.request not in ticket_ids) for receipt in receipts),
+        "STATE",
+        "receipt class differs from budget admission",
+    )
     state = replace(
-        initial, credentials=tuple(credentials), journal=reconstructed, height=height, mode=mode
+        initial,
+        credentials=tuple(credentials),
+        journal=reconstructed,
+        height=height,
+        mode=mode,
+        budget=budget,
     )
     require(encode(state) == value, "STATE", "noncanonical control-state structure")
     return state

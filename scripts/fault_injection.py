@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "core/work_budget.py",
+        "test_work_budget.py",
+        "budget_spending_retention",
+        "return sum(ticket.charged for ticket in self.tickets)",
+        "return 0",
+        "test_rejects_budget_excess_reconfiguration_and_terminal_rewriting",
+    ),
+    (
+        "core/work_budget.py",
+        "test_work_budget.py",
+        "verification_budget_protection",
+        "return max(0, self.verification_reserve - allocated)",
+        "return 0",
+        "test_verification_allocation_survives_other_phases_and_release",
+    ),
+    (
         "repository_execution.py",
         "test_repository_execution.py",
         "repository_inventory_binding",

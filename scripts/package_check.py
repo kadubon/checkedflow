@@ -29,6 +29,7 @@ REQUIRED = [
     "checkedflow/data/request-archive.schema.json",
     "checkedflow/data/artifact-reference.schema.json",
     "checkedflow/data/key-command.schema.json",
+    "checkedflow/data/budget-command.schema.json",
     "checkedflow/data/repository-patch.schema.json",
     "checkedflow/data/invoice-fixture.json",
     "checkedflow/data/repository-cases.schema.json",
@@ -106,6 +107,18 @@ command.update(id="0:checkpoint", nonce=2, kind="journal.rollover")
 archive = control.apply(sign_command(command, keys), height=2)
 assert archive.root == control.state.journal.archive_root
 assert control.state.journal.epoch == 1
+for offset, (kind, payload) in enumerate([
+    ("budget.configure", {"budget": 100, "verification_reserve": 20}),
+    ("mission.resume", {}),
+    ("budget.reserve", {"phase": "execute", "ceiling": 60, "target": "a" * 64}),
+    ("budget.settle", {"ticket": "1:budget-5", "outcome": "unknown", "charged": 60}),
+], start=3):
+    funding = command | {"epoch": 1, "id": f"1:budget-{offset}", "nonce": offset,
+                         "kind": kind, "payload": {"mission": "m"} | payload}
+    control.apply(sign_command(funding, keys), height=offset)
+assert control.state.budget.spent == 60 and control.state.budget.available == 40
+from checkedflow.operational_codec import decode as decode_control, state_bytes
+assert decode_control(state_bytes(control.state)) == control.state
 import tempfile
 from pathlib import Path
 from checkedflow.operational_storage import Store

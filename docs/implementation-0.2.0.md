@@ -238,3 +238,17 @@ the legacy demo cached accounting before its final node barrier and reported 780
 The reporting adapter now waits past the maximum worker-node height and reads a new state.
 Regression tests reject a stale post-barrier response. The exact accounting assertion and frozen
 v1 consensus semantics are unchanged. Subsequent real infrastructure evidence is required.
+
+
+### Governed work-budget extension
+
+The v2 control state now persists a fixed-budget ledger with target-bound phase reservations,
+a protected verification allocation and conservative full-ceiling charges for unknown outcomes.
+Configuration, reservation and settlement require the current administrative quorum. Ordinary
+reservation saturation does not consume settlement/control journal reserves. Terminal tickets
+are immutable and retained through request rollover. Signed SQLite replay and an independent
+accounting reference model exercise the component. The 128-ticket active/history bound is
+explicit; sustainable ticket archival and task/lease/residual integration remain incomplete.
+
+The predecessor source 7abe55c passed run 36212387543, including the real repository sandbox
+cases and final-accounting barrier correction. That result does not qualify this later extension.
