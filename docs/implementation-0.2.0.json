@@ -2776,6 +2776,22 @@
         "docs/operational-storage.md"
       ],
       "scope": "Eleven source cases including actual before/after-commit process crashes, concurrent commits, signed replay and corruption checks. This is local control storage, not snapshot bootstrap, backup/restore, full work-state persistence or CometBFT qualification."
+    },
+    {
+      "id": "local-artifact-integrity",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/core/artifact.py",
+        "src/checkedflow/artifacts.py",
+        "src/checkedflow/data/artifact-reference.schema.json"
+      ],
+      "tests": [
+        "tests/test_artifacts.py"
+      ],
+      "evidence": [
+        "docs/artifact-storage.md"
+      ],
+      "scope": "Ten local tests for bounded bytes, scope-before-I/O, atomic publication, concurrent quotas, corruption and schema agreement. Not S3, availability quorum, retention, network authentication or domain lifecycle qualification."
     }
   ],
   "observations": [
@@ -2796,6 +2812,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36205962214",
       "conclusion": "success",
       "scope": "Control increment and existing infrastructure cases. Predates atomic storage implementation."
+    },
+    {
+      "source": "38453811f5884cb5bd02cb75e3183d15981bbeb6",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36207633409",
+      "conclusion": "success",
+      "scope": "Atomic local control storage, hosted matrix and existing infrastructure cases. Predates artifact store."
     }
   ]
 }

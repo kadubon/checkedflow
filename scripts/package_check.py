@@ -27,6 +27,7 @@ REQUIRED = [
     "checkedflow/data/operational-envelope.schema.json",
     "checkedflow/data/operational-state.schema.json",
     "checkedflow/data/request-archive.schema.json",
+    "checkedflow/data/artifact-reference.schema.json",
     "checkedflow/data/repository-patch.schema.json",
     "checkedflow/data/research.json",
     "checkedflow/data/examples/sdk.py",
@@ -109,6 +110,17 @@ with tempfile.TemporaryDirectory() as folder:
         previous_hash=OperationalRuntime(initial_control).state_hash
     )
     assert store.verify_history(expected_hash=committed.state_hash) == store.load()
+from io import BytesIO
+from hashlib import sha256
+from checkedflow.artifacts import Access, LocalStore
+from checkedflow.core.artifact import Reference
+with tempfile.TemporaryDirectory() as folder:
+    artifacts = LocalStore(Path(folder) / "artifacts.sqlite")
+    access = Access("installed-check", frozenset({"demo"}), frozenset({"read", "write"}))
+    ref = Reference("sha256", sha256(b"installed").hexdigest(), 9,
+                    "text/plain", "evidence", "demo", "1" * 64)
+    artifacts.put(ref, BytesIO(b"installed"), access=access)
+    assert artifacts.get(ref, access=access) == b"installed"
 runpy.run_path(str(r.files("checkedflow").joinpath("data/examples/sdk.py")), run_name="__main__")
 assert main(["example"]) == 0
 from checkedflow.agents.gateway import profile

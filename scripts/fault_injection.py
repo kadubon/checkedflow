@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "artifacts.py",
+        "test_artifacts.py",
+        "artifact_digest_integrity",
+        "sha256(body).hexdigest() == ref.digest",
+        "True",
+        "test_corruption_is_detected_not_silently_repaired",
+    ),
+    (
+        "artifacts.py",
+        "test_artifacts.py",
+        "artifact_scope_authorization",
+        "scope in self.scopes and permission in self.permissions",
+        "True",
+        "test_denial_before_storage_or_stream_observation",
+    ),
+    (
         "operational_storage.py",
         "test_operational_storage.py",
         "trusted_replay_checkpoint",

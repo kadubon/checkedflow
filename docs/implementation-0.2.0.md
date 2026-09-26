@@ -111,6 +111,24 @@ and test the final increment. None of these development artifacts is authorized 
 
 ## Next implementation order
 
+The [artifact reference and local byte store](artifact-storage.md) add portable typed references,
+scope checks before I/O, verified bounded streams, atomic publication and per-scope quotas. Ten
+local source cases cover malformed uploads, concurrent publication/capacity, corruption, removal,
+rollback and schema agreement. This is a filesystem-backed SQLite component, not S3, availability
+admission, retention/pinning, network authorization or full consensus/domain integration.
+The combined Windows Python 3.12.10 run passed 235 source tests in 44.07 seconds; eight
+infrastructure cases were deselected. Both new modules reached 100% statements and branches in
+their focused source suite. All fifteen selected invariant mutations and static checks passed.
+After tightening schema rejection of trailing newlines, the ten focused cases and static checks
+passed again. Coverage does not establish operational correctness.
+
+The [atomic-storage CI run](https://github.com/kadubon/checkedflow/actions/runs/36207633409) passed
+for `38453811f5884cb5bd02cb75e3183d15981bbeb6`, including the existing matrix and legacy infrastructure
+cases. It predates the new artifact component. Fresh development wheel and sdist installations
+for that commit exercised signed control/store/replay and recorded their package import under
+`Lib/site-packages/checkedflow/__init__.py`, outside the source tree. These are development builds
+with 0.1.0 metadata, not authorized release candidates.
+
 The [local control store](operational-storage.md) now atomically commits bounded state, signed
 block history and request archives. Its eleven source cases cover reopen/replay, concurrent writers,
 SQL rollback, actual process exit before/after commit, corruption and checkpoint mismatch. Store
