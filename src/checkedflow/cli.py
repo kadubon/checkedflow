@@ -81,6 +81,7 @@ def main(argv: list[str] | None = None) -> int:
         agent.add_argument("--rpc", required=True, help="operator-owned loopback full node")
         agent.add_argument("--chain", required=True)
         agent.add_argument("--mission", required=True)
+        agent.add_argument("--protocol", choices=["v1", "v2"], default="v1")
         agent.add_argument("--host", default="127.0.0.1")
         agent.add_argument("--port", type=int, default=8080 if transport == "a2a" else 8082)
         agent.add_argument("--token-env", default="CHECKEDFLOW_AGENT_TOKEN")
@@ -179,10 +180,19 @@ def main(argv: list[str] | None = None) -> int:
 
                 emit(Worker(client, args.identity, key(args.key), args.chain).once())
         elif args.action in {"a2a", "mcp"}:
-            from checkedflow.agents.gateway import Gateway
+            from checkedflow.agents.gateway import AgentGateway, Gateway
             from checkedflow.distributed.client import Client
 
-            gateway = Gateway(Client(args.rpc), args.chain, args.mission)
+            gateway: AgentGateway
+            if args.protocol == "v2":
+                from checkedflow.agents.operational_gateway import Gateway as OperationalGateway
+                from checkedflow.distributed.operational_client import Client as OperationalClient
+
+                gateway = OperationalGateway(
+                    OperationalClient(args.rpc, chain=args.chain), args.chain, args.mission
+                )
+            else:
+                gateway = Gateway(Client(args.rpc), args.chain, args.mission)
             gateway.state()
             if args.action == "a2a":
                 from checkedflow.agents.a2a import serve as serve_a2a

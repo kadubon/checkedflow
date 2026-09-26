@@ -429,6 +429,7 @@ def test_repository_patch_independent_observation(infrastructure, source, expect
 @pytest.mark.sandbox
 @pytest.mark.qualification
 def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_path):
+    import asyncio
     import json
     import sqlite3
     from contextlib import closing
@@ -501,13 +502,28 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
         from checkedflow.worker_supervisor import Supervisor
 
         own = cluster.client(owner)
+        from checkedflow.agents.operational_gateway import Gateway as OperationalGateway
+
+        agent_gateway = OperationalGateway(own, cluster.initial.chain, cluster.initial.mission)
         access = Access(worker, frozenset({"repository"}), frozenset({"read", "write"}))
         artifacts = LocalStore(tmp_path / "evidence.sqlite")
         executor = RepositoryExecutor(base, patch, contract, cases)
         executed = []
 
         def confirmed_submit(raw):
-            reply = own.submit(raw)
+            from mcp import Client as MCPClient
+
+            from checkedflow.agents.mcp import create_server
+
+            async def through_mcp():
+                async with MCPClient(create_server(agent_gateway)) as client:
+                    response = await client.call_tool(
+                        "checkedflow_submit", {"envelope_json": raw.decode("utf-8")}
+                    )
+                    assert not response.is_error, response.structured_content
+                    return response.structured_content
+
+            reply = asyncio.run(through_mcp())
             cluster.wait_height(int(reply["height"]), nodes=(owner,))
             return reply
 
@@ -565,6 +581,22 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
             == "finished"
         )
         assert len(executed) == 1
+        from checkedflow.agents.a2a import Handler
+
+        async def a2a_observe():
+            from google.protobuf.json_format import MessageToDict
+
+            handler = Handler(agent_gateway)
+            try:
+                await handler.refresh()
+                projected = handler.project(task)
+                assert projected.id == task and len(projected.artifacts) == 1
+                part = MessageToDict(projected.artifacts[0].parts[0])
+                assert "not_implied" in part["data"]["receiptJson"]
+            finally:
+                handler.journal.close()
+
+        asyncio.run(a2a_observe())
         raw = executed[0].evidence
         evidence = json.loads(raw)
         assert evidence["case_match"] is True and evidence["contract_digest"] == target

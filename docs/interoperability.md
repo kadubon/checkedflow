@@ -5,6 +5,12 @@ resources and prompts to an agent application. Both adapters call the same `Gate
 for one chain and one mission, through an operator-owned validating node. They hold no signing
 keys, execute no received code and cannot change the authority rules.
 
+The default application contract remains `checkedflow/v1`. Development deployments may select
+`--protocol v2` on either CLI server; read [operational agent transports](operational-agents.md)
+for native v2 records, command restrictions and outstanding security qualification. The connected
+server's profile/schema resources identify its selected contract. `checkedflow schema agents`
+continues to export the published v1 profile.
+
 The wire versions are [A2A 1.0](https://a2a-protocol.org/latest/specification/) and
 [MCP 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28). The uv lock selects
 official A2A SDK 1.1.5 and MCP SDK 2.2.0. See the [conformance matrix](conformance.md) for operations,

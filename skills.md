@@ -159,3 +159,8 @@ Never reset a plan, command or execution journal to recover uncertainty. `Schedu
 local persistent inhibit, not consensus revocation. A `complete` schedule is not artifact acceptance.
 Before release, reconcile README, Docs, AGENTS.md, this guide and the machine-readable operation
 catalogue with actual installed-artifact behavior. Component CI cannot substitute for G1-G7 evidence.
+
+For [v2 agent transports](docs/operational-agents.md), select `--protocol v2` explicitly and inspect
+the selected profile/schema. Keep original signed bytes and distinguish current candidate acceptance
+from task completion. Missing receipts remain unknown; no automatic transport retry, signing,
+admin admission or unknown-work cancellation is provided. Native v2 data is not a translated v1 state.

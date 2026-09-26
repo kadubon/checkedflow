@@ -19,7 +19,7 @@ from a2a.types.a2a_pb2_grpc import add_A2AServiceServicer_to_server
 from starlette.applications import Starlette
 
 from checkedflow.agents.a2a import Handler, card
-from checkedflow.agents.gateway import Gateway
+from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY, Guard
 from checkedflow.agents.journal import Journal
 from checkedflow.agents.push import Push

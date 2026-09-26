@@ -21,13 +21,12 @@ from google.protobuf.json_format import MessageToDict, ParseDict
 from starlette.types import ASGIApp
 
 from checkedflow import __version__
-from checkedflow.agents.gateway import Gateway, profile
+from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY as MAX_BODY
 from checkedflow.agents.journal import Journal
 from checkedflow.agents.push import Push
-from checkedflow.contracts import check
 from checkedflow.core.values import Failure, Object, fields, obj, require, text
-from checkedflow.wire import digest, dumps, transaction_document
+from checkedflow.wire import digest, dumps
 
 TERMINAL = {
     pb.TASK_STATE_COMPLETED,
@@ -111,9 +110,11 @@ def task_projection(identity: str, value: Object) -> pb.Task:
         "leased": pb.TASK_STATE_WORKING,
         "running": pb.TASK_STATE_WORKING,
         "uncertain": pb.TASK_STATE_INPUT_REQUIRED,
+        "unknown": pb.TASK_STATE_INPUT_REQUIRED,
+        "cancelled": pb.TASK_STATE_CANCELED,
         "abandoned": pb.TASK_STATE_CANCELED,
         "finished": pb.TASK_STATE_FAILED
-        if obj(record["result"]).get("outcome") == "fail"
+        if obj(record.get("result", {})).get("outcome") == "fail"
         else pb.TASK_STATE_COMPLETED,
     }
     task = pb.Task(
@@ -128,16 +129,15 @@ def task_projection(identity: str, value: Object) -> pb.Task:
             pb.Task().metadata,
         ),
     )
-    if record.get("result"):
+    receipt = obj(record.get("result", {}))
+    if value.get("profile") == "checkedflow/control-state/v2" and record.get("evidence"):
+        receipt = {"evidence_digest": record["evidence"], "availability": "not_implied"}
+    if receipt:
         task.artifacts.add(
             artifact_id="receipt:" + identity,
             name="Committed work receipt",
             description="Untrusted evidence; completion does not imply acceptance.",
-            parts=[
-                ParseDict(
-                    {"data": {"receiptJson": dumps(obj(record["result"])).decode()}}, pb.Part()
-                )
-            ],
+            parts=[ParseDict({"data": {"receiptJson": dumps(receipt).decode()}}, pb.Part())],
         )
     return task
 
@@ -303,7 +303,7 @@ class Handler(RequestHandler):
         tracked = ""
         if operation == "profile":
             fields(data, "operation")
-            value = profile()
+            value = self.gateway.transport_profile()
         elif operation == "inspect":
             fields(data, "operation kind identity")
             require(
@@ -317,16 +317,9 @@ class Handler(RequestHandler):
         elif operation in {"submit", "task"}:
             fields(data, "operation envelopeJson")
             envelope = text(data["envelopeJson"], limit=1048576)
-            parsed = transaction_document(envelope.encode())
-            check(parsed)
-            command = obj(parsed["command"])
+            command = self.gateway.command(envelope)
             if operation == "task":
-                require(
-                    text(command["kind"]).startswith("task."),
-                    "SHAPE",
-                    "task operation requires a task command",
-                )
-                tracked = text(obj(command["payload"])["id"])
+                tracked = self.gateway.task_target(command)
             require(
                 not message.task_id or message.task_id == tracked,
                 "BINDING",
@@ -454,17 +447,8 @@ class Handler(RequestHandler):
                     "signed task.reconcile (retry=false)"
                 )
             envelope = text(data["envelopeJson"], limit=1048576)
-            parsed = transaction_document(envelope.encode())
-            check(parsed)
-            command = obj(parsed["command"])
-            payload = obj(command["payload"])
-            require(
-                command["kind"] == "task.reconcile"
-                and payload.get("id") == params.id
-                and payload.get("retry") is False,
-                "BINDING",
-                "cancellation command mismatch",
-            )
+            command = self.gateway.command(envelope)
+            self.gateway.cancellation(command, params.id)
             await anyio.to_thread.run_sync(self.gateway.submit, envelope)
             await self.refresh()
             return self.project(params.id)

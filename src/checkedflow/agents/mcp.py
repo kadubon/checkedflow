@@ -3,7 +3,6 @@
 import ipaddress
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from importlib.resources import files
 from pathlib import Path
 from typing import Literal
 
@@ -26,11 +25,10 @@ from mcp.types import (
 )
 
 from checkedflow import __version__
-from checkedflow.agents.gateway import Gateway, profile
+from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY, Guard
 from checkedflow.agents.oauth import OAuth
 from checkedflow.core.values import Failure, Object, obj, require
-from checkedflow.serialization import encode
 from checkedflow.wire import digest, dumps
 
 
@@ -54,27 +52,15 @@ def create_server(
         previous: dict[str, str] = {}
         while True:
             try:
-                state = await anyio.to_thread.run_sync(gateway.state)
-                records: dict[str, Object] = {"checkedflow://mission": encode(state)}
-                for kind, collection in (
-                    ("tasks", state.tasks),
-                    ("capabilities", state.capabilities),
-                ):
-                    encoded = encode(state)[kind]
-                    for identity, record in collection.items():
-                        if record.mission == gateway.mission:
-                            records[f"checkedflow://{kind}/{identity}"] = {
-                                "record": obj(encoded)[identity]
-                            }
-                for identity, residual in state.residuals.items():
-                    try:
-                        gateway._residual(state, identity)
-                    except Failure:
-                        continue
-                    records[f"checkedflow://residuals/{identity}"] = {
-                        "status": residual.status,
-                        "resolution": residual.resolution,
-                    }
+                snapshot = await anyio.to_thread.run_sync(gateway.snapshot)
+                records: dict[str, Object] = {"checkedflow://mission": obj(snapshot["mission"])}
+                for kind in ("tasks", "capabilities", "residuals"):
+                    for identity, value in obj(snapshot[kind]).items():
+                        view = obj(value)
+                        records[f"checkedflow://{kind}/{identity}"] = {
+                            "record": view["record"],
+                            "capabilities": view.get("capabilities", {}),
+                        }
                 current = {uri: digest(value) for uri, value in records.items()}
                 for uri, fingerprint in current.items():
                     if previous and previous.get(uri) != fingerprint:
@@ -137,7 +123,7 @@ def create_server(
     @server.resource("checkedflow://profile", mime_type="application/json")
     def agent_profile() -> str:
         """Versioned transport profile, supported operations and error semantics."""
-        return dumps(profile()).decode()
+        return dumps(gateway.transport_profile()).decode()
 
     @server.resource("checkedflow://mission", mime_type="application/json")
     def mission() -> str:
@@ -147,7 +133,7 @@ def create_server(
     @server.resource("checkedflow://schemas/envelope", mime_type="application/schema+json")
     def envelope_schema() -> str:
         """Closed signed-command schema. Schema validation does not verify signatures."""
-        return files("checkedflow").joinpath("data/envelope.schema.json").read_text()
+        return gateway.envelope_schema()
 
     @server.resource("checkedflow://tasks/{identity}", mime_type="application/json")
     def task(identity: str) -> str:
@@ -183,32 +169,22 @@ def create_server(
     ) -> Completion:
         if argument.name != "identity":
             return Completion(values=[])
-        state = await anyio.to_thread.run_sync(gateway.state)
+        snapshot = await anyio.to_thread.run_sync(gateway.snapshot)
         if (isinstance(ref, PromptReference) and ref.name == "checkedflow_review") or (
             isinstance(ref, ResourceTemplateReference)
             and str(ref.uri) == "checkedflow://tasks/{identity}"
         ):
-            candidates = [
-                key for key, value in state.tasks.items() if value.mission == gateway.mission
-            ]
+            candidates = list(obj(snapshot["tasks"]))
         elif (
             isinstance(ref, ResourceTemplateReference)
             and str(ref.uri) == "checkedflow://capabilities/{identity}"
         ):
-            candidates = [
-                key for key, value in state.capabilities.items() if value.mission == gateway.mission
-            ]
+            candidates = list(obj(snapshot["capabilities"]))
         elif (
             isinstance(ref, ResourceTemplateReference)
             and str(ref.uri) == "checkedflow://residuals/{identity}"
         ):
-            candidates = []
-            for identity in state.residuals:
-                try:
-                    gateway._residual(state, identity)
-                    candidates.append(identity)
-                except Failure:
-                    continue
+            candidates = list(obj(snapshot["residuals"]))
         else:
             candidates = []
         values = sorted(key for key in candidates if key.startswith(argument.value))

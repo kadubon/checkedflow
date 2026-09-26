@@ -1549,8 +1549,10 @@
       "id": "R8-0406",
       "source_line": 406,
       "text": "Enforce equivalent policy at A2A, MCP, artifact download, pagination, notifications, and callbacks. Test cross-mission and cross-client denial. Protect callback credentials at rest and redact them from responses/logs.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-agent-projections"
+      ]
     },
     {
       "id": "R8-0408",
@@ -3539,6 +3541,35 @@
         "R10-0463"
       ],
       "scope": "Private bounded OCI recovery journal, create-before-start ownership binding, independent expiry recovery, local daemon/boot continuity and fail-closed admission. Does not qualify service-manager restart, workspace collection, journal disaster recovery, four-host lifecycle or full release gates."
+    },
+    {
+      "id": "v2-agent-projections",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/agents/operational_gateway.py",
+        "src/checkedflow/agents/gateway.py",
+        "src/checkedflow/agents/journal.py",
+        "src/checkedflow/agents/a2a.py",
+        "src/checkedflow/agents/mcp.py",
+        "src/checkedflow/cli.py"
+      ],
+      "tests": [
+        "tests/test_operational_gateway.py",
+        "tests/test_agents.py",
+        "tests/test_agent_protocols.py",
+        "tests/test_integration.py",
+        "scripts/fault_injection.py"
+      ],
+      "documentation": [
+        "docs/operational-agents.md"
+      ],
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ],
+      "requirements": [
+        "R8-0406"
+      ],
+      "scope": "Shared A2A/MCP transport implementations with explicit v1/v2 selection, native v2 mission snapshots, original-byte admission and committed-receipt checks; existing v1 behavior retained. Per-client equivalent authorization, callback credential custody, archived-record policy and full mTLS/deployment/recovery qualification remain incomplete. No G1-G7 promotion."
     }
   ],
   "observations": [
@@ -3673,6 +3704,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36227112812",
       "conclusion": "success",
       "scope": "Portable retention-backup increment passed all six platform/Python jobs, installed-wheel CometBFT/gVisor, real Vault and both real S3 jobs. Dependency audit found no known vulnerabilities; publication scan found no issues. Publication denied. Predates GitHub draft provider."
+    },
+    {
+      "source": "f486af29d728a84d6377c95e23046033dacb1143",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36279970168",
+      "conclusion": "success",
+      "scope": "Finite scheduler increment: all component jobs, six OS/Python jobs and20 installed-wheel infrastructure cases passed (318.797s, zero skips/errors/failures). Local681passed/3platformskips/59mutants. Predates v2 agent gateway changes; no full G1-G7 qualification."
     }
   ]
 }

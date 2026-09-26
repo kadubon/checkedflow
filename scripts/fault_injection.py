@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "agents/operational_gateway.py",
+        "test_operational_gateway.py",
+        "gateway_current_signature_and_epoch",
+        "Runtime(state).apply(raw, height=state.height + 1)",
+        "pass",
+        "test_bad_inputs_governance_signature_and_retired_duplicate",
+    ),
+    (
+        "agents/operational_gateway.py",
+        "test_operational_gateway.py",
+        "gateway_committed_receipt_required",
+        "require(confirmed(state),",
+        "require(True,",
+        "test_ambiguous_transport_never_retransmits",
+    ),
+    (
         "worker_schedule.py",
         "test_worker_schedule.py",
         "persistent_schedule_total_limit",

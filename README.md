@@ -32,6 +32,7 @@ guides; complete generation orchestration and operational deployment are still u
 | How is a patch checked, accepted and reused? | [Patch contract](docs/repository-patch.md), [organizational verification](docs/work-acceptance.md), [reuse](docs/repository-reuse.md) |
 | What happens after a worker crashes? | [Durable worker SDK](docs/worker-supervision.md), [sandbox recovery](docs/sandbox-recovery.md), [freshness watchdog](docs/dispatch-watchdog.md) |
 | How are retries kept finite? | [Persistent scheduling](docs/worker-scheduling.md); fixed call limits, deadlines and local stop survive process restarts |
+| How do agents connect to v2? | [Operational A2A/MCP](docs/operational-agents.md); explicit protocol selection and native signed-command admission |
 | How are evidence and bounded records retained? | [S3 storage](docs/s3-storage.md), [retention](docs/retention-backup.md), [settled-work retirement](docs/work-archive.md) |
 | How is application state restored? | [Application history recovery](docs/application-backup.md); validator ownership needs separate recovery |
 | Can it open a pull request automatically? | [Draft provider](docs/github-drafts.md); disabled by default and not yet integrated with complete effect authority |

@@ -6,6 +6,12 @@ MCP server surfaces described below have concrete implementations and executable
 It does not mean every agent's private extensions, every old protocol revision, every media
 type, or every optional client role is implemented. There is no external certification claim.
 
+The matrix below describes the published v1 application mapping. The development
+[v2 gateway](operational-agents.md) shares these transport implementations, but has native task,
+candidate and budget records, no agent-side administrative admission, and no unknown-work
+cancellation transition. Its new protocol mapping and broader operational authorization are not
+covered by historical v1 qualification or by this page's completeness statement.
+
 The reviewed authorities are the [A2A specification](https://a2a-protocol.org/latest/specification/)
 and [MCP specification](https://modelcontextprotocol.io/specification/2026-07-28). SDK versions
 are locked in [uv.lock](../uv.lock). The machine profile is [agents.json](../src/checkedflow/data/agents.json).

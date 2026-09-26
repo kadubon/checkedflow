@@ -844,3 +844,32 @@ README, the Docs index and worker guides, AGENTS.md, skills.md and the machine-r
 catalogue describe the new behavior and limits. This does not complete automatic generation,
 verification/reuse orchestration, cross-host deployment, boot/validator recovery, consensus-bound
 effects or uniform v2 A2A/MCP authorization. The remaining G1-G7 gates and final release stay open.
+
+The finite scheduler source `f486af29d728a84d6377c95e23046033dacb1143` completed CI 36279970168
+successfully, including six OS/Python jobs, Vault, both object-store jobs and all 20 installed-wheel
+infrastructure cases (318.797 seconds, zero skips/errors/failures). Local source checks passed
+681 cases, three Windows-only platform skips, and all 59 selected mutants. The scheduler had
+150/150 statements and 26/26 branches covered, with no exclusions. Wheel SHA-256 is
+`167df86bbbde324404184995f83f555f51bd4adfc892aff902991341fd1b7345`; sdist is
+`e0dd08b8888ed22f9f3822418935431338a9e28d30127ce7ec96cb6cbf66cb3e`. The 702-member
+source/distribution publication scan found no pattern matches. This remains development 0.1.0
+metadata and does not authorize final 0.2.0 publication.
+
+## Native v2 agent gateway
+
+A common transport-facing gateway interface now supplies mission snapshots, command parsing,
+protocol/schema discovery and receipt admission. A2A history and MCP notifications/completion no
+longer depend on v1 consensus state classes. The new v2 gateway accepts original signed bytes,
+checks current authentication/admission, sends once and requires the committed digest. The CLI
+selects it explicitly with `--protocol v2`; v1 remains the default.
+
+Native task status, evidence digests, modeled accounting and current candidate acceptance are
+projected without fabricating residuals or cancellation authority. Eighty-eight targeted v1/v2
+agent cases passed, including the official MCP client and A2A handler lifecycle; the v2 gateway
+has 100% statement/branch coverage in that suite. The actual installed-wheel v2 case now sends
+worker commands through MCP to CometBFT and observes the A2A receipt projection. This changed
+path requires a new exact-source infrastructure run; the scheduler CI above does not qualify it.
+
+Docs, README, AGENTS.md and skills.md describe both the API and its unfinished boundaries.
+Equivalent per-client authorization, callback-secret custody, archived-record policy, mTLS,
+coordinated gateway recovery and full G1-G7 remain incomplete. No release gate is promoted.

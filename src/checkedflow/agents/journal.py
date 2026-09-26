@@ -9,9 +9,8 @@ import time
 from collections.abc import Callable
 from pathlib import Path
 
-from checkedflow.agents.gateway import Gateway
+from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.core.values import Object, array, obj, require
-from checkedflow.serialization import encode
 from checkedflow.wire import digest, document, dumps
 
 
@@ -47,7 +46,7 @@ class Journal:
                 delivered TEXT NOT NULL DEFAULT '', attempts INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY(task,id));
         """)
-        binding = digest({"chain": self.gateway.chain, "mission": self.gateway.mission})
+        binding = self.gateway.journal_binding()
         with self.db:
             self.db.execute("INSERT OR IGNORE INTO settings VALUES ('binding', ?)", (binding,))
             require(
@@ -68,23 +67,16 @@ class Journal:
     def refresh(self) -> list[str]:
         # Serialize refreshes as well as writes so an older in-flight response cannot win.
         with self.lock:
-            state = self.gateway.state()
-            encoded = encode(state)
-            state_hash = digest(encoded)
+            snapshot = self.gateway.snapshot()
             changed: list[str] = []
             with self.db:
                 last = int(
                     self.db.execute("SELECT COALESCE(MAX(stamp),0) FROM observations").fetchone()[0]
                 )
-                for identity, task in state.tasks.items():
-                    if task.mission != self.gateway.mission:
-                        continue
-                    record = obj(encoded["tasks"])[identity]
-                    capabilities: Object = {
-                        key: {"status": cap.status, "source_digest": cap.source_digest}
-                        for key, cap in state.capabilities.items()
-                        if cap.task == identity and cap.mission == self.gateway.mission
-                    }
+                for identity, item in obj(snapshot["tasks"]).items():
+                    value = obj(item)
+                    record = obj(value["record"])
+                    capabilities = obj(value["capabilities"])
                     fingerprint = digest({"record": record, "capabilities": capabilities})
                     row = self.db.execute(
                         "SELECT fingerprint, history FROM observations WHERE id=?", (identity,)
@@ -93,16 +85,8 @@ class Journal:
                         continue
                     last = max(self.clock(), last + 1)
                     history = array(document(row[1])["items"]) if row else []
-                    history.append({"status": task.status, "height": state.height})
+                    history.append({"status": record["status"], "height": value["height"]})
                     # History is a documented bounded observation history, not a block journal.
-                    value: Object = {
-                        "chain": state.chain,
-                        "mission": self.gateway.mission,
-                        "height": state.height,
-                        "state_hash": state_hash,
-                        "record": record,
-                        "capabilities": capabilities,
-                    }
                     self.db.execute(
                         "INSERT OR REPLACE INTO observations VALUES (?, ?, ?, ?, ?)",
                         (
