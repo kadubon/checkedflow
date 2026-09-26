@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CheckedFlow scoped retention dry-run plan v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "namespace",
+    "scope",
+    "revision",
+    "objects"
+  ],
+  "properties": {
+    "version": {
+      "const": "checkedflow/retention-plan/v1"
+    },
+    "namespace": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "scope": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z0-9_-]+(?![\\s\\S])"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "objects": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "$ref": "#/$defs/artifact"
+      },
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "algorithm",
+        "digest",
+        "length",
+        "content_type",
+        "kind",
+        "scope",
+        "manifest"
+      ],
+      "properties": {
+        "version": {
+          "const": "checkedflow/artifact/v1"
+        },
+        "algorithm": {
+          "const": "sha256"
+        },
+        "digest": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4194304
+        },
+        "content_type": {
+          "enum": [
+            "application/json",
+            "application/octet-stream",
+            "text/plain"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "source-tree",
+            "patch",
+            "evidence",
+            "archive",
+            "snapshot"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9_-]+(?![\\s\\S])"
+        },
+        "manifest": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}

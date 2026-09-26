@@ -37,7 +37,9 @@ and manifest; the byte store does not parse a source tree or validate evidence s
 
 ## Local adapter
 
-[`ArtifactStore`](../src/checkedflow/artifacts.py) defines verified `put` and `get` operations.
+[`ArtifactStore`](../src/checkedflow/artifact_io.py) defines verified `put` and `get` operations.
+The common module owns scoped access and bounded byte verification, with no SQLite, S3 or HTTP
+dependency. The initial imports from `checkedflow.artifacts` remain available as SDK re-exports.
 `LocalStore` uses a private filesystem-backed SQLite database, separate from the consensus store.
 This choice avoids constructing filesystem paths from artifact names and makes object visibility
 transactional on Windows and Linux. It is appropriate for the bounded 4 MiB object profile;
@@ -104,8 +106,9 @@ content, exact bounds, interrupted/malformed streams, empty objects, concurrent 
 admission, corruption, removal, SQLite rollback and reopen. These checks test local integrity and
 visibility, not S3 consistency or multi-host durability.
 
-No deletion API is exposed. Authenticated retention planning, pending-operation pins, grace
-periods, tombstones, restore-resurrection prevention and protected historical roots must be
-implemented together before automatic reclamation is enabled. Successful local `put` is not a
-signed replica-availability receipt. Full S3 deployment, availability admission, lifecycle use,
-authenticated restore and operational qualification remain required before release.
+The privileged `erase` method requires separate `erase` authority. It is a provider primitive,
+not permission to bypass retention. Only the owning [retention controller](retention.md) should
+receive that authority. Ordinary workers use its scoped interface and persistent pins instead.
+Successful local `put` is not a signed replica-availability receipt. Full S3 deployment,
+availability admission, lifecycle-root integration, authenticated restore and operational
+qualification remain required before release.

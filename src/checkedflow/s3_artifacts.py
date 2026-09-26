@@ -1,6 +1,7 @@
 """Scoped S3 bytes with explicit SigV4 credentials and verified conditional publication.
 
-No bucket provisioning, listing, presigned URLs, deletion or ambient credential discovery.
+No bucket provisioning, listing, presigned URLs or ambient credential discovery.
+Physical erasure requires separate privileged access and the owning retention controller.
 Service compatibility and retention are separate from a successful point-in-time read.
 """
 
@@ -17,7 +18,7 @@ from botocore.auth import S3SigV4Auth
 from botocore.awsrequest import AWSRequest
 from botocore.credentials import Credentials as AwsCredentials
 
-from checkedflow.artifacts import Access, _read, _verify
+from checkedflow.artifact_io import Access, read_verified, verify
 from checkedflow.core.artifact import Reference
 from checkedflow.core.values import Failure, require
 
@@ -184,16 +185,30 @@ class S3Store:
         code, body = self._request("GET", ref)
         require(code not in {401, 403}, "AUTHORITY", "S3 service denied access")
         require(code == 200, "UNAVAILABLE", "S3 object unavailable")
-        _verify(ref, body)
+        verify(ref, body)
         return body
 
     def get(self, ref: Reference, *, access: Access) -> bytes:
         access.authorize(ref.scope, "read")
         return self._get(ref)
 
+    def erase(self, ref: Reference, *, access: Access) -> None:
+        """One privileged DELETE; confirm absence without automatically repeating the effect."""
+        access.authorize(ref.scope, "erase")
+        try:
+            code, _ = self._request("DELETE", ref)
+            require(code not in {401, 403}, "AUTHORITY", "S3 service denied erasure")
+            require(code in {200, 204, 404}, "OUTCOME_UNKNOWN", "S3 erasure unconfirmed")
+            code, _ = self._request("GET", ref)
+            require(code == 404, "OUTCOME_UNKNOWN", "S3 absence unconfirmed")
+        except Failure as failure:
+            if failure.code == "AUTHORITY":
+                raise
+            raise Failure("OUTCOME_UNKNOWN", "S3 erasure requires reconciliation") from None
+
     def put(self, ref: Reference, source: BinaryIO, *, access: Access) -> None:
         access.authorize(ref.scope, "write")
-        body = _read(ref, source)
+        body = read_verified(ref, source)
         ambiguous = False
         try:
             code, _ = self._request("PUT", ref, body)

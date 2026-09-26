@@ -2950,7 +2950,7 @@
     },
     {
       "id": "verified-s3-artifact-store",
-      "status": "INSTALLED_TESTED",
+      "status": "INTEGRATION_TESTED",
       "implementation": [
         "src/checkedflow/s3_artifacts.py",
         "scripts/fetch_seaweedfs.py",
@@ -2965,7 +2965,27 @@
         "docs/s3-storage.md",
         "docs/implementation-0.2.0.md"
       ],
-      "scope": "Twenty-eight protocol cases passed. Real SeaweedFS 4.47 installed-wheel tests passed on Windows and Linux/WSL, including scoped conditional writes, interrupted uploads, corruption, outage/restart and credential replacement. Exact development wheel d595103221a856ed02ba52f567ad4ee433791e16136a16d2cedce04b15928ce4; dirty harness based on 4c4f9ff. First hosted Linux case failed on fixture assumptions; corrected hosted result pending. Not availability quorum, retention, power-loss or multi-host durability, or full G1-G7 qualification."
+      "scope": "Real SeaweedFS 4.47 conditional publication, byte verification, interruption, outage/restart and credential replacement passed at 88567f4 on Windows/Linux installed-wheel CI. Later privileged erasure and retention extensions have separate local installed evidence; hosted qualification pending. Not full operational G1-G7 qualification."
+    },
+    {
+      "id": "durable-artifact-retention",
+      "status": "INSTALLED_TESTED",
+      "implementation": [
+        "src/checkedflow/artifact_io.py",
+        "src/checkedflow/retention.py",
+        "src/checkedflow/data/retention-plan.schema.json",
+        "src/checkedflow/data/retention-vectors.json"
+      ],
+      "tests": [
+        "tests/test_retention.py",
+        "tests/test_retention_model.py",
+        "tests/test_s3_service.py"
+      ],
+      "evidence": [
+        "docs/retention.md",
+        "docs/implementation-0.2.0.md"
+      ],
+      "scope": "Persistent protected roots, grace, revision-bound plans, pre-effect tombstones, explicit uncertain erasure and independent trusted-floor rejection. Source/model/crash/mutation tests and real installed-wheel S3 checks passed on Windows/Linux; wheel 5dda16fc2d1d9962b6a506e0768c90dadfcf4c9872032e182116323bfea30590, dirty harness based on 88567f4. Not complete lifecycle-root derivation, governed maintenance service, authenticated backup/bootstrap or operational qualification."
     }
   ],
   "observations": [
@@ -3076,6 +3096,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36219168437",
       "conclusion": "failure",
       "scope": "Build, all six platform/Python jobs, CometBFT/gVisor, real Vault and Windows S3 passed. Linux S3 failed because the fixture demanded immediate confirmation of every concurrent conditional write. Not a qualified run. Corrected bounded read reconciliation, actual data readiness and explicit crash fixture require a new exact-source run."
+    },
+    {
+      "source": "88567f435092ff64cdef98dfecefd79c444d0be4",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36219580713",
+      "conclusion": "success",
+      "scope": "Corrected S3 fixture: all six platform/Python jobs, installed-wheel CometBFT/gVisor, real Vault and real Windows/Linux S3 service checks passed. Publication denied. Predates retention controller and privileged erasure."
     }
   ]
 }

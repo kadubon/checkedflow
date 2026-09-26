@@ -7,7 +7,7 @@ The caller supplies its own validating node's state and enforces dispatch freshn
 from dataclasses import asdict, dataclass
 from typing import cast
 
-from checkedflow.artifacts import Access, ArtifactStore
+from checkedflow.artifact_io import Access, ArtifactStore
 from checkedflow.core.artifact import MAX_ARTIFACT_BYTES, Reference
 from checkedflow.core.operational import State
 from checkedflow.core.values import JSON, Object, array, fields, integer, obj, require, text

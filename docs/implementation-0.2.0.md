@@ -404,3 +404,37 @@ skips, 19 separately selected infrastructure/service cases, static checks and 32
 Run 36219168437 finished failed solely at its earlier Linux S3 job; all six platform jobs, managed
 signer, Windows S3 and existing CometBFT/gVisor qualification succeeded. That failure remains a
 failure, regardless of later local corrections.
+
+The corrected source 88567f435092ff64cdef98dfecefd79c444d0be4 subsequently passed
+[run 36219580713](https://github.com/kadubon/checkedflow/actions/runs/36219580713): all six
+platform/Python jobs, installed-wheel CometBFT/gVisor, Vault and both Windows/Linux S3 service
+jobs. Publication remained denied. This result predates the retention controller below.
+
+### Durable retention controller
+
+The [retention component](retention.md) adds private namespace/scope identity, transactional
+capacity, persistent roots, grace intervals, read-only plans bound to a catalog revision,
+tombstones committed before provider effects, explicit uncertain-erasure reconciliation and
+rollback rejection below an independently supplied trusted floor. The local and S3 providers
+have a separately authorized erasure primitive; ordinary worker access must not include it.
+Provider-neutral access/byte contracts now live in `artifact_io.py`, with initial SDK imports
+retained as re-exports and a static rule against provider dependencies in that interface.
+
+Local source checks passed 387 cases in 91.44 seconds, with three Linux-only skips and 19
+infrastructure/service cases selected separately. All static checks and 36 selected mutations
+passed. Retention, common artifact I/O and both storage adapters reached 100% line/branch coverage.
+The retention tests include a killed child process after tombstone commit and a separate bounded
+Hypothesis state-machine oracle (12 examples, 35 operations each), using independent publication
+and release timestamps rather than the catalog's stored deadline representation.
+
+The final local development wheel, SHA-256
+`5dda16fc2d1d9962b6a506e0768c90dadfcf4c9872032e182116323bfea30590`, passed isolated wheel/sdist
+checks and actual S3/retention service checks on Windows/Python 3.12.10 and Linux/WSL Python 3.12.3.
+The fixture protects a snapshot root, enforces grace, physically deletes through S3, restores the
+old provider bytes, reopens the catalog and confirms persistent retirement. The harness explicitly
+records an uncommitted tree based on 88567f4. Exact-source hosted qualification remains required.
+
+These are component results. Complete lifecycle-root derivation, replicated availability admission,
+authenticated catalog checkpoints/backups, governed maintenance integration, supervised work and
+G1–G7 qualification remain unfinished. A caller-supplied stale recovery floor is not bootstrap trust.
+No final 0.2.0 tag, release or PyPI publication has been performed.

@@ -98,3 +98,12 @@ storage credentials to candidate code. A verified read is a point-in-time availa
 not a signature, quorum, retention promise or execution permit. Preserve `OUTCOME_UNKNOWN` after
 an unconfirmed write and reconcile by read; do not automatically retry publication.
 See [S3 storage](docs/s3-storage.md) for real-service qualification and remaining limitations.
+
+Use the [retention controller](docs/retention.md) for protected service namespaces. Register every
+pending/dependency/effect/snapshot/replay root before use, and verify actual bytes separately.
+Pins do not expire on crash. Release only the same owner's current pin after reconciliation.
+Treat a plan as a dry run, not authority; changed revisions must reject. Never give ordinary
+workers raw provider erasure permission. Reopening requires an independently retained trusted
+catalog revision floor; reading that floor from an old backup does not establish recovery trust.
+The [plan schema](src/checkedflow/data/retention-plan.schema.json) and
+[vectors](src/checkedflow/data/retention-vectors.json) are packaged for non-Python consumers.

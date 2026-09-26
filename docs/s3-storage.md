@@ -39,7 +39,8 @@ def connect(endpoint, bucket, access_key, secret_key, ca_file):
 ```
 
 The operator provisions the bucket and its policy separately. The adapter cannot create or list
-buckets, delete objects or issue presigned links. The endpoint must be a fixed HTTPS origin without
+buckets or issue presigned links. Physical erasure is a separate privileged operation described
+in [retention](retention.md). The endpoint must be a fixed HTTPS origin without
 credentials, path, query or fragment. Certificate and hostname validation are mandatory; a private
 CA can be supplied. Only explicit test mode permits HTTP at literal address `127.0.0.1`.
 Redirects, ambient proxy settings and compressed responses are rejected or disabled.
@@ -94,10 +95,11 @@ headers can outlast it until the transport returns control. A worker supervisor 
 overall attempt deadline and preserve uncertainty. The qualifier's outer process timeout is not a
 production supervisor.
 
-Per-scope quotas, replica receipts, availability admission, retention pins, tombstones, garbage
-collection, encryption at rest, authenticated backup/restore and rollback protection are not
-provided here. Bucket lifecycle rules must not remove retained evidence. No deletion API is exposed
-before retention is implemented. Tests do not establish multi-host durability, cross-provider
+The [retention controller](retention.md) adds per-scope quotas, durable pins, dry-run erasure plans
+and tombstones above this adapter. Replica receipts, availability admission, encryption at rest
+and integrated authenticated backup/restore remain separate unfinished work. Bucket lifecycle rules
+must not remove retained evidence. Give raw `erase` authority only to the controller. Tests do not
+establish multi-host durability, cross-provider
 consistency or an AWS-hosted deployment claim.
 
 ## Reproduce the real service check

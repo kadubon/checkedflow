@@ -279,3 +279,33 @@ def test_conflicting_existing_object_cannot_be_repaired(monkeypatch):
     with pytest.raises(Failure, match="INTEGRITY"):
         store().put(reference(), BytesIO(BODY), access=ACCESS)
     assert [call.method for call in calls] == ["PUT", "GET"]
+
+
+@pytest.mark.parametrize(
+    "deleted,observed,expected",
+    [
+        (204, 404, None),
+        (200, 404, None),
+        (404, 404, None),
+        (403, 404, "AUTHORITY"),
+        (500, 404, "OUTCOME_UNKNOWN"),
+        (204, 200, "OUTCOME_UNKNOWN"),
+        (204, 403, "OUTCOME_UNKNOWN"),
+    ],
+)
+def test_privileged_erasure_requires_verified_absence(monkeypatch, deleted, observed, expected):
+    calls = transport(
+        monkeypatch,
+        lambda r: httpx.Response(deleted if r.method == "DELETE" else observed, content=b""),
+    )
+    instance = store()
+    with pytest.raises(Failure, match="AUTHORITY"):
+        instance.erase(reference(), access=ACCESS)
+    assert not calls
+    access = replace(ACCESS, permissions=ACCESS.permissions | {"erase"})
+    if expected:
+        with pytest.raises(Failure, match=expected):
+            instance.erase(reference(), access=access)
+    else:
+        instance.erase(reference(), access=access)
+    assert [call.method for call in calls].count("DELETE") == 1

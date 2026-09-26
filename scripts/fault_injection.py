@@ -44,6 +44,38 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "retention.py",
+        "test_retention.py",
+        "retention_tombstone_nonresurrection",
+        'row[1] == "live"',
+        "True",
+        "test_tombstone_precedes_effect_and_survives_provider_resurrection",
+    ),
+    (
+        "retention.py",
+        "test_retention.py",
+        "retention_plan_freshness",
+        "plan.revision == revision",
+        "True",
+        "test_grace_pins_reopen_and_read_only_plan",
+    ),
+    (
+        "retention.py",
+        "test_retention.py",
+        "retention_protected_roots",
+        "row[0] + self.grace_blocks <= height and rooted is None",
+        "row[0] + self.grace_blocks <= height",
+        "test_forged_current_plan_cannot_erase_protected_or_young_objects",
+    ),
+    (
+        "retention.py",
+        "test_retention.py",
+        "retention_restore_watermark",
+        "self._meta(db)[0] >= trusted_floor",
+        "True",
+        "test_old_catalog_below_independent_floor_cannot_restore",
+    ),
+    (
         "s3_artifacts.py",
         "test_s3_artifacts.py",
         "s3_conditional_publication",
@@ -55,7 +87,7 @@ OPERATIONAL_MUTATIONS = [
         "s3_artifacts.py",
         "test_s3_artifacts.py",
         "s3_verified_read",
-        "_verify(ref, body)",
+        "verify(ref, body)",
         "pass",
         "test_read_hash_and_length_are_authoritative",
     ),
@@ -180,7 +212,7 @@ OPERATIONAL_MUTATIONS = [
         "test_pending_activation_retirement_and_nonce_continuity",
     ),
     (
-        "artifacts.py",
+        "artifact_io.py",
         "test_artifacts.py",
         "artifact_digest_integrity",
         "sha256(body).hexdigest() == ref.digest",
@@ -188,7 +220,7 @@ OPERATIONAL_MUTATIONS = [
         "test_corruption_is_detected_not_silently_repaired",
     ),
     (
-        "artifacts.py",
+        "artifact_io.py",
         "test_artifacts.py",
         "artifact_scope_authorization",
         "scope in self.scopes and permission in self.permissions",

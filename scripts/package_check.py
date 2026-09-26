@@ -28,6 +28,8 @@ REQUIRED = [
     "checkedflow/data/operational-state.schema.json",
     "checkedflow/data/request-archive.schema.json",
     "checkedflow/data/artifact-reference.schema.json",
+    "checkedflow/data/retention-plan.schema.json",
+    "checkedflow/data/retention-vectors.json",
     "checkedflow/data/key-command.schema.json",
     "checkedflow/data/budget-command.schema.json",
     "checkedflow/data/task-command.schema.json",
@@ -62,6 +64,12 @@ from checkedflow.repository_reuse import decode_tree, tree_bytes
 from checkedflow.domains.repository_patch import Tree
 bundle_tree = Tree((("empty.py", b""),))
 assert decode_tree(tree_bytes(bundle_tree)) == bundle_tree
+from checkedflow.retention import decode_plan
+retention_vectors = json.loads(
+    r.files("checkedflow").joinpath("data/retention-vectors.json").read_text()
+)
+for record in retention_vectors["valid"]:
+    assert decode_plan(dumps(record)).record() == record
 from checkedflow.runtime import Runtime
 from checkedflow.serialization import decode
 from checkedflow.wire import dumps, loads

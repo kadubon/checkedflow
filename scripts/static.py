@@ -63,6 +63,13 @@ def inspect() -> list[str]:
             for name in imports:
                 if not (name.startswith("checkedflow.core.") or name in allowed):
                     errors.append(f"forbidden core dependency: {path}: {name}")
+        if path.name == "artifact_io.py":
+            for name in imports:
+                if not (
+                    name.startswith("checkedflow.core.")
+                    or name in {"dataclasses", "hashlib", "typing"}
+                ):
+                    errors.append(f"provider dependency in artifact interface: {path}: {name}")
         if path.name in {
             "wire.py",
             "contracts.py",

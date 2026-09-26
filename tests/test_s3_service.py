@@ -32,6 +32,7 @@ import checkedflow
 from checkedflow.artifacts import Access
 from checkedflow.core.artifact import Reference
 from checkedflow.core.values import Failure
+from checkedflow.retention import RetentionStore
 from checkedflow.s3_artifacts import Credentials, S3Store
 
 
@@ -343,6 +344,50 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
             store = S3Store(endpoint, bucket, rotated, ca_file=ca)
             with pytest.raises(Failure, match="UNAVAILABLE"):
                 store.get(ref, access=access)
+            # Exercise the same durable retention controller over real S3, including erasure.
+            maintained = Access(
+                "retention-controller",
+                access.scopes,
+                frozenset({"read", "write", "pin", "maintain", "erase"}),
+            )
+            catalog = RetentionStore(
+                tmp_path / "retention.sqlite",
+                store,
+                namespace="disposable-s3",
+                scope="mission",
+                trusted_floor=0,
+                retention_blocks=2,
+                grace_blocks=3,
+            )
+            payload = b"protected retention fixture"
+            item = replace(ref, digest=hashlib.sha256(payload).hexdigest(), length=len(payload))
+            catalog.put(item, BytesIO(payload), access=maintained)
+            pin = catalog.pin("snapshot-root", (item,), category="snapshot", access=maintained)
+            catalog.advance(10, access=maintained)
+            assert not catalog.plan(access=maintained).objects
+            catalog.release(pin, access=maintained)
+            catalog.advance(13, access=maintained)
+            assert (
+                catalog.sweep(catalog.plan(access=maintained), access=maintained)[0].status
+                == "erased"
+            )
+            with pytest.raises(Failure, match="UNAVAILABLE"):
+                store.get(item, access=access)
+            # Simulated old provider backup; the durable catalog still rejects resurrection.
+            assert request("PUT", f"/{bucket}/checkedflow/mission/{item.digest}", payload) == 200
+            assert store.get(item, access=access) == payload
+            floor = catalog.revision(access=maintained)
+            catalog = RetentionStore(
+                tmp_path / "retention.sqlite",
+                store,
+                namespace="disposable-s3",
+                scope="mission",
+                trusted_floor=floor,
+                retention_blocks=2,
+                grace_blocks=3,
+            )
+            with pytest.raises(Failure, match="RETIRED_ARTIFACT"):
+                catalog.get(item, access=maintained)
         finally:
             if process.poll() is None:
                 process.terminate()

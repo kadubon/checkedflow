@@ -7,59 +7,15 @@ Candidate code must never receive the database, an Access instance, or this adap
 import sqlite3
 from collections.abc import Iterator
 from contextlib import contextmanager
-from dataclasses import dataclass
-from hashlib import sha256
 from pathlib import Path
-from typing import BinaryIO, Protocol, cast
+from typing import BinaryIO, cast
 
+# Re-export the initial SDK imports while keeping providers independent of each other.
+from checkedflow.artifact_io import Access as Access
+from checkedflow.artifact_io import ArtifactStore as ArtifactStore
+from checkedflow.artifact_io import read_verified, verify
 from checkedflow.core.artifact import MAX_ARTIFACT_BYTES, Reference
-from checkedflow.core.values import integer, require, text
-
-
-@dataclass(frozen=True)
-class Access:
-    """Trusted service-local policy result; never deserialize this from client input."""
-
-    principal: str
-    scopes: frozenset[str]
-    permissions: frozenset[str]
-
-    def authorize(self, scope: str, permission: str) -> None:
-        text(self.principal, limit=80)
-        require(
-            scope in self.scopes and permission in self.permissions,
-            "AUTHORITY",
-            "artifact access denied",
-        )
-
-
-class ArtifactStore(Protocol):
-    """Provider-neutral verified read and atomic publication interface."""
-
-    def put(self, ref: Reference, source: BinaryIO, *, access: Access) -> None: ...
-
-    def get(self, ref: Reference, *, access: Access) -> bytes: ...
-
-
-def _verify(ref: Reference, body: bytes) -> None:
-    require(len(body) == ref.length, "INTEGRITY", "artifact byte length differs")
-    require(sha256(body).hexdigest() == ref.digest, "INTEGRITY", "artifact digest differs")
-
-
-def _read(ref: Reference, source: BinaryIO) -> bytes:
-    body = bytearray()
-    while True:
-        ceiling = min(65_536, ref.length - len(body) + 1)
-        part = source.read(ceiling)
-        require(isinstance(part, bytes), "SHAPE", "binary artifact stream required")
-        require(len(part) <= ceiling, "LIMIT", "stream exceeded requested read bound")
-        if not part:
-            break
-        body.extend(part)
-        require(len(body) <= ref.length, "INTEGRITY", "artifact exceeds declared length")
-    result = bytes(body)
-    _verify(ref, result)
-    return result
+from checkedflow.core.values import integer, require
 
 
 class LocalStore:
@@ -67,7 +23,7 @@ class LocalStore:
 
     The operator owns the database directory and permissions. Arbitrary supplied database files
     and hostile same-user filesystem writers are outside this local adapter's trust boundary.
-    No deletion is exposed until authenticated retention and pinning are integrated.
+    Give erase authority only to the owning retention controller, never to ordinary workers.
     """
 
     def __init__(
@@ -138,12 +94,12 @@ class LocalStore:
         ).fetchone()
         body: bytes = stored[0]
         require(isinstance(body, bytes), "INTEGRITY", "stored bytes required")
-        _verify(ref, body)
+        verify(ref, body)
         return body
 
     def put(self, ref: Reference, source: BinaryIO, *, access: Access) -> None:
         access.authorize(ref.scope, "write")
-        body = _read(ref, source)
+        body = read_verified(ref, source)
         with self._connect() as db:
             db.execute("BEGIN IMMEDIATE")
             prior = self._get(db, ref)
@@ -171,3 +127,12 @@ class LocalStore:
             body = self._get(db, ref)
             require(body is not None, "UNAVAILABLE", "artifact unavailable")
             return cast(bytes, body)
+
+    def erase(self, ref: Reference, *, access: Access) -> None:
+        """Privileged physical erasure, separate from retention and verification revocation."""
+        access.authorize(ref.scope, "erase")
+        with self._connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            db.execute(
+                "DELETE FROM artifact_objects WHERE scope=? AND digest=?", (ref.scope, ref.digest)
+            )
