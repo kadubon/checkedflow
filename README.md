@@ -28,6 +28,7 @@ and expected outputs outside the candidate process. This produces an observation
 can attest separately. [Reuse preparation](docs/repository-reuse.md) reads and validates exact bytes
 again and rejects a changed base or destination. Supervised dispatch and permission to open a pull
 request still require further integrations. See the
+[S3 storage guide](docs/s3-storage.md) for the optional verified object-store adapter,
 [repository-patch guide](docs/repository-patch.md) and
 [implementation ledger](docs/implementation-0.2.0.md) before using development APIs.
 

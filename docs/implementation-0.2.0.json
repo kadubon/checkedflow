@@ -2947,6 +2947,25 @@
         "docs/repository-reuse.md"
       ],
       "scope": "Snapshot-bound exact target/current scoped byte validation, immutable patch reconstruction, typed evidence consistency and changed-base fresh qualification. Source/provider fault cases and exact-wheel single-host CometBFT/gVisor two-base qualification passed at 6aceeac. Not supervised dispatch, replicated availability receipts, retention or complete lifecycle reuse accounting."
+    },
+    {
+      "id": "verified-s3-artifact-store",
+      "status": "INSTALLED_TESTED",
+      "implementation": [
+        "src/checkedflow/s3_artifacts.py",
+        "scripts/fetch_seaweedfs.py",
+        "scripts/service_qualification.py",
+        "scripts/qualify_s3.py"
+      ],
+      "tests": [
+        "tests/test_s3_artifacts.py",
+        "tests/test_s3_service.py"
+      ],
+      "evidence": [
+        "docs/s3-storage.md",
+        "docs/implementation-0.2.0.md"
+      ],
+      "scope": "Twenty-seven protocol cases and real pinned SeaweedFS 4.47 installed-wheel TLS/conditional-write/corruption/outage/restart test passed on Windows. Exact development wheel b174f96ef041bfa2202acd5b94551ba586034fda708a1a2fcfb830349dcdcef7; dirty harness based on 311f4a6. Hosted Linux result pending. Not availability quorum, retention, multi-host durability or full G1-G7 qualification."
     }
   ],
   "observations": [
@@ -3045,6 +3064,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36217592717",
       "conclusion": "success",
       "scope": "All six platform/Python jobs, real managed signer and 17 installed-wheel infrastructure cases passed, including available-object reuse, withdrawal rejection and two content-distinct bases with fresh funded four-organization verification. Not full G1-G7 qualification; publication denied."
+    },
+    {
+      "source": "311f4a6996f1c1b8df7e5a21686bb6c3042a1146",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36217957291",
+      "conclusion": "success",
+      "scope": "Repository reuse evidence documentation follow-up passed all required component jobs. Predates S3 implementation and its real-service jobs; not full operational qualification."
     }
   ]
 }

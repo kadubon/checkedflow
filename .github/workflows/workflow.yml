@@ -131,8 +131,38 @@ jobs:
           name: managed-signer
           path: reports/
 
+  object-storage:
+    needs: build
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            binary: .tools/seaweedfs/weed
+          - os: windows-latest
+            binary: .tools/seaweedfs/weed.exe
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: '0.11.28'
+      - run: uv sync --frozen --group dev
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: distributions
+          path: dist/
+      - run: uv run python scripts/fetch_seaweedfs.py --directory .tools/seaweedfs
+      - run: uv run python scripts/qualify_s3.py --dist dist --binary ${{ matrix.binary }}
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: object-storage-${{ matrix.os }}
+          path: reports/
+
   publish:
-    needs: [build, checks, qualification, managed-signer]
+    needs: [build, checks, qualification, managed-signer, object-storage]
     # Development interlock: existing component jobs do not implement the full 0.2 G1-G7 gates.
     # Replace this literal denial only with exact-artifact operational evidence verification.
     if: >-

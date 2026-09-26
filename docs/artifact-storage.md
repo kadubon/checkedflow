@@ -1,7 +1,8 @@
 # Artifact references and local storage
 
 Status: a source-tested local component of the unfinished 0.2 operational profile. This is not
-the S3 backend, a network authorization service, an availability quorum, or a retention system.
+a network authorization service, an availability quorum, or a retention system. The separate
+[S3 adapter](s3-storage.md) implements the same byte-store interface for an external service.
 It is not connected to consensus work admission yet. The released 0.1 package does not contain it.
 
 An artifact is a bounded sequence of bytes, such as a patch or a verification record. The
@@ -106,5 +107,5 @@ visibility, not S3 consistency or multi-host durability.
 No deletion API is exposed. Authenticated retention planning, pending-operation pins, grace
 periods, tombstones, restore-resurrection prevention and protected historical roots must be
 implemented together before automatic reclamation is enabled. Successful local `put` is not a
-signed replica-availability receipt. Real S3 integration, availability admission, lifecycle use,
+signed replica-availability receipt. Full S3 deployment, availability admission, lifecycle use,
 authenticated restore and operational qualification remain required before release.

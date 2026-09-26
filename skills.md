@@ -89,3 +89,12 @@ Expected cases remain outside gVisor, and null `case_match` preserves unknown ou
 Never promote a matching observation to committed acceptance. Follow the
 [domain guide](docs/repository-patch.md) and [inventory schema](src/checkedflow/data/repository-cases.schema.json).
 Run candidate files only in the required gVisor path, including bundled seeded-bug fixtures.
+
+## Development artifact storage boundary
+
+The optional `s3` adapter requires explicit trusted endpoint, TLS and credentials. Derive `Access`
+from authenticated current policy; never trust client-supplied scope authority. Never provide
+storage credentials to candidate code. A verified read is a point-in-time availability observation,
+not a signature, quorum, retention promise or execution permit. Preserve `OUTCOME_UNKNOWN` after
+an unconfirmed write and reconcile by read; do not automatically retry publication.
+See [S3 storage](docs/s3-storage.md) for real-service qualification and remaining limitations.

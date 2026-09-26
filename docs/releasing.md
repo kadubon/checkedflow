@@ -79,6 +79,11 @@ the SDK, CLI, type marker, schemas, vectors, research registry, minimal example 
 `checkedflow[distributed]` adds RPC/protobuf dependencies; CometBFT and gVisor remain external
 execution infrastructure. A source checkout is not needed for SDK, CLI or packaged contracts.
 
+`checkedflow[s3]` adds the optional verified object-store adapter. Separate Windows/Linux CI jobs
+run the pinned real S3 service against the build job's exact wheel. Like the real managed-signer
+job, they reject skipped cases and do not independently authorize the operational release.
+See [S3 storage](s3-storage.md) for fixture bounds, credentials and remaining deployment work.
+
 `checkedflow[agents]` adds the official A2A/MCP SDKs and the A2A HTTP server. The bundled agent
 CLI also needs `distributed` for its own-node backend. `package_check.py` tests base installation
 before adding both extras and testing protocol discovery for each distribution. The wheel includes

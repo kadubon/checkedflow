@@ -35,6 +35,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [Work budget](work-budget.md) | How are bounded funding reservations, verification allocations and uncertain charges governed? |
 | [Operational storage](operational-storage.md) | How are local control state, signed block history and archive batches committed atomically? |
 | [Artifact storage](artifact-storage.md) | How are bounded artifact bytes stored and checked separately from authorization and availability? |
+| [S3 storage](s3-storage.md) | How do conditional writes, verified reads, lost replies and real-service qualification work? |
 
 For agents, [skills.md](../skills.md) provides the reading order, machine contracts and validation
 commands. Schemas describe structural contracts; transition rules also impose semantic invariants.

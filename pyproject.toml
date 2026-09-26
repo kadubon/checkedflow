@@ -26,6 +26,10 @@ agents = [
     "uvicorn>=0.54,<1",
     "PyJWT[crypto]>=2.10,<3",
 ]
+s3 = [
+    "botocore>=1.43.99,<2",
+    "httpx>=0.28,<1",
+]
 
 [project.scripts]
 checkedflow = "checkedflow.cli:main"
@@ -58,10 +62,15 @@ module = ["grpc", "grpc.*", "checkedflow.distributed.proto.*"]
 ignore_missing_imports = true
 follow_imports = "skip"
 
+[[tool.mypy.overrides]]
+module = ["botocore", "botocore.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
-markers = ["integration: requires real CometBFT nodes", "sandbox: requires Linux and gVisor", "qualification: full distributed and sandbox acceptance", "signer: requires a real pinned disposable Vault process"]
+markers = ["integration: requires real CometBFT nodes", "sandbox: requires Linux and gVisor", "qualification: full distributed and sandbox acceptance", "signer: requires a real pinned disposable Vault process", "object_store: requires a real pinned disposable S3 process"]
 
 [tool.coverage.run]
 branch = true

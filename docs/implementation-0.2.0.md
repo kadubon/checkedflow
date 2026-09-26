@@ -40,12 +40,12 @@ source revision, artifact hashes, environment and executed results before qualif
 | M0 | Baseline, envelope, threat boundaries, ADRs, requirement ledger | None | IN PROGRESS |
 | M1 | Separate v2 contracts, legacy replay, administrative reserve | M0 | IN PROGRESS |
 | M2 | Local/S3 storage, archive, checkpoints, snapshots, migration | M1 | IN PROGRESS |
-| M3 | Repository patches and independent bounded verification | M1–M2 | NOT_STARTED |
+| M3 | Repository patches and independent bounded verification | M1–M2 | IN PROGRESS |
 | M4 | Role separation, scoped access, managed signer, rotation | M1–M2 | IN PROGRESS |
 | M5 | Worker supervision, effect journal, recovery | M2–M4 | NOT_STARTED |
 | M6 | Metrics, readiness, deployments, runbooks | M2–M5 | NOT_STARTED |
-| M7 | Installed, infrastructure, fault, load, multi-host qualification | M3–M6 | NOT_STARTED |
-| M8 | Documentation, exact-artifact publication gates, release | M7 | NOT_STARTED |
+| M7 | Installed, infrastructure, fault, load, multi-host qualification | M3–M6 | IN PROGRESS |
+| M8 | Documentation, exact-artifact publication gates, release | M7 | IN PROGRESS |
 
 ## Infrastructure dependencies and execution limits
 
@@ -349,3 +349,35 @@ platform/Python jobs, real managed signer and all 17 required single-host infras
 That includes current-object reuse preparation, withdrawal rejection and two content-distinct
 bases with separately funded real gVisor verification. This qualifies those component mechanisms;
 it does not supply S3, retention pins, supervised dispatch or the full operational release gates.
+
+### Verified S3 byte-store increment
+
+The [S3 adapter](s3-storage.md) uses explicit SigV4 credentials, validated TLS, conditional creation
+and exact read-back verification. It does not repeat an ambiguous write. Scoped authority precedes
+stream consumption and network requests. Corruption, absence, access denial and unknown publication
+remain distinguishable. The optional `s3` dependency group keeps provider dependencies out of the
+base package. The deterministic core has no new I/O dependencies.
+
+Twenty-seven focused protocol cases passed, with 100% line/branch coverage. A real SeaweedFS 4.47
+test passed in 30.29 seconds on Windows/Python 3.12.10 against an isolated installation of development
+wheel SHA-256 `b174f96ef041bfa2202acd5b94551ba586034fda708a1a2fcfb830349dcdcef7`.
+That test covers conditional concurrent publication, TLS and authorization denial, scoped keys,
+empty/bounded objects, corruption, deletion, outage and restart persistence. Its record identifies
+an uncommitted tree based on 311f4a6; it is not falsely attributed to that clean predecessor.
+
+The exact same wheel also passed the real installed Vault check after extracting shared bounded
+qualification-process handling. Both service harnesses reject skipped cases. New Windows/Linux
+object-storage CI jobs consume the build job's wheel, independently verify pinned provider bytes
+and retain component reports. Hosted results for this new increment must still be inspected.
+Per-scope S3 capacity, availability quorum, retention, authenticated restore and worker supervision
+remain unfinished. No G1–G7 status is promoted; the publication interlock remains active.
+
+The preceding documentation revision 311f4a6996f1c1b8df7e5a21686bb6c3042a1146 passed
+[run 36217957291](https://github.com/kadubon/checkedflow/actions/runs/36217957291).
+That result predates this S3 increment and does not qualify it.
+
+The combined local source check passed 362 cases in 80.15 seconds, with three Linux-only filesystem
+skips and 19 infrastructure/service cases excluded into separate groups. All static checks and
+32 selected invariant mutations passed. The isolated wheel/sdist package checks also passed.
+The S3 and Vault service cases were executed separately as described above, not counted as source
+passes. These results do not supply the remaining operational implementation or missing inventory.

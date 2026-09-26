@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "s3_artifacts.py",
+        "test_s3_artifacts.py",
+        "s3_conditional_publication",
+        '"If-None-Match": "*"',
+        '"If-None-Match": "disabled"',
+        "test_signed_conditional_publication_always_verifies_bytes",
+    ),
+    (
+        "s3_artifacts.py",
+        "test_s3_artifacts.py",
+        "s3_verified_read",
+        "_verify(ref, body)",
+        "pass",
+        "test_read_hash_and_length_are_authoritative",
+    ),
+    (
         "repository_reuse.py",
         "test_repository_reuse.py",
         "reuse_typed_verdict_consistency",
