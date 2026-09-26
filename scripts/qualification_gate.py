@@ -12,6 +12,7 @@ REQUIRED = {
     "test_sandbox_network_paths_nonroot_and_checker_protection": 1,
     "test_sandbox_nested_repository_tree": 1,
     "test_repository_patch_independent_observation": 6,
+    "test_v2_consensus_patch_execution_and_crash_recovery": 1,
 }
 
 

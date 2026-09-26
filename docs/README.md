@@ -28,6 +28,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [Key lifecycle](key-lifecycle.md) | How are application keys scheduled, proven, activated, retired and revoked? |
 | [Managed signer](managed-signer.md) | How does pinned Vault Transit signing bind exact bytes to the committed public key? |
 | [Operational control](operational-control.md) | How do initial v2 control transitions and bounded epoch receipts behave? |
+| [Operational consensus](operational-consensus.md) | How do the separate v2 ABCI service and own-node client commit and recover state? |
 | [Work tasks](work-tasks.md) | How do approved tickets, worker leases, fences and uncertain outcomes connect? |
 | [Work budget](work-budget.md) | How are bounded funding reservations, verification allocations and uncertain charges governed? |
 | [Operational storage](operational-storage.md) | How are local control state, signed block history and archive batches committed atomically? |

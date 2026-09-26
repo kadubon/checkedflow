@@ -300,3 +300,14 @@ def test_empty_committed_blocks_charge_expired_started_work(tmp_path):
     assert previous == h.runtime.state_hash
     assert store.verify_history(expected_hash=previous).tasks[0].status == "unknown"
     assert store.load().budget.spent == 30
+
+
+def test_snapshot_cannot_claim_a_future_execution_start():
+    h = Harness()
+    task, _ = h.prepare()
+    h.send("task.lease", {"task": task}, "worker")
+    h.send("task.start", {"task": task, "fence": 1}, "worker")
+    value = loads(state_bytes(h.runtime.state))
+    value["tasks"][0]["started"] = h.runtime.state.height + 1
+    with pytest.raises(Failure, match="future"):
+        decode(dumps(value))

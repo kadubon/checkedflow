@@ -31,6 +31,7 @@ REQUIRED = [
     "checkedflow/data/key-command.schema.json",
     "checkedflow/data/budget-command.schema.json",
     "checkedflow/data/task-command.schema.json",
+    "checkedflow/data/operational-configuration.schema.json",
     "checkedflow/data/repository-patch.schema.json",
     "checkedflow/data/invoice-fixture.json",
     "checkedflow/data/repository-cases.schema.json",

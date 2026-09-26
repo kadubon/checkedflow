@@ -2,8 +2,8 @@
 
 Status: unreleased v2 state-machine and storage component. These transitions establish who may
 start an approved isolated attempt and how its modeled funding settles. They do not dispatch
-code, prove node freshness, establish evidence availability or adopt an artifact. Distributed v2
-ABCI, worker supervision, artifact verification quorum and conditional reuse remain incomplete.
+code, prove node freshness, establish evidence availability or adopt an artifact. The [separate v2 ABCI adapter](operational-consensus.md) now connects these transitions to
+CometBFT. Worker supervision, artifact verification quorum and conditional reuse remain incomplete.
 
 ## Admission and authority
 

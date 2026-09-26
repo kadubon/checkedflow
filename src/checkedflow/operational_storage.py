@@ -22,6 +22,7 @@ from checkedflow.core.values import (
     require,
     text,
 )
+from checkedflow.core.work_budget import Ledger
 from checkedflow.operational_codec import archive_bytes, decode, decode_archive, state_bytes
 from checkedflow.operational_runtime import Runtime
 from checkedflow.wire import MAX_TRANSACTION_BYTES, document, dumps
@@ -84,6 +85,8 @@ class Store:
             and initial.journal.epoch == 0
             and initial.mode == "paused"
             and not initial.journal.receipts
+            and initial.budget == Ledger()
+            and not initial.tasks
             and all(item.revision == 1 and item.usable_at(0) for item in initial.credentials)
             and all(nonce == 0 for _, nonce in initial.journal.actors),
             "GENESIS",

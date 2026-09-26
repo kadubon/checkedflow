@@ -181,6 +181,9 @@ def decode(raw: bytes) -> State:
         )
     validate_tasks(budget, tuple(tasks))
     require(
+        all(work.started <= height for work in tasks), "STATE", "execution start is in the future"
+    )
+    require(
         advance_tasks(budget, tuple(tasks), height, tuple(credentials)) == (budget, tuple(tasks)),
         "STATE",
         "unapplied task expiration or authority loss",

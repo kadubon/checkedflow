@@ -1,8 +1,8 @@
 # Initial v2 control and request accounting
 
 Status: **IMPLEMENTED, SOURCE-TESTED**. This is an unreleased SDK control
-profile, not the complete operational runtime. Work execution, consensus integration,
-state sync and worker/gateway integration remain pending. The bounded
+profile, not the complete operational runtime. A [separate v2 consensus adapter](operational-consensus.md)
+now connects it to CometBFT. Supervised execution, state sync and worker/gateway integration remain pending. The bounded
 [task ownership extension](work-tasks.md) now accepts isolated-task commands, but does not
 dispatch candidate code or establish artifact acceptance.
 The [local control store](operational-storage.md) now persists control state and emitted archive

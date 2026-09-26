@@ -3,7 +3,9 @@
 import concurrent.futures
 import os
 import platform
+import sys
 import time
+from pathlib import Path
 
 import pytest
 from network import FaultNetwork
@@ -25,6 +27,11 @@ def infrastructure():
             pytest.fail("required Linux, pinned image and CometBFT configuration missing")
         pytest.skip("real Linux/gVisor/CometBFT qualification was not requested")
     GVisorRunner(image).check()
+    if os.environ.get("CHECKEDFLOW_REQUIRE_INFRA") == "1":
+        import checkedflow
+
+        origin = Path(checkedflow.__file__).resolve().relative_to(Path(sys.prefix).resolve())
+        assert "site-packages" in origin.parts, "qualification must use the installed wheel"
     return image, binary
 
 
@@ -335,3 +342,136 @@ def test_repository_patch_independent_observation(infrastructure, source, expect
         assert observation.case_match is (
             True if expected == "cases_match" else (False if expected == "cases_differ" else None)
         )
+
+
+@pytest.mark.integration
+@pytest.mark.sandbox
+@pytest.mark.qualification
+def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_path):
+    import json
+    import sqlite3
+    from contextlib import closing
+    from dataclasses import asdict, replace
+    from hashlib import sha256
+    from io import BytesIO
+
+    from checkedflow.artifacts import Access, LocalStore
+    from checkedflow.core.artifact import Reference
+    from checkedflow.distributed.operational_cluster import Cluster as OperationalCluster
+    from checkedflow.operational_runtime import Runtime as OperationalRuntime
+    from checkedflow.operational_storage import Store as OperationalStore
+    from checkedflow.wire import digest, dumps, validate
+
+    image, binary = infrastructure
+    cluster = OperationalCluster(tmp_path / "operational", binary)
+    try:
+        cluster.start()
+        base, patch, contract, cases = invoice(image)
+        contract = replace(contract, deadline_height=100000)
+        target = digest(validate(json.loads(json.dumps(asdict(contract)))))
+        cluster.send("budget.configure", {"budget": 100, "verification_reserve": 40})
+        cluster.send("mission.resume", {})
+        ticket = cluster.send(
+            "budget.reserve",
+            {
+                "phase": "execute",
+                "ceiling": 30,
+                "target": target,
+            },
+        )["request"]
+        admitted = cluster.send(
+            "task.admit",
+            {
+                "ticket": ticket,
+                "workers": ["w0", "w1"],
+                "lease_blocks": 1000,
+                "expires": cluster.client().state().height + 10000,
+                "max_attempts": 2,
+            },
+        )
+        task = admitted["request"]
+        cluster.wait_height(int(admitted["receipt"]["height"]))
+
+        def compete(index):
+            try:
+                cluster.send("task.lease", {"task": task}, actor=f"w{index}", node=index)
+                return index, "OK"
+            except Failure as exc:
+                assert exc.code in {"REJECTED", "OUTCOME_UNKNOWN"}
+                return index, exc.code
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
+            receipts = list(pool.map(compete, (0, 1)))
+        # A mempool timeout is uncertain, not a rejection. Reconcile committed ownership.
+        cluster.wait_height(max(cluster.client(index).state().height for index in range(4)) + 1)
+        acquired = cluster.client().state()
+        worker = acquired.tasks[0].owner
+        assert worker in {"w0", "w1"} and acquired.tasks[0].fence == 1
+        owner = int(worker[1])
+        assert dict(acquired.journal.actors)[worker] == 1
+        assert dict(acquired.journal.actors)[f"w{1 - owner}"] == 0
+        assert all(code != "OK" or index == owner for index, code in receipts)
+        cluster.send("task.start", {"task": task, "fence": 1}, actor=worker, node=owner)
+        cluster.stop_node(3, crash=True)
+        state = cluster.client(owner).state()
+        assert state.tasks[0].owner == worker and state.tasks[0].status == "running"
+        assert state.budget.tickets[0].target == target
+        observation = observe_patch(base, patch, contract, cases, height=state.height)
+        assert observation.case_match is True and observation.contract_digest == target
+        evidence = validate(json.loads(json.dumps(asdict(observation))))
+        raw = dumps(evidence)
+        reference = Reference(
+            "sha256",
+            digest(evidence),
+            len(raw),
+            "application/json",
+            "evidence",
+            "repository",
+            target,
+        )
+        access = Access(worker, frozenset({"repository"}), frozenset({"read", "write"}))
+        artifacts = LocalStore(tmp_path / "evidence.sqlite")
+        artifacts.put(reference, BytesIO(raw), access=access)
+        assert artifacts.get(reference, access=access) == raw
+        finish = cluster.send(
+            "task.finish",
+            {
+                "task": task,
+                "fence": 1,
+                "outcome": "reported",
+                "evidence": reference.digest,
+            },
+            actor=worker,
+            node=owner,
+        )
+        cluster.wait_height(int(finish["receipt"]["height"]), nodes=(0, 1, 2))
+        assert cluster.client().state().budget.spent == 30
+        cluster.stop_node(2, crash=True)
+        time.sleep(2)
+        stopped = cluster.client().state().height
+        time.sleep(1.5)
+        assert cluster.client().state().height == stopped
+        cluster.start_node(2)
+        cluster.start_node(3)
+        cluster.wait_height(stopped + 3)
+        states = [cluster.client(index).state() for index in range(4)]
+        assert all(
+            state.tasks == states[0].tasks and state.budget == states[0].budget for state in states
+        )
+        assert states[0].tasks[0].status == "finished" and states[0].budget.spent == 30
+        height, app_hash = cluster.common_hash()
+        assert height >= int(finish["receipt"]["height"]) and len(app_hash) == 64
+        cluster.close()
+        for index in range(4):
+            path = cluster.directory / f"node{index}" / "operational.sqlite"
+            store = OperationalStore(path, cluster.initial)
+            final = store.load()
+            assert store.verify_history(expected_hash=OperationalRuntime(final).state_hash) == final
+            with closing(sqlite3.connect(path)) as db:
+                body, fingerprint = db.execute(
+                    "SELECT body, hash FROM blocks WHERE height=?", (height,)
+                ).fetchone()
+            assert sha256(body).hexdigest() == fingerprint
+            assert json.loads(body)["state_hash"] == app_hash.lower()
+    finally:
+        cluster.close()

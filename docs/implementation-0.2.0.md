@@ -267,3 +267,22 @@ mutations. This does not implement distributed worker dispatch or artifact adopt
 
 The predecessor budget source ab9aab6 passed hosted run 36212996745. That observation is scoped
 to the budget increment, not the later task state-machine extension or the complete G1–G7 gates.
+
+
+### Separate v2 consensus service and own-node transport
+
+A separate CometBFT ABCI application now evaluates v2 raw signed transactions, retains transient
+finalization, replays exact bytes at atomic commit and exposes only committed v2 queries.
+Validator public keys are pinned separately from command credentials. The own-node client bounds
+response bytes and preserves ambiguous submission outcomes. Fresh stores reject pre-funded/task
+state, and snapshots reject future execution starts. A new mandatory installed-wheel laboratory
+case joins consensus, scoped evidence storage and actual gVisor patch observation, then exercises
+one-node loss, quorum loss and crash recovery. That case remains unqualified until CI is inspected.
+
+Local static checks and distribution checks passed on Windows/Python 3.12. The full source suite
+passed 298 cases with 25 detected mutations; a subsequent future-start regression also passed
+in the focused 24-case suite. The wheel and sdist passed isolated installation and packaged-resource
+checks. These observations do not qualify the new live ABCI workflow or the full operational profile.
+
+The task-ownership predecessor 0b3210b passed run 36213818933. This does not qualify the later
+ABCI adapter, supervised dispatch, artifact adoption, four-host operation or the complete G1–G7 gates.
