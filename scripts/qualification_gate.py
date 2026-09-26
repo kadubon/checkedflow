@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 REQUIRED = {
+    "test_systemd_restarts_recovery_after_worker_and_service_sigkill": 1,
     "test_independent_reaper_survives_worker_process_death": 2,
     "test_actual_generation_registration_reuse_and_next_generation": 1,
     "test_agent_protocols_share_four_node_commit": 1,

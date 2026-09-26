@@ -91,3 +91,17 @@ restart fault tests, coordinated journal/daemon disaster recovery, and collectio
 workspace directories left by hard-killed workers remain unqualified. This mechanism recovers OCI
 containers; it does not delete arbitrary host directories, restore validator keys, reconcile GitHub
 effects or complete the G1–G7 release gates.
+
+The required qualification suite now includes a separate `systemd-run` experiment on its disposable
+Linux host. It starts an installed-wheel reaper as a transient service with `Restart=on-failure`,
+observes an actual running gVisor container, kills the worker and the recovery service's main process,
+and requires a new service PID, a restart counter and verified container retirement. The experiment
+uses a 45-second service runtime limit and a three-start ceiling within 180 seconds, and explicitly
+stops its uniquely named unit during cleanup. It requires noninteractive `sudo` and systemd; missing
+infrastructure fails the required gate. It does not enable a permanent service or alter Docker's
+configuration. See the upstream [systemd 255 service contract](https://raw.githubusercontent.com/systemd/systemd/v255/man/systemd.service.xml).
+
+A passing `reports/sandbox-service.json` records the measured elapsed time and restart count for
+that artifact. Adding this test is not itself evidence that it passed. Its scope is a single hosted
+machine with an intact recovery journal and available Docker, not simultaneous host/storage failure
+or a production service-level objective.

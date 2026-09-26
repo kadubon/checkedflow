@@ -191,3 +191,26 @@ class Harness:
 @pytest.fixture
 def h():
     return Harness()
+
+
+@pytest.fixture
+def runtime_infrastructure():
+    """Require actual isolation without starting a recovery supervisor implicitly."""
+    import os
+    import platform
+    import sys
+    from pathlib import Path
+
+    import checkedflow
+    from checkedflow.runner import GVisorRunner
+
+    image, binary = os.environ.get("CHECKEDFLOW_IMAGE"), os.environ.get("CHECKEDFLOW_COMETBFT")
+    if platform.system() != "Linux" or not image or not binary:
+        if os.environ.get("CHECKEDFLOW_REQUIRE_INFRA") == "1":
+            pytest.fail("required Linux, pinned image and CometBFT configuration missing")
+        pytest.skip("real Linux/gVisor/CometBFT qualification was not requested")
+    GVisorRunner(image).check()
+    if os.environ.get("CHECKEDFLOW_REQUIRE_INFRA") == "1":
+        origin = Path(checkedflow.__file__).resolve().relative_to(Path(sys.prefix).resolve())
+        assert "site-packages" in origin.parts, "qualification must use the installed wheel"
+    return image, binary

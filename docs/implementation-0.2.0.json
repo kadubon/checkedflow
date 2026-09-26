@@ -3519,7 +3519,8 @@
         "tests/test_sandbox_recovery.py",
         "tests/test_runner_lifecycle.py",
         "tests/test_integration.py",
-        "scripts/fault_injection.py"
+        "scripts/fault_injection.py",
+        "tests/test_recovery_service.py"
       ],
       "documentation": [
         "docs/sandbox-recovery.md",

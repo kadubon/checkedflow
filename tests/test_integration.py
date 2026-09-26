@@ -2,7 +2,6 @@
 
 import concurrent.futures
 import os
-import platform
 import subprocess
 import sys
 import time
@@ -21,20 +20,10 @@ from checkedflow.runner import GVisorRunner, Limits
 
 
 @pytest.fixture
-def infrastructure(tmp_path, monkeypatch):
-    image, binary = os.environ.get("CHECKEDFLOW_IMAGE"), os.environ.get("CHECKEDFLOW_COMETBFT")
-    if platform.system() != "Linux" or not image or not binary:
-        if os.environ.get("CHECKEDFLOW_REQUIRE_INFRA") == "1":
-            pytest.fail("required Linux, pinned image and CometBFT configuration missing")
-        pytest.skip("real Linux/gVisor/CometBFT qualification was not requested")
-    GVisorRunner(image).check()
-    if os.environ.get("CHECKEDFLOW_REQUIRE_INFRA") == "1":
-        import checkedflow
-
-        origin = Path(checkedflow.__file__).resolve().relative_to(Path(sys.prefix).resolve())
-        assert "site-packages" in origin.parts, "qualification must use the installed wheel"
+def infrastructure(runtime_infrastructure, tmp_path, monkeypatch):
     from checkedflow.sandbox_recovery import Docker, Recovery, boot_id
 
+    image, binary = runtime_infrastructure
     directory = tmp_path / "sandbox-recovery"
     recovery = Recovery(directory, Docker(), boot_id())
     monkeypatch.setenv("CHECKEDFLOW_SANDBOX_RECOVERY", str(directory))

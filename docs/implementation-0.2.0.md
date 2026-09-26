@@ -779,3 +779,18 @@ The [recovery runbook](sandbox-recovery.md) explains the new required configurat
 semantics. This is not a complete operational deployment: service-manager restart qualification,
 orphan temporary-workspace collection, journal disaster recovery, unattended scheduling and the
 remaining G1–G7 requirements are still open. The literal publication interlock remains closed.
+
+Source `9521aa7deb2b73b86416e556cab0ec404341e0bb` completed CI 36239137463 successfully on all
+six OS/Python jobs, the build, managed signer and both object-storage jobs. The installed-wheel
+CometBFT/gVisor suite executed 19 cases with no skips/errors/failures in 334.991 seconds, including
+the created-container crash window (13.532 seconds) and running-container crash window (8.824 seconds).
+Its wheel SHA-256 is `73025ba6462f5688cc671449f3f55ee037ec17337702449460189bbd791576a4`;
+sdist SHA-256 is `addcf16d60eb4cec2becc428a15454ffaee9d0331b4bfac6999272b7d4397104`.
+Local source validation reached 634 passes, three Windows descriptor skips, and 55 detected mutants.
+These development distributions retain 0.1.0 metadata and must not replace public 0.1.0 files.
+
+The next qualification increment adds an actual transient-systemd recovery restart experiment.
+It uses the same wheel import boundary, injects worker and recovery-service SIGKILL, and requires
+automatic service restart plus container/journal retirement. This new required case is pending
+exact-source execution; the preceding 19-case result does not qualify it. No release gate is
+promoted on the strength of the added test or the service template.
