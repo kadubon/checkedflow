@@ -2877,6 +2877,23 @@
         "docs/work-budget.md"
       ],
       "scope": "Governed fixed funding, target/phase reservations, protected verification allocation, conservative unknown charging, immutable terminal tickets and signed SQLite replay. Bounded at 128 retained tickets. Not task leases, automatic metering, full residual integration or sustained lifecycle archival."
+    },
+    {
+      "id": "bounded-isolated-task-ownership",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/core/work_tasks.py",
+        "src/checkedflow/core/operational.py",
+        "src/checkedflow/operational_codec.py",
+        "src/checkedflow/data/task-command.schema.json"
+      ],
+      "tests": [
+        "tests/test_work_tasks.py"
+      ],
+      "evidence": [
+        "docs/work-tasks.md"
+      ],
+      "scope": "Ten signed lifecycle/reference-model/storage cases; 100% task-core line/branch coverage; fence and expiry mutations detected. Finite approved ownership, pre-start retries and charged uncertainty. Not distributed v2 dispatch, worker freshness, artifact availability/quorum, adoption, residual dependency graph or reuse."
     }
   ],
   "observations": [
@@ -2939,6 +2956,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36212387543",
       "conclusion": "success",
       "scope": "Six platform/Python jobs, real Vault signer and infrastructure including six repository-observation variants and final accounting barrier correction. Predates work-budget ledger; not full G1-G7 qualification."
+    },
+    {
+      "source": "ab9aab686765ef17866dbd2d0e30fa0ddb27b270",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36212996745",
+      "conclusion": "success",
+      "scope": "Governed-budget increment passed platform matrix, exact-wheel infrastructure and managed signer jobs. Predates task ownership; not full operational qualification."
     }
   ]
 }

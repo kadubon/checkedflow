@@ -30,6 +30,7 @@ REQUIRED = [
     "checkedflow/data/artifact-reference.schema.json",
     "checkedflow/data/key-command.schema.json",
     "checkedflow/data/budget-command.schema.json",
+    "checkedflow/data/task-command.schema.json",
     "checkedflow/data/repository-patch.schema.json",
     "checkedflow/data/invoice-fixture.json",
     "checkedflow/data/repository-cases.schema.json",
@@ -119,6 +120,33 @@ for offset, (kind, payload) in enumerate([
 assert control.state.budget.spent == 60 and control.state.budget.available == 40
 from checkedflow.operational_codec import decode as decode_control, state_bytes
 assert decode_control(state_bytes(control.state)) == control.state
+worker_key = Ed25519PrivateKey.generate()
+worker_credential = Credential("executor", 1, "a", "executor", "m",
+                              worker_key.public_key().public_bytes_raw().hex(), 0)
+work = OperationalRuntime(operational_genesis(
+    "installed-auth-only", "m", tuple("abcd"), (*registry.values(), worker_credential)
+))
+for number, (kind, payload) in enumerate([
+    ("budget.configure", {"budget": 100, "verification_reserve": 20}),
+    ("mission.resume", {}),
+    ("budget.reserve", {"phase": "execute", "ceiling": 30, "target": "a" * 64}),
+    ("task.admit", {"ticket": "0:task-3", "workers": ["executor"], "lease_blocks": 5,
+                    "expires": 100, "max_attempts": 2}),
+], start=1):
+    raw = sign_command(command | {"epoch": 0, "id": f"0:task-{number}", "nonce": number,
+        "kind": kind, "payload": {"mission": "m"} | payload}, keys)
+    work.apply(raw, height=number)
+for nonce, (kind, extra) in enumerate([
+    ("task.lease", {}), ("task.start", {"fence": 1}),
+    ("task.finish", {"fence": 1, "outcome": "reported", "evidence": "b" * 64}),
+], start=1):
+    raw = sign_command(command | {"epoch": 0, "id": f"0:worker-{nonce}", "nonce": nonce,
+        "actor": "executor", "kind": kind,
+        "payload": {"mission": "m", "task": "0:task-4"} | extra},
+        {("executor", 1): worker_key})
+    work.apply(raw, height=nonce + 4)
+assert work.state.tasks[0].status == "finished" and work.state.budget.spent == 30
+assert decode_control(state_bytes(work.state)) == work.state
 import tempfile
 from pathlib import Path
 from checkedflow.operational_storage import Store

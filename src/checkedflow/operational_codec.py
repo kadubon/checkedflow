@@ -12,6 +12,9 @@ from checkedflow.core.request_journal import Archive, Journal, Limits, Receipt, 
 from checkedflow.core.values import JSON, Object, array, fields, integer, names, obj, require, text
 from checkedflow.core.work_budget import MAX_TICKETS, Ledger, Ticket
 from checkedflow.core.work_budget import validate as validate_budget
+from checkedflow.core.work_tasks import MAX_TASKS, ROLE, Task
+from checkedflow.core.work_tasks import advance as advance_tasks
+from checkedflow.core.work_tasks import validate as validate_tasks
 from checkedflow.wire import document, dumps, validate
 
 MAX_STATE_BYTES = 4194304
@@ -54,7 +57,9 @@ def _receipt(value: JSON) -> Receipt:
 def decode(raw: bytes) -> State:
     require(len(raw) <= MAX_STATE_BYTES, "LIMIT", "control-state byte ceiling")
     value = document(raw)
-    fields(value, "chain mission organizations credentials journal height mode profile budget")
+    fields(
+        value, "chain mission organizations credentials journal height mode profile budget tasks"
+    )
     require(value["profile"] == "checkedflow/control-state/v2", "VERSION", "state profile")
     credentials = []
     for item in array(value["credentials"], limit=MAX_REVISIONS):
@@ -148,9 +153,78 @@ def decode(raw: bytes) -> State:
         integer(budget_value["verification_reserve"]),
     )
     validate_budget(budget)
-    ticket_ids = {ticket.identity for ticket in budget.tickets}
+    tasks = []
+    for item in array(value["tasks"], limit=MAX_TASKS):
+        task = obj(item)
+        fields(
+            task,
+            "identity ticket workers lease_blocks expires max_attempts status owner "
+            "revision fence until started evidence reason",
+        )
+        tasks.append(
+            Task(
+                text(task["identity"], limit=80),
+                text(task["ticket"], limit=80),
+                names(task["workers"], limit=64),
+                integer(task["lease_blocks"]),
+                integer(task["expires"]),
+                integer(task["max_attempts"]),
+                text(task["status"]),
+                _string(task["owner"]),
+                integer(task["revision"]),
+                integer(task["fence"]),
+                integer(task["until"]),
+                integer(task["started"]),
+                _string(task["evidence"]),
+                _string(task["reason"]),
+            )
+        )
+    validate_tasks(budget, tuple(tasks))
     require(
-        all(receipt.administrative == (receipt.request not in ticket_ids) for receipt in receipts),
+        advance_tasks(budget, tuple(tasks), height, tuple(credentials)) == (budget, tuple(tasks)),
+        "STATE",
+        "unapplied task expiration or authority loss",
+    )
+    tickets_by_id = {ticket.identity: ticket for ticket in budget.tickets}
+    for work in tasks:
+        role = ROLE[tickets_by_id[work.ticket].phase]
+        require(
+            not work.owner
+            or any(
+                credential.identity == work.owner
+                and credential.revision == work.revision
+                and credential.role == role
+                and credential.mission == initial.mission
+                for credential in credentials
+            ),
+            "STATE",
+            "task owner revision or purpose missing",
+        )
+        require(
+            all(
+                any(
+                    credential.identity == worker
+                    and credential.role == role
+                    and credential.mission == initial.mission
+                    for credential in credentials
+                )
+                for worker in work.workers
+            ),
+            "STATE",
+            "task worker purpose or scope differs",
+        )
+    ordinary_ids = {ticket.identity for ticket in budget.tickets} | {
+        task.identity for task in tasks
+    }
+    administrators = {
+        credential.identity for credential in credentials if credential.role == "administrator"
+    }
+    require(
+        all(
+            receipt.administrative
+            == (receipt.actor in administrators and receipt.request not in ordinary_ids)
+            for receipt in receipts
+        ),
         "STATE",
         "receipt class differs from budget admission",
     )
@@ -161,6 +235,7 @@ def decode(raw: bytes) -> State:
         height=height,
         mode=mode,
         budget=budget,
+        tasks=tuple(tasks),
     )
     require(encode(state) == value, "STATE", "noncanonical control-state structure")
     return state

@@ -47,7 +47,9 @@ Settlement has three explicit outcomes:
   is appropriate; this accounting component does not determine whether an external effect ran.
 
 An unknown ticket cannot subsequently be changed to released or erased by these commands.
-It remains visible after request-journal rollover. It is not yet the full task residual with
+It remains visible after request-journal rollover. The [task ownership layer](work-tasks.md) now
+attaches reserved tickets and prevents independent settlement of attached funding. This is not
+yet the full task residual with
 dependencies and recheck triggers; that integration is still required. A settlement likewise does
 not establish checker acceptance, artifact adoption, compensation or permission to retry.
 
@@ -75,8 +77,9 @@ Published v1 histories and package behavior retain their original decoding and r
 
 ## Remaining task integration
 
-A reservation is not a lease. The task layer must bind the ticket to its approved immutable
-contract, worker purpose, attempt, fencing number, deadline and evidence before executing.
+A reservation is not a lease. The [task ownership layer](work-tasks.md) now binds a ticket to
+approved workers, a purpose, attempt fence, deadline and result evidence identity. Dispatch must
+still authenticate and resolve the immutable target contract before executing.
 It must reserve adequate independent verification capacity for each task, not merely rely on the
 mission-wide allocation. Automatic settlement, restart reconciliation, task residuals, artifact
 acceptance, administrative emergency actions and history retention remain required release work.

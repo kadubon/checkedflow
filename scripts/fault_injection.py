@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "core/work_tasks.py",
+        "test_work_tasks.py",
+        "v2_attempt_fence",
+        'task.fence == integer(payload["fence"], low=1)',
+        'integer(payload["fence"], low=1) > 0',
+        "test_competing_lease_stale_fence_and_prestart_attempt_limit",
+    ),
+    (
+        "core/work_tasks.py",
+        "test_work_tasks.py",
+        "v2_lease_boundary",
+        "height >= task.until",
+        "height > task.until",
+        "test_started_work_never_becomes_retryable_or_refundable",
+    ),
+    (
         "core/work_budget.py",
         "test_work_budget.py",
         "budget_spending_retention",

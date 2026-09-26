@@ -2,8 +2,9 @@
 
 Status: **IMPLEMENTED, SOURCE-TESTED**. This is an unreleased SDK control
 profile, not the complete operational runtime. Work execution, consensus integration,
-state sync and worker/gateway integration remain pending. No v2 task command is
-accepted by this implementation.
+state sync and worker/gateway integration remain pending. The bounded
+[task ownership extension](work-tasks.md) now accepts isolated-task commands, but does not
+dispatch candidate code or establish artifact acceptance.
 The [local control store](operational-storage.md) now persists control state and emitted archive
 batches atomically. Full work/archive integration remains pending.
 

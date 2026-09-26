@@ -252,3 +252,18 @@ explicit; sustainable ticket archival and task/lease/residual integration remain
 
 The predecessor source 7abe55c passed run 36212387543, including the real repository sandbox
 cases and final-accounting barrier correction. That result does not qualify this later extension.
+
+
+### Isolated task ownership and deterministic expiry
+
+Approved funding now attaches to one bounded task with an explicit worker allowlist, purpose,
+lease window, final deadline and finite attempt limit. Signed lease/start/heartbeat/finish transitions
+pin owner revision and fence. Pre-start expiry can retry within the limit; started expiry, key
+revocation/retirement and cancellation preserve charged unknown work. Direct budget settlement
+cannot detach or refund task-owned funding. Empty committed blocks apply expiry atomically.
+Ten lifecycle/model/storage cases cover this component, including full signed replay; fence and
+boundary-expiry mutations are detected. Source checks passed with 285 tests and 25 detected
+mutations. This does not implement distributed worker dispatch or artifact adoption/reuse.
+
+The predecessor budget source ab9aab6 passed hosted run 36212996745. That observation is scoped
+to the budget increment, not the later task state-machine extension or the complete G1–G7 gates.

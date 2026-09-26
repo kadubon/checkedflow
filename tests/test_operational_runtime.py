@@ -37,7 +37,7 @@ def test_controls_require_current_quorum_and_signed_scope():
         runtime.apply(sign_command(command | {"payload": {"mission": "other"}}, keys), height=1)
     assert runtime.state_hash == original
     with pytest.raises(Failure, match="not supported"):
-        runtime.apply(sign_command(command | {"kind": "task.start"}, keys), height=1)
+        runtime.apply(sign_command(command | {"kind": "task.future"}, keys), height=1)
     assert runtime.state_hash == original
 
 

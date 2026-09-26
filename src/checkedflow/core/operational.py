@@ -1,4 +1,4 @@
-"""Initial v2 control transitions. Work admission remains unsupported until integrated."""
+"""Pure v2 control, governed funding and bounded isolated-task ownership."""
 
 from dataclasses import dataclass, replace
 
@@ -9,6 +9,10 @@ from checkedflow.core.request_journal import genesis as journal_genesis
 from checkedflow.core.values import Object, fields, integer, obj, require, text
 from checkedflow.core.work_budget import Ledger
 from checkedflow.core.work_budget import change as change_budget
+from checkedflow.core.work_tasks import WORKER_COMMANDS, Task
+from checkedflow.core.work_tasks import advance as advance_tasks
+from checkedflow.core.work_tasks import change as change_tasks
+from checkedflow.core.work_tasks import validate as validate_tasks
 
 
 @dataclass(frozen=True)
@@ -22,6 +26,7 @@ class State:
     mode: str = "paused"
     profile: str = "checkedflow/control-state/v2"
     budget: Ledger = Ledger()
+    tasks: tuple[Task, ...] = ()
 
 
 def genesis(
@@ -74,7 +79,9 @@ def genesis(
 
 def advance(state: State, height: int) -> State:
     integer(height, low=state.height)
-    return replace(state, height=height)
+    budget, tasks = advance_tasks(state.budget, state.tasks, height, state.credentials)
+    validate_tasks(budget, tasks)
+    return replace(state, height=height, budget=budget, tasks=tasks)
 
 
 def transition(state: State, command: Object, context: Verified) -> tuple[State, Archive | None]:
@@ -100,8 +107,9 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
         "context does not match current registry",
     )
     require(context.height >= state.height, "HEIGHT", "height cannot decrease")
-    context.require_administration()
     kind = text(command["kind"])
+    if kind not in WORKER_COMMANDS:
+        context.require_administration()
     require(
         kind
         in {
@@ -114,20 +122,24 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
             "budget.configure",
             "budget.reserve",
             "budget.settle",
+            "task.admit",
+            "task.cancel",
+            *WORKER_COMMANDS,
         },
         "VERSION",
         "command not supported by the initial v2 control profile",
     )
     payload = obj(command["payload"])
-    if not kind.startswith(("key.", "budget.")):
+    if not kind.startswith(("key.", "budget.", "task.")):
         fields(payload, "mission")
     require(payload.get("mission") == state.mission, "SCOPE", "mission mismatch")
+    state = advance(state, context.height)
     receipt = Receipt(
         text(command["id"], limit=80),
         context.actor.identity,
         integer(command["nonce"], low=1),
         context.command_digest,
-        kind != "budget.reserve",
+        kind not in {"budget.reserve", "task.admit", *WORKER_COMMANDS},
     )
     if kind == "journal.rollover":
         journal, archive = rollover(state.journal, receipt)
@@ -136,13 +148,37 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
     if duplicate:
         return advance(state, context.height), None
     if kind.startswith("budget."):
+        require(
+            kind != "budget.settle"
+            or not any(task.ticket == payload.get("ticket") for task in state.tasks),
+            "BUDGET",
+            "task-attached funding must settle through task lifecycle",
+        )
         budget = change_budget(
             state.budget, kind, payload, request=receipt.request, running=state.mode == "running"
         )
         return replace(state, budget=budget, journal=journal, height=context.height), None
+    if kind.startswith("task."):
+        budget, tasks = change_tasks(
+            state.budget,
+            state.tasks,
+            kind,
+            payload,
+            context,
+            request=receipt.request,
+            mode=state.mode,
+            mission=state.mission,
+            credentials=state.credentials,
+        )
+        validate_tasks(budget, tasks)
+        return replace(
+            state, budget=budget, tasks=tasks, journal=journal, height=context.height
+        ), None
     if kind.startswith("key."):
         credentials = change_keys(state.credentials, kind, payload, context)
-        return replace(state, credentials=credentials, journal=journal, height=context.height), None
+        return advance(
+            replace(state, credentials=credentials, journal=journal), context.height
+        ), None
     mode = {"mission.pause": "paused", "mission.drain": "draining", "mission.resume": "running"}[
         kind
     ]
