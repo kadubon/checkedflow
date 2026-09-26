@@ -38,6 +38,10 @@ REQUIRED = [
 SMOKE = """
 import importlib.resources as r, json, runpy, sys
 import checkedflow
+from pathlib import Path
+origin = Path(checkedflow.__file__).resolve().relative_to(Path(sys.prefix).resolve())
+assert "site-packages" in origin.parts
+print("Installed import origin:", origin.as_posix())
 from checkedflow.runtime import Runtime
 from checkedflow.serialization import decode
 from checkedflow.wire import dumps, loads
