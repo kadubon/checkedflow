@@ -1,7 +1,7 @@
 # Operational identity boundary
 
 Status: **SOURCE-TESTED AUTHENTICATION PRIMITIVE**. The complete v2 work state machine,
-managed signing service, snapshot bootstrap and gateway integration are still pending. This API
+snapshot bootstrap and gateway integration are still pending. This API
 does not turn a v1 node into an operational v2 deployment.
 
 The initial [control runtime](operational-control.md) now connects this boundary to authenticated
@@ -38,7 +38,8 @@ Worker role checks also require exact mission scope. No bearer token or payload 
 
 `Signer.sign(message)` is a typed boundary for local or managed Ed25519 signing. The caller supplies
 an explicitly selected identity/revision; the adapter returns the signature over those exact bytes.
-No implemented Vault integration or non-exporting custody guarantee is claimed yet. `sign_command`
+The [Vault Transit adapter](managed-signer.md) now verifies a pinned service version and public-key
+binding; its disposable service test is not a hardware or production-custody guarantee. `sign_command`
 checks the signature size and builds bounded portable bytes; receiving authentication independently
 verifies the signature using committed public keys.
 

@@ -2809,6 +2809,24 @@
         "docs/key-lifecycle.md"
       ],
       "scope": "Twelve lifecycle cases covering governed scheduling/revocation, exact possession, nonce continuity, revoked pending-key replacement, nonresurrection, bounded revision retention, local persistence and signed replay. Not full key archival, work-level compromise quarantine, validator rotation or managed custody."
+    },
+    {
+      "id": "vault-transit-signer",
+      "status": "INTEGRATION_TESTED",
+      "implementation": [
+        "src/checkedflow/vault_signer.py",
+        "scripts/fetch_vault.py",
+        "scripts/qualify_signer.py",
+        ".github/workflows/workflow.yml"
+      ],
+      "tests": [
+        "tests/test_vault_signer.py",
+        "tests/test_vault_service.py"
+      ],
+      "evidence": [
+        "docs/managed-signer.md"
+      ],
+      "scope": "Five protocol-server cases and one real pinned Vault 2.1.1 Windows TLS process case, including governed application rotation. Final installed-wheel and hosted Linux results require separate inspection. Not hardware/production custody, full G4, or multi-host qualification."
     }
   ],
   "observations": [
@@ -2847,6 +2865,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36208880655",
       "conclusion": "success",
       "scope": "Initial key lifecycle, hosted matrix and existing infrastructure cases. Predates pending-key recovery."
+    },
+    {
+      "source": "6febbe6385c564b66261390a880594e1228bd7f2",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36209264395",
+      "conclusion": "success",
+      "scope": "Pending-key recovery, hosted matrix and existing infrastructure cases. Predates managed signer."
     }
   ]
 }

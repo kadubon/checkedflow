@@ -2,8 +2,10 @@
 
 Status: **UNRELEASED, SOURCE-TESTED COMPONENT**. Application-key scheduling and revocation now
 execute through the initial v2 control runtime and its local atomic store. Full work/evidence
-quarantine, archived key registries, managed signing, validator replacement and network deployment
+quarantine, archived key registries, validator replacement and network deployment
 remain required. These commands do not change CometBFT validator keys or signing-state files.
+The [managed signer adapter](managed-signer.md) now supports exact Vault Transit signatures and
+possession proofs; production custody and multi-host qualification are still separate obligations.
 
 ## Authority and ownership
 
@@ -117,6 +119,6 @@ rejection, mixed revisions, exact possession binding, inadequate quorum, key reu
 lost-signer and pending-key recovery, nonce continuity, preservation of revoked history, saturation
 headroom, local reopen and authenticated replay. Generated bounded sequences independently probe
 old signing intervals to detect accidental extension. Separate mutations remove possession, activation
-and retirement checks
-to confirm that these tests detect their absence. These are application-level tests. No managed
-signer, hardware custody, independent organizational operation or validator rotation is established.
+and retirement checks to confirm that these tests detect their absence. These are application-level
+tests. The separate managed-signer case does not establish hardware custody, independent
+organizational operation or validator rotation.

@@ -111,6 +111,24 @@ and test the final increment. None of these development artifacts is authorized 
 
 ## Next implementation order
 
+The [Vault Transit signer](managed-signer.md) now implements exact-message signing with an explicit
+provider version and committed public-key binding. Five protocol-server cases cover TLS, timeouts,
+malformed responses, secret redaction and authority mismatch. A separate real Vault 2.1.1 process
+case passed on Windows Python 3.12.10, including TLS certificate validation, non-export policy,
+least-privilege denial, provider rotation, governed CheckedFlow rotation, token revocation and outage.
+The combined focused run passed six cases in 11.02 seconds. The final source suite passed 252 tests
+in 47.80 seconds, all static checks and nineteen selected mutations; nine infrastructure/service
+cases were deselected in that source-only run. The real signer case was executed separately.
+The adapter reached 100% statement/branch coverage in its focused protocol suite.
+
+The installed-wheel qualification script and Linux CI job are implemented with pinned binary checks,
+fresh environment import verification and finite process-tree cleanup. Their final artifact/CI
+results must be inspected separately; source service success alone does not establish them. None of
+these component results qualifies the whole G4 gate, production custody or operational deployment.
+
+The [pending-key recovery CI run](https://github.com/kadubon/checkedflow/actions/runs/36209264395)
+succeeded for `6febbe6385c564b66261390a880594e1228bd7f2`. It predates the managed signer increment.
+
 Pending-key recovery now permits a new governed revision after revoking a lost pending key,
 without waiting for its planned activation. Replacement shortens or preserves older retirement
 boundaries and cannot revive an expired key. Three additional lifecycle cases cover actual local

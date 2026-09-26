@@ -26,6 +26,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [Repository patch boundary](repository-patch.md) | Which patch admission primitives exist and what remains unintegrated? |
 | [Operational identity](operational-identity.md) | How do v2 signed bytes separate key purposes, revisions and organization approvals? |
 | [Key lifecycle](key-lifecycle.md) | How are application keys scheduled, proven, activated, retired and revoked? |
+| [Managed signer](managed-signer.md) | How does pinned Vault Transit signing bind exact bytes to the committed public key? |
 | [Operational control](operational-control.md) | How do initial v2 control transitions and bounded epoch receipts behave? |
 | [Operational storage](operational-storage.md) | How are local control state, signed block history and archive batches committed atomically? |
 | [Artifact storage](artifact-storage.md) | How are bounded artifact bytes stored and checked separately from authorization and availability? |

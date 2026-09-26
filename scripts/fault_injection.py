@@ -44,6 +44,14 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "vault_signer.py",
+        "test_vault_signer.py",
+        "managed_signer_credential_binding",
+        "public_key.hex() == self.credential.public_key",
+        "True",
+        "test_metadata_and_signature_fail_closed",
+    ),
+    (
         "core/key_registry.py",
         "test_key_lifecycle.py",
         "retired_key_nonresurrection",
