@@ -137,3 +137,9 @@ For [settled-work retirement](docs/work-archive.md), pause and retire the reques
 selecting known terminal records. Use the [command schema](src/checkedflow/data/work-archive-command.schema.json).
 Never archive unknown liabilities to free capacity or interpret archived objects as currently
 reusable. Retrieve batches only against independently trusted commitments; archival is not erasure.
+
+For [worker supervision](docs/worker-supervision.md), route every command for one signing identity
+through the same durable coordinator. See the [SDK catalogue](src/checkedflow/data/worker-operations.json).
+Preserve pending bytes after transport uncertainty. Never restart already-started code because a
+completion reply was lost. Use the concrete gVisor repository executor; candidate-defined callbacks
+are not trusted supervisor adapters. No unattended worker service is supplied by this SDK increment.

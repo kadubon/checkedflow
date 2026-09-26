@@ -414,40 +414,82 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
         assert dict(acquired.journal.actors)[worker] == 1
         assert dict(acquired.journal.actors)[f"w{1 - owner}"] == 0
         assert all(code != "OK" or index == owner for index, code in receipts)
-        cluster.send("task.start", {"task": task, "fence": 1}, actor=worker, node=owner)
-        cluster.stop_node(3, crash=True)
-        state = cluster.client(owner).state()
-        assert state.tasks[0].owner == worker and state.tasks[0].status == "running"
-        assert state.budget.tickets[0].target == target
-        observation = observe_patch(base, patch, contract, cases, height=state.height)
-        assert observation.case_match is True and observation.contract_digest == target
-        evidence = validate(json.loads(json.dumps(asdict(observation))))
-        raw = dumps(evidence)
+        from checkedflow.repository_worker import EvidencePublisher, RepositoryExecutor
+        from checkedflow.worker_submission import Coordinator
+        from checkedflow.worker_supervisor import Supervisor
+
+        own = cluster.client(owner)
+        access = Access(worker, frozenset({"repository"}), frozenset({"read", "write"}))
+        artifacts = LocalStore(tmp_path / "evidence.sqlite")
+        executor = RepositoryExecutor(base, patch, contract, cases)
+        executed = []
+
+        def confirmed_submit(raw):
+            reply = own.submit(raw)
+            cluster.wait_height(int(reply["height"]), nodes=(owner,))
+            return reply
+
+        coordinator = Coordinator(
+            tmp_path / "worker-commands",
+            own.live_state,
+            confirmed_submit,
+            cluster.keys[(worker, 1)],
+            chain=cluster.initial.chain,
+            mission=cluster.initial.mission,
+            actor=worker,
+            revision=1,
+        )
+        worker_watchdog = Watchdog(
+            own.live_state,
+            chain=cluster.initial.chain,
+            mission=cluster.initial.mission,
+            max_read_age_ns=5_000_000_000,
+            max_stall_ns=5_000_000_000,
+        )
+        sample = worker_watchdog.poll()
+        cluster.wait_height(sample.height + 1)
+
+        def supervised_observation(state, attempt):
+            cluster.stop_node(3, crash=True)
+            supervisor.heartbeat(attempt.identity)
+            result = executor(state, attempt)
+            executed.append(result)
+            return result
+
+        supervisor = Supervisor(
+            tmp_path / "worker-execution",
+            coordinator,
+            worker_watchdog,
+            supervised_observation,
+            EvidencePublisher(artifacts, access),
+        )
+        assert supervisor.step(task) == "finished"
+        assert len(executed) == 1 and executed[0].outcome == "reported"
+        assert (
+            Supervisor(
+                tmp_path / "worker-execution",
+                coordinator,
+                worker_watchdog,
+                supervised_observation,
+                EvidencePublisher(artifacts, access),
+            ).step(task)
+            == "finished"
+        )
+        assert len(executed) == 1
+        raw = executed[0].evidence
+        evidence = json.loads(raw)
+        assert evidence["case_match"] is True and evidence["contract_digest"] == target
         reference = Reference(
             "sha256",
-            digest(evidence),
+            sha256(raw).hexdigest(),
             len(raw),
             "application/json",
             "evidence",
             "repository",
             target,
         )
-        access = Access(worker, frozenset({"repository"}), frozenset({"read", "write"}))
-        artifacts = LocalStore(tmp_path / "evidence.sqlite")
-        artifacts.put(reference, BytesIO(raw), access=access)
         assert artifacts.get(reference, access=access) == raw
-        finish = cluster.send(
-            "task.finish",
-            {
-                "task": task,
-                "fence": 1,
-                "outcome": "reported",
-                "evidence": reference.digest,
-            },
-            actor=worker,
-            node=owner,
-        )
-        cluster.wait_height(int(finish["receipt"]["height"]), nodes=(0, 1, 2))
+        cluster.wait_height(own.state().height, nodes=(0, 1, 2))
         assert cluster.client().state().budget.spent == 30
         watchdog = Watchdog(
             cluster.client().live_state,

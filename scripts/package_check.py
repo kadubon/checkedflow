@@ -37,6 +37,7 @@ REQUIRED = [
     "checkedflow/data/application-checkpoint.schema.json",
     "checkedflow/data/application-backup-vector.json",
     "checkedflow/data/application-recovery.json",
+    "checkedflow/data/worker-operations.json",
     "checkedflow/data/retention-backup-vector.json",
     "checkedflow/data/github-draft-plan.schema.json",
     "checkedflow/data/github-draft-vector.json",
@@ -214,6 +215,9 @@ for nonce, (kind, extra) in enumerate([
     work.apply(raw, height=nonce + 4)
 assert work.state.tasks[0].status == "finished" and work.state.budget.spent == 30
 assert decode_control(state_bytes(work.state)) == work.state
+from checkedflow.worker_submission import Coordinator
+from checkedflow.worker_supervisor import Supervisor, Outcome
+from checkedflow.repository_worker import RepositoryExecutor, EvidencePublisher
 from checkedflow.core.work_archive import WorkArchive
 from checkedflow.operational_codec import work_archive_bytes
 retirement = json.loads(

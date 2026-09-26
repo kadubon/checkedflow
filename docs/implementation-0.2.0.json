@@ -1711,15 +1711,19 @@
       "id": "R10-0459",
       "source_line": 459,
       "text": "Implement a persistent worker supervisor with bounded concurrency, backoff/jitter outside consensus, current-fence checks, and explicit heartbeat support where appropriate.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:durable-worker-supervision"
+      ]
     },
     {
       "id": "R10-0461",
       "source_line": 461,
       "text": "Use one active command-submission/nonce coordinator per signing identity. Prefer separate worker identities for independent workers. Do not introduce racing heartbeats and result submissions that consume the same actor nonce incorrectly.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:durable-worker-supervision"
+      ]
     },
     {
       "id": "R10-0463",
@@ -1727,7 +1731,8 @@
       "text": "Do not automatically rerun already-started uncertain work. Classify retryable failures and enforce finite retry/time/budget policies. Reuse the same logical operation identity for reconciliation; new IDs are not a recovery technique.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:bounded-isolated-task-ownership"
+        "component:bounded-isolated-task-ownership",
+        "component:durable-worker-supervision"
       ]
     },
     {
@@ -1756,15 +1761,18 @@
       "text": "- Pause blocks new dispatch, not historical reads.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:dispatch-freshness-watchdog"
+        "component:dispatch-freshness-watchdog",
+        "component:durable-worker-supervision"
       ]
     },
     {
       "id": "R10-0470",
       "source_line": 470,
       "text": "- Drain lets already safe work settle under a declared policy.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:durable-worker-supervision"
+      ]
     },
     {
       "id": "R10-0471",
@@ -1772,7 +1780,8 @@
       "text": "- Local emergency disable can stop the operator's dispatcher without quorum, but cannot fabricate a consensus revocation or authorize new work.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:dispatch-freshness-watchdog"
+        "component:dispatch-freshness-watchdog",
+        "component:durable-worker-supervision"
       ]
     },
     {
@@ -1788,7 +1797,8 @@
       "text": "- A stopped block height is not a wall-clock lease extension.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:dispatch-freshness-watchdog"
+        "component:dispatch-freshness-watchdog",
+        "component:durable-worker-supervision"
       ]
     },
     {
@@ -1797,7 +1807,8 @@
       "text": "During quorum outage or stale own-node state, stop new external dispatch based on a documented local freshness policy. Local watchdog clocks may inhibit execution; they must not alter deterministic consensus time or create authority. In-flight effects remain explicitly uncertain where necessary.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:dispatch-freshness-watchdog"
+        "component:dispatch-freshness-watchdog",
+        "component:durable-worker-supervision"
       ]
     },
     {
@@ -3457,6 +3468,41 @@
         "R13-0561"
       ],
       "scope": "Paused three-organization retirement of selected known terminal work from retired request epochs. Preserves cumulative charges and active reference pins; atomically commits authenticated batches, replays and restores them. No credential retirement, full dependency/effect graph, remote availability, automatic scheduling or complete G6 qualification."
+    },
+    {
+      "id": "durable-worker-supervision",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/worker_submission.py",
+        "src/checkedflow/worker_supervisor.py",
+        "src/checkedflow/repository_worker.py",
+        "src/checkedflow/data/worker-operations.json"
+      ],
+      "tests": [
+        "tests/test_worker_submission.py",
+        "tests/test_worker_supervisor.py",
+        "tests/test_repository_worker.py",
+        "tests/test_integration.py",
+        "scripts/fault_injection.py"
+      ],
+      "documentation": [
+        "docs/worker-supervision.md",
+        "docs/adr-0003-worker-submission.md"
+      ],
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ],
+      "requirements": [
+        "R10-0459",
+        "R10-0461",
+        "R10-0463",
+        "R10-0469",
+        "R10-0470",
+        "R10-0471",
+        "R10-0473",
+        "R10-0475"
+      ],
+      "scope": "Concurrency-one persistent worker SDK, original-byte nonce coordinator, bounded explicit retransmission, conservative interruption recovery, gVisor-only repository adapter and verified evidence publication. Does not provide an unattended scheduler, generation loop, cross-host identity leader election, coordinated journal recovery, effect authority, full G6 or complete release qualification."
     }
   ],
   "observations": [

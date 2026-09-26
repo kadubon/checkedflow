@@ -683,3 +683,50 @@ branch coverage. Ruff, strict mypy, Bandit, offline contracts and actionlint pas
 wheel and sdist installation checks, including signed retirement-vector replay and optional agent
 SDK smoke checks, passed outside the checkout. The source/distribution scan examined 657 members
 with zero findings. These local results do not qualify the new real-infrastructure case or release.
+
+
+## Durable worker submission and supervision increment
+
+The worker SDK now serializes all commands for a signing identity, persists original signed bytes
+before submission and confirms them through own-node receipts. Ambiguous sends block replacement
+requests; explicit retransmission is identical-byte and bounded to three transport calls. A complete
+immediately preceding request archive anchored in current state can establish commitment or retired
+nonmembership. Empty live queries cannot establish absence. Local journals preserve observation
+floors and exclude concurrent local callers without pretending to elect a cross-host leader.
+
+The concurrency-one supervisor connects committed lease/start, a durable pre-invocation record,
+current freshness/fence checks, one bounded trusted observer, persisted results, scoped verified
+evidence publication and signed completion. Restart never reruns already-started code. Missing
+results become unknown; saved results can be republished without execution. Optional heartbeats
+share the same nonce coordinator. The concrete repository adapter invokes only the existing
+fail-closed gVisor observer and binds its exact funded contract. A report is not verifier acceptance.
+
+The initial targeted source run passed 37 cases with 100% statement/branch coverage for all three
+new modules. It included actual child-process exits during execution and before publication.
+Additional process-exit cases for commands before/after remote commitment and an exclusion test
+were then added. A whole-source check initially flagged two redundant type-narrowing assertions;
+these were replaced by casts after the existing mandatory checks, without suppressing Bandit.
+Final source and exact-artifact infrastructure results are recorded separately.
+
+The installed-wheel CometBFT/gVisor case now drives the actual patch through the new supervisor,
+interrupts one node before observation, sends a heartbeat through the same coordinator, publishes
+verified evidence and reopens the supervisor without invoking the observer again. Merely adding
+that test does not establish a passing execution. Unattended scheduling, bounded generation/reuse
+loops, full dependency/effect graphs, coordinated worker-journal restore, protected bootstrap,
+versioned migration, deployment/observability and complete G1-G7 qualification remain required.
+
+
+A runner audit identified an additional release-critical gap: a hard kill of the supervising process
+can bypass its container cleanup and wall-clock enforcement. Durable worker journals inhibit duplicate
+execution but do not terminate an orphan. A separately supervised, ownership-checked orphan recovery
+path and actual live-container crash qualification remain required. The benign process-exit fixtures
+must not be cited as proof of sandbox termination after supervisor death.
+
+
+Final local validation for this increment passed 603 source cases on Windows/Python 3.12.10,
+with three Linux-only descriptor skips and 19 infrastructure/service cases separately selected.
+All 50 selected invariant mutants were detected. All three new worker boundaries reached 100%
+statement/branch coverage. Static checks, isolated wheel/sdist installations and agent SDK smoke
+checks passed; the source/distribution publication scan examined 679 members with zero findings.
+These results do not qualify orphan-container cleanup or replace exact-source real infrastructure
+execution. The publication interlock remains closed.

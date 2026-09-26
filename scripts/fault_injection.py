@@ -44,6 +44,30 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "worker_supervisor.py",
+        "test_worker_supervisor.py",
+        "interrupted_worker_nonrepeat",
+        "if row is None and started_here:",
+        "if True:",
+        "test_interrupted_observer_never_runs_again",
+    ),
+    (
+        "worker_supervisor.py",
+        "test_worker_supervisor.py",
+        "completion_fence_binding",
+        "and task.fence == expected_fence",
+        "and True",
+        "test_corrupt_publisher_and_changed_completion_fence_are_rejected",
+    ),
+    (
+        "worker_submission.py",
+        "test_worker_submission.py",
+        "bounded_exact_retransmission",
+        "attempts < 3",
+        "True",
+        "test_retransmission_is_explicit_finite_and_never_resigns",
+    ),
+    (
         "core/work_archive.py",
         "test_work_archive.py",
         "retirement_preserves_spend",

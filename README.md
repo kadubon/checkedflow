@@ -28,8 +28,9 @@ specific artifact; late contradictions, withdrawal or revoked evidence keys quar
 For example, the repository fixture checks an invoice quantity fix by comparing declared inputs
 and expected outputs outside the candidate process. This produces an observation that a verifier
 can attest separately. [Reuse preparation](docs/repository-reuse.md) reads and validates exact bytes
-again and rejects a changed base or destination. Supervised dispatch and permission to open a pull
-request still require further integrations. See the
+again and rejects a changed base or destination. The [bounded worker SDK](docs/worker-supervision.md) now connects owned tasks to durable command
+submission, one gVisor observation and evidence publication without replaying interrupted code.
+The unattended scheduler and permission to open a pull request still require further integrations. See the
 [dispatch watchdog](docs/dispatch-watchdog.md) for local inhibition when node reads or committed
 height progress become stale, the
 [GitHub draft provider guide](docs/github-drafts.md) for the disabled-by-default transport component,

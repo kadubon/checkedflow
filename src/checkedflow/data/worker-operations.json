@@ -1,0 +1,93 @@
+{
+  "version": "checkedflow/worker-sdk/v1",
+  "protocol": "checkedflow/v2",
+  "concurrency_per_identity": 1,
+  "administrative_keys": false,
+  "candidate_host_execution": false,
+  "operations": [
+    {
+      "api": "Coordinator.send",
+      "writes": [
+        "signed pending bytes",
+        "attempt count",
+        "observation floors"
+      ],
+      "network": [
+        "managed signer if configured",
+        "own-node submission and observation"
+      ],
+      "retry": "Reconcile first; another logical request cannot overtake pending intent."
+    },
+    {
+      "api": "Coordinator.reconcile",
+      "writes": [
+        "resolution and observation floors"
+      ],
+      "network": [
+        "own-node observation"
+      ],
+      "results": [
+        "idle",
+        "pending",
+        "confirmed",
+        "retired_absent"
+      ],
+      "retry": "Reads can repeat. Nonmembership requires the complete preceding epoch anchored in the current root."
+    },
+    {
+      "api": "Coordinator.retransmit",
+      "writes": [
+        "durable transmission count",
+        "resolution"
+      ],
+      "network": [
+        "own-node submission and observation"
+      ],
+      "retry": "Identical original bytes only, at most three total transport calls."
+    },
+    {
+      "api": "Supervisor.step",
+      "writes": [
+        "pre-invocation attempt",
+        "bounded result evidence",
+        "command journal",
+        "scoped evidence store"
+      ],
+      "network": [
+        "configured signer",
+        "own node",
+        "configured artifact store"
+      ],
+      "retry": "Persisted results can be republished. Started or uncertain code is never automatically re-executed."
+    },
+    {
+      "api": "Supervisor.heartbeat",
+      "writes": [
+        "command journal"
+      ],
+      "network": [
+        "configured signer",
+        "own node"
+      ],
+      "retry": "Uses the same nonce coordinator. No automatic heartbeat thread."
+    },
+    {
+      "api": "Watchdog.stop",
+      "writes": [
+        "process-local stop latch"
+      ],
+      "network": [],
+      "retry": "Idempotent local inhibition; does not cancel in-flight execution or revoke consensus authority."
+    }
+  ],
+  "errors": {
+    "BUSY": "Another local caller holds the identity or execution lock; use bounded scheduling.",
+    "OUTCOME_UNKNOWN": "Preserve pending bytes and reconcile; do not invent a replacement request.",
+    "STALE": "Stop dispatch and restore a current own-node observation.",
+    "NOT_READY": "Require fresh running observations with committed-height progress.",
+    "FENCE": "Retain evidence and inspect current ownership; do not execute under another fence.",
+    "LIMIT": "Do not reset counters to retry; reconcile the original operation.",
+    "RETIRED_REQUEST": "The closed epoch cannot admit this original request.",
+    "STOPPED": "Local emergency inhibition is latched; operator-controlled restart must warm readiness again."
+  }
+}
