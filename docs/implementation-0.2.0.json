@@ -2864,9 +2864,11 @@
       "evidence": []
     },
     "G6": {
-      "status": "BLOCKED",
-      "reason": "Four-host authorized Linux inventory not supplied. Harness implementation remains required.",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "reason": "The owner authorized four disposable Linux VMs; installed-wheel cross-kernel component experiments are recorded. Full lifecycle/fault qualification, maintained deployment harness and protected exact-artifact evidence remain incomplete. Shared physical/WSL host and administrator do not establish organizational independence.",
+      "evidence": [
+        "docs/vm-laboratory-2026-09-26.md"
+      ]
     },
     "G7": {
       "status": "NOT_STARTED",

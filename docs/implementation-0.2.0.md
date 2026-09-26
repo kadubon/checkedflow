@@ -59,9 +59,12 @@ authenticate a test result or authorize publication; G1–G7 remain unqualified.
 
 ## Infrastructure dependencies and execution limits
 
-No four-host inventory or disposable GitHub effect target has been supplied at baseline.
-G6 and live-effect qualification therefore have unavailable prerequisites. Independent
-implementation continues; neither mocked tests nor four colocated containers can satisfy them.
+At baseline, no four-host inventory or disposable GitHub effect target had been supplied.
+The owner subsequently authorized both. The disposable GitHub component test is recorded below;
+four local Linux VMs now have actual installed-wheel component fault observations in the
+[dated VM report](vm-laboratory-2026-09-26.md). Infrastructure availability no longer blocks this
+work. Full G6 and end-to-end effect qualification remain incomplete; neither mocked tests nor
+four colocated containers can satisfy them.
 No paid resources, model calls, model downloads or production-target writes are authorized.
 
 Initial source baseline: one Windows Python 3.12 run, at most 15 minutes, no candidate execution.
@@ -566,3 +569,26 @@ The source/distribution scan examined 618 members with zero findings. These arti
 uncommitted source based on 4012ee8, preceding this evidence update; they retain development
 0.1.0 metadata and cannot replace the published baseline. The extended real-node test requires
 its own exact-source hosted run, separately from the installed cold-start smoke.
+
+### Owner-authorized Linux VM experiments
+
+The final preceding source `f695b870311e44733aabb90c6d2f64d98a1b8365` passed all component jobs
+in [run 36230700551](https://github.com/kadubon/checkedflow/actions/runs/36230700551); publication
+was skipped. Four disposable QEMU/KVM environments were then created under the owner's new
+authorization, with separate kernels and disks on one physical/WSL host and one administrator.
+The same CI wheel was installed in all four guests and an isolated controller environment.
+
+Actual gVisor preflights passed on all four. Two successful cross-kernel experiments covered
+agreement, competing acquisition, one-node interruption, two-node quorum loss, watchdog
+inhibition and recovery. One used process crashes; the other disabled guest peer interfaces
+while services remained running. All four states and budgets agreed after each recovery.
+The first process-fault attempt failed in the operator helper and is retained as failed.
+Details, artifact identities, corrections and limitations are in the
+[dated VM report](vm-laboratory-2026-09-26.md). All guests and the virtual network helper were
+stopped cleanly, preserving private disks and evidence for a future bounded session.
+
+G6 is now `IN_PROGRESS`, not blocked by missing host permission or inventory. It has not passed:
+the maintained deployment harness, delayed replies, storage/key-service outages, replacement,
+coordinated restoration, upgrades and complete declared workload remain required. Private operator
+fixtures do not supply the deployment product or protected release evidence. Other incomplete
+implementation milestones remain unchanged. No 0.2.0 publication occurred.

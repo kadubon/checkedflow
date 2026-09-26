@@ -41,6 +41,10 @@ No throughput, latency, RPO or RTO result has yet been measured for this profile
 results must be separate fields. Operational readiness requires actual failure/recovery measurements,
 not inherited 0.1.0 results. A missing multi-host inventory blocks qualification, not implementation.
 
+The owner subsequently authorized a [four-VM local laboratory](vm-laboratory-2026-09-26.md).
+It supplies separate Linux node environments on one physical host. It does not establish independent
+operators or complete G6; the deployment lifecycle and remaining fault cases still require work.
+
 ## Exclusions and threats
 
 No dynamic organization membership, arbitrary repository execution, general program correctness,

@@ -23,6 +23,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [Releasing](releasing.md) | How are the exact tested files prepared for Trusted Publishing? |
 | [0.2 implementation](implementation-0.2.0.md) | What is being implemented and which gates remain open? |
 | [Proposed operational profile](operational-profile-0.2.md) | What workload and deployment must qualify before 0.2 release? |
+| [Four-VM experiment](vm-laboratory-2026-09-26.md) | What was observed on separate guest kernels, and which operational cases remain unqualified? |
 | [Repository patch boundary](repository-patch.md) | Which patch admission primitives exist and what remains unintegrated? |
 | [Operational identity](operational-identity.md) | How do v2 signed bytes separate key purposes, revisions and organization approvals? |
 | [Key lifecycle](key-lifecycle.md) | How are application keys scheduled, proven, activated, retired and revoked? |

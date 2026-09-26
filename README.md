@@ -20,6 +20,8 @@ Version **0.1.0** is an experimental reference implementation. Its complete demo
 
 The **0.2.0 development branch is not release-qualified**. It adds separate components for
 operational control, managed signing, artifact storage and bounded repository-patch checks.
+The [four-VM experiment report](docs/vm-laboratory-2026-09-26.md) records actual process and network
+fault observations, alongside the operational cases still required before release.
 The v2 path also includes signed task ownership, a separate CometBFT adapter and
 [funded organizational verification](docs/work-acceptance.md). A passing quorum can accept a
 specific artifact; late contradictions, withdrawal or revoked evidence keys quarantine it.
