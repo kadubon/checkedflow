@@ -343,3 +343,9 @@ has 100% line and branch coverage. Wheel/sdist isolated installation and package
 passed on Windows/Python 3.12. The successor fixture's Git commit ID and changed SHA-256 tree
 bindings were independently exercised without executing candidate code. Live reuse qualification
 is still required for the current source revision.
+
+Source 6aceeac32622ff1cac83c4883c7cda0a8bbc9169 subsequently passed run 36217592717: all six
+platform/Python jobs, real managed signer and all 17 required single-host infrastructure cases.
+That includes current-object reuse preparation, withdrawal rejection and two content-distinct
+bases with separately funded real gVisor verification. This qualifies those component mechanisms;
+it does not supply S3, retention pins, supervised dispatch or the full operational release gates.

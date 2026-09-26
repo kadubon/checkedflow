@@ -2934,7 +2934,7 @@
     },
     {
       "id": "exact-repository-reuse-preparation",
-      "status": "SOURCE_TESTED",
+      "status": "INTEGRATION_TESTED",
       "implementation": [
         "src/checkedflow/repository_reuse.py",
         "src/checkedflow/data/repository-tree.schema.json"
@@ -2946,7 +2946,7 @@
       "evidence": [
         "docs/repository-reuse.md"
       ],
-      "scope": "Snapshot-bound exact target and current scoped byte validation, immutable in-memory patch reconstruction, typed evidence consistency and fresh qualification for changed bases. Local source/provider fault tests; mandatory live changed-base case remains pending exact-source CI. Not supervised dispatch, replicated availability receipts, retention or complete lifecycle reuse accounting."
+      "scope": "Snapshot-bound exact target/current scoped byte validation, immutable patch reconstruction, typed evidence consistency and changed-base fresh qualification. Source/provider fault cases and exact-wheel single-host CometBFT/gVisor two-base qualification passed at 6aceeac. Not supervised dispatch, replicated availability receipts, retention or complete lifecycle reuse accounting."
     }
   ],
   "observations": [
@@ -3039,6 +3039,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36216918034",
       "conclusion": "success",
       "scope": "Acceptance evidence and release-procedure documentation follow-up passed all platform, installed-wheel infrastructure and managed signer jobs. Predates repository reuse preparation and changed-base qualification."
+    },
+    {
+      "source": "6aceeac32622ff1cac83c4883c7cda0a8bbc9169",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36217592717",
+      "conclusion": "success",
+      "scope": "All six platform/Python jobs, real managed signer and 17 installed-wheel infrastructure cases passed, including available-object reuse, withdrawal rejection and two content-distinct bases with fresh funded four-organization verification. Not full G1-G7 qualification; publication denied."
     }
   ]
 }
