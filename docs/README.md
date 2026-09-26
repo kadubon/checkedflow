@@ -38,6 +38,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [S3 storage](s3-storage.md) | How do conditional writes, verified reads, lost replies and real-service qualification work? |
 | [Retention](retention.md) | How do persistent roots, grace periods and tombstones protect bytes during reclamation? |
 | [Retention backups](retention-backup.md) | How are catalog snapshots restored without trusting their own metadata or overwriting a live store? |
+| [GitHub draft provider](github-drafts.md) | How are exact pre-staged drafts created once locally and reconciled without automatic resend? |
 
 For agents, [skills.md](../skills.md) provides the reading order, machine contracts and validation
 commands. Schemas describe structural contracts; transition rules also impose semantic invariants.

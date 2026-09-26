@@ -32,6 +32,8 @@ REQUIRED = [
     "checkedflow/data/retention-vectors.json",
     "checkedflow/data/retention-checkpoint.schema.json",
     "checkedflow/data/retention-backup-vector.json",
+    "checkedflow/data/github-draft-plan.schema.json",
+    "checkedflow/data/github-draft-vector.json",
     "checkedflow/data/key-command.schema.json",
     "checkedflow/data/budget-command.schema.json",
     "checkedflow/data/task-command.schema.json",
@@ -280,6 +282,25 @@ from mcp import Client
 from checkedflow.agents.a2a import create_app
 from checkedflow.agents.gateway import Gateway
 from checkedflow.agents.mcp import create_server
+from checkedflow.github_drafts import Drafts, Token, decode_plan
+from checkedflow.core.values import Failure
+from pathlib import Path
+from tempfile import TemporaryDirectory
+import importlib.resources as resources, json
+vector = json.loads(
+    resources.files("checkedflow").joinpath("data/github-draft-vector.json").read_text()
+)
+from checkedflow.wire import dumps
+with TemporaryDirectory(prefix="checkedflow-disabled-draft-") as directory:
+    journal = Path(directory) / "never-created.sqlite"
+    provider = Drafts("owner/fixture", 42, "owner", Token("fixture"), journal)
+    try:
+        provider.dispatch(decode_plan(dumps(vector)))
+    except Failure as error:
+        assert error.code == "DISABLED"
+    else:
+        raise AssertionError("draft provider must default to disabled")
+    assert not journal.exists()
 class NoNode:
     def state(self):
         raise RuntimeError("discovery must not require ledger authority")
@@ -352,7 +373,7 @@ def main() -> None:
                     "install",
                     "--python",
                     str(executable),
-                    str(artifact) + "[agents,distributed]",
+                    str(artifact) + "[agents,distributed,effects]",
                 ],
                 directory,
             )

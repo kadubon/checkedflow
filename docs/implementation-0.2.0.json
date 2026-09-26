@@ -2989,7 +2989,7 @@
     },
     {
       "id": "retention-catalog-backup",
-      "status": "INSTALLED_TESTED",
+      "status": "INTEGRATION_TESTED",
       "implementation": [
         "src/checkedflow/retention_backup.py",
         "src/checkedflow/data/retention-checkpoint.schema.json",
@@ -3004,7 +3004,25 @@
         "docs/retention-backup.md",
         "docs/retention.md"
       ],
-      "scope": "Consistent portable export and staged new-directory restoration bound to an independently authenticated checkpoint and current revision floor. Thirty-nine source cases, 100% line/branch coverage, process-crash rejection and two targeted mutations. Isolated wheel/sdist and real Windows/Linux S3 restoration passed for development wheel c00ca87268d7c0bccbd320d44c36a11ca1c5c8056db189ba4c2392ed8a5c4ff2, dirty harness based on d5109ec. Does not supply protected checkpoint custody, consensus state sync, coordinated service recovery, provider availability or exclusive-controller ownership."
+      "scope": "Consistent portable export and staged new-directory restoration bound to an independently authenticated checkpoint and current revision floor. Thirty-nine source cases, 100% line/branch coverage, process-crash rejection and two targeted mutations. Isolated wheel/sdist and real Windows/Linux S3 restoration passed for development wheel c00ca87268d7c0bccbd320d44c36a11ca1c5c8056db189ba4c2392ed8a5c4ff2, dirty harness based on d5109ec. Does not supply protected checkpoint custody, consensus state sync, coordinated service recovery, provider availability or exclusive-controller ownership. Hosted run 36227112812 at 7a7f13f subsequently passed all component jobs; this predates the GitHub provider."
+    },
+    {
+      "id": "github-draft-provider",
+      "status": "INSTALLED_TESTED",
+      "implementation": [
+        "src/checkedflow/github_drafts.py",
+        "src/checkedflow/data/github-draft-plan.schema.json",
+        "src/checkedflow/data/github-draft-vector.json"
+      ],
+      "tests": [
+        "tests/test_github_drafts.py",
+        "scripts/qualify_github_draft.py",
+        "scripts/package_check.py"
+      ],
+      "documentation": [
+        "docs/github-drafts.md"
+      ],
+      "scope": "Disabled-by-default provider for pre-staged exact Git commits, immutable destination binding, Actions-disabled preflight, durable serialized send claim, historical receipt and read-only unknown reconciliation. Thirty-eight source cases including real local HTTP lost reply and actual process exit, 100% line/branch coverage. Exact development wheel f999ae3bd82cbf1e155b0eda59225eee5864778d2d74b00e91df867ba1c354d0 passed installed smoke and authorized real disposable GitHub create/reconcile/operator-cleanup. Local uncommitted source based on 7a7f13f. Not consensus effect authorization, patch staging, runtime compensation, scoped production credential custody or full G3 qualification."
     }
   ],
   "observations": [
@@ -3127,6 +3145,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36221287294",
       "conclusion": "success",
       "scope": "Retention increment passed six platform/Python jobs, installed-wheel CometBFT/gVisor, real Vault and real Windows/Linux S3 service checks. Publication denied. Predates the portable catalog backup implementation."
+    },
+    {
+      "source": "7a7f13fdbb556659ff8cbee8cdd39ef0f21b542c",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36227112812",
+      "conclusion": "success",
+      "scope": "Portable retention-backup increment passed all six platform/Python jobs, installed-wheel CometBFT/gVisor, real Vault and both real S3 jobs. Dependency audit found no known vulnerabilities; publication scan found no issues. Publication denied. Predates GitHub draft provider."
     }
   ]
 }

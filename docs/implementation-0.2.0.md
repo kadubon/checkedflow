@@ -479,3 +479,47 @@ still include sustained state archival, residual propagation, supervised work, v
 integration, external-effect recovery, deployment/observability and G1–G7 qualification. The
 required approved four-host inventory and disposable GitHub effect target remain unavailable.
 The publication interlock remains active; no 0.2.0 release is claimed.
+
+### Exact-destination GitHub draft provider
+
+Backup source 7a7f13fdbb556659ff8cbee8cdd39ef0f21b542c passed
+[run 36227112812](https://github.com/kadubon/checkedflow/actions/runs/36227112812), including all
+six Windows/Linux and Python-version jobs, actual installed-wheel CometBFT/gVisor, Vault and both
+S3 jobs. Dependency scanning found no known vulnerabilities. This predates the provider below.
+
+The owner subsequently authorized creation of a disposable GitHub target. A separate private
+repository was created, Actions disabled, and its immutable numeric ID retained locally. The
+earlier missing-target observation is resolved. Four-host inventory remains unavailable.
+
+The [draft provider](github-drafts.md) supplies a concrete, disabled-by-default adapter for exact
+pre-staged commits. Repository name and numeric identity are bound both in the plan and configured
+destination. Preflight checks Actions policy, both branches, parent and Git tree. An SQLite claim
+commits before sending; repeated requests cannot automatically POST again. Read reconciliation
+keeps absence uncertain and refuses foreign, modified, closed or non-draft objects. Confirmation
+remains a historical observation; a different object cannot replace the original receipt.
+
+Thirty-eight provider tests passed at 100% line/branch coverage. They include protocol fixtures,
+a real loopback HTTP server dropping a successful reply, concurrent claim acquisition, malformed
+responses, changed policy/content, Boolean identity rejection and an actual process exit before
+send. The full source check passed 464 cases in 94.82 seconds, with three Linux-only filesystem
+skips and 19 infrastructure/service cases selected separately. All static checks and 40 selected
+invariant mutations passed. A source/distribution publication scan checked 611 members with no
+findings. These are automated component checks, not independent penetration-test results.
+
+The development wheel `f999ae3bd82cbf1e155b0eda59225eee5864778d2d74b00e91df867ba1c354d0`
+and sdist `a63a6dbbb269de5d9ba5220497f2e01197a84b55ca1653c1bb51f917c62bb236` passed isolated
+installation tests. The same wheel was installed separately outside the checkout; its package
+files were compared byte-for-byte with the archive before an actual GitHub provider smoke.
+That smoke created one real draft, retained the same receipt on duplicate dispatch, reconciled
+the original draft, closed it through explicit operator cleanup, and removed its unchanged owned
+branch. The four bounded development fixture runs, including earlier revisions, were all cleaned
+up; none merged or executed candidate code. Their private journals and provider object identities
+remain local. The final recorded smoke used Windows/Python 3.12.10 and API version 2026-03-10,
+with uncommitted source based on 7a7f13f. Exact-source hosted CI remains a separate check.
+
+The fixture stages inert text and uses the operator's existing `gh` credential. It does not prove
+least-privilege runtime custody, consensus authorization, accepted-patch-to-Git staging, governed
+compensation or complete external-effect recovery. Those integrations remain required before G3
+or the complete operational profile can pass. The new `effects` extra adds HTTPX without changing
+the base SDK dependency boundary. No runtime-driven production write, 0.2.0 publication, paid
+provisioning or companion-project modification has occurred.

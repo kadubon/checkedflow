@@ -114,3 +114,10 @@ revision floor from independently protected operator records. Decoding the packa
 Restore into a new directory; never rename an interrupted pending database into service. Stop the
 old controller before activating its replacement. Catalog restoration performs no provider I/O
 and is not consensus state sync or evidence that referenced bytes are available.
+
+The [GitHub draft provider](docs/github-drafts.md) is a privileged component, disabled by default.
+Its [plan](src/checkedflow/data/github-draft-plan.schema.json) is intent metadata, not authorization.
+Never give the token or journal to candidate code. Do not recreate a journal or use a new operation
+to retry an unknown POST. Read reconciliation cannot treat absence as permission to resend.
+The operator fixture writes to a real repository: run it only against an explicitly authorized
+disposable target. Its staging/cleanup are not a completed runtime effect or compensation workflow.

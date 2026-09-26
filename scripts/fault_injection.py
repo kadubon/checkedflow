@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "github_drafts.py",
+        "test_github_drafts.py",
+        "draft_only_observation",
+        'row.get("draft") is True',
+        "True",
+        "test_existing_changed_or_foreign_object_cannot_be_adopted",
+    ),
+    (
+        "github_drafts.py",
+        "test_github_drafts.py",
+        "draft_ci_policy",
+        'policy.get("enabled") is False',
+        "True",
+        "test_preflight_refuses_changed_policy_or_content",
+    ),
+    (
         "retention_backup.py",
         "test_retention_backup.py",
         "backup_exact_digest",

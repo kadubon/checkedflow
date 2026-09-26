@@ -19,6 +19,7 @@ Repository = "https://github.com/kadubon/checkedflow"
 Documentation = "https://github.com/kadubon/checkedflow/tree/main/docs"
 
 [project.optional-dependencies]
+effects = ["httpx>=0.28,<1"]
 distributed = ["grpcio>=1.84,<2", "protobuf>=7.36.2,<8", "httpx>=0.28,<1"]
 agents = [
     "a2a-sdk[http-server,grpc]>=1.1.5,<2",
