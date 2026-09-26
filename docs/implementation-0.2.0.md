@@ -41,7 +41,7 @@ source revision, artifact hashes, environment and executed results before qualif
 | M1 | Separate v2 contracts, legacy replay, administrative reserve | M0 | IN PROGRESS |
 | M2 | Local/S3 storage, archive, checkpoints, snapshots, migration | M1 | IN PROGRESS |
 | M3 | Repository patches and independent bounded verification | M1–M2 | NOT_STARTED |
-| M4 | Role separation, scoped access, managed signer, rotation | M1–M2 | NOT_STARTED |
+| M4 | Role separation, scoped access, managed signer, rotation | M1–M2 | IN PROGRESS |
 | M5 | Worker supervision, effect journal, recovery | M2–M4 | NOT_STARTED |
 | M6 | Metrics, readiness, deployments, runbooks | M2–M5 | NOT_STARTED |
 | M7 | Installed, infrastructure, fault, load, multi-host qualification | M3–M6 | NOT_STARTED |
@@ -111,6 +111,19 @@ and test the final increment. None of these development artifacts is authorized 
 
 ## Next implementation order
 
+Pending-key recovery now permits a new governed revision after revoking a lost pending key,
+without waiting for its planned activation. Replacement shortens or preserves older retirement
+boundaries and cannot revive an expired key. Three additional lifecycle cases cover actual local
+reopen/replay, bounded generated operation sequences and nonresurrection. The final source check
+passed 247 tests in 39.20 seconds on Windows Python 3.12.10, all static checks and eighteen selected
+mutations; eight infrastructure cases were deselected. The revised key registry reached 100%
+statement/branch coverage in the focused twelve-case suite. This closes the pending-replacement
+limitation recorded below; key-history archival and the other operational integrations remain open.
+
+The [initial key-lifecycle CI run](https://github.com/kadubon/checkedflow/actions/runs/36208880655)
+succeeded for `ab9a2009313ed2f031ca94e011fc03953fd5a958`. It predates pending-key recovery and cannot
+qualify this later change or replace the new operational gates.
+
 The [application-key lifecycle](key-lifecycle.md) now connects governed scheduling/revocation,
 exact proposal-bound possession proofs, future-height activation, nonce continuity and persistent
 signed replay. The nine lifecycle cases and existing source suite passed together: 244 tests in
@@ -118,9 +131,10 @@ signed replay. The nine lifecycle cases and existing source suite passed togethe
 also reject malformed revocation reasons with protocol failures rather than Python type errors.
 The final run detected all seventeen selected mutations and passed all static checks.
 Key-registry and authentication coverage reached 100% statements and branches in the focused suite.
-This is not complete operational rotation: retained history is bounded at 1,024 revisions, a revoked
-pending revision cannot be replaced before its scheduled activation, and work-level compromise
-quarantine, registry archival, validator rotation and managed custody remain pending.
+At that increment, a revoked pending revision could not be replaced before its scheduled activation;
+the recovery change above removes that restriction. Complete operational rotation still requires
+work-level compromise quarantine, registry archival, validator rotation and managed custody.
+Retained history is currently bounded at 1,024 revisions.
 
 The [artifact-store CI run](https://github.com/kadubon/checkedflow/actions/runs/36208135291) succeeded
 for `9a1f9ed66bd0f8bfd37d44e83efeb9384c20d136`. It predates key-lifecycle changes and qualifies only

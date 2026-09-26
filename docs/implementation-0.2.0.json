@@ -2808,7 +2808,7 @@
       "evidence": [
         "docs/key-lifecycle.md"
       ],
-      "scope": "Governed application-key scheduling/revocation, exact new-key possession, nonce continuity, bounded revision retention, local persistence and signed replay. Not full key archival, prompt pending-key replacement, work-level compromise quarantine, validator rotation or managed custody."
+      "scope": "Twelve lifecycle cases covering governed scheduling/revocation, exact possession, nonce continuity, revoked pending-key replacement, nonresurrection, bounded revision retention, local persistence and signed replay. Not full key archival, work-level compromise quarantine, validator rotation or managed custody."
     }
   ],
   "observations": [
@@ -2841,6 +2841,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36208135291",
       "conclusion": "success",
       "scope": "Local artifact component, hosted matrix and existing infrastructure cases. Predates key lifecycle."
+    },
+    {
+      "source": "ab9a2009313ed2f031ca94e011fc03953fd5a958",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36208880655",
+      "conclusion": "success",
+      "scope": "Initial key lifecycle, hosted matrix and existing infrastructure cases. Predates pending-key recovery."
     }
   ]
 }

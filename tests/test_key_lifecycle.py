@@ -6,6 +6,8 @@ from importlib.resources import files
 
 import pytest
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from hypothesis import given, settings
+from hypothesis import strategies as st
 from jsonschema import Draft202012Validator
 from test_operational_identity import setup
 from test_operational_runtime import runtime_and_command
@@ -327,3 +329,105 @@ def test_key_command_schema_and_full_registry_state():
         loads(files("checkedflow").joinpath("data/operational-state.schema.json").read_bytes())
     )
     state_validator.validate(loads(state_bytes(runtime.state)))
+
+
+def test_lost_pending_revision_can_be_replaced_before_its_activation(tmp_path):
+    runtime, command, keys = runtime_and_command()
+    initial = runtime.state
+    store = Store(tmp_path / "pending.sqlite", initial)
+    proposal, lost_key = schedule(command, activation=100)
+    result = store.commit_block(1, [sign_command(proposal, keys)], previous_hash=runtime.state_hash)
+    revoke = command | {
+        "id": "0:lost-pending",
+        "nonce": 2,
+        "kind": "key.revoke",
+        "payload": {"mission": "m", "identity": "a", "revision": 2, "reason": "lost"},
+    }
+    result = store.commit_block(2, [sign_command(revoke, keys)], previous_hash=result.state_hash)
+    replacement, new_key = schedule(
+        command | {"id": "0:replace-pending", "nonce": 3}, revision=3, activation=5
+    )
+    result = store.commit_block(
+        3, [sign_command(replacement, keys)], previous_hash=result.state_hash
+    )
+    assert result.outcomes == ("OK",)
+    assert Store(store.path, initial).load() == store.load()
+    lineage = [item for item in store.load().credentials if item.identity == "a"]
+    assert lineage[0].retired_height == 5
+    assert lineage[1].revoked and lineage[1].activated_height == 100
+    assert lineage[2].activated_height == 5
+    # The original key still works before replacement, then loses authority exactly once.
+    control = command | {"id": "0:before", "nonce": 4, "kind": "mission.resume"}
+    result = store.commit_block(4, [sign_command(control, keys)], previous_hash=result.state_hash)
+    successor_keys = {k: v for k, v in keys.items() if k[0] != "a"} | {("a", 3): new_key}
+    after = control | {"id": "0:after", "nonce": 5, "revision": 3}
+    result = store.commit_block(
+        5,
+        [sign_command(after, successor_keys), sign_command(control, keys)],
+        previous_hash=result.state_hash,
+    )
+    assert result.outcomes == ("OK", "SIGNATURE")
+    restored = Store(store.path, initial)
+    assert restored.verify_history(expected_hash=result.state_hash) == restored.load()
+    runtime = Runtime(restored.load())
+    lost_signers = {k: v for k, v in keys.items() if k[0] != "a"} | {("a", 2): lost_key}
+    with pytest.raises(Failure, match="revoked"):
+        runtime.apply(sign_command(after | {"revision": 2}, lost_signers), height=100)
+
+
+@given(st.lists(st.integers(min_value=1, max_value=200), min_size=1, max_size=6))
+@settings(max_examples=25, deadline=None)
+def test_replacement_never_extends_a_previous_authority_interval(delays):
+    runtime, command, _ = runtime_and_command()
+    all_keys, _, _ = setup()
+    keys = {key: value for key, value in all_keys.items() if key[0] in "bcd"}
+    command.update(actor="b")
+    nonce = 0
+    for revision, delay in enumerate(delays, 2):
+        height = (revision - 2) * 3 + 1
+        nonce += 1
+        proposal, _ = schedule(
+            command | {"id": f"0:schedule-{revision}", "nonce": nonce},
+            revision=revision,
+            activation=height + delay,
+        )
+        before = {item.revision: item for item in runtime.state.credentials if item.identity == "a"}
+        runtime.apply(sign_command(proposal, keys), height=height)
+        for item in runtime.state.credentials:
+            if item.identity == "a" and item.revision in before:
+                old = before[item.revision]
+                assert item.revoked == old.revoked
+                if old.retired_height is not None:
+                    assert item.retired_height <= old.retired_height
+                # Independent finite probe across every possible activation in this test.
+                for probe in range(225):
+                    assert not item.usable_at(probe) or old.usable_at(probe)
+        nonce += 1
+        revoke = command | {
+            "id": f"0:revoke-{revision}",
+            "nonce": nonce,
+            "kind": "key.revoke",
+            "payload": {"mission": "m", "identity": "a", "revision": revision, "reason": "lost"},
+        }
+        runtime.apply(sign_command(revoke, keys), height=height + 1)
+        assert decode(state_bytes(runtime.state)) == runtime.state
+
+
+def test_rotation_cannot_resurrect_an_expired_key_or_overlap_live_intervals():
+    runtime, command, _ = runtime_and_command()
+    state = runtime.state
+    credentials = tuple(
+        replace(item, retired_height=2) if item.identity == "a" else item
+        for item in state.credentials
+    )
+    runtime = Runtime(replace(state, credentials=credentials, height=3))
+    all_keys, _, _ = setup()
+    keys = {key: value for key, value in all_keys.items() if key[0] in "bcd"}
+    proposal, _ = schedule(command | {"actor": "b"}, activation=5)
+    runtime.apply(sign_command(proposal, keys), height=3)
+    old = runtime.state.credentials[0]
+    assert old.retired_height == 2 and not old.usable_at(3)
+    assert decode(state_bytes(runtime.state)) == runtime.state
+    overlapping = (replace(old, retired_height=6), *runtime.state.credentials[1:])
+    with pytest.raises(Failure, match="overlapping"):
+        validate(overlapping, 3)

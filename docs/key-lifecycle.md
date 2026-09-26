@@ -33,15 +33,15 @@ request ID, administrative actor/revision and nonce. Their payloads have no addi
 | `key.revoke` | `mission`, `identity`, `revision`, `reason` | Permanently deny that revision future command authority |
 
 `key.schedule` requires the next consecutive revision, a never-used public key, and no still-pending
-revision for that identity. Activation must be from one through 10,000 committed heights after
+unrevoked revision for that identity. Activation must be from one through 10,000 committed heights after
 the processing height. This is a fixed limit in this unreleased profile. It is not a wall-clock
 interval or a promise about how quickly the chain progresses.
 
-At activation height H, the preceding revision's validity ends and the successor's begins:
+By activation height H, earlier unrevoked revisions have retired and the successor's validity begins:
 
 | Revision | Height below H | Height H or later |
 |---|---|---|
-| Previous, not revoked | Usable, subject to its activation | Retired |
+| Previous, not revoked | Usable only within its existing validity interval | Retired |
 | Successor, not revoked | Pending; rejected for command signatures | Activated |
 
 There is no interval in which both revisions of the same identity are usable. Different identities
@@ -52,11 +52,18 @@ signed history intact; it does not declare old observations false.
 `key.revoke` accepts `reason="compromise"` or `reason="lost"`. The record is immediately revoked,
 including when it was pending or already retired. The exact reason, target and processing height
 remain in authenticated command/block history; the active credential carries the revoked flag.
-A later rotation does not clear that flag on the older revision. Revoking a pending revision does
-not cancel its scheduled retirement of the old one. The current implementation requires waiting
-until that pending activation height before scheduling another successor. Operators must account
-for this restriction; a complete cancellation/replacement procedure is still needed before the
-operational recovery gate can pass.
+A later rotation does not clear that flag on the older revision. After revoking a lost pending
+revision, the same three-organization governance can schedule another consecutive revision without
+waiting for the lost one's planned activation. The replacement still needs its own possession
+proof and a strictly future activation height. The revoked record retains its original planned
+activation for audit, even if the replacement activates earlier.
+
+For example, revision 2 scheduled for height 100 can be revoked at height 2 and replaced by revision
+3 scheduled at height 3 for activation at height 5. Revision 1 retires by height 5, revision 2 never
+regains authority, and revision 3 starts at height 5. Scheduling a replacement only shortens existing
+unrevoked intervals: it never extends a recorded retirement or revives an expired credential. If an
+old key has already expired, the interval before the successor activates has no usable key for that
+identity. Other organizations must supply current quorum for the recovery.
 
 For both reasons, consumers of historical evidence must treat the revoked revision as requiring
 review/reverification. This component does not implement work acceptance or propagate quarantine
@@ -93,7 +100,8 @@ The [local control store](operational-storage.md) derives changes from original 
 commits credentials, actor nonces, receipts and block history atomically. Its immutable ownership
 check pins the initial identity roots and purpose/organization bindings while allowing governed
 revision history to evolve. State decoding verifies consecutive revisions, ordering, immutable
-ownership, distinct keys and activation/retirement continuity. It does not establish bootstrap trust;
+ownership, distinct keys and nonoverlapping authority intervals. Revoked pending records can have
+planned activation heights out of revision order; they contribute no signing interval. It does not establish bootstrap trust;
 signed replay and an independently trusted checkpoint are still necessary for that purpose.
 
 Active state currently retains at most 1,024 key revision records. At this bound, new scheduling
@@ -106,7 +114,9 @@ operational key lifecycle complete. Increasing this ceiling is not the planned s
 
 [Source tests](../tests/test_key_lifecycle.py) exercise pending/activation boundaries, old-key
 rejection, mixed revisions, exact possession binding, inadequate quorum, key reuse, pending conflicts,
-lost-signer recovery, nonce continuity, preservation of revoked history, saturation headroom,
-local reopen and authenticated replay. Separate mutations remove possession and activation checks
+lost-signer and pending-key recovery, nonce continuity, preservation of revoked history, saturation
+headroom, local reopen and authenticated replay. Generated bounded sequences independently probe
+old signing intervals to detect accidental extension. Separate mutations remove possession, activation
+and retirement checks
 to confirm that these tests detect their absence. These are application-level tests. No managed
 signer, hardware custody, independent organizational operation or validator rotation is established.

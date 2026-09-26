@@ -132,6 +132,42 @@ with tempfile.TemporaryDirectory() as folder:
     )
     assert committed.outcomes == ("OK",)
     assert store.verify_history(expected_hash=committed.state_hash) == store.load()
+    lost = Ed25519PrivateKey.generate()
+    pending = after | {
+        "id": "1:pending", "nonce": 4, "kind": "key.schedule",
+        "payload": {"mission": "m", "identity": "a", "revision": 3,
+                    "public_key": lost.public_key().public_bytes_raw().hex(),
+                    "activation_height": 100, "proof": ""}
+    }
+    committed = store.commit_block(
+        4, [sign_command(prove_possession(pending, lost), new_signers)],
+        previous_hash=committed.state_hash
+    )
+    revoke = after | {
+        "id": "1:lost", "nonce": 5, "kind": "key.revoke",
+        "payload": {"mission": "m", "identity": "a", "revision": 3, "reason": "lost"}
+    }
+    committed = store.commit_block(
+        5, [sign_command(revoke, new_signers)], previous_hash=committed.state_hash
+    )
+    recovered = Ed25519PrivateKey.generate()
+    recovery = pending | {
+        "id": "1:recover", "nonce": 6,
+        "payload": pending["payload"] | {"revision": 4, "activation_height": 7,
+                     "public_key": recovered.public_key().public_bytes_raw().hex()}
+    }
+    committed = store.commit_block(
+        6, [sign_command(prove_possession(recovery, recovered), new_signers)],
+        previous_hash=committed.state_hash
+    )
+    del new_signers[("a", 2)]
+    new_signers[("a", 4)] = recovered
+    committed = store.commit_block(
+        7, [sign_command(after | {"id": "1:recovered", "revision": 4, "nonce": 7}, new_signers)],
+        previous_hash=committed.state_hash
+    )
+    assert committed.outcomes == ("OK",)
+    assert store.verify_history(expected_hash=committed.state_hash) == store.load()
 from io import BytesIO
 from hashlib import sha256
 from checkedflow.artifacts import Access, LocalStore

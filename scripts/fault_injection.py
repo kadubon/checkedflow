@@ -46,6 +46,14 @@ OPERATIONAL_MUTATIONS = [
     (
         "core/key_registry.py",
         "test_key_lifecycle.py",
+        "retired_key_nonresurrection",
+        "min(item.retired_height, activation)",
+        "activation",
+        "test_rotation_cannot_resurrect_an_expired_key_or_overlap_live_intervals",
+    ),
+    (
+        "core/key_registry.py",
+        "test_key_lifecycle.py",
         "key_possession_authority",
         "context.possession_key == public_key",
         "True",

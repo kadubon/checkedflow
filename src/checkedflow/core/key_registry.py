@@ -31,6 +31,7 @@ def validate(credentials: tuple[Credential, ...], height: int) -> None:
         "key reuse prohibited",
     )
     prior: dict[str, Credential] = {}
+    last_usable: dict[str, Credential] = {}
     for item in credentials:
         old = prior.get(item.identity)
         if old is None:
@@ -41,12 +42,23 @@ def validate(credentials: tuple[Credential, ...], height: int) -> None:
                 and item.organization == old.organization
                 and item.role == old.role
                 and item.mission == old.mission
-                and old.retired_height == item.activated_height
-                and old.activated_height <= height,
+                and (old.revoked or old.activated_height <= height),
                 "STATE",
                 "invalid key revision lineage",
             )
         prior[item.identity] = item
+        if not item.revoked:
+            earlier = last_usable.get(item.identity)
+            require(
+                earlier is None
+                or (
+                    earlier.retired_height is not None
+                    and earlier.retired_height <= item.activated_height
+                ),
+                "STATE",
+                "overlapping key authority intervals",
+            )
+            last_usable[item.identity] = item
 
 
 def change(
@@ -61,7 +73,11 @@ def change(
         fields(payload, "mission identity revision public_key activation_height proof")
         old = history[-1]
         require(len(credentials) < MAX_REVISIONS, "CAPACITY", "key revision capacity")
-        require(old.activated_height <= context.height, "STATE", "pending revision exists")
+        require(
+            old.revoked or old.activated_height <= context.height,
+            "STATE",
+            "pending revision exists",
+        )
         require(revision == old.revision + 1, "REVISION", "next key revision required")
         public_key = text(payload["public_key"])
         require(context.possession_key == public_key, "SIGNATURE", "new-key possession required")
@@ -84,7 +100,14 @@ def change(
             revoked=False,
         )
         updated = tuple(
-            replace(item, retired_height=activation) if item == old else item
+            replace(
+                item,
+                retired_height=min(item.retired_height, activation)
+                if item.retired_height is not None
+                else activation,
+            )
+            if item.identity == identity and not item.revoked
+            else item
             for item in credentials
         ) + (successor,)
     else:
