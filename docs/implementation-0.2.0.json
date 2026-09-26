@@ -2792,6 +2792,23 @@
         "docs/artifact-storage.md"
       ],
       "scope": "Ten local tests for bounded bytes, scope-before-I/O, atomic publication, concurrent quotas, corruption and schema agreement. Not S3, availability quorum, retention, network authentication or domain lifecycle qualification."
+    },
+    {
+      "id": "governed-application-key-revisions",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/core/key_registry.py",
+        "src/checkedflow/operational_identity.py",
+        "src/checkedflow/core/operational.py",
+        "src/checkedflow/data/key-command.schema.json"
+      ],
+      "tests": [
+        "tests/test_key_lifecycle.py"
+      ],
+      "evidence": [
+        "docs/key-lifecycle.md"
+      ],
+      "scope": "Governed application-key scheduling/revocation, exact new-key possession, nonce continuity, bounded revision retention, local persistence and signed replay. Not full key archival, prompt pending-key replacement, work-level compromise quarantine, validator rotation or managed custody."
     }
   ],
   "observations": [
@@ -2818,6 +2835,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36207633409",
       "conclusion": "success",
       "scope": "Atomic local control storage, hosted matrix and existing infrastructure cases. Predates artifact store."
+    },
+    {
+      "source": "9a1f9ed66bd0f8bfd37d44e83efeb9384c20d136",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36208135291",
+      "conclusion": "success",
+      "scope": "Local artifact component, hosted matrix and existing infrastructure cases. Predates key lifecycle."
     }
   ]
 }

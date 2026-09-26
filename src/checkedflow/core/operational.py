@@ -3,6 +3,7 @@
 from dataclasses import dataclass, replace
 
 from checkedflow.core.authority import Credential, Verified
+from checkedflow.core.key_registry import change as change_keys
 from checkedflow.core.request_journal import Archive, Journal, Limits, Receipt, admit, rollover
 from checkedflow.core.request_journal import genesis as journal_genesis
 from checkedflow.core.values import Object, fields, integer, obj, require, text
@@ -99,13 +100,22 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
     context.require_administration()
     kind = text(command["kind"])
     require(
-        kind in {"mission.pause", "mission.drain", "mission.resume", "journal.rollover"},
+        kind
+        in {
+            "mission.pause",
+            "mission.drain",
+            "mission.resume",
+            "journal.rollover",
+            "key.schedule",
+            "key.revoke",
+        },
         "VERSION",
         "command not supported by the initial v2 control profile",
     )
     payload = obj(command["payload"])
-    fields(payload, "mission")
-    require(payload["mission"] == state.mission, "SCOPE", "mission mismatch")
+    if not kind.startswith("key."):
+        fields(payload, "mission")
+    require(payload.get("mission") == state.mission, "SCOPE", "mission mismatch")
     receipt = Receipt(
         text(command["id"], limit=80),
         context.actor.identity,
@@ -119,6 +129,9 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
     journal, duplicate = admit(state.journal, receipt)
     if duplicate:
         return advance(state, context.height), None
+    if kind.startswith("key."):
+        credentials = change_keys(state.credentials, kind, payload, context)
+        return replace(state, credentials=credentials, journal=journal, height=context.height), None
     mode = {"mission.pause": "paused", "mission.drain": "draining", "mission.resume": "running"}[
         kind
     ]

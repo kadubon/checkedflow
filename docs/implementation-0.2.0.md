@@ -111,6 +111,21 @@ and test the final increment. None of these development artifacts is authorized 
 
 ## Next implementation order
 
+The [application-key lifecycle](key-lifecycle.md) now connects governed scheduling/revocation,
+exact proposal-bound possession proofs, future-height activation, nonce continuity and persistent
+signed replay. The nine lifecycle cases and existing source suite passed together: 244 tests in
+43.83 seconds on Windows Python 3.12.10, eight infrastructure cases deselected. The schema cases
+also reject malformed revocation reasons with protocol failures rather than Python type errors.
+The final run detected all seventeen selected mutations and passed all static checks.
+Key-registry and authentication coverage reached 100% statements and branches in the focused suite.
+This is not complete operational rotation: retained history is bounded at 1,024 revisions, a revoked
+pending revision cannot be replaced before its scheduled activation, and work-level compromise
+quarantine, registry archival, validator rotation and managed custody remain pending.
+
+The [artifact-store CI run](https://github.com/kadubon/checkedflow/actions/runs/36208135291) succeeded
+for `9a1f9ed66bd0f8bfd37d44e83efeb9384c20d136`. It predates key-lifecycle changes and qualifies only
+the recorded increment and existing infrastructure cases, not the new operational gates.
+
 The [artifact reference and local byte store](artifact-storage.md) add portable typed references,
 scope checks before I/O, verified bounded streams, atomic publication and per-scope quotas. Ten
 local source cases cover malformed uploads, concurrent publication/capacity, corruption, removal,

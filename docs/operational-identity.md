@@ -1,12 +1,14 @@
 # Operational identity boundary
 
-Status: **SOURCE-TESTED AUTHENTICATION PRIMITIVE**. The complete v2 work state machine, key lifecycle commands,
+Status: **SOURCE-TESTED AUTHENTICATION PRIMITIVE**. The complete v2 work state machine,
 managed signing service, snapshot bootstrap and gateway integration are still pending. This API
 does not turn a v1 node into an operational v2 deployment.
 
 The initial [control runtime](operational-control.md) now connects this boundary to authenticated
 pause/drain/resume and request-journal rollover. The [local store](operational-storage.md) persists
-these control transitions. Work execution and full work/archive integration remain pending.
+these control transitions. [Governed key scheduling and revocation](key-lifecycle.md) now use the
+same boundary, with exact new-key possession proofs. Work execution and full work/archive
+integration remain pending.
 
 `checkedflow.operational_identity.authenticate` accepts original envelope bytes, not a decoded
 SDK object. Strict lexical admission runs before signature verification. The signature message is
@@ -24,7 +26,8 @@ The supported purposes here are administrator, producer, executor, verifier and 
 Credentials bind organization, revision, public key, activation height, optional retirement height
 and revocation. Validity is inclusive at activation and exclusive at retirement. A revoked key
 cannot authenticate a new submission. This predicate does not decide whether historical accepted
-evidence should be withdrawn after compromise; that requires the pending governed state transition.
+evidence should be withdrawn after compromise. The governed revocation remains in state/history;
+work-level quarantine and dependency propagation still require implementation.
 
 Authentication checks the exact chain and epoch. An older epoch returns `RETIRED_REQUEST`; a
 future epoch returns `EPOCH`. It never turns an old request into a fresh command. Nonces and request

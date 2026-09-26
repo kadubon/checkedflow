@@ -28,6 +28,7 @@ REQUIRED = [
     "checkedflow/data/operational-state.schema.json",
     "checkedflow/data/request-archive.schema.json",
     "checkedflow/data/artifact-reference.schema.json",
+    "checkedflow/data/key-command.schema.json",
     "checkedflow/data/repository-patch.schema.json",
     "checkedflow/data/research.json",
     "checkedflow/data/examples/sdk.py",
@@ -109,6 +110,27 @@ with tempfile.TemporaryDirectory() as folder:
         1, [sign_command(command, keys)],
         previous_hash=OperationalRuntime(initial_control).state_hash
     )
+    assert store.verify_history(expected_hash=committed.state_hash) == store.load()
+    from checkedflow.operational_identity import prove_possession
+    replacement = Ed25519PrivateKey.generate()
+    proposal = command | {
+        "epoch": 1, "id": "1:rotation", "nonce": 2, "kind": "key.schedule",
+        "payload": {"mission": "m", "identity": "a", "revision": 2,
+                    "public_key": replacement.public_key().public_bytes_raw().hex(),
+                    "activation_height": 3, "proof": ""}
+    }
+    proposal = prove_possession(proposal, replacement)
+    committed = store.commit_block(
+        2, [sign_command(proposal, keys)], previous_hash=committed.state_hash
+    )
+    new_signers = {pair: signer for pair, signer in keys.items() if pair[0] != "a"}
+    new_signers[("a", 2)] = replacement
+    after = command | {"epoch": 1, "id": "1:after", "revision": 2,
+                       "nonce": 3, "kind": "mission.pause"}
+    committed = store.commit_block(
+        3, [sign_command(after, new_signers)], previous_hash=committed.state_hash
+    )
+    assert committed.outcomes == ("OK",)
     assert store.verify_history(expected_hash=committed.state_hash) == store.load()
 from io import BytesIO
 from hashlib import sha256

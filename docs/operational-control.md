@@ -1,8 +1,8 @@
 # Initial v2 control and request accounting
 
 Status: **IMPLEMENTED, SOURCE-TESTED**. This is an unreleased SDK control
-profile, not the complete operational runtime. Work execution, consensus integration, governed
-key rotation, state sync and worker/gateway integration remain pending. No v2 task command is
+profile, not the complete operational runtime. Work execution, consensus integration,
+state sync and worker/gateway integration remain pending. No v2 task command is
 accepted by this implementation.
 The [local control store](operational-storage.md) now persists control state and emitted archive
 batches atomically. Full work/archive integration remains pending.
@@ -26,7 +26,9 @@ represented as arrays. String normalization is not performed.
 | `mission.resume` | Record running mode | Three administrative organizations |
 | `journal.rollover` | Retire active request IDs, carry nonces, emit archive batch | Three administrative organizations |
 
-Each payload is exactly `{"mission":"CONFIGURED_MISSION"}`. Unknown kinds and extra fields
+Each command in this table has payload exactly `{"mission":"CONFIGURED_MISSION"}`.
+The additional [key lifecycle commands](key-lifecycle.md), `key.schedule` and `key.revoke`, have
+their own exact payloads and the same three-organization approval rule. Unknown kinds and extra fields
 reject. These modes are committed SDK records only: no worker supervisor is connected yet, so
 this is not evidence of actual drain or emergency-stop behavior. No wall clock, storage, network
 or candidate process runs in a transition. An explicit height tick survives rejected commands.

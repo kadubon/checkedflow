@@ -57,6 +57,7 @@ class Verified:
     signers: tuple[Credential, ...]
     height: int
     epoch: int
+    possession_key: str = ""
 
     def require_administration(self) -> None:
         require(self.actor.role == "administrator", "AUTHORITY", "administrative actor required")

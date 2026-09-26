@@ -5,6 +5,8 @@ from dataclasses import asdict, replace
 from typing import cast
 
 from checkedflow.core.authority import Credential
+from checkedflow.core.key_registry import MAX_REVISIONS, roots
+from checkedflow.core.key_registry import validate as validate_registry
 from checkedflow.core.operational import State, genesis
 from checkedflow.core.request_journal import Archive, Journal, Limits, Receipt, admit
 from checkedflow.core.values import JSON, Object, array, fields, integer, names, obj, require, text
@@ -53,7 +55,7 @@ def decode(raw: bytes) -> State:
     fields(value, "chain mission organizations credentials journal height mode profile")
     require(value["profile"] == "checkedflow/control-state/v2", "VERSION", "state profile")
     credentials = []
-    for item in array(value["credentials"], limit=64):
+    for item in array(value["credentials"], limit=MAX_REVISIONS):
         record = obj(item)
         fields(
             record,
@@ -74,6 +76,8 @@ def decode(raw: bytes) -> State:
                 _boolean(record["revoked"]),
             )
         )
+    height = integer(value["height"])
+    validate_registry(tuple(credentials), height)
     journal = obj(value["journal"])
     fields(journal, "actors limits epoch archive_root receipts")
     limits = obj(journal["limits"])
@@ -82,7 +86,7 @@ def decode(raw: bytes) -> State:
         text(value["chain"]),
         text(value["mission"]),
         names(value["organizations"], limit=4),
-        tuple(credentials),
+        roots(tuple(credentials)),
         limits=Limits(
             integer(limits["ordinary_count"]),
             integer(limits["administrative_count"]),
@@ -121,7 +125,9 @@ def decode(raw: bytes) -> State:
         require(not duplicate, "STATE", "duplicate stored receipt")
     mode = text(value["mode"])
     require(mode in {"paused", "running", "draining"}, "STATE", "unsupported control mode")
-    state = replace(initial, journal=reconstructed, height=integer(value["height"]), mode=mode)
+    state = replace(
+        initial, credentials=tuple(credentials), journal=reconstructed, height=height, mode=mode
+    )
     require(encode(state) == value, "STATE", "noncanonical control-state structure")
     return state
 

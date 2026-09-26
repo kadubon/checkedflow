@@ -39,7 +39,7 @@
     "credentials": {
       "type": "array",
       "minItems": 4,
-      "maxItems": 64,
+      "maxItems": 1024,
       "items": {
         "type": "object",
         "additionalProperties": false,

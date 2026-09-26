@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "core/key_registry.py",
+        "test_key_lifecycle.py",
+        "key_possession_authority",
+        "context.possession_key == public_key",
+        "True",
+        "test_registry_validation_and_proof_context_cannot_be_omitted",
+    ),
+    (
+        "core/authority.py",
+        "test_key_lifecycle.py",
+        "key_activation_height",
+        "self.activated_height <= height",
+        "True",
+        "test_pending_activation_retirement_and_nonce_continuity",
+    ),
+    (
         "artifacts.py",
         "test_artifacts.py",
         "artifact_digest_integrity",

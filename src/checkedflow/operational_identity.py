@@ -26,6 +26,7 @@ from checkedflow.core.values import (
 from checkedflow.wire import MAX_TRANSACTION_BYTES, digest, dumps, transaction_document
 
 DOMAIN = b"CheckedFlow/command/v2\x00"
+POSSESSION_DOMAIN = b"CheckedFlow/key-possession/v2\x00"
 
 
 class Signer(Protocol):
@@ -46,6 +47,48 @@ def command_message(command: Object) -> bytes:
     text(command["kind"], limit=80)
     obj(command["payload"])
     return DOMAIN + dumps(command)
+
+
+def possession_message(command: Object) -> bytes:
+    """Bind the new key to this exact proposal, omitting only its own proof field."""
+    command_message(command)
+    require(command["kind"] == "key.schedule", "VERSION", "key schedule required")
+    payload = obj(command["payload"])
+    fields(payload, "mission identity revision public_key activation_height proof")
+    unsigned = command | {
+        "payload": {key: value for key, value in payload.items() if key != "proof"}
+    }
+    return POSSESSION_DOMAIN + dumps(unsigned)
+
+
+def prove_possession(command: Object, signer: Signer) -> Object:
+    signature = signer.sign(possession_message(command))
+    require(
+        isinstance(signature, bytes) and len(signature) == 64, "SIGNATURE", "possession signature"
+    )
+    return command | {"payload": obj(command["payload"]) | {"proof": signature.hex()}}
+
+
+def _verify_possession(command: Object) -> str:
+    if command["kind"] != "key.schedule":
+        return ""
+    message = possession_message(command)
+    payload = obj(command["payload"])
+    public_key, signature = text(payload["public_key"]), text(payload["proof"])
+    require(
+        len(public_key) == 64
+        and len(signature) == 128
+        and all(c in "0123456789abcdef" for c in public_key + signature),
+        "SIGNATURE",
+        "canonical possession key and signature required",
+    )
+    try:
+        Ed25519PublicKey.from_public_bytes(bytes.fromhex(public_key)).verify(
+            bytes.fromhex(signature), message
+        )
+    except InvalidSignature as exc:
+        raise Failure("SIGNATURE", "invalid possession proof") from exc
+    return public_key
 
 
 def sign_command(command: Object, signers: Mapping[tuple[str, int], Signer]) -> bytes:
@@ -138,4 +181,6 @@ def authenticate(
             actor = credential
     if actor is None:
         raise Failure("SIGNATURE", "actor revision must sign")
-    return command, Verified(digest(command), actor, tuple(verified), height, epoch)
+    return command, Verified(
+        digest(command), actor, tuple(verified), height, epoch, _verify_possession(command)
+    )

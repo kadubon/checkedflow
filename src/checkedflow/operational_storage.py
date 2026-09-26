@@ -8,6 +8,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import cast
 
+from checkedflow.core.key_registry import roots
 from checkedflow.core.operational import State
 from checkedflow.core.request_journal import Archive
 from checkedflow.core.values import (
@@ -83,6 +84,7 @@ class Store:
             and initial.journal.epoch == 0
             and initial.mode == "paused"
             and not initial.journal.receipts
+            and all(item.revision == 1 and item.usable_at(0) for item in initial.credentials)
             and all(nonce == 0 for _, nonce in initial.journal.actors),
             "GENESIS",
             "a fresh genesis is required",
@@ -155,14 +157,14 @@ class Store:
                 state.chain,
                 state.mission,
                 state.organizations,
-                state.credentials,
+                roots(state.credentials),
                 state.journal.limits,
             )
             == (
                 self.initial.chain,
                 self.initial.mission,
                 self.initial.organizations,
-                self.initial.credentials,
+                roots(self.initial.credentials),
                 self.initial.journal.limits,
             ),
             "GENESIS",

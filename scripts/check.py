@@ -76,6 +76,7 @@ def main() -> None:
             "core/artifact.py",
             "domains/repository_patch.py",
             "core/authority.py",
+            "core/key_registry.py",
             "core/request_journal.py",
             "core/operational.py",
         }
