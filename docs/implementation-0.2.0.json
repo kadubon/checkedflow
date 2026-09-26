@@ -3007,6 +3007,22 @@
       "scope": "Consistent portable export and staged new-directory restoration bound to an independently authenticated checkpoint and current revision floor. Thirty-nine source cases, 100% line/branch coverage, process-crash rejection and two targeted mutations. Isolated wheel/sdist and real Windows/Linux S3 restoration passed for development wheel c00ca87268d7c0bccbd320d44c36a11ca1c5c8056db189ba4c2392ed8a5c4ff2, dirty harness based on d5109ec. Does not supply protected checkpoint custody, consensus state sync, coordinated service recovery, provider availability or exclusive-controller ownership. Hosted run 36227112812 at 7a7f13f subsequently passed all component jobs; this predates the GitHub provider."
     },
     {
+      "id": "dispatch-freshness-watchdog",
+      "status": "INSTALLED_TESTED",
+      "implementation": [
+        "src/checkedflow/dispatch_watchdog.py",
+        "src/checkedflow/distributed/operational_client.py"
+      ],
+      "tests": [
+        "tests/test_dispatch_watchdog.py",
+        "tests/test_operational_client.py",
+        "tests/test_integration.py",
+        "scripts/package_check.py"
+      ],
+      "documentation": ["docs/dispatch-watchdog.md"],
+      "scope": "Local monotonic inhibition for stale reads, no committed progress, maintenance, rollback and emergency stop. Twenty-one watchdog cases at 100% line/branch coverage, eleven new own-node admission cases; full Windows source run 496 passed, three Linux-only skips, 19 separately selected infrastructure cases. All static checks and 42 mutations passed. Isolated development wheel 3fe6c2383d213869b34cb0551a36cdf4107e8e60f3bb217b01ec980f069923a5 and sdist 89866d91cecb2a4ce7b6af4aa618a63bc2a929d0497b4603e6ccf1273657e029 passed installed cold-start checks. Dirty source based on 4012ee8; real-node watchdog extension awaits exact-source hosted CI. Not complete supervisor integration, durable recovery trust or effect authorization."
+    },
+    {
       "id": "github-draft-provider",
       "status": "INSTALLED_TESTED",
       "implementation": [
@@ -3026,6 +3042,12 @@
     }
   ],
   "observations": [
+    {
+      "source": "4012ee800f5a2511ab23b8b0b8cac68db2d57cb7",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36229225801",
+      "conclusion": "success",
+      "scope": "GitHub draft provider increment passed all six platform/Python jobs, installed-wheel CometBFT/gVisor, real Vault and both real S3 jobs. Publication skipped. Live GitHub writes are a separately recorded operator-authorized component test, not ordinary CI. Predates dispatch watchdog; not full G1-G7 qualification."
+    },
     {
       "source": "6bb511000400642708972fdbc48ea65b77570175",
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36204053007",

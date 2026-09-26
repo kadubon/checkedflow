@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "dispatch_watchdog.py",
+        "test_dispatch_watchdog.py",
+        "stalled_height_watchdog",
+        "state.height > self._warm_height",
+        "state.height >= self._warm_height",
+        "test_identical_successful_reads_do_not_hide_quorum_stall",
+    ),
+    (
+        "dispatch_watchdog.py",
+        "test_dispatch_watchdog.py",
+        "stale_observation_watchdog",
+        "now - self._sample >= self.max_age",
+        "False",
+        "test_cold_start_read_expiry_and_restart_require_progress",
+    ),
+    (
         "github_drafts.py",
         "test_github_drafts.py",
         "draft_only_observation",

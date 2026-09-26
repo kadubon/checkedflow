@@ -71,6 +71,28 @@ class Client:
         require(reported_height == str(state.height), "RPC", "state response height differs")
         return state
 
+    def live_state(self) -> State:
+        """Read own-node sync status before state; this is not task/effect authorization.
+
+        Use with a local progress watchdog. A single non-catching-up response does not establish
+        continuing quorum or independent freshness; only the configured validating node is trusted.
+        """
+        status = self.rpc("status", {})
+        require(
+            obj(status.get("node_info")).get("network") == self.chain,
+            "CHAIN",
+            "own-node status chain differs",
+        )
+        sync = obj(status.get("sync_info"))
+        require(sync.get("catching_up") is False, "NOT_READY", "own node not synchronized")
+        spelling = text(sync.get("latest_block_height"), limit=20)
+        require(spelling.isascii() and spelling.isdecimal(), "RPC", "invalid status height")
+        height = integer(int(spelling), low=1)
+        require(str(height) == spelling, "RPC", "status height spelling")
+        state = self.state()
+        require(state.height >= height, "STALE", "state precedes observed own-node height")
+        return state
+
     def submit(self, raw: bytes) -> Object:
         _inputs((raw,))
         try:

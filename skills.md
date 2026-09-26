@@ -121,3 +121,8 @@ Never give the token or journal to candidate code. Do not recreate a journal or 
 to retry an unknown POST. Read reconciliation cannot treat absence as permission to resend.
 The operator fixture writes to a real repository: run it only against an explicitly authorized
 disposable target. Its staging/cleanup are not a completed runtime effect or compensation workflow.
+
+For [dispatch freshness](docs/dispatch-watchdog.md), use `Client.live_state` with `Watchdog` on an
+approved own node. `poll()` only observes; `current()` also requires recent height progress.
+Neither grants execution authority. A `STOPPED` instance cannot resume, and unknown in-flight
+effects still require reconciliation. Never restart a watchdog merely to hide a rollback conflict.

@@ -57,6 +57,17 @@ from pathlib import Path
 origin = Path(checkedflow.__file__).resolve().relative_to(Path(sys.prefix).resolve())
 assert "site-packages" in origin.parts
 print("Installed import origin:", origin.as_posix())
+from checkedflow.dispatch_watchdog import Watchdog
+from checkedflow.core.values import Failure
+watchdog = Watchdog(lambda: None, chain="installed", mission="fixture",
+                    max_read_age_ns=1, max_stall_ns=1)
+try:
+    watchdog.current()
+except Failure as error:
+    assert error.code == "NOT_READY"
+else:
+    raise AssertionError("cold watchdog granted readiness")
+watchdog.stop()
 from checkedflow.repository_execution import CHECKER_DIGEST, inventory
 from checkedflow.wire import dumps
 fixture = json.loads(r.files("checkedflow").joinpath("data/invoice-fixture.json").read_text())

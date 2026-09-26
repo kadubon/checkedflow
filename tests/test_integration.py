@@ -358,6 +358,7 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
     from checkedflow.artifacts import Access, LocalStore
     from checkedflow.core.artifact import Reference
     from checkedflow.core.work_acceptance import status as acceptance_status
+    from checkedflow.dispatch_watchdog import Watchdog
     from checkedflow.distributed.operational_cluster import Cluster as OperationalCluster
     from checkedflow.operational_runtime import Runtime as OperationalRuntime
     from checkedflow.operational_storage import Store as OperationalStore
@@ -448,14 +449,43 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
         )
         cluster.wait_height(int(finish["receipt"]["height"]), nodes=(0, 1, 2))
         assert cluster.client().state().budget.spent == 30
+        watchdog = Watchdog(
+            cluster.client().live_state,
+            chain=cluster.initial.chain,
+            mission=cluster.initial.mission,
+            max_read_age_ns=5_000_000_000,
+            max_stall_ns=2_000_000_000,
+        )
+
+        def warm_watchdog():
+            deadline = time.monotonic() + 15
+            while time.monotonic() < deadline:
+                try:
+                    watchdog.poll()
+                    return watchdog.current()
+                except Failure as exc:
+                    assert exc.code in {"NOT_READY", "STALE"}
+                time.sleep(0.1)
+            raise AssertionError("own-node watchdog did not observe fresh height progress")
+
+        assert warm_watchdog().mode == "running"
         cluster.stop_node(2, crash=True)
         time.sleep(2)
         stopped = cluster.client().state().height
-        time.sleep(1.5)
+        # Successful queries of the same state cannot renew dispatch readiness during quorum loss.
+        for _ in range(6):
+            time.sleep(0.4)
+            assert watchdog.poll().height == stopped
+            with pytest.raises(Failure, match="NOT_READY"):
+                watchdog.current()
         assert cluster.client().state().height == stopped
         cluster.start_node(2)
         cluster.start_node(3)
         cluster.wait_height(stopped + 3)
+        assert warm_watchdog().height > stopped
+        watchdog.stop()
+        with pytest.raises(Failure, match="STOPPED"):
+            watchdog.current()
         states = [cluster.client(index).state() for index in range(4)]
         assert all(
             state.tasks == states[0].tasks and state.budget == states[0].budget for state in states

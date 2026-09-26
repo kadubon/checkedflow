@@ -523,3 +523,36 @@ compensation or complete external-effect recovery. Those integrations remain req
 or the complete operational profile can pass. The new `effects` extra adds HTTPX without changing
 the base SDK dependency boundary. No runtime-driven production write, 0.2.0 publication, paid
 provisioning or companion-project modification has occurred.
+
+### Dispatch freshness increment
+
+The preceding provider source `4012ee800f5a2511ab23b8b0b8cac68db2d57cb7` passed all component jobs
+in [run 36229225801](https://github.com/kadubon/checkedflow/actions/runs/36229225801): six
+Windows/Linux Python jobs, 17 real CometBFT/gVisor cases, real Vault and both real S3 jobs.
+The dependency audit reported no known vulnerabilities; the publication scan found no issues in
+611 members. Publication was skipped. This result predates the watchdog and does not qualify it.
+
+The [dispatch watchdog](dispatch-watchdog.md) adds process-local inhibition based on bounded
+read age and committed-height progress. Its own-node reader checks the pinned chain and sync flag
+before reading v2 state. Repeated successful reads of a stopped height cannot extend readiness.
+Slow/failed reads and maintenance break the warmup sequence; rollback, same-height divergence,
+clock regression and emergency stop prevent further dispatch through the instance. A network
+read does not hold the stop lock. No clock enters the pure state machine and no observation grants
+task or effect authority. Durable supervision and dispatch integration remain incomplete.
+
+The Windows/Python 3.12.10 source suite passed 496 cases in 95.92 seconds, with three Linux-only
+filesystem skips and 19 infrastructure/service cases selected separately. The 21 new watchdog
+cases reached 100% statement/branch coverage; eleven new client cases cover sync/chain/height
+admission. Initial test expectations for invalid integers were corrected to the existing `SHAPE`
+code. Bandit initially rejected a redundant type-narrowing assertion; an explicit runtime failure
+branch replaced it without suppressing the rule. The initial failure log remains local.
+The corrected full run passed all static checks and detected all 42 selected invariant mutations,
+including unchanged-height renewal and omitted read-age expiry.
+
+Fresh isolated installations of the development wheel
+`3fe6c2383d213869b34cb0551a36cdf4107e8e60f3bb217b01ec980f069923a5` and sdist
+`89866d91cecb2a4ce7b6af4aa618a63bc2a929d0497b4603e6ccf1273657e029` passed outside the checkout.
+The source/distribution scan examined 618 members with zero findings. These artifacts contain
+uncommitted source based on 4012ee8, preceding this evidence update; they retain development
+0.1.0 metadata and cannot replace the published baseline. The extended real-node test requires
+its own exact-source hosted run, separately from the installed cold-start smoke.

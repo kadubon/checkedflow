@@ -28,6 +28,8 @@ and expected outputs outside the candidate process. This produces an observation
 can attest separately. [Reuse preparation](docs/repository-reuse.md) reads and validates exact bytes
 again and rejects a changed base or destination. Supervised dispatch and permission to open a pull
 request still require further integrations. See the
+[dispatch watchdog](docs/dispatch-watchdog.md) for local inhibition when node reads or committed
+height progress become stale, the
 [GitHub draft provider guide](docs/github-drafts.md) for the disabled-by-default transport component,
 [S3 storage guide](docs/s3-storage.md) for the optional verified object-store adapter,
 [retention and recovery](docs/retention-backup.md) for protected catalog backup boundaries,

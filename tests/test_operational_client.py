@@ -2,6 +2,7 @@
 
 import base64
 import gzip
+from dataclasses import replace
 
 import httpx
 import pytest
@@ -11,6 +12,52 @@ from checkedflow.core.values import Failure
 from checkedflow.distributed.operational_client import Client
 from checkedflow.operational_codec import state_bytes
 from checkedflow.wire import dumps, loads
+
+
+@pytest.mark.parametrize(
+    "network,catching_up,height,state_height,code",
+    [
+        ("operational-test", False, "2", 3, None),
+        ("other", False, "2", 3, "CHAIN"),
+        ("operational-test", True, "2", 3, "NOT_READY"),
+        ("operational-test", 0, "2", 3, "NOT_READY"),
+        ("operational-test", None, "2", 3, "NOT_READY"),
+        ("operational-test", False, "02", 3, "RPC"),
+        ("operational-test", False, "0", 3, "SHAPE"),
+        ("operational-test", False, "-1", 3, "RPC"),
+        ("operational-test", False, "\u0662", 3, "RPC"),
+        ("operational-test", False, "9007199254740992", 3, "SHAPE"),
+        ("operational-test", False, "4", 3, "STALE"),
+    ],
+)
+def test_live_state_requires_synchronized_chain_and_nonregressing_query(
+    monkeypatch, network, catching_up, height, state_height, code
+):
+    runtime, _, _ = runtime_and_command()
+    client = Client("http://127.0.0.1:12345", chain=runtime.state.chain)
+    calls = []
+
+    def status(method, params):
+        calls.append(method)
+        assert method == "status" and params == {}
+        return {
+            "node_info": {"network": network},
+            "sync_info": {"catching_up": catching_up, "latest_block_height": height},
+        }
+
+    def state():
+        calls.append("state")
+        return replace(runtime.state, height=state_height)
+
+    monkeypatch.setattr(client, "rpc", status)
+    monkeypatch.setattr(client, "state", state)
+    if code:
+        with pytest.raises(Failure, match=code):
+            client.live_state()
+        assert calls == (["status", "state"] if code == "STALE" else ["status"])
+    else:
+        assert client.live_state().height == state_height
+        assert calls == ["status", "state"]
 
 
 def transport(monkeypatch, handler):
