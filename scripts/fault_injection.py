@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "retention_backup.py",
+        "test_retention_backup.py",
+        "backup_exact_digest",
+        "digest.hexdigest() == checkpoint.digest",
+        "True",
+        "test_corrupt_or_partial_snapshot_never_activates",
+    ),
+    (
+        "retention_backup.py",
+        "test_retention_backup.py",
+        "backup_current_watermark",
+        "checkpoint.revision >= current_revision",
+        "True",
+        "test_current_floor_and_namespace_precede_input_and_filesystem_access",
+    ),
+    (
         "retention.py",
         "test_retention.py",
         "retention_tombstone_nonresurrection",

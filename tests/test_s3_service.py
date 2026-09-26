@@ -33,6 +33,7 @@ from checkedflow.artifacts import Access
 from checkedflow.core.artifact import Reference
 from checkedflow.core.values import Failure
 from checkedflow.retention import RetentionStore
+from checkedflow.retention_backup import export_catalog, restore_catalog
 from checkedflow.s3_artifacts import Credentials, S3Store
 
 
@@ -348,7 +349,7 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
             maintained = Access(
                 "retention-controller",
                 access.scopes,
-                frozenset({"read", "write", "pin", "maintain", "erase"}),
+                frozenset({"read", "write", "pin", "maintain", "erase", "backup", "restore"}),
             )
             catalog = RetentionStore(
                 tmp_path / "retention.sqlite",
@@ -388,6 +389,22 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
             )
             with pytest.raises(Failure, match="RETIRED_ARTIFACT"):
                 catalog.get(item, access=maintained)
+            snapshot = BytesIO()
+            checkpoint = export_catalog(catalog, snapshot, access=maintained)
+            snapshot.seek(0)
+            recovered = restore_catalog(
+                snapshot,
+                tmp_path / "restored-retention",
+                store,
+                checkpoint=checkpoint,
+                current_revision=floor,
+                namespace="disposable-s3",
+                scope="mission",
+                access=maintained,
+            )
+            assert recovered.revision(access=maintained) == floor
+            with pytest.raises(Failure, match="RETIRED_ARTIFACT"):
+                recovered.get(item, access=maintained)
         finally:
             if process.poll() is None:
                 process.terminate()

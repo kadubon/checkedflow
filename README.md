@@ -29,6 +29,7 @@ can attest separately. [Reuse preparation](docs/repository-reuse.md) reads and v
 again and rejects a changed base or destination. Supervised dispatch and permission to open a pull
 request still require further integrations. See the
 [S3 storage guide](docs/s3-storage.md) for the optional verified object-store adapter,
+[retention and recovery](docs/retention-backup.md) for protected catalog backup boundaries,
 [repository-patch guide](docs/repository-patch.md) and
 [implementation ledger](docs/implementation-0.2.0.md) before using development APIs.
 

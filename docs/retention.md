@@ -87,8 +87,10 @@ system to bind to its authenticated checkpoint.
 
 Never obtain the supposedly trusted floor from the backup being verified. A stale floor cannot
 detect rollback past that stale point; this SDK parameter is not a complete bootstrap protocol.
-The operational snapshot/backup implementation must durably bind the current revision and protect
-its own trust chain before this becomes a qualified deployment. Same-user modification of the
+The [catalog backup API](retention-backup.md) exports a consistent portable snapshot and restores
+into a new staged directory against an independently authenticated checkpoint and current floor.
+The operational recovery implementation must durably bind that revision and protect
+its trust chain before this becomes a qualified deployment. Same-user modification of the
 private SQLite database is outside the component's protection boundary.
 
 ## Minimal disposable example
@@ -146,6 +148,6 @@ tombstoning but before erasure. Fault injection checks the key guards. The real 
 the same controller, scoped deletion and rejection after provider-byte restoration.
 
 Remaining work includes deriving roots and trusted heights from the complete committed lifecycle,
-replicated availability admission, governed maintenance authority, authenticated catalog backup,
+replicated availability admission, governed maintenance authority, protected checkpoint custody,
 cross-host recovery and full operational qualification. Until those integrations pass, do not
 describe this component as a complete retention service or enable unattended operational GC.

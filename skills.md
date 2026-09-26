@@ -107,3 +107,10 @@ workers raw provider erasure permission. Reopening requires an independently ret
 catalog revision floor; reading that floor from an old backup does not establish recovery trust.
 The [plan schema](src/checkedflow/data/retention-plan.schema.json) and
 [vectors](src/checkedflow/data/retention-vectors.json) are packaged for non-Python consumers.
+
+For [retention backup and restoration](docs/retention-backup.md), obtain the checkpoint and current
+revision floor from independently protected operator records. Decoding the packaged
+[checkpoint schema](src/checkedflow/data/retention-checkpoint.schema.json) is not authentication.
+Restore into a new directory; never rename an interrupted pending database into service. Stop the
+old controller before activating its replacement. Catalog restoration performs no provider I/O
+and is not consensus state sync or evidence that referenced bytes are available.

@@ -438,3 +438,44 @@ These are component results. Complete lifecycle-root derivation, replicated avai
 authenticated catalog checkpoints/backups, governed maintenance integration, supervised work and
 G1–G7 qualification remain unfinished. A caller-supplied stale recovery floor is not bootstrap trust.
 No final 0.2.0 tag, release or PyPI publication has been performed.
+
+### Portable retention-catalog backup
+
+The retention revision d5109ec68583358f2653c5d51ec19f0d3ad12e88 passed
+[run 36221287294](https://github.com/kadubon/checkedflow/actions/runs/36221287294): all six
+Windows/Linux and Python 3.12–3.14 jobs, actual installed-wheel CometBFT/gVisor, Vault and both S3
+service jobs. Publication was denied. That result predates the backup increment described here.
+
+The [backup component](retention-backup.md) streams one consistent catalog snapshot into canonical
+JSONL and restores it into a new private directory. It requires an independently authenticated
+exact-byte checkpoint and a positive current revision floor, preserves tombstones, unknown
+erasures, pins and accounting, and rejects invalid roots or counters. The active database appears
+only after complete validation; existing stores are never overwritten. This is a concrete catalog
+export/import path, not a complete consensus bootstrap or coordinated-service recovery claim.
+
+Thirty-nine focused cases passed with 100% line and branch coverage. They include concurrent
+source mutation during export, corruption and truncation, unauthorized access before I/O, stale
+watermarks, scope mismatch, stream limits and a child process killed before activation. Two new
+fault mutations remove the exact-digest and current-watermark guards; both were detected.
+
+The complete Windows/Python 3.12.10 source check passed 426 cases in 100.53 seconds, with three
+Linux-only filesystem skips and 19 separately selected infrastructure/service cases. Static checks
+and all 38 selected mutations passed. Source and development distributions were scanned together:
+596 files/members, no publication-scanner findings. This is automated inspection, not a guarantee
+that every vulnerability is absent or an independent penetration test.
+
+Development wheel SHA-256 `c00ca87268d7c0bccbd320d44c36a11ca1c5c8056db189ba4c2392ed8a5c4ff2`
+and sdist SHA-256 `82bc4f7b729b1cf12b5c8949c015602256f59be9c24ce011bf644138b40ec452` passed
+isolated installed-package checks, including portable catalog restoration outside the checkout.
+The same wheel passed the actual SeaweedFS 4.47 fixture on Windows/Python 3.12.10 (36.73 seconds)
+and Linux/WSL Python 3.12.3 (38.01 seconds). That fixture restores catalog tombstones after old
+provider bytes reappear. Both records identify a dirty harness based on d5109ec; they do not
+qualify subsequent source changes or the final operational release.
+
+Remaining recovery work includes independent protected checkpoint custody, current lifecycle-root
+derivation, coordinated provider/catalog/agent journals, exclusive controller replacement,
+authenticated consensus bootstrap and measured cross-host restoration. Broader unfinished items
+still include sustained state archival, residual propagation, supervised work, v2 agent-access
+integration, external-effect recovery, deployment/observability and G1–G7 qualification. The
+required approved four-host inventory and disposable GitHub effect target remain unavailable.
+The publication interlock remains active; no 0.2.0 release is claimed.

@@ -30,6 +30,8 @@ REQUIRED = [
     "checkedflow/data/artifact-reference.schema.json",
     "checkedflow/data/retention-plan.schema.json",
     "checkedflow/data/retention-vectors.json",
+    "checkedflow/data/retention-checkpoint.schema.json",
+    "checkedflow/data/retention-backup-vector.json",
     "checkedflow/data/key-command.schema.json",
     "checkedflow/data/budget-command.schema.json",
     "checkedflow/data/task-command.schema.json",
@@ -70,6 +72,25 @@ retention_vectors = json.loads(
 )
 for record in retention_vectors["valid"]:
     assert decode_plan(dumps(record)).record() == record
+from io import BytesIO
+from tempfile import TemporaryDirectory
+from checkedflow.artifact_io import Access
+from checkedflow.artifacts import LocalStore
+from checkedflow.retention_backup import decode_checkpoint, export_catalog, restore_catalog
+backup_vector = json.loads(
+    r.files("checkedflow").joinpath("data/retention-backup-vector.json").read_text()
+)
+checkpoint = decode_checkpoint(dumps(backup_vector["checkpoint"]))
+with TemporaryDirectory(prefix="checkedflow-installed-backup-") as temporary:
+    directory = Path(temporary)
+    access = Access("fixture", frozenset({"mission"}), frozenset({"restore", "backup"}))
+    restored = restore_catalog(BytesIO(backup_vector["jsonl"].encode()),
+        directory / "restored", LocalStore(directory / "bytes.sqlite"),
+        checkpoint=checkpoint, current_revision=1, namespace="operator", scope="mission",
+        access=access)
+    output = BytesIO()
+    assert export_catalog(restored, output, access=access) == checkpoint
+    assert output.getvalue() == backup_vector["jsonl"].encode()
 from checkedflow.runtime import Runtime
 from checkedflow.serialization import decode
 from checkedflow.wire import dumps, loads
