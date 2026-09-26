@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "operational-state",
+  "description": "Structural control-profile contract only. Runtime invariants, original JSON lexical checks, byte ceilings and independent checkpoint trust remain required.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "chain",
+    "mission",
+    "organizations",
+    "credentials",
+    "journal",
+    "height",
+    "mode",
+    "profile"
+  ],
+  "properties": {
+    "chain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "mission": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "organizations": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+      }
+    },
+    "credentials": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 64,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "identity",
+          "revision",
+          "organization",
+          "role",
+          "mission",
+          "public_key",
+          "activated_height",
+          "retired_height",
+          "revoked"
+        ],
+        "properties": {
+          "identity": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "organization": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "role": {
+            "enum": [
+              "administrator",
+              "producer",
+              "executor",
+              "verifier",
+              "effect_executor"
+            ]
+          },
+          "mission": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "public_key": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "activated_height": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 9007199254740991
+          },
+          "retired_height": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "revoked": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "journal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actors",
+        "limits",
+        "epoch",
+        "archive_root",
+        "receipts"
+      ],
+      "properties": {
+        "actors": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 64,
+          "items": {
+            "type": "array",
+            "prefixItems": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              }
+            ],
+            "items": false,
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "limits": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "ordinary_count",
+            "administrative_count",
+            "ordinary_bytes",
+            "administrative_bytes"
+          ],
+          "properties": {
+            "ordinary_count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4096
+            },
+            "administrative_count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 64
+            },
+            "ordinary_bytes": {
+              "type": "integer",
+              "minimum": 64,
+              "maximum": 1048576
+            },
+            "administrative_bytes": {
+              "type": "integer",
+              "minimum": 209,
+              "maximum": 16384
+            }
+          }
+        },
+        "epoch": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "archive_root": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "receipts": {
+          "type": "array",
+          "maxItems": 4160,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "request",
+              "actor",
+              "nonce",
+              "command_digest",
+              "administrative"
+            ],
+            "properties": {
+              "request": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "actor": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "nonce": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "command_digest": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "administrative": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "mode": {
+      "enum": [
+        "paused",
+        "running",
+        "draining"
+      ]
+    },
+    "profile": {
+      "const": "checkedflow/control-state/v2"
+    }
+  }
+}

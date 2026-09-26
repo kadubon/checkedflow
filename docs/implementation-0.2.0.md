@@ -39,7 +39,7 @@ source revision, artifact hashes, environment and executed results before qualif
 |---|---|---|---|
 | M0 | Baseline, envelope, threat boundaries, ADRs, requirement ledger | None | IN PROGRESS |
 | M1 | Separate v2 contracts, legacy replay, administrative reserve | M0 | IN PROGRESS |
-| M2 | Local/S3 storage, archive, checkpoints, snapshots, migration | M1 | NOT_STARTED |
+| M2 | Local/S3 storage, archive, checkpoints, snapshots, migration | M1 | IN PROGRESS |
 | M3 | Repository patches and independent bounded verification | M1–M2 | NOT_STARTED |
 | M4 | Role separation, scoped access, managed signer, rotation | M1–M2 | NOT_STARTED |
 | M5 | Worker supervision, effect journal, recovery | M2–M4 | NOT_STARTED |
@@ -110,6 +110,19 @@ original-bytes type guard was added. Those checks are preliminary; the next PR r
 and test the final increment. None of these development artifacts is authorized for publication.
 
 ## Next implementation order
+
+The [local control store](operational-storage.md) now atomically commits bounded state, signed
+block history and request archives. Its eleven source cases cover reopen/replay, concurrent writers,
+SQL rollback, actual process exit before/after commit, corruption and checkpoint mismatch. Store
+failures abort the transaction rather than becoming command acceptance. State/archive schemas and
+a bounded validating codec are packaged; bootstrap trust and snapshot restore are not implied.
+The combined Windows Python 3.12.10 source run passed 225 tests in 38.50 seconds and thirteen
+selected invariant mutations, with eight infrastructure cases deselected. Local store/codec
+coverage reached 100% statements and branches in the focused suite. Existing SQLite test connections
+were subsequently made explicitly closing; the eleven focused cases passed again.
+
+The [control increment CI run](https://github.com/kadubon/checkedflow/actions/runs/36205962214)
+passed for `cddd1c9d9c5890117b7bdfa753e0b6fd437fdf90`; it predates this storage increment.
 
 The [initial v2 control runtime](operational-control.md) now connects signed admission to
 pause/drain/resume and bounded request rollover. Seven control tests and fourteen journal tests

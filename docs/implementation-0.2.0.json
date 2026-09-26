@@ -2759,6 +2759,23 @@
           "checkedflow-0.1.0.tar.gz": "97bf26f771149c521e635246bb707dd9eb8378f0aaea8e76f2649c60027098ed"
         }
       }
+    },
+    {
+      "id": "atomic-control-storage",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/operational_storage.py",
+        "src/checkedflow/operational_codec.py",
+        "src/checkedflow/data/operational-state.schema.json",
+        "src/checkedflow/data/request-archive.schema.json"
+      ],
+      "tests": [
+        "tests/test_operational_storage.py"
+      ],
+      "evidence": [
+        "docs/operational-storage.md"
+      ],
+      "scope": "Eleven source cases including actual before/after-commit process crashes, concurrent commits, signed replay and corruption checks. This is local control storage, not snapshot bootstrap, backup/restore, full work-state persistence or CometBFT qualification."
     }
   ],
   "observations": [
@@ -2773,6 +2790,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36204933803",
       "conclusion": "success",
       "scope": "Identity increment, six matrix jobs and existing infrastructure cases. Predates control/journal implementation."
+    },
+    {
+      "source": "cddd1c9d9c5890117b7bdfa753e0b6fd437fdf90",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36205962214",
+      "conclusion": "success",
+      "scope": "Control increment and existing infrastructure cases. Predates atomic storage implementation."
     }
   ]
 }

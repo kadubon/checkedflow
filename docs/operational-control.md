@@ -1,9 +1,11 @@
 # Initial v2 control and request accounting
 
 Status: **IMPLEMENTED, SOURCE-TESTED**. This is an unreleased SDK control
-profile, not the complete operational runtime. Work execution, durable archive storage, governed
+profile, not the complete operational runtime. Work execution, consensus integration, governed
 key rotation, state sync and worker/gateway integration remain pending. No v2 task command is
 accepted by this implementation.
+The [local control store](operational-storage.md) now persists control state and emitted archive
+batches atomically. Full work/archive integration remains pending.
 
 ## Authenticated transitions
 
@@ -83,7 +85,7 @@ and a fixed CPU-only 5,000-request / 64-active-receipt run with two actors. This
 request-count limit for this component only. It does not qualify artifact longevity, budget
 conservation, multi-host recovery or the full G5 operating envelope.
 
-Before network deployment, an adapter must atomically persist state and emitted archive batches,
+Before network deployment, the consensus adapter must bind ordering to the local store's atomic commits,
 verify archive availability and preserve all active work, budgets, fences, keys, dependencies and
 residuals across rollover. None may be dropped to make a checkpoint fit. These full-runtime
 obligations remain open in the [implementation ledger](implementation-0.2.0.json).

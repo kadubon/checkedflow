@@ -52,6 +52,8 @@ def main() -> None:
                 "--cov=checkedflow.core",
                 "--cov=checkedflow.operational_identity",
                 "--cov=checkedflow.operational_runtime",
+                "--cov=checkedflow.operational_codec",
+                "--cov=checkedflow.operational_storage",
                 "--cov=checkedflow.domains.repository_patch",
                 "--cov-branch",
                 "--cov-report=json:reports/coverage.json",
@@ -67,6 +69,8 @@ def main() -> None:
         boundaries = {
             "operational_identity.py",
             "operational_runtime.py",
+            "operational_codec.py",
+            "operational_storage.py",
             "domains/repository_patch.py",
             "core/authority.py",
             "core/request_journal.py",

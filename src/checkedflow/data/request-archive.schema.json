@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "request-archive",
+  "description": "Structural control-profile contract only. Runtime invariants, original JSON lexical checks, byte ceilings and independent checkpoint trust remain required.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "previous_root",
+    "epoch",
+    "receipts"
+  ],
+  "properties": {
+    "previous_root": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "epoch": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "receipts": {
+      "type": "array",
+      "maxItems": 4161,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "request",
+          "actor",
+          "nonce",
+          "command_digest",
+          "administrative"
+        ],
+        "properties": {
+          "request": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "actor": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "nonce": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 9007199254740991
+          },
+          "command_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "administrative": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}

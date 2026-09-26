@@ -25,6 +25,8 @@ REQUIRED = [
     "checkedflow/data/vectors.json",
     "checkedflow/data/legacy-v1.json",
     "checkedflow/data/operational-envelope.schema.json",
+    "checkedflow/data/operational-state.schema.json",
+    "checkedflow/data/request-archive.schema.json",
     "checkedflow/data/repository-patch.schema.json",
     "checkedflow/data/research.json",
     "checkedflow/data/examples/sdk.py",
@@ -89,6 +91,20 @@ command.update(id="0:checkpoint", nonce=2, kind="journal.rollover")
 archive = control.apply(sign_command(command, keys), height=2)
 assert archive.root == control.state.journal.archive_root
 assert control.state.journal.epoch == 1
+import tempfile
+from pathlib import Path
+from checkedflow.operational_storage import Store
+initial_control = operational_genesis(
+    "installed-auth-only", "m", tuple("abcd"), tuple(registry.values())
+)
+with tempfile.TemporaryDirectory() as folder:
+    store = Store(Path(folder) / "control.sqlite", initial_control)
+    command.update(id="0:stored", nonce=1)
+    committed = store.commit_block(
+        1, [sign_command(command, keys)],
+        previous_hash=OperationalRuntime(initial_control).state_hash
+    )
+    assert store.verify_history(expected_hash=committed.state_hash) == store.load()
 runpy.run_path(str(r.files("checkedflow").joinpath("data/examples/sdk.py")), run_name="__main__")
 assert main(["example"]) == 0
 from checkedflow.agents.gateway import profile

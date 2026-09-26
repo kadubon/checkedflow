@@ -71,6 +71,7 @@ def inspect() -> list[str]:
             "runtime.py",
             "operational_identity.py",
             "operational_runtime.py",
+            "operational_codec.py",
         }:
             for name in imports:
                 if name.startswith(

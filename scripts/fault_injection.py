@@ -44,6 +44,14 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "operational_storage.py",
+        "test_operational_storage.py",
+        "trusted_replay_checkpoint",
+        "head_hash == expected_hash",
+        "True",
+        "test_committed_archive_reopens_and_history_replays",
+    ),
+    (
         "core/operational.py",
         "test_operational_runtime.py",
         "duplicate_control_application",

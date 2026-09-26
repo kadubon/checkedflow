@@ -1,13 +1,12 @@
 """Authenticated in-memory v2 control runtime; no execution or durable-finality claim."""
 
-import json
-from dataclasses import asdict
+from hashlib import sha256
 
 from checkedflow.core.operational import State, advance, transition
 from checkedflow.core.request_journal import Archive
 from checkedflow.core.values import require
+from checkedflow.operational_codec import state_bytes
 from checkedflow.operational_identity import authenticate
-from checkedflow.wire import digest, validate
 
 
 class Runtime:
@@ -25,7 +24,7 @@ class Runtime:
 
     @property
     def state_hash(self) -> str:
-        return digest(validate(json.loads(json.dumps(asdict(self._state)))))
+        return sha256(state_bytes(self._state)).hexdigest()
 
     def apply(self, raw: bytes, *, height: int) -> Archive | None:
         state = self._state
