@@ -13,7 +13,7 @@ from checkedflow.domains.repository_patch import (
     digest_bytes,
     normalized_path,
 )
-from checkedflow.wire import dumps
+from checkedflow.wire import dumps, loads
 
 
 def target(*, path="src/pricing.py", content="def total(items): return sum(items)\n"):
@@ -127,3 +127,23 @@ def test_output_comparison_preserves_json_types_and_inventory():
         check_outputs(b'{"results":[{"case":"two","output":1}]}', expected, byte_limit=4096)
     with pytest.raises(Failure):
         check_outputs(b'{"results":[{"case":"one","output":1.0}]}', expected, byte_limit=4096)
+
+
+def test_deletion_is_bound_to_original_bytes_and_result_tree():
+    base, raw, contract = target()
+    patch = loads(raw)
+    patch["changes"][0]["content"] = None
+    raw = dumps(patch)
+    expected = Tree((("tests/test_pricing.py", b""),))
+    contract = replace(contract, patch_digest=digest_bytes(raw), result_tree=expected.digest)
+    assert apply_patch(base, raw, contract) == expected
+    patch["changes"][0]["before"] = "f" * 64
+    changed = dumps(patch)
+    with pytest.raises(Failure, match="preimage"):
+        apply_patch(base, changed, replace(contract, patch_digest=digest_bytes(changed)))
+
+
+def test_invalid_utf8_is_rejected_before_materialization():
+    with pytest.raises(Failure) as failure:
+        Tree((("src/app.py", b"\xff"),))
+    assert failure.value.code == "UNICODE"

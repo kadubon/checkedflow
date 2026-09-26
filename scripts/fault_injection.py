@@ -42,10 +42,56 @@ MUTATIONS = [
     ),
 ]
 
+OPERATIONAL_MUTATIONS = [
+    (
+        "operational_identity.py",
+        "test_operational_identity.py",
+        "organization_quorum",
+        "len(organizations) >= 3",
+        "len(organizations) >= 1",
+        "test_three_organizations_and_purposes_are_separate",
+    ),
+    (
+        "operational_identity.py",
+        "test_operational_identity.py",
+        "mission_scope",
+        "self.actor.mission == mission",
+        "True",
+        "test_worker_cannot_promote_its_role_or_mission",
+    ),
+    (
+        "operational_identity.py",
+        "test_operational_identity.py",
+        "key_purpose",
+        "self.actor.role == role",
+        "True",
+        "test_worker_cannot_promote_its_role_or_mission",
+    ),
+    (
+        "domains/repository_patch.py",
+        "test_repository_patch.py",
+        "patch_result_binding",
+        "tree.digest == contract.result_tree",
+        "True",
+        "test_patch_binds_preimage_result_and_scope_without_executing",
+    ),
+    (
+        "domains/repository_patch.py",
+        "test_repository_patch.py",
+        "independent_output_verdict",
+        "dumps(actual) == dumps(list(expected))",
+        "True",
+        "test_incorrect_output_and_forged_reports_cannot_assert_success",
+    ),
+]
+
 
 def main() -> None:
     outcomes = []
-    for name, old, new, test in MUTATIONS:
+    mutations = [
+        ("core/machine.py", "test_core.py", *mutation) for mutation in MUTATIONS
+    ] + OPERATIONAL_MUTATIONS
+    for module, suite, name, old, new, test in mutations:
         with tempfile.TemporaryDirectory(prefix="checkedflow-mutant-") as temporary:
             directory = Path(temporary)
             shutil.copytree(
@@ -53,7 +99,7 @@ def main() -> None:
                 directory / "checkedflow",
                 ignore=shutil.ignore_patterns("__pycache__", "proto"),
             )
-            path = directory / "checkedflow/core/machine.py"
+            path = directory / "checkedflow" / module
             source = path.read_text()
             if old not in source:
                 raise SystemExit(f"mutant no longer applies: {name}")
@@ -67,7 +113,7 @@ def main() -> None:
                     sys.executable,
                     "-m",
                     "pytest",
-                    str(ROOT / "tests/test_core.py"),
+                    str(ROOT / "tests" / suite),
                     "-k",
                     test,
                     "-q",

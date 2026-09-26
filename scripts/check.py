@@ -50,16 +50,40 @@ def main() -> None:
                 "-m",
                 "not integration and not sandbox",
                 "--cov=checkedflow.core",
+                "--cov=checkedflow.operational_identity",
+                "--cov=checkedflow.domains.repository_patch",
                 "--cov-branch",
                 "--cov-report=json:reports/coverage.json",
                 "--junitxml=reports/unit.xml",
                 "-q",
             ]
         )
-        totals = json.loads((ROOT / "reports/coverage.json").read_text())["totals"]
-        for key in ("percent_statements_covered", "percent_branches_covered"):
-            if totals[key] < 95:
-                raise SystemExit(f"Core {key} below 95%: {totals[key]}")
+        coverage = json.loads((ROOT / "reports/coverage.json").read_text())
+        core = {
+            key: 0
+            for key in ("covered_lines", "num_statements", "covered_branches", "num_branches")
+        }
+        boundaries = {"operational_identity.py", "domains/repository_patch.py"}
+        found = set()
+        for name, report in coverage["files"].items():
+            normalized = name.replace("\\", "/")
+            if "/checkedflow/core/" in normalized:
+                for key in core:
+                    core[key] += report["summary"][key]
+            for boundary in boundaries:
+                if normalized.endswith("/" + boundary):
+                    found.add(boundary)
+                    for key in ("percent_statements_covered", "percent_branches_covered"):
+                        if report["summary"][key] < 95:
+                            raise SystemExit(f"Authoritative boundary {name} {key} below 95%")
+        if found != boundaries or not core["num_statements"] or not core["num_branches"]:
+            raise SystemExit("Required authoritative coverage is missing")
+        for covered, total in (
+            ("covered_lines", "num_statements"),
+            ("covered_branches", "num_branches"),
+        ):
+            if 100 * core[covered] < 95 * core[total]:
+                raise SystemExit(f"Legacy core {covered}/{total} below 95%")
         run([sys.executable, "scripts/fault_injection.py"])
 
 

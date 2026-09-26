@@ -2715,10 +2715,33 @@
       "tests": [
         "tests/test_repository_patch.py"
       ],
-      "scope": "17 source tests for in-memory patch admission and evaluator-owned output comparison. No candidate execution, no sandbox qualification, no transport integration.",
+      "scope": "19 source tests for in-memory patch admission and evaluator-owned output comparison. No candidate execution, no sandbox qualification, no transport integration.",
       "evidence": [
         "docs/repository-patch.md"
       ]
+    },
+    {
+      "id": "v2-identity-boundary",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/operational_identity.py",
+        "src/checkedflow/data/operational-envelope.schema.json"
+      ],
+      "tests": [
+        "tests/test_operational_identity.py"
+      ],
+      "evidence": [
+        "docs/operational-identity.md"
+      ],
+      "scope": "12 tests for original signed-byte admission, revision/purpose/mission validity and independent organization approvals. No v2 state transition, managed signer or rotation governance qualification."
+    }
+  ],
+  "observations": [
+    {
+      "source": "6bb511000400642708972fdbc48ea65b77570175",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36204053007",
+      "conclusion": "success",
+      "scope": "Initial foundation build, six matrix jobs and existing infrastructure cases. Not evidence for later identity changes or new operational gates."
     }
   ]
 }

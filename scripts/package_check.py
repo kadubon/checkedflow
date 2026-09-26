@@ -24,6 +24,8 @@ REQUIRED = [
     "checkedflow/data/commands.json",
     "checkedflow/data/vectors.json",
     "checkedflow/data/legacy-v1.json",
+    "checkedflow/data/operational-envelope.schema.json",
+    "checkedflow/data/repository-patch.schema.json",
     "checkedflow/data/research.json",
     "checkedflow/data/examples/sdk.py",
     "checkedflow/data/examples/agents.py",
@@ -54,6 +56,27 @@ legacy = json.loads(r.files("checkedflow").joinpath("data/legacy-v1.json").read_
 assert replay_blocks(decode(legacy["initial"]), legacy["blocks"]).state_hash == (
     "9c12eea3393f018bbac48ad1660b1077c9e8fb6d1b6665eede9ca50cf1817950"
 )
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from checkedflow.operational_identity import Credential, authenticate, sign_command
+keys = {(name, 1): Ed25519PrivateKey.generate() for name in ("a", "b", "c", "d")}
+registry = {
+    (name, revision): Credential(
+        name, revision, name, "administrator", "", key.public_key().public_bytes_raw().hex(), 0
+    )
+    for (name, revision), key in keys.items()
+}
+command = {
+    "api_version": "checkedflow/v2", "chain": "installed-auth-only", "epoch": 0,
+    "id": "auth-check", "actor": "a", "revision": 1, "nonce": 1,
+    "kind": "mission.pause", "payload": {"mission": "m"}
+}
+raw = sign_command(command, {identity: key for identity, key in keys.items() if identity[0] != "d"})
+parsed, verified = authenticate(
+    raw, chain="installed-auth-only", epoch=0, height=0,
+    organizations=frozenset("abcd"), registry=registry
+)
+assert parsed == command
+verified.require_administration()
 runpy.run_path(str(r.files("checkedflow").joinpath("data/examples/sdk.py")), run_name="__main__")
 assert main(["example"]) == 0
 from checkedflow.agents.gateway import profile

@@ -24,6 +24,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [0.2 implementation](implementation-0.2.0.md) | What is being implemented and which gates remain open? |
 | [Proposed operational profile](operational-profile-0.2.md) | What workload and deployment must qualify before 0.2 release? |
 | [Repository patch boundary](repository-patch.md) | Which patch admission primitives exist and what remains unintegrated? |
+| [Operational identity](operational-identity.md) | How do v2 signed bytes separate key purposes, revisions and organization approvals? |
 
 For agents, [skills.md](../skills.md) provides the reading order, machine contracts and validation
 commands. Schemas describe structural contracts; transition rules also impose semantic invariants.

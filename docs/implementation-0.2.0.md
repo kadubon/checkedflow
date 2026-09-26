@@ -38,7 +38,7 @@ source revision, artifact hashes, environment and executed results before qualif
 | Milestone | Deliverable | Dependency | Current state |
 |---|---|---|---|
 | M0 | Baseline, envelope, threat boundaries, ADRs, requirement ledger | None | IN PROGRESS |
-| M1 | Separate v2 contracts, legacy replay, administrative reserve | M0 | NOT_STARTED |
+| M1 | Separate v2 contracts, legacy replay, administrative reserve | M0 | IN PROGRESS |
 | M2 | Local/S3 storage, archive, checkpoints, snapshots, migration | M1 | NOT_STARTED |
 | M3 | Repository patches and independent bounded verification | M1–M2 | NOT_STARTED |
 | M4 | Role separation, scoped access, managed signer, rotation | M1–M2 | NOT_STARTED |
@@ -86,9 +86,32 @@ Windows/Linux Python 3.12–3.14 check jobs capped at 25 minutes each, and one f
 CometBFT/gVisor qualification job capped at 30 minutes. These existing cases qualify the legacy
 profile only. They cannot satisfy new S3, managed-signer, patch execution or multi-host gates.
 
-## Resume order
+## Identity-boundary increment
 
-Complete baseline checks and fixed published-runtime replay captures. Implement the v2 signed
-boundary and bounded state before connecting storage, identity and worker changes. Update individual
+The [v2 identity boundary](operational-identity.md) adds explicit purpose, mission, revision,
+height and four-organization membership checks. It signs under a distinct domain and accepts
+only original envelope bytes. Parsed SDK objects, old epochs and v1 signatures are rejected.
+It does not yet implement v2 transitions, nonce persistence, rotation governance or managed custody.
+
+On 2026-09-26 the updated source check passed 193 tests in 34.88 seconds on Windows Python 3.12.10,
+with eight infrastructure cases deselected. All static checks and ten invariant mutations passed.
+The identity and patch-admission modules each reached 100% statement and branch coverage in this
+suite. Four identity-module lines are type-only `Protocol` declarations excluded by coverage's
+default typing rules; no runtime admission code is excluded. Coverage is a test scope metric,
+not a correctness proof. The legacy core keeps its independent 95% minimum thresholds.
+
+The [first draft-PR run](https://github.com/kadubon/checkedflow/actions/runs/36204053007) succeeded
+for source `6bb511000400642708972fdbc48ea65b77570175`: build, all six Windows/Linux Python matrix
+jobs and existing real infrastructure qualification. It predates this identity increment and
+cannot qualify it. Publication was skipped as expected for a draft PR.
+
+Local development wheel/sdist authentication smoke checks also succeeded before the final
+original-bytes type guard was added. Those checks are preliminary; the next PR run must build
+and test the final increment. None of these development artifacts is authorized for publication.
+
+## Next implementation order
+
+Use the frozen legacy captures as regression evidence. Implement the v2 deterministic state,
+bounded request/epoch journal and governed key lifecycle before connecting storage and workers. Update individual
 ledger entries only when their evidence exists. Keep all G1–G7 gates unqualified until their exact
 required cases execute against the final artifacts. Never promote the ledger itself to PASS evidence.
