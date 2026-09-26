@@ -18,6 +18,14 @@ Version **0.1.0** is an experimental reference implementation. Its complete demo
 31 finite inputs and actual generated Python. See the [audit against the original plan](docs/audit.md) and
 [executed validation record](docs/validation-status.md) for the current scope.
 
+The **0.2.0 development branch is not release-qualified**. It adds separate components for
+operational control, managed signing, artifact storage and bounded repository-patch checks.
+For example, the repository fixture checks an invoice quantity fix by comparing declared inputs
+and expected outputs outside the candidate process. This currently produces a local observation,
+not an adopted patch or permission to open a pull request. See the
+[repository-patch guide](docs/repository-patch.md) and
+[implementation ledger](docs/implementation-0.2.0.md) before using development APIs.
+
 ## The concepts in one minute
 
 | Term | Meaning | Example |

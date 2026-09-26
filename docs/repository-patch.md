@@ -1,6 +1,6 @@
 # Repository-patch domain implementation boundary
 
-Status: **PARTIAL, SOURCE-TESTED ADMISSION PRIMITIVES ONLY**. The end-to-end domain is not yet
+Status: **PARTIAL: admission, isolated execution and independent observation components**. The end-to-end domain is not yet
 available through the worker, consensus, CLI, A2A or MCP. Do not interpret this document as a
 qualified execution path or an authorization to run candidate code on a host.
 
@@ -60,8 +60,89 @@ as flat-file execution. Missing infrastructure still fails closed. A reported pr
 establishes only execution status; callers must authenticate the contract and compare outputs
 outside the sandbox. The separate legacy `run` method continues to reject nested filenames.
 
-Controlled acquisition, pinned checker and test inventory, evidence signatures, artifact storage
-integration and the v2 task lifecycle are pending. The nested-tree infrastructure test is mandatory
+Controlled acquisition, reported repository lint/test execution, evidence signatures, artifact
+storage integration and the v2 task lifecycle are pending. The nested-tree infrastructure test is mandatory
 in the qualification gate; source-only filesystem tests cannot establish sandbox isolation. Runtime reuse must bind the original repository, base, environment,
 receiver and unexpired evidence; a different base requires a new approved target and fresh checks.
 See the [0.2 implementation record](implementation-0.2.0.md) for release gates.
+
+
+## Contract-bound independent observations
+
+`checkedflow.repository_execution.observe_patch(base, patch, contract, cases, height=height)`
+is an SDK component for a target that the caller has already authorized. It checks the exact base,
+patch, resulting tree, inventory bytes, checker identity and deadline before creating a runner.
+It does not obtain consensus, reserve a budget, issue a lease or authorize a worker. The supplied
+height must come from the caller's fresh trusted full node; supplying an arbitrary number is not
+proof of freshness. Worker integration must enforce those obligations before this call.
+
+The inventory is strict JSON with this shape:
+
+```json
+{
+  "version": "repository-cases/v1",
+  "path": "shop/invoice.py",
+  "function": "invoice_total",
+  "cases": [
+    {
+      "case": "empty-invoice",
+      "input": {"lines": [], "shipping_cents": 0, "discount_cents": 0},
+      "output": 0
+    }
+  ]
+}
+```
+
+The [inventory schema](../src/checkedflow/data/repository-cases.schema.json) describes structure.
+Runtime validation additionally checks portable paths, unique case identities, strict numeric
+representation, JSON nesting and the 256 KiB aggregate byte limit. There must be 1–128 cases.
+Each invocation calls one explicitly named public function with one JSON argument per case.
+Returned values must be interoperable JSON: integer arithmetic should use integer units rather
+than floating point. This is a bounded function interface, not an arbitrary pytest runner.
+
+Only input records, the entry path and the function name go to the sandbox. The installed wrapper
+starts Python in isolated mode, then loads the selected source under `/work`. Candidate imports
+and all function calls occur inside gVisor. The trusted evaluator compares the resulting bounded
+report with expected answers after the process ends. The candidate can inspect the request,
+interfere with its own interpreter or fabricate a response. Passing therefore establishes agreement
+on these declared cases, not that a particular internal implementation was used or that unseen
+inputs are correct. No secret-test, novelty or general-equivalence claim is supported.
+
+`CHECKER_DIGEST` identifies a canonical manifest containing the wrapper and the exact installed
+source bytes for the observation adapter, domain comparator, wire implementation and value
+validation. Changes to these bytes change the target, including changes between source checkouts
+and built distributions. Operators must use the same qualified distribution when approving and
+checking this digest. This manifest is not a substitute for the release's full dependency and image
+provenance; the contract separately pins the execution image.
+
+The returned frozen `Observation` includes a digest of every contract field, observed height,
+result tree, inventory, checker, image and stdout/stderr digests. Its `case_match` is:
+
+- `true` only when the sandbox reports completed execution and all ordered case outputs match;
+- `false` when a structurally complete output report differs from expected answers;
+- `null` for timeout, uncertain cleanup, nonzero exit, malformed reports or omitted cases.
+
+The reason records the distinction. Missing infrastructure raises a failure rather than invoking a
+host fallback. Observations are unsigned local records. They do not establish a quorum, registration,
+reuse eligibility, external effect permission or successful linting. The lint contract field is retained
+in the full contract digest, but this output-only component does not execute a lint command.
+
+## Included practical fixture
+
+The [invoice fixture](../src/checkedflow/data/invoice-fixture.json) is original Apache-2.0 material
+and includes a full license file, two small Python modules, a seeded quantity-accounting bug,
+the corrected file and four independently specified cases. Cases cover quantities, an empty invoice,
+shipping, discounts and a zero floor. Amounts use integer cents. This is a software test fixture,
+not a payment or accounting service.
+
+The fixture includes a reconstructible Git commit object and its exact base identity. Tests rebuild
+the Git blob/tree/commit identities from the bundled bytes without importing candidate modules.
+SHA-1 here denotes Git's legacy object identifier, not the security digest: CheckedFlow separately
+binds the base, patch and result with SHA-256. The fixture repository name is a local logical identity;
+no remote repository is fetched or assumed to exist.
+
+Mandatory real-sandbox tests exercise the corrected fixture, wrong results, invalid Python,
+self-reported PASS, an empty result inventory and nontermination. Source tests use a substituted
+runner only to inspect requests and failure handling; those tests cannot establish actual isolation.
+The full domain still needs authenticated work admission, evidence quorum, registration, scoped
+reuse and fresh checks for a new base before it can satisfy the end-to-end release gate.

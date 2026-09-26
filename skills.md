@@ -78,3 +78,14 @@ Preserve the distinction between replaying metadata and rerunning effects. Empty
 belong in replay. Finished generation receipts may resume proposal from their stored source;
 started attempts without committed results require reconciliation. Inspect current state before
 retrying after an ambiguous RPC response. Run only one process per signing identity.
+
+
+## Development repository-patch boundary
+
+The `repository_execution.observe_patch` SDK function returns an unsigned local observation.
+It requires an already-authorized contract and a fresh trusted-node height; it does not reserve
+budgets, acquire leases, sign evidence, register artifacts or grant reuse/effect authority.
+Expected cases remain outside gVisor, and null `case_match` preserves unknown outcomes.
+Never promote a matching observation to committed acceptance. Follow the
+[domain guide](docs/repository-patch.md) and [inventory schema](src/checkedflow/data/repository-cases.schema.json).
+Run candidate files only in the required gVisor path, including bundled seeded-bug fixtures.

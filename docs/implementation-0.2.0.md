@@ -223,3 +223,18 @@ The shared execution routine retains the existing gVisor restrictions and cleanu
 Filesystem tests cover exact bytes, modes, private-parent enforcement and existing/symlink
 rejection. A mandatory real sandbox case exercises nested module import and write denial.
 This increment does not establish a complete approved repository-patch workflow or satisfy G1–G7.
+
+
+### Contract-bound repository observations and accounting snapshot correction
+
+The independent-output adapter now binds inventory bytes, the installed checker source manifest,
+complete contract and resulting tree before isolated execution. Its tri-state result preserves
+unknown execution/report outcomes. A licensed invoice fixture provides two modules, an exact
+reconstructible Git base and independent cases; six real-sandbox variants are mandatory in the
+infrastructure gate. This component still has no v2 work admission, quorum, registration or reuse.
+
+Run 36211761633 passed the new nested-tree case but failed the complete infrastructure gate:
+the legacy demo cached accounting before its final node barrier and reported 780 versus 779.
+The reporting adapter now waits past the maximum worker-node height and reads a new state.
+Regression tests reject a stale post-barrier response. The exact accounting assertion and frozen
+v1 consensus semantics are unchanged. Subsequent real infrastructure evidence is required.

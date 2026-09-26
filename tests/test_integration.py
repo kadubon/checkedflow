@@ -7,11 +7,13 @@ import time
 
 import pytest
 from network import FaultNetwork
+from patch_fixture import invoice
 
 from checkedflow.core.values import Failure
 from checkedflow.distributed.cluster import Cluster
 from checkedflow.distributed.demo import bootstrap, run_scenario
 from checkedflow.domains.repository_patch import Tree
+from checkedflow.repository_execution import observe_patch
 from checkedflow.runner import GVisorRunner, Limits
 
 
@@ -307,3 +309,29 @@ print(json.dumps(solve(json.load(sys.stdin))))
 """
     result = GVisorRunner(image).run_tree(("python", "-B", "-s", "-c", script), tree, 5)
     assert result.status == "reported" and result.stdout.strip() == b"12"
+
+
+@pytest.mark.sandbox
+@pytest.mark.qualification
+@pytest.mark.parametrize(
+    "source,expected",
+    [
+        (None, "cases_match"),
+        ("def invoice_total(value): return 0\n", "cases_differ"),
+        ("invalid Python syntax!\n", "unknown"),
+        ("import sys\nprint('PASS')\nsys.exit(0)\n", "invalid_output"),
+        ("import sys\nprint('{\"results\":[]}')\nsys.exit(0)\n", "invalid_output"),
+        ("while True: pass\n", "unknown"),
+    ],
+)
+def test_repository_patch_independent_observation(infrastructure, source, expected):
+    image, _ = infrastructure
+    base, patch, contract, cases = invoice(image, source)
+    observation = observe_patch(base, patch, contract, cases, height=10)
+    if expected == "unknown":
+        assert observation.case_match is None
+    else:
+        assert observation.reason == expected
+        assert observation.case_match is (
+            True if expected == "cases_match" else (False if expected == "cases_differ" else None)
+        )

@@ -11,6 +11,7 @@ REQUIRED = {
     "test_sandbox_resource_exhaustion": 4,
     "test_sandbox_network_paths_nonroot_and_checker_protection": 1,
     "test_sandbox_nested_repository_tree": 1,
+    "test_repository_patch_independent_observation": 6,
 }
 
 

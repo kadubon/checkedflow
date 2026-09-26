@@ -30,6 +30,8 @@ REQUIRED = [
     "checkedflow/data/artifact-reference.schema.json",
     "checkedflow/data/key-command.schema.json",
     "checkedflow/data/repository-patch.schema.json",
+    "checkedflow/data/invoice-fixture.json",
+    "checkedflow/data/repository-cases.schema.json",
     "checkedflow/data/research.json",
     "checkedflow/data/examples/sdk.py",
     "checkedflow/data/examples/agents.py",
@@ -44,6 +46,13 @@ from pathlib import Path
 origin = Path(checkedflow.__file__).resolve().relative_to(Path(sys.prefix).resolve())
 assert "site-packages" in origin.parts
 print("Installed import origin:", origin.as_posix())
+from checkedflow.repository_execution import CHECKER_DIGEST, inventory
+from checkedflow.wire import dumps
+fixture = json.loads(r.files("checkedflow").joinpath("data/invoice-fixture.json").read_text())
+request, expected = inventory(dumps(fixture["inventory"]))
+assert len(expected) == 4 and request["path"] == "shop/invoice.py"
+assert len(CHECKER_DIGEST) == 64
+print("Installed repository checker:", CHECKER_DIGEST)
 from checkedflow.runtime import Runtime
 from checkedflow.serialization import decode
 from checkedflow.wire import dumps, loads

@@ -2843,6 +2843,23 @@
         "docs/repository-patch.md"
       ],
       "scope": "Four Linux filesystem cases passed under WSL, including directory replacement by a symlink; Windows source suite and strict type checks passed. Real gVisor nested-tree case is mandatory but not yet observed for this increment. Not approved task execution, independent checker integration or full repository-patch acceptance."
+    },
+    {
+      "id": "contract-bound-repository-observer",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/repository_execution.py",
+        "src/checkedflow/data/repository-cases.schema.json",
+        "src/checkedflow/data/invoice-fixture.json"
+      ],
+      "tests": [
+        "tests/test_repository_execution.py",
+        "tests/test_integration.py"
+      ],
+      "evidence": [
+        "docs/repository-patch.md"
+      ],
+      "scope": "Twelve protocol/fixture tests, 100% observer line/branch coverage, two new killed mutations, and development wheel/sdist import/inventory checks. Six real sandbox variants are mandatory and remain unqualified until an exact-source CI result is inspected. Not authenticated work admission, lint reports, evidence quorum, registration or reuse."
     }
   ],
   "observations": [
@@ -2893,6 +2910,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36210750042",
       "conclusion": "success",
       "scope": "Managed signer increment: six platform/Python jobs, existing infrastructure and real installed-wheel Vault TLS service on Linux. Predates nested repository-tree runner."
+    },
+    {
+      "source": "d7c1d740bd07083b66ae19c7d44a92c452457c9f",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36211761633",
+      "conclusion": "failure",
+      "scope": "Six matrix jobs and managed signer passed; nested-tree sandbox case passed. Infrastructure gate failed because the legacy demo reused a pre-barrier accounting snapshot (780 versus 779). Not a qualified run. A subsequent adapter-level reporting fix must be qualified; v1 consensus semantics remain frozen."
     }
   ]
 }

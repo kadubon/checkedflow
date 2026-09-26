@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "repository_execution.py",
+        "test_repository_execution.py",
+        "repository_inventory_binding",
+        "digest_bytes(cases) == contract.test_inventory_digest",
+        "True",
+        "test_reject_before_sandbox",
+    ),
+    (
+        "repository_execution.py",
+        "test_repository_execution.py",
+        "repository_timeout_uncertainty",
+        'result.status == "reported"',
+        "True",
+        "test_unknown_and_mismatch_are_separate",
+    ),
+    (
         "vault_signer.py",
         "test_vault_signer.py",
         "managed_signer_credential_binding",
