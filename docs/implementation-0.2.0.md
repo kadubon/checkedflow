@@ -52,7 +52,7 @@ authenticate a test result or authorize publication; G1–G7 remain unqualified.
 | M2 | Local/S3 storage, archive, checkpoints, snapshots, migration | M1 | IN PROGRESS |
 | M3 | Repository patches and independent bounded verification | M1–M2 | IN PROGRESS |
 | M4 | Role separation, scoped access, managed signer, rotation | M1–M2 | IN PROGRESS |
-| M5 | Worker supervision, effect journal, recovery | M2–M4 | NOT_STARTED |
+| M5 | Worker supervision, effect journal, recovery | M2–M4 | IN PROGRESS |
 | M6 | Metrics, readiness, deployments, runbooks | M2–M5 | NOT_STARTED |
 | M7 | Installed, infrastructure, fault, load, multi-host qualification | M3–M6 | IN PROGRESS |
 | M8 | Documentation, exact-artifact publication gates, release | M7 | IN PROGRESS |
