@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "worker_schedule.py",
+        "test_worker_schedule.py",
+        "persistent_schedule_total_limit",
+        "attempts >= self.policy.total_attempts",
+        "False",
+        "test_total_budget_and_deadline_do_not_reset",
+    ),
+    (
+        "worker_schedule.py",
+        "test_worker_schedule.py",
+        "persistent_schedule_identity",
+        "row[0] == binding",
+        "True",
+        "test_plan_binding_cannot_reset_limits",
+    ),
+    (
         "worker_supervisor.py",
         "test_worker_retirement.py",
         "local_recovery_capacity_before_execution",

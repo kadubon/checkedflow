@@ -96,6 +96,19 @@
         "no unresolved command"
       ],
       "retry": "Idempotent for active finished tasks; run before history.archive. Unknowns and missing proofs stay pinned."
+    },
+    {
+      "api": "Schedule.tick/run/status/stop",
+      "writes": [
+        "immutable boot-bound plan",
+        "call allowance before invocation",
+        "retry due times",
+        "persistent stop latch"
+      ],
+      "network": [
+        "same Supervisor callbacks; status and stop are local"
+      ],
+      "retry": "Fixed task IDs, per-task and total limits, and deadline survive reopening. Unknown execution is never retried. New clock epochs or changed policies are rejected."
     }
   ],
   "errors": {
@@ -120,5 +133,16 @@
     "service_template": "sandbox-recovery.service",
     "poll_interval_milliseconds": 250
   },
-  "max_local_attempt_records": 128
+  "max_local_attempt_records": 128,
+  "scheduling": {
+    "module": "checkedflow.worker_schedule",
+    "max_tasks": 128,
+    "max_calls_per_task": 32,
+    "max_total_calls": 4096,
+    "max_duration_seconds": 3600,
+    "max_polls_per_run": 4096,
+    "clock_epoch": "actual host boot identity",
+    "automatic_retransmit": false,
+    "automatic_unknown_reexecution": false
+  }
 }

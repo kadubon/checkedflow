@@ -25,12 +25,13 @@ Independent organizations then attest to the evidence. A committed completion is
 and acceptance of one patch does not authorize opening a pull request or reusing it on another base.
 
 Start with the concepts below for the published reference runtime. For development APIs, use these
-guides; the unattended scheduler and complete operational deployment are still unfinished.
+guides; complete generation orchestration and operational deployment are still unfinished.
 
 | Development question | Guide |
 |---|---|
 | How is a patch checked, accepted and reused? | [Patch contract](docs/repository-patch.md), [organizational verification](docs/work-acceptance.md), [reuse](docs/repository-reuse.md) |
 | What happens after a worker crashes? | [Durable worker SDK](docs/worker-supervision.md), [sandbox recovery](docs/sandbox-recovery.md), [freshness watchdog](docs/dispatch-watchdog.md) |
+| How are retries kept finite? | [Persistent scheduling](docs/worker-scheduling.md); fixed call limits, deadlines and local stop survive process restarts |
 | How are evidence and bounded records retained? | [S3 storage](docs/s3-storage.md), [retention](docs/retention-backup.md), [settled-work retirement](docs/work-archive.md) |
 | How is application state restored? | [Application history recovery](docs/application-backup.md); validator ownership needs separate recovery |
 | Can it open a pull request automatically? | [Draft provider](docs/github-drafts.md); disabled by default and not yet integrated with complete effect authority |

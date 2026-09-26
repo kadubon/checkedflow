@@ -496,6 +496,7 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
         assert dict(acquired.journal.actors)[f"w{1 - owner}"] == 0
         assert all(code != "OK" or index == owner for index, code in receipts)
         from checkedflow.repository_worker import EvidencePublisher, RepositoryExecutor
+        from checkedflow.worker_schedule import Policy, Schedule
         from checkedflow.worker_submission import Coordinator
         from checkedflow.worker_supervisor import Supervisor
 
@@ -544,7 +545,14 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
             supervised_observation,
             EvidencePublisher(artifacts, access),
         )
-        assert supervisor.step(task) == "finished"
+        schedule = Schedule(
+            tmp_path / "worker-schedule",
+            supervisor,
+            Policy((task,), duration_seconds=120),
+            clock_epoch=Path("/proc/sys/kernel/random/boot_id").read_text().strip(),
+        )
+        assert schedule.run(max_polls=256).mode == "complete"
+        assert 1 <= schedule.tick().attempts <= 8
         assert len(executed) == 1 and executed[0].outcome == "reported"
         assert (
             Supervisor(

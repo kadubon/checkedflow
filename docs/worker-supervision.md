@@ -4,7 +4,8 @@ The draft v2 worker SDK connects a committed task to one bounded execution, evid
 and signed completion. It separates two operations that must not be confused: resending identical
 signed command bytes can be idempotent; executing a program a second time can repeat its effects.
 
-This component is synchronous, with one invocation at a time per worker. A service scheduler,
+This component is synchronous, with one invocation at a time per worker. The
+[finite persistent scheduler](worker-scheduling.md) adds bounded waiting and retries. Service deployment,
 multi-host leader election, automatic generation loop and complete deployment lifecycle remain
 separate requirements. Do not interpret this SDK as an unattended production service.
 
@@ -123,7 +124,7 @@ need an explicit recovery/migration procedure; never delete pending intent to up
 
 The caller must warm the watchdog with two fresh observations showing committed-height progress
 before calling `step`. Choose read timeouts shorter than the freshness window; each callback must
-be bounded. Configure finite scheduling/backoff outside consensus. On `OUTCOME_UNKNOWN`, inspect
+be bounded. Use the finite scheduler or an equivalently bounded caller outside consensus. On `OUTCOME_UNKNOWN`, inspect
 `pending()` and reconcile; do not blindly loop `step`, delete state or restart under another identity.
 The [machine-readable SDK catalogue](../src/checkedflow/data/worker-operations.json) distinguishes
 filesystem writes, network effects and retry behavior. There is no new worker CLI command in this increment.

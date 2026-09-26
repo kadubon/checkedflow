@@ -3479,7 +3479,8 @@
         "src/checkedflow/worker_submission.py",
         "src/checkedflow/worker_supervisor.py",
         "src/checkedflow/repository_worker.py",
-        "src/checkedflow/data/worker-operations.json"
+        "src/checkedflow/data/worker-operations.json",
+        "src/checkedflow/worker_schedule.py"
       ],
       "tests": [
         "tests/test_worker_submission.py",
@@ -3487,11 +3488,13 @@
         "tests/test_repository_worker.py",
         "tests/test_integration.py",
         "scripts/fault_injection.py",
-        "tests/test_worker_retirement.py"
+        "tests/test_worker_retirement.py",
+        "tests/test_worker_schedule.py"
       ],
       "documentation": [
         "docs/worker-supervision.md",
-        "docs/adr-0003-worker-submission.md"
+        "docs/adr-0003-worker-submission.md",
+        "docs/worker-scheduling.md"
       ],
       "evidence": [
         "docs/implementation-0.2.0.md"
@@ -3506,7 +3509,7 @@
         "R10-0473",
         "R10-0475"
       ],
-      "scope": "Concurrency-one persistent worker SDK, original-byte nonce coordinator, bounded explicit retransmission, conservative interruption recovery, gVisor-only repository adapter and verified evidence publication. Does not provide an unattended scheduler, generation loop, cross-host identity leader election, coordinated journal recovery, effect authority, full G6 or complete release qualification. Local execution buffers have a 128-record admission ceiling and paused, verified-evidence retirement before consensus history archival; unknowns remain pinned."
+      "scope": "Concurrency-one persistent worker SDK, original-byte nonce coordinator, bounded explicit retransmission, conservative interruption recovery, gVisor-only repository adapter and verified evidence publication. Adds an immutable finite persistent execution schedule with admission deadline, per-task/total call limits, outside-consensus backoff/jitter and emergency stop. Does not provide the complete generation loop, cross-host identity leader election, coordinated journal recovery, effect authority, full G6 or complete release qualification. Local execution buffers have a 128-record admission ceiling and paused, verified-evidence retirement before consensus history archival; unknowns remain pinned."
     },
     {
       "id": "independent-sandbox-recovery",

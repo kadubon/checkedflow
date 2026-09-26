@@ -152,3 +152,10 @@ Before candidate execution, start the [independent sandbox recovery service](doc
 and set `CHECKEDFLOW_SANDBOX_RECOVERY` to its private host journal. Use one journal per local Docker
 daemon. Never reset unresolved creation intents to free capacity or use a stale service heartbeat
 as proof that an orphan has stopped. The packaged service template requires operator review.
+
+For [finite worker scheduling](docs/worker-scheduling.md), pin the task list and call/time limits
+before starting. Use one persistent plan directory and the real monotonic-clock boot identity.
+Never reset a plan, command or execution journal to recover uncertainty. `Schedule.stop()` is a
+local persistent inhibit, not consensus revocation. A `complete` schedule is not artifact acceptance.
+Before release, reconcile README, Docs, AGENTS.md, this guide and the machine-readable operation
+catalogue with actual installed-artifact behavior. Component CI cannot substitute for G1-G7 evidence.

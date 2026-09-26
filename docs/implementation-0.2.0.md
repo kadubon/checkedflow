@@ -821,3 +821,26 @@ checks buffer retirement and exact evidence retrieval before consensus archival.
 same-artifact qualification is pending for this new source; prior infrastructure results do not
 qualify the added maintenance path. Logical record bounds do not replace disk quotas, archive-based
 worker recovery, artifact replicas or coordinated disaster recovery.
+
+The bounded-buffer source `5ffe561afe94499452efe5cdd9545e482d4d05ae` passed CI 36278781917.
+All six OS/Python jobs, Vault and both object-store jobs passed. Its 20 installed-wheel infrastructure
+cases had zero failures/errors/skips (320.925 seconds). Wheel SHA-256 is
+`fc495e291fb02f5088efd718f42e6bbac3323718243a7392f5a215cd574f0532`; sdist is
+`d746b0f87cc4488e70e305f094a502c971f471394f530635bdc7379926c22c9d`. Local validation passed
+651 tests and 57 selected mutants. The source/distribution publication scan inspected 695 members
+without findings. This development metadata remains 0.1.0 and must not be published over 0.1.0.
+
+## Finite persistent execution scheduling
+
+The next increment implements an immutable task schedule outside consensus. Local call allowances,
+boot-bound deadlines, retry due times and emergency stop survive process restart. Only explicit
+transient classes are retried with bounded exponential waiting and jitter. Limits are charged before
+invocation, and the existing supervisor prevents uncertain code from being executed again.
+Thirty targeted cases passed, including an actual process exit and recovery through the worker's
+persisted attempt. The installed-wheel infrastructure case now runs its patch task through the
+scheduler. Exact-source full/installed qualification for this increment is pending.
+
+README, the Docs index and worker guides, AGENTS.md, skills.md and the machine-readable operation
+catalogue describe the new behavior and limits. This does not complete automatic generation,
+verification/reuse orchestration, cross-host deployment, boot/validator recovery, consensus-bound
+effects or uniform v2 A2A/MCP authorization. The remaining G1-G7 gates and final release stay open.
