@@ -23,6 +23,16 @@ records individual requirement paragraphs with stable identifiers and source lin
 An implementation status is not a release approval. Evidence must identify actual code, tests,
 source revision, artifact hashes, environment and executed results before qualification.
 
+The initial import retained every nonempty source paragraph, including reference links and
+reporting instructions. Those 377 records are not equally sized engineering requirements and must
+not be used as a completion percentage. An audit found that their statuses remained `NOT_STARTED`
+despite separate component records. Twenty component records now link to 88 affected paragraphs,
+with reciprocal evidence references and `IN_PROGRESS` status. This deliberately does not promote
+partial component evidence to complete paragraph acceptance. Read each component's scope and the
+remaining milestone obligations. Offline static checks validate frozen text/line/hash identity,
+unique IDs, reciprocal references and local implementation/test/document paths. They do not
+authenticate a test result or authorize publication; G1–G7 remain unqualified.
+
 1. Preserve the v1 interpreter and signed bytes; add a separate v2 profile. See
    [the protocol boundary ADR](adr-0001-versioned-operational-state.md).
 2. Use bounded active state and explicit epoch retirement, with retained authenticated history.

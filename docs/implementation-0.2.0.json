@@ -6,6 +6,7 @@
   "baseline_source": "a58869e2488bed9550b006d261601240357b2b99",
   "statuses": [
     "NOT_STARTED",
+    "IN_PROGRESS",
     "IMPLEMENTED",
     "SOURCE_TESTED",
     "INSTALLED_TESTED",
@@ -144,8 +145,10 @@
       "id": "R0-0043",
       "source_line": 43,
       "text": "- The GitHub draft-PR effect implemented below is disabled by default. Exercise its real write path only against an explicitly authorized disposable target. A configured credential alone is not permission to mutate an arbitrary repository.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:github-draft-provider"
+      ]
     },
     {
       "id": "R0-0044",
@@ -536,22 +539,28 @@
       "id": "R3-0145",
       "source_line": 145,
       "text": "Preserve the interpretation of existing `checkedflow/v1` signed bytes, canonicalization, state hashes, commands, error codes, expiry behavior, and replay vectors. Preserve published 0.1.0 tags/assets and historical validation records.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:legacy-v1-capture"
+      ]
     },
     {
       "id": "R3-0147",
       "source_line": 147,
       "text": "Make frozen golden fixtures from authentic old histories. The new package must verify/replay them with the original semantics. Do not edit expected hashes to make a changed interpretation pass.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:legacy-v1-capture"
+      ]
     },
     {
       "id": "R3-0151",
       "source_line": 151,
       "text": "Use a new explicitly versioned protocol/state profile, such as `checkedflow/v2`, for changes that reinterpret committed data, including:",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-identity-boundary"
+      ]
     },
     {
       "id": "R3-0153",
@@ -564,8 +573,10 @@
       "id": "R3-0154",
       "source_line": 154,
       "text": "- Role-separated organization keys and rotation semantics.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-identity-boundary"
+      ]
     },
     {
       "id": "R3-0155",
@@ -599,36 +610,47 @@
       "id": "R3-0161",
       "source_line": 161,
       "text": "Reject unsupported combinations at startup and request admission. Do not accept v1 bytes under v2 meaning. Do not downgrade a signed request automatically.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-identity-boundary",
+        "component:operational-abci-and-own-node-client"
+      ]
     },
     {
       "id": "R3-0163",
       "source_line": 163,
       "text": "Preserve strict JSON lexical admission, duplicate-key rejection, canonical bytes, integer bounds, and domain-separated signatures. Network SDKs must not normalize untrusted input before the signed inner envelope is checked.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-identity-boundary"
+      ]
     },
     {
       "id": "R3-0167",
       "source_line": 167,
       "text": "The state transition must not call S3, GitHub, Vault, clocks, DNS, randomness, model APIs, metrics, or a sandbox. All outside observations enter through bounded, authenticated, explicitly interpreted records. Local service availability cannot make different validators compute different state transitions.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:operational-abci-and-own-node-client"
+      ]
     },
     {
       "id": "R3-0169",
       "source_line": 169,
       "text": "Local derived indexes and caches are rebuildable, never independent authorization sources. Rejected commands must preserve the established command-versus-block-expiry distinction.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:atomic-control-storage"
+      ]
     },
     {
       "id": "R4-0175",
       "source_line": 175,
       "text": "Implement **`repository-patch/v1`** as a restricted Python project profile, not “arbitrary repository execution.”",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0179",
@@ -641,71 +663,91 @@
       "id": "R4-0181",
       "source_line": 181,
       "text": "- Repository identity and exact base commit plus content/tree digest.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0182",
       "source_line": 182,
       "text": "- Bounded normalized file manifest, patch digest, result-tree digest.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0183",
       "source_line": 183,
       "text": "- Allowed paths/extensions, maximum files/bytes, and prohibited file classes.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0184",
       "source_line": 184,
       "text": "- Approved dependency lock or prebuilt environment image digest.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0185",
       "source_line": 185,
       "text": "- Exact verifier implementation, test selection, lint configuration, and expected test inventory.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0186",
       "source_line": 186,
       "text": "- Resource ceilings and deadlines.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0187",
       "source_line": 187,
       "text": "- Named receiver/use scope.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0188",
       "source_line": 188,
       "text": "- Whether any eventual external PR effect is permitted; default false.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0190",
       "source_line": 190,
       "text": "Do not resolve mutable branches during verification. Changing the base, dependency lock, checker, selected tests, or relevant environment creates a new verification target.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0192",
       "source_line": 192,
       "text": "Use fixture repositories included under an explicit open license, containing small real Python modules with seeded bugs and independently specified expectations. Include more than trivial integer-array transformations, but keep tests CPU-only and bounded.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:contract-bound-repository-observer"
+      ]
     },
     {
       "id": "R4-0194",
@@ -732,50 +774,64 @@
       "id": "R4-0202",
       "source_line": 202,
       "text": "- Absolute/traversal paths, mixed-separator escapes, collisions, escaping links, hardlinks, device files, oversized archives, and decompression bombs.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0203",
       "source_line": 203,
       "text": "- Git hooks, `.git` metadata, submodules, LFS fetching, executable filters, uncontrolled credential helpers, and network-driven dependency installation.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0204",
       "source_line": 204,
       "text": "- Changes to protected tests, checker configuration, dependency policy, CI workflows, signing metadata, or security controls unless a separate newly approved contract explicitly allows them.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:patch-admission-primitives"
+      ]
     },
     {
       "id": "R4-0206",
       "source_line": 206,
       "text": "Validate paths on the actual host/target filesystem; do not rely on a string prefix. Use private workspaces, controlled extraction, no-follow/descriptor-based operations where appropriate, and protection against validation-to-use races.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:nested-repository-tree-runner"
+      ]
     },
     {
       "id": "R4-0208",
       "source_line": 208,
       "text": "Repository acquisition is a trusted, constrained host operation or an uploaded immutable bundle. Do not grant network access or credentials to candidate code. A generic repository URL must not become an SSRF, local-file, or arbitrary-git-protocol primitive.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:nested-repository-tree-runner"
+      ]
     },
     {
       "id": "R4-0212",
       "source_line": 212,
       "text": "Apply the patch in disposable isolated workspaces. Run candidate code only through the approved gVisor profile, with no network, secrets, Docker socket, writable host paths, or privileged mode.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:nested-repository-tree-runner"
+      ]
     },
     {
       "id": "R4-0214",
       "source_line": 214,
       "text": "Bind evidence to the exact patched bytes, base, environment, and checker. Zero collected tests, unexpected skips, malformed reports, timeout, missing sandbox, or uncertain cleanup must not produce a pass.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:contract-bound-repository-observer"
+      ]
     },
     {
       "id": "R4-0216",
@@ -788,8 +844,10 @@
       "id": "R4-0218",
       "source_line": 218,
       "text": "Provide a restricted cross-process/output-checking path where the trusted evaluator owns the expected inputs/results and interprets bounded candidate outputs outside the candidate's process. Preserve the distinction between:",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:contract-bound-repository-observer"
+      ]
     },
     {
       "id": "R4-0220",
@@ -802,8 +860,10 @@
       "id": "R4-0221",
       "source_line": 221,
       "text": "- Independently checked properties for a declared bounded interface.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:contract-bound-repository-observer"
+      ]
     },
     {
       "id": "R4-0222",
@@ -816,22 +876,28 @@
       "id": "R4-0224",
       "source_line": 224,
       "text": "Do not trust candidate-supplied JUnit, stdout containing “PASS,” or a success Boolean as the authoritative verdict. Document residual shared-checker risks. Do not claim secret hidden tests when the candidate can inspect the wrapper or inputs.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:contract-bound-repository-observer"
+      ]
     },
     {
       "id": "R4-0226",
       "source_line": 226,
       "text": "For non-exhaustive repository tests, use a scoped test-suite acceptance claim and unknown general behavior/novelty. Do not relabel a digest of test outputs as universal program equivalence.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:contract-bound-repository-observer"
+      ]
     },
     {
       "id": "R4-0230",
       "source_line": 230,
       "text": "Distinguish reuse of an exact checked patch against its original base from extraction of a generally reusable procedure. Implement context checks and fresh verification for a new base/environment. Do not automatically cherry-pick a patch onto a new repository and inherit old acceptance.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:exact-repository-reuse-preparation"
+      ]
     },
     {
       "id": "R4-0232",
@@ -844,64 +910,84 @@
       "id": "R4-0234",
       "source_line": 234,
       "text": "approved mission -> candidate patch -> isolated execution -> independent checks -> accepted scoped artifact -> allowed same-scope reuse -> changed-base rejection -> new qualification.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:exact-repository-reuse-preparation"
+      ]
     },
     {
       "id": "R4-0236",
       "source_line": 236,
       "text": "Include a valid patch, an incorrect patch, test-tampering attempts, stale evidence, changed dependencies, and timeout cases.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:contract-bound-repository-observer"
+      ]
     },
     {
       "id": "R5-0242",
       "source_line": 242,
       "text": "Implement a content-addressed artifact interface with:",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:local-artifact-integrity"
+      ]
     },
     {
       "id": "R5-0244",
       "source_line": 244,
       "text": "- A local filesystem backend for offline/disposable operation.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:local-artifact-integrity"
+      ]
     },
     {
       "id": "R5-0245",
       "source_line": 245,
       "text": "- A real S3-compatible backend, exercised against an approved disposable local service or authorized endpoint.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:verified-s3-artifact-store"
+      ]
     },
     {
       "id": "R5-0247",
       "source_line": 247,
       "text": "Use provider-neutral interfaces. Select and pin any external service only after checking its current license, supported distribution, and compatibility. Do not invent a dependency or assume every “S3-compatible” backend has identical consistency semantics.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:verified-s3-artifact-store"
+      ]
     },
     {
       "id": "R5-0251",
       "source_line": 251,
       "text": "Consensus records contain small typed references: digest algorithm/value, byte length, content type, artifact kind, scope, and manifest/version identity. Keep credentials, expiring signed URLs, and arbitrary endpoint addresses outside canonical state.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:local-artifact-integrity"
+      ]
     },
     {
       "id": "R5-0253",
       "source_line": 253,
       "text": "Every read verifies exact bytes and length. S3 ETag is not a substitute for the declared content digest. Handle partial uploads, concurrent identical puts, conflicting content, corruption, interrupted fetches, and bounded streams.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:local-artifact-integrity",
+        "component:verified-s3-artifact-store"
+      ]
     },
     {
       "id": "R5-0255",
       "source_line": 255,
       "text": "Uploaded bytes become visible only after complete verification and atomic finalization. Use per-scope storage policy; a hash is not authorization. Prevent cross-scope existence leaks, unauthorized presigned access, and unsafe cache reuse. Define encrypted-storage digest semantics explicitly.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:local-artifact-integrity",
+        "component:verified-s3-artifact-store"
+      ]
     },
     {
       "id": "R5-0259",
@@ -914,36 +1000,48 @@
       "id": "R5-0261",
       "source_line": 261,
       "text": "Do not fetch artifacts during consensus execution. Runtime use fetches and checks bytes; if data is unavailable, it stops with an explicit unavailable/unknown state. A local outage must not silently mutate the global verdict.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:exact-repository-reuse-preparation"
+      ]
     },
     {
       "id": "R5-0263",
       "source_line": 263,
       "text": "Test removal, corruption, stale replicas, and service outage after initial acceptance. Do not return “usable” solely because an old hash exists in committed state.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:exact-repository-reuse-preparation",
+        "component:verified-s3-artifact-store"
+      ]
     },
     {
       "id": "R5-0267",
       "source_line": 267,
       "text": "Implement mark/retain/sweep or an equivalent safe policy with a dry run, protected references, pending-operation roots, historical retention rules, grace periods, and authenticated execution.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:durable-artifact-retention"
+      ]
     },
     {
       "id": "R5-0269",
       "source_line": 269,
       "text": "Retain live dependencies, unresolved effect evidence, required snapshot manifests, and retained replay material. Do not delete an artifact between admission and use: pin/version the referenced object for the operation.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:durable-artifact-retention"
+      ]
     },
     {
       "id": "R5-0271",
       "source_line": 271,
       "text": "Deletion/tombstoning, revocation, and physical erasure are distinct. Document and test restore-related resurrection prevention.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:durable-artifact-retention",
+        "component:retention-catalog-backup"
+      ]
     },
     {
       "id": "R6-0277",
@@ -956,8 +1054,10 @@
       "id": "R6-0279",
       "source_line": 279,
       "text": "Implement a versioned bounded-state/archive strategy. Decide it in an ADR before coding. A bounded active set plus authenticated archived commitments and epoch/checkpoint transitions is acceptable; a transactional indexed state representation is also acceptable if its deterministic commitment and replay are specified.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-control-and-request-journal"
+      ]
     },
     {
       "id": "R6-0281",
@@ -977,22 +1077,31 @@
       "id": "R6-0284",
       "source_line": 284,
       "text": "- Durable immutable history/commitments and selective materialization.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:atomic-control-storage"
+      ]
     },
     {
       "id": "R6-0285",
       "source_line": 285,
       "text": "- Nonce, request-ID, fence, key, dependency, budget, and residual continuity.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-control-and-request-journal",
+        "component:atomic-control-storage",
+        "component:bounded-isolated-task-ownership"
+      ]
     },
     {
       "id": "R6-0286",
       "source_line": 286,
       "text": "- Safe rollover/checkpoint/archive without resetting unfinished obligations.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-control-and-request-journal",
+        "component:atomic-control-storage"
+      ]
     },
     {
       "id": "R6-0287",
@@ -1019,8 +1128,10 @@
       "id": "R6-0292",
       "source_line": 292,
       "text": "If old idempotency records are retired, specify the retention window and an explicit permanent `RETIRED_REQUEST`/equivalent result. A retired request must never become a fresh dispatch. Do not promise infinite successful duplicate acknowledgment if the design only retains a finite window.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-control-and-request-journal"
+      ]
     },
     {
       "id": "R6-0294",
@@ -1033,29 +1144,37 @@
       "id": "R6-0298",
       "source_line": 298,
       "text": "Ordinary work must not consume the capacity needed for pause, drain, revoke, reconcile, snapshot, and safe rollover. Reserve bounded storage/request/transition capacity for those actions and for invalidation/residual expansion.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-control-and-request-journal"
+      ]
     },
     {
       "id": "R6-0300",
       "source_line": 300,
       "text": "Test byte-level as well as object-count exhaustion. A paused or saturated system must still be able to enter its defined safe state. No quorum or signature bypass is permitted.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-control-and-request-journal"
+      ]
     },
     {
       "id": "R6-0304",
       "source_line": 304,
       "text": "Keep legacy declared-ceiling charges separate from optional observed CPU/token/currency measurements. Missing observations remain missing; counters do not turn into financial metering by relabeling.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-work-budget"
+      ]
     },
     {
       "id": "R6-0306",
       "source_line": 306,
       "text": "Preserve budget conservation across retries, snapshots, rollover, and restore. A successor epoch or run is not a fresh spending allowance unless separately authorized. Carry unresolved liabilities explicitly and prevent double charging.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-work-budget"
+      ]
     },
     {
       "id": "R6-0308",
@@ -1152,8 +1271,10 @@
       "id": "R7-0339",
       "source_line": 339,
       "text": "Provide CLI/runbooks for consistent backup, validation, restore into a new directory, dry-run inspection, and caught-up verification. Account for SQLite WAL and the A2A journal's non-reconstructible callback configuration.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:retention-catalog-backup"
+      ]
     },
     {
       "id": "R7-0341",
@@ -1215,29 +1336,37 @@
       "id": "R8-0365",
       "source_line": 365,
       "text": "- CometBFT validator signing keys and anti-double-sign state.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:operational-abci-and-own-node-client"
+      ]
     },
     {
       "id": "R8-0366",
       "source_line": 366,
       "text": "- Organization administrative authorization keys.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-identity-boundary"
+      ]
     },
     {
       "id": "R8-0367",
       "source_line": 367,
       "text": "- Worker/executor keys.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-identity-boundary"
+      ]
     },
     {
       "id": "R8-0368",
       "source_line": 368,
       "text": "- Verifier identities and attestation keys.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-identity-boundary"
+      ]
     },
     {
       "id": "R8-0369",
@@ -1264,29 +1393,38 @@
       "id": "R8-0374",
       "source_line": 374,
       "text": "Preserve the existing separation between consensus progress and artifact acceptance. A negative or contradictory verifier observation must remain visible and trigger the declared quarantine policy; do not discard it merely because a passing quorum was reached. Remaining funded checks and their costs must not disappear after early acceptance. A false/malicious negative may reduce availability; document that trade-off rather than inventing a truth oracle or weakening the policy silently.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:funded-organizational-acceptance"
+      ]
     },
     {
       "id": "R8-0376",
       "source_line": 376,
       "text": "Preserve the four-organization membership model. Three signatures from different keys controlled by one organization do not count as three organizations.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-identity-boundary",
+        "component:funded-organizational-acceptance"
+      ]
     },
     {
       "id": "R8-0380",
       "source_line": 380,
       "text": "Implement pending -> activated -> retired/revoked key lifecycles, explicit activation heights/versions, proof of possession where required, and administrative approval under current valid authority.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-application-key-revisions"
+      ]
     },
     {
       "id": "R8-0382",
       "source_line": 382,
       "text": "Test overlap, old-key requests, mixed key epochs, replay, rotation failure, lost signer, and compromised-key revocation. Distinguish routine rotation from compromised historical evidence; do not automatically invalidate all old observations on every routine rotation or automatically trust them after compromise.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-application-key-revisions"
+      ]
     },
     {
       "id": "R8-0384",
@@ -1299,64 +1437,82 @@
       "id": "R8-0388",
       "source_line": 388,
       "text": "Provide a typed signer interface and at least one real non-exporting signing-service integration. A concrete suitable target is **Vault Transit Ed25519**, subject to checking and pinning current documented support.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:vault-transit-signer"
+      ]
     },
     {
       "id": "R8-0390",
       "source_line": 390,
       "text": "- Sign the exact canonical domain-separated message, not an accidental hex string or differently prehashed message.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:vault-transit-signer"
+      ]
     },
     {
       "id": "R8-0391",
       "source_line": 391,
       "text": "- Bind the public key and provider key version to the committed identity.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:vault-transit-signer"
+      ]
     },
     {
       "id": "R8-0392",
       "source_line": 392,
       "text": "- Avoid `latest` key-version ambiguity during a rotation.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:vault-transit-signer"
+      ]
     },
     {
       "id": "R8-0393",
       "source_line": 393,
       "text": "- No private-key export or plaintext backup is required for normal operation.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:vault-transit-signer"
+      ]
     },
     {
       "id": "R8-0394",
       "source_line": 394,
       "text": "- Transport/authentication, timeouts, unavailable service, wrong key, wrong algorithm, and rotation have tests.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:vault-transit-signer"
+      ]
     },
     {
       "id": "R8-0395",
       "source_line": 395,
       "text": "- Use a real disposable local service for its integration gate; a fake HTTP client alone is insufficient.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:vault-transit-signer"
+      ]
     },
     {
       "id": "R8-0396",
       "source_line": 396,
       "text": "- A local development Vault proves API integration, not hardware-backed key custody or secure production Vault operation.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:vault-transit-signer"
+      ]
     },
     {
       "id": "R8-0398",
       "source_line": 398,
       "text": "Do not claim AWS/Azure/HSM support without a concrete implemented, tested adapter with the required signature algorithm. Keep external service deployment/operator responsibility visible.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:vault-transit-signer"
+      ]
     },
     {
       "id": "R8-0402",
@@ -1390,8 +1546,10 @@
       "id": "R9-0414",
       "source_line": 414,
       "text": "Implement an optional `EffectAdapter` boundary and one concrete effect: opening a **draft pull request** for an accepted repository patch in an explicitly allowed repository.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:github-draft-provider"
+      ]
     },
     {
       "id": "R9-0416",
@@ -1439,15 +1597,19 @@
       "id": "R9-0429",
       "source_line": 429,
       "text": "- Repository identity, base commit, exact approved patch and result tree.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:github-draft-provider"
+      ]
     },
     {
       "id": "R9-0430",
       "source_line": 430,
       "text": "- Permitted head-branch namespace and draft-only action.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:github-draft-provider"
+      ]
     },
     {
       "id": "R9-0431",
@@ -1474,8 +1636,10 @@
       "id": "R9-0439",
       "source_line": 439,
       "text": "Creating a draft PR or pushing its branch can trigger destination CI. “Draft” does not make candidate code harmless. Before enabling this adapter, require an operator-reviewed destination policy that prevents candidate-controlled code from receiving repository secrets or privileged CI credentials. Protect `.github/`, build/test control files, and the allowed patch scope.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:github-draft-provider"
+      ]
     },
     {
       "id": "R9-0441",
@@ -1488,22 +1652,28 @@
       "id": "R9-0445",
       "source_line": 445,
       "text": "Use deterministic operation identities and owned branch names, conditional/create-if-absent behavior where actually supported, and a serialized dispatch claim. Inspect the existing branch/PR against exact expected content before treating it as the result of a retry.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:github-draft-provider"
+      ]
     },
     {
       "id": "R9-0447",
       "source_line": 447,
       "text": "GitHub PR creation is not assumed to expose a universal exactly-once primitive. After an ambiguous reply, reconcile the original operation rather than create a fresh ID or resend blindly. Account for delayed remote visibility and concurrent requests. Preserve `unknown` when absence has not been established reliably.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:github-draft-provider"
+      ]
     },
     {
       "id": "R9-0449",
       "source_line": 449,
       "text": "A fence in CheckedFlow cannot cancel an already in-flight GitHub request. State the exact guarantees and test the failure windows. If the adapter cannot safely resume an ambiguous operation, require explicit authorized reconciliation.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:github-draft-provider"
+      ]
     },
     {
       "id": "R9-0451",
@@ -1516,8 +1686,10 @@
       "id": "R9-0453",
       "source_line": 453,
       "text": "Test against a local protocol-faithful fake server for exhaustive failure paths and, separately, an explicitly authorized disposable real repository for the supported external-provider claim. If no disposable target is authorized, keep the live gate blocked and the feature disabled; do not substitute a mock PASS for it.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:github-draft-provider"
+      ]
     },
     {
       "id": "R10-0459",
@@ -1537,29 +1709,39 @@
       "id": "R10-0463",
       "source_line": 463,
       "text": "Do not automatically rerun already-started uncertain work. Classify retryable failures and enforce finite retry/time/budget policies. Reuse the same logical operation identity for reconciliation; new IDs are not a recovery technique.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:bounded-isolated-task-ownership"
+      ]
     },
     {
       "id": "R10-0465",
       "source_line": 465,
       "text": "Keep verification capacity protected. Apply backpressure before generation exhausts verification/storage capacity. Track reservation, commitment, and actual observations separately.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-work-budget",
+        "component:funded-organizational-acceptance"
+      ]
     },
     {
       "id": "R10-0467",
       "source_line": 467,
       "text": "Provide mission-level pause, drain, resume, and local emergency-disable controls:",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:v2-control-and-request-journal",
+        "component:dispatch-freshness-watchdog"
+      ]
     },
     {
       "id": "R10-0469",
       "source_line": 469,
       "text": "- Pause blocks new dispatch, not historical reads.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:dispatch-freshness-watchdog"
+      ]
     },
     {
       "id": "R10-0470",
@@ -1572,8 +1754,10 @@
       "id": "R10-0471",
       "source_line": 471,
       "text": "- Local emergency disable can stop the operator's dispatcher without quorum, but cannot fabricate a consensus revocation or authorize new work.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:dispatch-freshness-watchdog"
+      ]
     },
     {
       "id": "R10-0472",
@@ -1586,15 +1770,19 @@
       "id": "R10-0473",
       "source_line": 473,
       "text": "- A stopped block height is not a wall-clock lease extension.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:dispatch-freshness-watchdog"
+      ]
     },
     {
       "id": "R10-0475",
       "source_line": 475,
       "text": "During quorum outage or stale own-node state, stop new external dispatch based on a documented local freshness policy. Local watchdog clocks may inhibit execution; they must not alter deterministic consensus time or create authority. In-flight effects remain explicitly uncertain where necessary.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:dispatch-freshness-watchdog"
+      ]
     },
     {
       "id": "R11-0481",
@@ -2703,7 +2891,11 @@
       "installed_development_artifacts": {
         "checkedflow-0.1.0-py3-none-any.whl": "f99fd5201ecc36d970bf84b8bb9030c2c0a5b9beb4e883716c8c2ac567200033",
         "checkedflow-0.1.0.tar.gz": "af46d2f8ce437b4d26e914cd14a07b1ec5cbdca00d1863b197a2654c062d405e"
-      }
+      },
+      "requirements": [
+        "R3-0145",
+        "R3-0147"
+      ]
     },
     {
       "id": "patch-admission-primitives",
@@ -2718,6 +2910,21 @@
       "scope": "19 source tests for in-memory patch admission and evaluator-owned output comparison. No candidate execution, no sandbox qualification, no transport integration.",
       "evidence": [
         "docs/repository-patch.md"
+      ],
+      "requirements": [
+        "R4-0175",
+        "R4-0181",
+        "R4-0182",
+        "R4-0183",
+        "R4-0184",
+        "R4-0185",
+        "R4-0186",
+        "R4-0187",
+        "R4-0188",
+        "R4-0190",
+        "R4-0202",
+        "R4-0203",
+        "R4-0204"
       ]
     },
     {
@@ -2733,7 +2940,17 @@
       "evidence": [
         "docs/operational-identity.md"
       ],
-      "scope": "12 tests for original signed-byte admission, revision/purpose/mission validity and independent organization approvals. No v2 state transition, managed signer or rotation governance qualification."
+      "scope": "12 tests for original signed-byte admission, revision/purpose/mission validity and independent organization approvals. No v2 state transition, managed signer or rotation governance qualification.",
+      "requirements": [
+        "R3-0151",
+        "R3-0154",
+        "R3-0161",
+        "R3-0163",
+        "R8-0366",
+        "R8-0367",
+        "R8-0368",
+        "R8-0376"
+      ]
     },
     {
       "id": "v2-control-and-request-journal",
@@ -2758,7 +2975,16 @@
           "checkedflow-0.1.0-py3-none-any.whl": "cdcc4178207260537dfbbce9be4fa89c2bc1023a1f1fb58dd35b22e23d037578",
           "checkedflow-0.1.0.tar.gz": "97bf26f771149c521e635246bb707dd9eb8378f0aaea8e76f2649c60027098ed"
         }
-      }
+      },
+      "requirements": [
+        "R6-0279",
+        "R6-0285",
+        "R6-0286",
+        "R6-0292",
+        "R6-0298",
+        "R6-0300",
+        "R10-0467"
+      ]
     },
     {
       "id": "atomic-control-storage",
@@ -2775,7 +3001,13 @@
       "evidence": [
         "docs/operational-storage.md"
       ],
-      "scope": "Eleven source cases including actual before/after-commit process crashes, concurrent commits, signed replay and corruption checks. This is local control storage, not snapshot bootstrap, backup/restore, full work-state persistence or CometBFT qualification."
+      "scope": "Eleven source cases including actual before/after-commit process crashes, concurrent commits, signed replay and corruption checks. This is local control storage, not snapshot bootstrap, backup/restore, full work-state persistence or CometBFT qualification.",
+      "requirements": [
+        "R3-0169",
+        "R6-0284",
+        "R6-0285",
+        "R6-0286"
+      ]
     },
     {
       "id": "local-artifact-integrity",
@@ -2791,7 +3023,14 @@
       "evidence": [
         "docs/artifact-storage.md"
       ],
-      "scope": "Ten local tests for bounded bytes, scope-before-I/O, atomic publication, concurrent quotas, corruption and schema agreement. Not S3, availability quorum, retention, network authentication or domain lifecycle qualification."
+      "scope": "Ten local tests for bounded bytes, scope-before-I/O, atomic publication, concurrent quotas, corruption and schema agreement. Not S3, availability quorum, retention, network authentication or domain lifecycle qualification.",
+      "requirements": [
+        "R5-0242",
+        "R5-0244",
+        "R5-0251",
+        "R5-0253",
+        "R5-0255"
+      ]
     },
     {
       "id": "governed-application-key-revisions",
@@ -2808,7 +3047,11 @@
       "evidence": [
         "docs/key-lifecycle.md"
       ],
-      "scope": "Twelve lifecycle cases covering governed scheduling/revocation, exact possession, nonce continuity, revoked pending-key replacement, nonresurrection, bounded revision retention, local persistence and signed replay. Not full key archival, work-level compromise quarantine, validator rotation or managed custody."
+      "scope": "Twelve lifecycle cases covering governed scheduling/revocation, exact possession, nonce continuity, revoked pending-key replacement, nonresurrection, bounded revision retention, local persistence and signed replay. Not full key archival, work-level compromise quarantine, validator rotation or managed custody.",
+      "requirements": [
+        "R8-0380",
+        "R8-0382"
+      ]
     },
     {
       "id": "vault-transit-signer",
@@ -2826,7 +3069,18 @@
       "evidence": [
         "docs/managed-signer.md"
       ],
-      "scope": "Five protocol-server cases and one real pinned Vault 2.1.1 Windows TLS process case, including governed application rotation. Final installed-wheel and hosted Linux results require separate inspection. Not hardware/production custody, full G4, or multi-host qualification."
+      "scope": "Five protocol-server cases and one real pinned Vault 2.1.1 Windows TLS process case, including governed application rotation. Final installed-wheel and hosted Linux results require separate inspection. Not hardware/production custody, full G4, or multi-host qualification.",
+      "requirements": [
+        "R8-0388",
+        "R8-0390",
+        "R8-0391",
+        "R8-0392",
+        "R8-0393",
+        "R8-0394",
+        "R8-0395",
+        "R8-0396",
+        "R8-0398"
+      ]
     },
     {
       "id": "nested-repository-tree-runner",
@@ -2842,7 +3096,12 @@
       "evidence": [
         "docs/repository-patch.md"
       ],
-      "scope": "Four Linux filesystem cases passed under WSL, including directory replacement by a symlink; Windows source suite and strict type checks passed. Real gVisor nested-tree case is mandatory but not yet observed for this increment. Not approved task execution, independent checker integration or full repository-patch acceptance."
+      "scope": "Four Linux filesystem cases passed under WSL, including directory replacement by a symlink; Windows source suite and strict type checks passed. Real gVisor nested-tree case is mandatory but not yet observed for this increment. Not approved task execution, independent checker integration or full repository-patch acceptance.",
+      "requirements": [
+        "R4-0206",
+        "R4-0208",
+        "R4-0212"
+      ]
     },
     {
       "id": "contract-bound-repository-observer",
@@ -2859,7 +3118,16 @@
       "evidence": [
         "docs/repository-patch.md"
       ],
-      "scope": "Twelve protocol/fixture tests, 100% observer line/branch coverage, two new killed mutations, and development wheel/sdist import/inventory checks. Six real sandbox variants are mandatory and remain unqualified until an exact-source CI result is inspected. Not authenticated work admission, lint reports, evidence quorum, registration or reuse."
+      "scope": "Twelve protocol/fixture tests, 100% observer line/branch coverage, two new killed mutations, and development wheel/sdist import/inventory checks. Six real sandbox variants are mandatory and remain unqualified until an exact-source CI result is inspected. Not authenticated work admission, lint reports, evidence quorum, registration or reuse.",
+      "requirements": [
+        "R4-0192",
+        "R4-0214",
+        "R4-0218",
+        "R4-0221",
+        "R4-0224",
+        "R4-0226",
+        "R4-0236"
+      ]
     },
     {
       "id": "governed-work-budget",
@@ -2876,7 +3144,12 @@
       "evidence": [
         "docs/work-budget.md"
       ],
-      "scope": "Governed fixed funding, target/phase reservations, protected verification allocation, conservative unknown charging, immutable terminal tickets and signed SQLite replay. Bounded at 128 retained tickets. Not task leases, automatic metering, full residual integration or sustained lifecycle archival."
+      "scope": "Governed fixed funding, target/phase reservations, protected verification allocation, conservative unknown charging, immutable terminal tickets and signed SQLite replay. Bounded at 128 retained tickets. Not task leases, automatic metering, full residual integration or sustained lifecycle archival.",
+      "requirements": [
+        "R6-0304",
+        "R6-0306",
+        "R10-0465"
+      ]
     },
     {
       "id": "bounded-isolated-task-ownership",
@@ -2893,7 +3166,11 @@
       "evidence": [
         "docs/work-tasks.md"
       ],
-      "scope": "Ten signed lifecycle/reference-model/storage cases; 100% task-core line/branch coverage; fence and expiry mutations detected. Finite approved ownership, pre-start retries and charged uncertainty. Not distributed v2 dispatch, worker freshness, artifact availability/quorum, adoption, residual dependency graph or reuse."
+      "scope": "Ten signed lifecycle/reference-model/storage cases; 100% task-core line/branch coverage; fence and expiry mutations detected. Finite approved ownership, pre-start retries and charged uncertainty. Not distributed v2 dispatch, worker freshness, artifact availability/quorum, adoption, residual dependency graph or reuse.",
+      "requirements": [
+        "R6-0285",
+        "R10-0463"
+      ]
     },
     {
       "id": "operational-abci-and-own-node-client",
@@ -2912,7 +3189,12 @@
       "evidence": [
         "docs/operational-consensus.md"
       ],
-      "scope": "Separate validator/command keys, transient finalization, atomic commit replay and bounded raw-byte own-node RPC. Exact-wheel four-node/gVisor repository work and crash recovery passed at 4470200 and 1c4b6a5. Not four-host operation, supervised dispatch, current availability/reuse or authenticated snapshots."
+      "scope": "Separate validator/command keys, transient finalization, atomic commit replay and bounded raw-byte own-node RPC. Exact-wheel four-node/gVisor repository work and crash recovery passed at 4470200 and 1c4b6a5. Not four-host operation, supervised dispatch, current availability/reuse or authenticated snapshots.",
+      "requirements": [
+        "R3-0161",
+        "R3-0167",
+        "R8-0365"
+      ]
     },
     {
       "id": "funded-organizational-acceptance",
@@ -2930,7 +3212,12 @@
       "evidence": [
         "docs/work-acceptance.md"
       ],
-      "scope": "Four funded organization-scoped checks, three passing organizations, retained late negative/contradictory/withdrawn evidence and conservative historical key revocation. Source and mutation tests plus exact-wheel single-host CometBFT/gVisor acceptance/withdrawal passed at 1c4b6a5. Not independent operators, current availability, full reuse, dependency propagation or sustained archival."
+      "scope": "Four funded organization-scoped checks, three passing organizations, retained late negative/contradictory/withdrawn evidence and conservative historical key revocation. Source and mutation tests plus exact-wheel single-host CometBFT/gVisor acceptance/withdrawal passed at 1c4b6a5. Not independent operators, current availability, full reuse, dependency propagation or sustained archival.",
+      "requirements": [
+        "R8-0374",
+        "R8-0376",
+        "R10-0465"
+      ]
     },
     {
       "id": "exact-repository-reuse-preparation",
@@ -2946,7 +3233,13 @@
       "evidence": [
         "docs/repository-reuse.md"
       ],
-      "scope": "Snapshot-bound exact target/current scoped byte validation, immutable patch reconstruction, typed evidence consistency and changed-base fresh qualification. Source/provider fault cases and exact-wheel single-host CometBFT/gVisor two-base qualification passed at 6aceeac. Not supervised dispatch, replicated availability receipts, retention or complete lifecycle reuse accounting."
+      "scope": "Snapshot-bound exact target/current scoped byte validation, immutable patch reconstruction, typed evidence consistency and changed-base fresh qualification. Source/provider fault cases and exact-wheel single-host CometBFT/gVisor two-base qualification passed at 6aceeac. Not supervised dispatch, replicated availability receipts, retention or complete lifecycle reuse accounting.",
+      "requirements": [
+        "R4-0230",
+        "R4-0234",
+        "R5-0261",
+        "R5-0263"
+      ]
     },
     {
       "id": "verified-s3-artifact-store",
@@ -2965,7 +3258,14 @@
         "docs/s3-storage.md",
         "docs/implementation-0.2.0.md"
       ],
-      "scope": "Real SeaweedFS 4.47 conditional publication, byte verification, interruption, outage/restart and credential replacement passed at 88567f4 on Windows/Linux installed-wheel CI. Later privileged erasure and retention extensions have separate local installed evidence; hosted qualification pending. Not full operational G1-G7 qualification."
+      "scope": "Real SeaweedFS 4.47 conditional publication, byte verification, interruption, outage/restart and credential replacement passed at 88567f4 on Windows/Linux installed-wheel CI. Later privileged erasure and retention extensions have separate local installed evidence; hosted qualification pending. Not full operational G1-G7 qualification.",
+      "requirements": [
+        "R5-0245",
+        "R5-0247",
+        "R5-0253",
+        "R5-0255",
+        "R5-0263"
+      ]
     },
     {
       "id": "durable-artifact-retention",
@@ -2985,7 +3285,12 @@
         "docs/retention.md",
         "docs/implementation-0.2.0.md"
       ],
-      "scope": "Persistent protected roots, grace, revision-bound plans, pre-effect tombstones, explicit uncertain erasure and independent trusted-floor rejection. Source/model/crash/mutation tests and actual installed S3 checks passed; hosted run 36221287294 at d5109ec passed all component jobs. Not complete lifecycle-root derivation, governed maintenance, protected checkpoint custody or operational qualification."
+      "scope": "Persistent protected roots, grace, revision-bound plans, pre-effect tombstones, explicit uncertain erasure and independent trusted-floor rejection. Source/model/crash/mutation tests and actual installed S3 checks passed; hosted run 36221287294 at d5109ec passed all component jobs. Not complete lifecycle-root derivation, governed maintenance, protected checkpoint custody or operational qualification.",
+      "requirements": [
+        "R5-0267",
+        "R5-0269",
+        "R5-0271"
+      ]
     },
     {
       "id": "retention-catalog-backup",
@@ -3004,7 +3309,11 @@
         "docs/retention-backup.md",
         "docs/retention.md"
       ],
-      "scope": "Consistent portable export and staged new-directory restoration bound to an independently authenticated checkpoint and current revision floor. Thirty-nine source cases, 100% line/branch coverage, process-crash rejection and two targeted mutations. Isolated wheel/sdist and real Windows/Linux S3 restoration passed for development wheel c00ca87268d7c0bccbd320d44c36a11ca1c5c8056db189ba4c2392ed8a5c4ff2, dirty harness based on d5109ec. Does not supply protected checkpoint custody, consensus state sync, coordinated service recovery, provider availability or exclusive-controller ownership. Hosted run 36227112812 at 7a7f13f subsequently passed all component jobs; this predates the GitHub provider."
+      "scope": "Consistent portable export and staged new-directory restoration bound to an independently authenticated checkpoint and current revision floor. Thirty-nine source cases, 100% line/branch coverage, process-crash rejection and two targeted mutations. Isolated wheel/sdist and real Windows/Linux S3 restoration passed for development wheel c00ca87268d7c0bccbd320d44c36a11ca1c5c8056db189ba4c2392ed8a5c4ff2, dirty harness based on d5109ec. Does not supply protected checkpoint custody, consensus state sync, coordinated service recovery, provider availability or exclusive-controller ownership. Hosted run 36227112812 at 7a7f13f subsequently passed all component jobs; this predates the GitHub provider.",
+      "requirements": [
+        "R5-0271",
+        "R7-0339"
+      ]
     },
     {
       "id": "dispatch-freshness-watchdog",
@@ -3019,8 +3328,17 @@
         "tests/test_integration.py",
         "scripts/package_check.py"
       ],
-      "documentation": ["docs/dispatch-watchdog.md"],
-      "scope": "Local monotonic inhibition for stale reads, no committed progress, maintenance, rollback and emergency stop. Twenty-one watchdog cases at 100% line/branch coverage, eleven new own-node admission cases; full Windows source run 496 passed, three Linux-only skips, 19 separately selected infrastructure cases. All static checks and 42 mutations passed. Isolated development wheel 3fe6c2383d213869b34cb0551a36cdf4107e8e60f3bb217b01ec980f069923a5 and sdist 89866d91cecb2a4ce7b6af4aa618a63bc2a929d0497b4603e6ccf1273657e029 passed installed cold-start checks. Dirty source based on 4012ee8; real-node watchdog extension awaits exact-source hosted CI. Not complete supervisor integration, durable recovery trust or effect authorization."
+      "documentation": [
+        "docs/dispatch-watchdog.md"
+      ],
+      "scope": "Local monotonic inhibition for stale reads, no committed progress, maintenance, rollback and emergency stop. Twenty-one watchdog cases at 100% line/branch coverage, eleven new own-node admission cases; full Windows source run 496 passed, three Linux-only skips, 19 separately selected infrastructure cases. All static checks and 42 mutations passed. Isolated development wheel 3fe6c2383d213869b34cb0551a36cdf4107e8e60f3bb217b01ec980f069923a5 and sdist 89866d91cecb2a4ce7b6af4aa618a63bc2a929d0497b4603e6ccf1273657e029 passed installed cold-start checks. Dirty source based on 4012ee8; real-node watchdog extension awaits exact-source hosted CI. Not complete supervisor integration, durable recovery trust or effect authorization.",
+      "requirements": [
+        "R10-0467",
+        "R10-0469",
+        "R10-0471",
+        "R10-0473",
+        "R10-0475"
+      ]
     },
     {
       "id": "github-draft-provider",
@@ -3038,7 +3356,18 @@
       "documentation": [
         "docs/github-drafts.md"
       ],
-      "scope": "Disabled-by-default provider for pre-staged exact Git commits, immutable destination binding, Actions-disabled preflight, durable serialized send claim, historical receipt and read-only unknown reconciliation. Thirty-eight source cases including real local HTTP lost reply and actual process exit, 100% line/branch coverage. Exact development wheel f999ae3bd82cbf1e155b0eda59225eee5864778d2d74b00e91df867ba1c354d0 passed installed smoke and authorized real disposable GitHub create/reconcile/operator-cleanup. Local uncommitted source based on 7a7f13f. Not consensus effect authorization, patch staging, runtime compensation, scoped production credential custody or full G3 qualification."
+      "scope": "Disabled-by-default provider for pre-staged exact Git commits, immutable destination binding, Actions-disabled preflight, durable serialized send claim, historical receipt and read-only unknown reconciliation. Thirty-eight source cases including real local HTTP lost reply and actual process exit, 100% line/branch coverage. Exact development wheel f999ae3bd82cbf1e155b0eda59225eee5864778d2d74b00e91df867ba1c354d0 passed installed smoke and authorized real disposable GitHub create/reconcile/operator-cleanup. Local uncommitted source based on 7a7f13f. Not consensus effect authorization, patch staging, runtime compensation, scoped production credential custody or full G3 qualification.",
+      "requirements": [
+        "R0-0043",
+        "R9-0414",
+        "R9-0429",
+        "R9-0430",
+        "R9-0439",
+        "R9-0445",
+        "R9-0447",
+        "R9-0449",
+        "R9-0453"
+      ]
     }
   ],
   "observations": [
