@@ -20,9 +20,13 @@ Version **0.1.0** is an experimental reference implementation. Its complete demo
 
 The **0.2.0 development branch is not release-qualified**. It adds separate components for
 operational control, managed signing, artifact storage and bounded repository-patch checks.
+The v2 path also includes signed task ownership, a separate CometBFT adapter and
+[funded organizational verification](docs/work-acceptance.md). A passing quorum can accept a
+specific artifact; late contradictions, withdrawal or revoked evidence keys quarantine it.
 For example, the repository fixture checks an invoice quantity fix by comparing declared inputs
-and expected outputs outside the candidate process. This currently produces a local observation,
-not an adopted patch or permission to open a pull request. See the
+and expected outputs outside the candidate process. This produces an observation that a verifier
+can attest separately. Current availability, safe reuse and permission to open a pull request still
+require further integrations. See the
 [repository-patch guide](docs/repository-patch.md) and
 [implementation ledger](docs/implementation-0.2.0.md) before using development APIs.
 

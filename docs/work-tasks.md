@@ -116,5 +116,6 @@ required task member are rejected rather than silently reinterpreted; published 
 
 Tests use real signed commands, an independent operation-sequence model, conflicting ownership,
 boundary expiry, key revocation, immutable funding, snapshot corruption, SQLite replay and empty
-blocks. They do not establish actual multi-host dispatch, gVisor worker supervision, evidence quorum,
-artifact registration, dependency invalidation or reuse. Those remain required integrations before release.
+blocks. Separate [work acceptance](work-acceptance.md) now binds funded verifier tasks to candidates
+and retains signed quorum observations. Task tests alone do not establish multi-host dispatch,
+gVisor worker supervision, dependency invalidation, current artifact availability or reuse.

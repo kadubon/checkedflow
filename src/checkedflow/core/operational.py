@@ -7,6 +7,9 @@ from checkedflow.core.key_registry import change as change_keys
 from checkedflow.core.request_journal import Archive, Journal, Limits, Receipt, admit, rollover
 from checkedflow.core.request_journal import genesis as journal_genesis
 from checkedflow.core.values import Object, fields, integer, obj, require, text
+from checkedflow.core.work_acceptance import VERIFIER_COMMANDS, Candidate
+from checkedflow.core.work_acceptance import change as change_candidates
+from checkedflow.core.work_acceptance import validate as validate_candidates
 from checkedflow.core.work_budget import Ledger
 from checkedflow.core.work_budget import change as change_budget
 from checkedflow.core.work_tasks import WORKER_COMMANDS, Task
@@ -27,6 +30,7 @@ class State:
     profile: str = "checkedflow/control-state/v2"
     budget: Ledger = Ledger()
     tasks: tuple[Task, ...] = ()
+    candidates: tuple[Candidate, ...] = ()
 
 
 def genesis(
@@ -108,7 +112,7 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
     )
     require(context.height >= state.height, "HEIGHT", "height cannot decrease")
     kind = text(command["kind"])
-    if kind not in WORKER_COMMANDS:
+    if kind not in WORKER_COMMANDS | VERIFIER_COMMANDS:
         context.require_administration()
     require(
         kind
@@ -124,13 +128,16 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
             "budget.settle",
             "task.admit",
             "task.cancel",
+            "artifact.admit",
+            "artifact.revoke",
+            *VERIFIER_COMMANDS,
             *WORKER_COMMANDS,
         },
         "VERSION",
         "command not supported by the initial v2 control profile",
     )
     payload = obj(command["payload"])
-    if not kind.startswith(("key.", "budget.", "task.")):
+    if not kind.startswith(("key.", "budget.", "task.", "artifact.")):
         fields(payload, "mission")
     require(payload.get("mission") == state.mission, "SCOPE", "mission mismatch")
     state = advance(state, context.height)
@@ -139,7 +146,14 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
         context.actor.identity,
         integer(command["nonce"], low=1),
         context.command_digest,
-        kind not in {"budget.reserve", "task.admit", *WORKER_COMMANDS},
+        kind
+        not in {
+            "budget.reserve",
+            "task.admit",
+            "artifact.admit",
+            *WORKER_COMMANDS,
+            *VERIFIER_COMMANDS,
+        },
     )
     if kind == "journal.rollover":
         journal, archive = rollover(state.journal, receipt)
@@ -147,6 +161,23 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
     journal, duplicate = admit(state.journal, receipt)
     if duplicate:
         return advance(state, context.height), None
+    if kind.startswith("artifact."):
+        candidates = change_candidates(
+            state.candidates,
+            kind,
+            payload,
+            context,
+            request=receipt.request,
+            mode=state.mode,
+            mission=state.mission,
+            ledger=state.budget,
+            tasks=state.tasks,
+            credentials=state.credentials,
+        )
+        validate_candidates(
+            candidates, state.budget, state.tasks, state.credentials, state.mission, context.height
+        )
+        return replace(state, candidates=candidates, journal=journal), None
     if kind.startswith("budget."):
         require(
             kind != "budget.settle"

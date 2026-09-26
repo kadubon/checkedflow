@@ -87,6 +87,7 @@ class Store:
             and not initial.journal.receipts
             and initial.budget == Ledger()
             and not initial.tasks
+            and not initial.candidates
             and all(item.revision == 1 and item.usable_at(0) for item in initial.credentials)
             and all(nonce == 0 for _, nonce in initial.journal.actors),
             "GENESIS",

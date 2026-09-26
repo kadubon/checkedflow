@@ -286,3 +286,28 @@ checks. These observations do not qualify the new live ABCI workflow or the full
 
 The task-ownership predecessor 0b3210b passed run 36213818933. This does not qualify the later
 ABCI adapter, supervised dispatch, artifact adoption, four-host operation or the complete G1–G7 gates.
+
+### Funded organizational observations and conservative acceptance
+
+The candidate extension requires four approved verification tasks under distinct organizations,
+reserved funding and one exact target. Three passing organizations can establish scoped acceptance.
+The fourth check and its funding remain active. Late failures, contradictory verdicts, withdrawals
+and revoked historical evidence keys quarantine the candidate without deleting observations or
+costs. Routine retirement retains evidence valid when signed; a rotated verifier can withdraw its
+historical observation. Structural decoding checks all retained links and bounds.
+
+Ten signed/model/storage/rotation cases cover the new component. The live installed-wheel case
+now includes four actual sandbox checks, signed attestations, acceptance, subsequent withdrawal
+and durable common-hash replay. This extension is not live-qualified until its exact-source CI
+is inspected. Current artifact availability, dependency propagation, reusable status, sustainable
+archival and a supervised worker remain incomplete.
+
+The preceding ABCI source 4470200 passed run 36215652810, including its real four-node/gVisor case,
+all six platform/Python jobs and managed signer. It does not qualify this later acceptance extension.
+
+Audit also found that the inherited publication job depended on component tests but not the full
+new G1–G7 gates. The development workflow now has a literal publication denial, including manual
+tag dispatch. This temporary interlock is not an implementation or PASS result for those gates.
+It must be replaced by verification of mandatory exact-artifact operational evidence before release;
+an editable status ledger or operator toggle cannot authorize that replacement. Published 0.1.0
+tag contents are unchanged.

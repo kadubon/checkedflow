@@ -45,7 +45,8 @@ A restarted application reports its durable height and app hash to CometBFT for 
 Empty blocks also commit deterministic task expiry and conservative funding settlement.
 
 Consensus agreement does not make a worker observation true. The adapter orders authenticated
-commands; separate evidence quorum, acceptance and reuse rules still need integration.
+commands. Separate [funded observations and acceptance](work-acceptance.md) now retain verifier
+quorum and adverse evidence; current availability and reuse rules still need integration.
 
 ## Own-node client and query scope
 
@@ -118,8 +119,12 @@ artifact storage and commits the result digest. It also exercises one-node loss,
 crash/restart recovery, common application hashes and independent local history replay.
 Mempool ambiguity is reconciled against committed ownership rather than counted as rejection.
 
-That case is a manually driven SDK workflow. It does not establish three-organization artifact
-acceptance, supervised worker freshness, artifact availability receipts, S3 support, conditional
+The extended case also reserves four organizational verification tasks, performs actual isolated
+checks and commits their signed observations. Three passes establish scoped acceptance without
+removing the fourth task's funding. A later signed withdrawal quarantines the artifact on every node.
+
+That case is a manually driven SDK workflow. It does not establish independent organizational
+ownership, supervised worker freshness, artifact availability receipts, S3 support, conditional
 reuse, authenticated snapshots, four-host operation or safe live GitHub effects. ABCI snapshot
 offers currently reject and no snapshots are advertised; trusted recovery/bootstrap remains
 separate required work. A source/mock test or skipped infrastructure case cannot qualify release.

@@ -85,6 +85,7 @@ def main() -> None:
             "core/operational.py",
             "core/work_budget.py",
             "core/work_tasks.py",
+            "core/work_acceptance.py",
         }
         found = set()
         for name, report in coverage["files"].items():

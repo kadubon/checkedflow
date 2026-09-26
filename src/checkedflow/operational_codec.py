@@ -10,6 +10,8 @@ from checkedflow.core.key_registry import validate as validate_registry
 from checkedflow.core.operational import State, genesis
 from checkedflow.core.request_journal import Archive, Journal, Limits, Receipt, admit
 from checkedflow.core.values import JSON, Object, array, fields, integer, names, obj, require, text
+from checkedflow.core.work_acceptance import MAX_CANDIDATES, Candidate, Observation
+from checkedflow.core.work_acceptance import validate as validate_candidates
 from checkedflow.core.work_budget import MAX_TICKETS, Ledger, Ticket
 from checkedflow.core.work_budget import validate as validate_budget
 from checkedflow.core.work_tasks import MAX_TASKS, ROLE, Task
@@ -58,7 +60,9 @@ def decode(raw: bytes) -> State:
     require(len(raw) <= MAX_STATE_BYTES, "LIMIT", "control-state byte ceiling")
     value = document(raw)
     fields(
-        value, "chain mission organizations credentials journal height mode profile budget tasks"
+        value,
+        "chain mission organizations credentials journal height mode profile "
+        "budget tasks candidates",
     )
     require(value["profile"] == "checkedflow/control-state/v2", "VERSION", "state profile")
     credentials = []
@@ -216,9 +220,48 @@ def decode(raw: bytes) -> State:
             "STATE",
             "task worker purpose or scope differs",
         )
-    ordinary_ids = {ticket.identity for ticket in budget.tickets} | {
-        task.identity for task in tasks
-    }
+    candidates = []
+    for item in array(value["candidates"], limit=MAX_CANDIDATES):
+        candidate = obj(item)
+        fields(candidate, "identity target artifact admitted expires checks observations revoked")
+        observations = []
+        for row in array(candidate["observations"], limit=12):
+            observation = obj(row)
+            fields(
+                observation, "task actor revision organization height evidence verdict withdrawn"
+            )
+            observations.append(
+                Observation(
+                    text(observation["task"], limit=80),
+                    text(observation["actor"], limit=80),
+                    integer(observation["revision"], low=1),
+                    text(observation["organization"], limit=80),
+                    integer(observation["height"]),
+                    text(observation["evidence"], limit=64),
+                    text(observation["verdict"]),
+                    integer(observation["withdrawn"]),
+                )
+            )
+        candidates.append(
+            Candidate(
+                text(candidate["identity"], limit=80),
+                text(candidate["target"], limit=64),
+                text(candidate["artifact"], limit=64),
+                integer(candidate["admitted"]),
+                integer(candidate["expires"]),
+                names(candidate["checks"], limit=4),
+                tuple(observations),
+                _boolean(candidate["revoked"]),
+            )
+        )
+    validate_candidates(
+        tuple(candidates), budget, tuple(tasks), tuple(credentials), initial.mission, height
+    )
+    ordinary_ids = (
+        {ticket.identity for ticket in budget.tickets}
+        | {task.identity for task in tasks}
+        | {candidate.identity for candidate in candidates}
+    )
     administrators = {
         credential.identity for credential in credentials if credential.role == "administrator"
     }
@@ -239,6 +282,7 @@ def decode(raw: bytes) -> State:
         mode=mode,
         budget=budget,
         tasks=tuple(tasks),
+        candidates=tuple(candidates),
     )
     require(encode(state) == value, "STATE", "noncanonical control-state structure")
     return state

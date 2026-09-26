@@ -357,6 +357,7 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
 
     from checkedflow.artifacts import Access, LocalStore
     from checkedflow.core.artifact import Reference
+    from checkedflow.core.work_acceptance import status as acceptance_status
     from checkedflow.distributed.operational_cluster import Cluster as OperationalCluster
     from checkedflow.operational_runtime import Runtime as OperationalRuntime
     from checkedflow.operational_storage import Store as OperationalStore
@@ -459,8 +460,94 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
             state.tasks == states[0].tasks and state.budget == states[0].budget for state in states
         )
         assert states[0].tasks[0].status == "finished" and states[0].budget.spent == 30
+        checks = []
+        for index in range(4):
+            reservation = cluster.send(
+                "budget.reserve", {"phase": "verify", "ceiling": 10, "target": target}
+            )["request"]
+            checks.append(
+                cluster.send(
+                    "task.admit",
+                    {
+                        "ticket": reservation,
+                        "workers": [f"v{index}"],
+                        "lease_blocks": 1000,
+                        "expires": 100000,
+                        "max_attempts": 1,
+                    },
+                )["request"]
+            )
+        candidate = cluster.send(
+            "artifact.admit",
+            {
+                "target": target,
+                "artifact": contract.result_tree,
+                "expires": contract.deadline_height,
+                "checks": checks,
+            },
+        )
+        cluster.wait_height(int(candidate["receipt"]["height"]))
+        for index, check in enumerate(checks):
+            verifier = f"v{index}"
+            cluster.send("task.lease", {"task": check}, actor=verifier, node=index)
+            cluster.send("task.start", {"task": check, "fence": 1}, actor=verifier, node=index)
+            checked = observe_patch(
+                base, patch, contract, cases, height=cluster.client(index).state().height
+            )
+            assert checked.case_match is True and checked.contract_digest == target
+            checked_bytes = dumps(validate(json.loads(json.dumps(asdict(checked)))))
+            checked_ref = replace(
+                reference, digest=sha256(checked_bytes).hexdigest(), length=len(checked_bytes)
+            )
+            verifier_access = Access(
+                verifier, frozenset({"repository"}), frozenset({"read", "write"})
+            )
+            artifacts.put(checked_ref, BytesIO(checked_bytes), access=verifier_access)
+            assert artifacts.get(checked_ref, access=verifier_access) == checked_bytes
+            cluster.send(
+                "task.finish",
+                {"task": check, "fence": 1, "outcome": "reported", "evidence": checked_ref.digest},
+                actor=verifier,
+                node=index,
+            )
+            attested = cluster.send(
+                "artifact.attest",
+                {
+                    "candidate": candidate["request"],
+                    "task": check,
+                    "evidence": checked_ref.digest,
+                    "verdict": "pass",
+                },
+                actor=verifier,
+                node=index,
+            )
+            cluster.wait_height(int(attested["receipt"]["height"]))
+            observed = cluster.client(index).state()
+            assert acceptance_status(
+                observed.candidates[0], observed.credentials, observed.height
+            ) == ("accepted" if index >= 2 else "pending")
+            assert observed.budget.spent == 30 + 10 * (index + 1)
+            assert observed.budget.reserved == 10 * (3 - index)
+        withdrawn = cluster.send(
+            "artifact.withdraw",
+            {
+                "candidate": candidate["request"],
+                "task": checks[3],
+            },
+            actor="v3",
+            node=3,
+        )
+        cluster.wait_height(int(withdrawn["receipt"]["height"]) + 1)
+        states = [cluster.client(index).state() for index in range(4)]
+        assert all(state.candidates == states[0].candidates for state in states)
+        assert all(
+            acceptance_status(state.candidates[0], state.credentials, state.height) == "quarantined"
+            and state.budget.spent == 70
+            and state.budget.reserved == 0
+            for state in states
+        )
         height, app_hash = cluster.common_hash()
-        assert height >= int(finish["receipt"]["height"]) and len(app_hash) == 64
+        assert height >= int(withdrawn["receipt"]["height"]) and len(app_hash) == 64
         cluster.close()
         for index in range(4):
             path = cluster.directory / f"node{index}" / "operational.sqlite"

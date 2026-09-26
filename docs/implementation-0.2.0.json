@@ -2913,6 +2913,24 @@
         "docs/operational-consensus.md"
       ],
       "scope": "Separate validator/command keys, transient finalization, atomic commit replay, bounded raw-byte own-node RPC and a mandatory real four-node isolated repository case. Live case is unqualified until exact-source CI inspection. Not four-host operation, supervised dispatch, artifact adoption/reuse or authenticated snapshots."
+    },
+    {
+      "id": "funded-organizational-acceptance",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/core/work_acceptance.py",
+        "src/checkedflow/core/operational.py",
+        "src/checkedflow/operational_codec.py",
+        "src/checkedflow/data/acceptance-command.schema.json"
+      ],
+      "tests": [
+        "tests/test_work_acceptance.py",
+        "tests/test_integration.py"
+      ],
+      "evidence": [
+        "docs/work-acceptance.md"
+      ],
+      "scope": "Four funded organization-scoped checks, three passing organizations, retained late negative/contradictory/withdrawn evidence and conservative historical key revocation. Source and mutation cases do not establish live qualification, current availability, full reuse, dependency propagation or sustained archival."
     }
   ],
   "observations": [
@@ -2987,6 +3005,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36213818933",
       "conclusion": "success",
       "scope": "Task-ownership increment passed platform matrix, existing exact-wheel infrastructure and managed signer jobs. Predates v2 ABCI service; not evidence of distributed v2 work."
+    },
+    {
+      "source": "44702006c32822dcb532090e642b394a1278418a",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36215652810",
+      "conclusion": "success",
+      "scope": "Separate v2 ABCI/client passed all platform jobs, real signer, and installed-wheel four-node/gVisor ownership/observation/recovery case. Predates funded candidate acceptance and its extended live case; not full G1-G7 qualification."
     }
   ]
 }

@@ -25,7 +25,8 @@
         "mode",
         "profile",
         "budget",
-        "tasks"
+        "tasks",
+        "candidates"
       ],
       "properties": {
         "chain": {
@@ -441,6 +442,124 @@
                   "result_reported",
                   "result_unknown"
                 ]
+              }
+            }
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "identity",
+              "target",
+              "artifact",
+              "admitted",
+              "expires",
+              "checks",
+              "observations",
+              "revoked"
+            ],
+            "properties": {
+              "identity": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "target": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "artifact": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "admitted": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "expires": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "checks": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                }
+              },
+              "observations": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "task",
+                    "actor",
+                    "revision",
+                    "organization",
+                    "height",
+                    "evidence",
+                    "verdict",
+                    "withdrawn"
+                  ],
+                  "properties": {
+                    "task": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "actor": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "organization": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "height": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "evidence": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                    },
+                    "verdict": {
+                      "enum": [
+                        "pass",
+                        "fail",
+                        "unknown"
+                      ]
+                    },
+                    "withdrawn": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              },
+              "revoked": {
+                "type": "boolean"
               }
             }
           }

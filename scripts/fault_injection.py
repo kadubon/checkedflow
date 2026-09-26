@@ -44,6 +44,30 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "core/work_acceptance.py",
+        "test_work_acceptance.py",
+        "contradictory_verdict_retention",
+        "len({item.task for item in candidate.observations}) != len(candidate.observations)",
+        "False",
+        "test_contradictory_verdict_is_retained_and_quarantines_even_without_failure",
+    ),
+    (
+        "core/work_acceptance.py",
+        "test_work_acceptance.py",
+        "acceptance_organization_quorum",
+        "len(organizations) >= 3",
+        "len(organizations) >= 2",
+        "test_three_organization_quorum_keeps_remaining_checks_and_replays",
+    ),
+    (
+        "core/work_acceptance.py",
+        "test_work_acceptance.py",
+        "late_adverse_observation",
+        'observation.verdict == "fail"',
+        "False",
+        "test_late_failure_quarantines_without_erasing_passing_quorum_or_costs",
+    ),
+    (
         "core/work_tasks.py",
         "test_work_tasks.py",
         "v2_attempt_fence",
