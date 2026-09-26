@@ -89,5 +89,16 @@
     "LIMIT": "Do not reset counters to retry; reconcile the original operation.",
     "RETIRED_REQUEST": "The closed epoch cannot admit this original request.",
     "STOPPED": "Local emergency inhibition is latched; operator-controlled restart must warm readiness again."
+  },
+  "sandbox_recovery": {
+    "module": "checkedflow.sandbox_recovery",
+    "environment": "CHECKEDFLOW_SANDBOX_RECOVERY",
+    "daemon": "unix:///var/run/docker.sock",
+    "journal_scope": "one private journal per local daemon",
+    "unresolved_capacity": 32,
+    "readiness_age_seconds": 3,
+    "restart_authorizes_reexecution": false,
+    "service_template": "sandbox-recovery.service",
+    "poll_interval_milliseconds": 250
   }
 }

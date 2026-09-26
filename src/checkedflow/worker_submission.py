@@ -244,6 +244,7 @@ class Coordinator:
                         "RETIRED_REQUEST",
                         "request retired without commitment",
                     )
+                    Runtime(state).apply(bytes(completed), height=state.height + 1)
                     return state
             if raw is not None:
                 prior = obj(document(raw)["command"])

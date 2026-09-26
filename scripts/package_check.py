@@ -38,6 +38,7 @@ REQUIRED = [
     "checkedflow/data/application-backup-vector.json",
     "checkedflow/data/application-recovery.json",
     "checkedflow/data/worker-operations.json",
+    "checkedflow/data/sandbox-recovery.service",
     "checkedflow/data/retention-backup-vector.json",
     "checkedflow/data/github-draft-plan.schema.json",
     "checkedflow/data/github-draft-vector.json",
@@ -58,12 +59,14 @@ REQUIRED = [
     "checkedflow/distributed/proto/NOTICE-CometBFT",
 ]
 SMOKE = """
-import importlib.resources as r, json, runpy, sys
+import importlib.resources as r, json, runpy, sys, subprocess
 import checkedflow
 from pathlib import Path
 origin = Path(checkedflow.__file__).resolve().relative_to(Path(sys.prefix).resolve())
 assert "site-packages" in origin.parts
 print("Installed import origin:", origin.as_posix())
+subprocess.run([sys.executable, "-I", "-m", "checkedflow.sandbox_recovery", "--help"],
+               check=True, capture_output=True, timeout=15)
 from checkedflow.dispatch_watchdog import Watchdog
 from checkedflow.core.values import Failure
 watchdog = Watchdog(lambda: None, chain="installed", mission="fixture",

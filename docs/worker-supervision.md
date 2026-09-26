@@ -38,6 +38,9 @@ command and the most recently resolved command, rather than an unbounded in-memo
 the proposed bytes against the current own-node state before writing the intent. Successful node
 submission alone is insufficient: a matching committed request receipt must be observed. Missing,
 rejected, malformed or lost replies leave uncertainty and block a different logical request.
+Repeating the most recently confirmed request revalidates its original signed bytes against current
+admission rules before returning a cached acknowledgment. A retired epoch or revoked signing key
+cannot be bypassed by the local cache. Historical receipt reconciliation remains a separate operation.
 
 `reconcile()` returns `idle`, `confirmed` or `pending`. It never treats absence in an active epoch as
 proof that the command cannot still arrive. With `archive=...`, it accepts only the complete immediately
@@ -142,12 +145,11 @@ run qualifies that case. This does not complete generation/reuse loops, external
 full G6, rolling upgrades or the remaining release requirements.
 
 
-### Unfinished orphan-container recovery
+### Independent container recovery
 
-The current gVisor runner enforces its deadline and removes its container while its supervising
-process remains alive. Abruptly killing that process can bypass its cleanup block; the worker
-journal prevents duplicate execution but does not prove that an orphaned container has stopped.
-The process-exit source tests above use benign observers and do not qualify live-container cleanup.
-A separately supervised, ownership-checked orphan reaper and actual running-container crash tests
-remain mandatory before operational release. Do not equate a recorded unknown outcome with process
-termination or enable unattended deployments on that assumption.
+The runner now requires the separately running [sandbox recovery service](sandbox-recovery.md).
+It records creation intent and immutable container ownership before execution. The service can
+remove an owned expired container after abrupt worker death. The worker command/execution journals
+still serve a different purpose: they prevent repeat execution and retain uncertain outcomes.
+An unknown result is not proof of process termination. Read the recovery service's daemon failure,
+service availability and remaining deployment qualification limits before enabling unattended work.

@@ -1,0 +1,22 @@
+# Operator-reviewed template. Provision the user, venv and private directory before enabling.
+# Keep this service independent of worker units; do not add PartOf=worker.service.
+[Unit]
+Description=CheckedFlow owned sandbox recovery
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=checkedflow
+Group=checkedflow
+SupplementaryGroups=docker
+UMask=0077
+StateDirectory=checkedflow
+StateDirectoryMode=0700
+ExecStart=/opt/checkedflow/bin/python -m checkedflow.sandbox_recovery /var/lib/checkedflow/sandbox
+Restart=on-failure
+RestartSec=1
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

@@ -44,6 +44,38 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "sandbox_recovery.py",
+        "test_sandbox_recovery.py",
+        "orphan_ownership_label",
+        'and obj(obj(info["Config"])["Labels"]).get(LABEL) == token',
+        "and True",
+        "test_reaper_never_removes_mismatched_ownership",
+    ),
+    (
+        "sandbox_recovery.py",
+        "test_sandbox_recovery.py",
+        "late_creation_intent_retention",
+        "elif not record[2]:",
+        "elif False:",
+        "test_lost_create_reply_is_not_absence_and_late_creation_is_reaped",
+    ),
+    (
+        "runner.py",
+        "test_runner_lifecycle.py",
+        "durable_container_before_start",
+        "recovery.bind(name, container)",
+        "pass",
+        "test_execution_starts_only_an_owned_durably_bound_id",
+    ),
+    (
+        "worker_submission.py",
+        "test_worker_submission.py",
+        "cached_request_current_admission",
+        "Runtime(state).apply(bytes(completed), height=state.height + 1)",
+        "pass",
+        "test_cached_confirmation_requires_current_admission",
+    ),
+    (
         "worker_submission.py",
         "test_worker_submission.py",
         "worker_origin_binding",

@@ -750,3 +750,32 @@ clarifications; final hosted artifacts must be built and tested again. The earli
 17 actual CometBFT/gVisor cases in 260.979 seconds and all six platform/Python jobs. That run
 qualifies the earlier supervisor wiring only, not the subsequent origin-binding change or orphan
 recovery. No full release gate is promoted by either component result.
+
+## Cached admission and independent sandbox recovery increment
+
+The origin-binding source `c403cd2e629e9050f2c4484faff81e8dd307c9cb` completed component CI
+36237724862 successfully. A subsequent review found that cached command acknowledgment did not
+reapply current authentication. Repeating a confirmed request now evaluates its original signed
+bytes under current admission rules. New regression cases reject retired request epochs and revoked
+worker keys without sending again. The interim local check passed 609 cases, three platform skips
+and all 52 selected mutants before the following sandbox changes were added.
+
+The draft runner now journals container creation intent before calling Docker create, verifies and
+persists its immutable ID before start, and requires a fresh independent recovery service. The
+service keeps uncertain creation outcomes, verifies ownership before removal, recognizes prior-boot
+deadlines, and pins learned IDs before destructive cleanup. A managed-container inventory prevents
+an empty replacement journal from advertising readiness over existing work. The journal has 32
+unresolved slots; capacity exhaustion inhibits execution. Docker access is explicitly local, restart
+policies and image health checks are disabled, and persistent container logging is disabled.
+
+The source suite adds ownership, absence, lost reply, concurrency, deadline, daemon continuity and
+create-before-start tests. The installed-wheel qualification now requires two additional actual
+failure windows: worker exit after creating a stopped container, and SIGKILL after observing a
+running gVisor container. Only successful execution of that exact artifact qualifies these cases;
+the older 17-case infrastructure runs cannot substitute for them. Full source checks, package checks
+and fresh hosted qualification are pending for this source increment.
+
+The [recovery runbook](sandbox-recovery.md) explains the new required configuration and failure
+semantics. This is not a complete operational deployment: service-manager restart qualification,
+orphan temporary-workspace collection, journal disaster recovery, unattended scheduling and the
+remaining G1–G7 requirements are still open. The literal publication interlock remains closed.

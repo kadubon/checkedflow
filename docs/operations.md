@@ -50,9 +50,10 @@ and image digest are recorded in [validation status](validation-status.md) and t
 ```
 
 Merge this operator configuration with existing daemon configuration; do not blindly replace an
-existing file. An isolated test daemon can instead use `--add-runtime runsc=/opt/gvisor/runsc`
-with its own socket, data-root, exec-root and PID file. The worker requires access to that daemon
-socket; the generated container never receives it. See
+existing file. The draft runner explicitly uses the local `/var/run/docker.sock` and requires the
+[independent sandbox recovery service](sandbox-recovery.md) with one private journal per daemon.
+Alternate sockets and remote Docker contexts are not supported by this recovery profile.
+The worker requires access to the daemon socket; the generated container never receives it. See
 [gVisor's security boundary](https://gvisor.dev/docs/architecture_guide/security/) for host and
 kernel assumptions. Isolation does not remove the operator from the trusted base.
 

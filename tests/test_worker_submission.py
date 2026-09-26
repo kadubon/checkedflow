@@ -64,6 +64,22 @@ def test_durable_nonce_sequence_and_completed_request_repetition(tmp_path):
     assert [document(raw)["command"]["nonce"] for raw in node.sent] == [1, 2, 3, 4]
 
 
+@pytest.mark.parametrize("retirement", ["epoch", "credential"])
+def test_cached_confirmation_requires_current_admission(tmp_path, retirement):
+    node = Node()
+    c = node.coordinator(tmp_path)
+    c.send("0:lease", "task.lease", node.lease())
+    if retirement == "epoch":
+        node.h.send("journal.rollover", {})
+        code = "RETIRED_REQUEST"
+    else:
+        node.h.send("key.revoke", {"identity": "worker", "revision": 1, "reason": "compromise"})
+        code = "SIGNATURE"
+    with pytest.raises(Failure, match=code):
+        node.coordinator(tmp_path).send("0:lease", "task.lease", node.lease())
+    assert len(node.sent) == 1 and c.pending() is None
+
+
 @pytest.mark.parametrize("behavior", ["before", "after", "empty"])
 def test_lost_or_unproven_replies_preserve_original_intent(tmp_path, behavior):
     node = Node()

@@ -3,6 +3,7 @@
 import concurrent.futures
 import os
 import platform
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -20,7 +21,7 @@ from checkedflow.runner import GVisorRunner, Limits
 
 
 @pytest.fixture
-def infrastructure():
+def infrastructure(tmp_path, monkeypatch):
     image, binary = os.environ.get("CHECKEDFLOW_IMAGE"), os.environ.get("CHECKEDFLOW_COMETBFT")
     if platform.system() != "Linux" or not image or not binary:
         if os.environ.get("CHECKEDFLOW_REQUIRE_INFRA") == "1":
@@ -32,7 +33,32 @@ def infrastructure():
 
         origin = Path(checkedflow.__file__).resolve().relative_to(Path(sys.prefix).resolve())
         assert "site-packages" in origin.parts, "qualification must use the installed wheel"
-    return image, binary
+    from checkedflow.sandbox_recovery import Docker, Recovery, boot_id
+
+    directory = tmp_path / "sandbox-recovery"
+    recovery = Recovery(directory, Docker(), boot_id())
+    monkeypatch.setenv("CHECKEDFLOW_SANDBOX_RECOVERY", str(directory))
+    with (tmp_path / "recovery.log").open("wb") as log:
+        process = subprocess.Popen(
+            [sys.executable, "-m", "checkedflow.sandbox_recovery", str(directory)],
+            stdout=log,
+            stderr=log,
+        )
+        try:
+            deadline = time.monotonic() + 15
+            while True:
+                assert process.poll() is None, "independent recovery service stopped"
+                try:
+                    recovery.ready()
+                    break
+                except Failure:
+                    assert time.monotonic() < deadline, "recovery readiness timeout"
+                    time.sleep(0.1)
+            yield image, binary
+        finally:
+            process.terminate()
+            process.wait(timeout=15)
+            recovery.sweep()
 
 
 @pytest.fixture
@@ -47,6 +73,61 @@ def cluster(infrastructure, tmp_path):
     finally:
         laboratory.close()
         network.close()
+
+
+@pytest.mark.sandbox
+@pytest.mark.qualification
+@pytest.mark.parametrize("phase", ["created", "running"])
+def test_independent_reaper_survives_worker_process_death(infrastructure, tmp_path, phase):
+    import sqlite3
+
+    from checkedflow.sandbox_recovery import Docker
+
+    image, _ = infrastructure
+    directory = Path(os.environ["CHECKEDFLOW_SANDBOX_RECOVERY"])
+    script = r"""
+import os, sys
+from checkedflow.runner import GVisorRunner, Limits
+from checkedflow.sandbox_recovery import Recovery
+if sys.argv[2] == "created":
+    Recovery.bind = lambda *args: os._exit(39)
+GVisorRunner(sys.argv[1], limits=Limits(seconds=8)).run(
+    ("python", "-c", "while True: pass"), {}, None
+)
+"""
+    engine = Docker()
+    with (tmp_path / "crashed-worker.log").open("wb") as log:
+        worker = subprocess.Popen(
+            [sys.executable, "-c", script, image, phase], stdout=log, stderr=log
+        )
+        try:
+            deadline = time.monotonic() + 20
+            container = None
+            while container is None:
+                with sqlite3.connect(directory / "sandbox.sqlite") as db:
+                    row = db.execute("SELECT name FROM containers").fetchone()
+                info = None if row is None else engine.inspect(row[0])
+                if info is not None and (phase == "created" or info["State"]["Running"]):
+                    container = info["Id"]
+                    assert info["HostConfig"]["Runtime"] == "runsc"
+                    if phase == "created":
+                        assert not info["State"]["Running"]
+                    break
+                assert time.monotonic() < deadline, "real container did not reach failure window"
+                time.sleep(0.1)
+            if phase == "running":
+                worker.kill()
+            worker.wait(timeout=10)
+            assert worker.returncode == (39 if phase == "created" else -9)
+            while engine.inspect(container) is not None:
+                assert time.monotonic() < deadline, "independent container recovery timed out"
+                time.sleep(0.1)
+            with sqlite3.connect(directory / "sandbox.sqlite") as db:
+                assert db.execute("SELECT COUNT(*) FROM containers").fetchone()[0] == 0
+        finally:
+            if worker.poll() is None:
+                worker.kill()
+            worker.wait(timeout=10)
 
 
 @pytest.mark.integration

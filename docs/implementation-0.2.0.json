@@ -830,7 +830,8 @@
       "text": "Bind evidence to the exact patched bytes, base, environment, and checker. Zero collected tests, unexpected skips, malformed reports, timeout, missing sandbox, or uncertain cleanup must not produce a pass.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:contract-bound-repository-observer"
+        "component:contract-bound-repository-observer",
+        "component:independent-sandbox-recovery"
       ]
     },
     {
@@ -1713,7 +1714,8 @@
       "text": "Implement a persistent worker supervisor with bounded concurrency, backoff/jitter outside consensus, current-fence checks, and explicit heartbeat support where appropriate.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:durable-worker-supervision"
+        "component:durable-worker-supervision",
+        "component:independent-sandbox-recovery"
       ]
     },
     {
@@ -1732,7 +1734,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:bounded-isolated-task-ownership",
-        "component:durable-worker-supervision"
+        "component:durable-worker-supervision",
+        "component:independent-sandbox-recovery"
       ]
     },
     {
@@ -3503,6 +3506,34 @@
         "R10-0475"
       ],
       "scope": "Concurrency-one persistent worker SDK, original-byte nonce coordinator, bounded explicit retransmission, conservative interruption recovery, gVisor-only repository adapter and verified evidence publication. Does not provide an unattended scheduler, generation loop, cross-host identity leader election, coordinated journal recovery, effect authority, full G6 or complete release qualification."
+    },
+    {
+      "id": "independent-sandbox-recovery",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/sandbox_recovery.py",
+        "src/checkedflow/runner.py",
+        "src/checkedflow/data/sandbox-recovery.service"
+      ],
+      "tests": [
+        "tests/test_sandbox_recovery.py",
+        "tests/test_runner_lifecycle.py",
+        "tests/test_integration.py",
+        "scripts/fault_injection.py"
+      ],
+      "documentation": [
+        "docs/sandbox-recovery.md",
+        "docs/worker-supervision.md"
+      ],
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ],
+      "requirements": [
+        "R4-0214",
+        "R10-0459",
+        "R10-0463"
+      ],
+      "scope": "Private bounded OCI recovery journal, create-before-start ownership binding, independent expiry recovery, local daemon/boot continuity and fail-closed admission. Does not qualify service-manager restart, workspace collection, journal disaster recovery, four-host lifecycle or full release gates."
     }
   ],
   "observations": [

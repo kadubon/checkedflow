@@ -115,8 +115,12 @@ CometBFT and gVisor are separately provisioned external processes.
 Prepare CometBFT **v0.40.0**, Docker configured with `runsc`, and a locally available Python image
 on Linux, following [operation and recovery](docs/operations.md). Use the inspected image digest:
 
+The draft runner also requires the [independent sandbox recovery service](docs/sandbox-recovery.md).
+Start that service in a separate terminal, then use the same private journal directory below:
+
 ```sh
 export CHECKEDFLOW_IMAGE='python@sha256:REPLACE_WITH_YOUR_INSPECTED_DIGEST'
+export CHECKEDFLOW_SANDBOX_RECOVERY="$HOME/.local/state/checkedflow/sandbox"
 uv run checkedflow demo --directory ./lab-run \
   --image "$CHECKEDFLOW_IMAGE" --cometbft /absolute/path/to/cometbft
 ```
