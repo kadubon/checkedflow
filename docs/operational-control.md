@@ -2,7 +2,8 @@
 
 Status: **IMPLEMENTED, SOURCE-TESTED**. This is an unreleased SDK control
 profile, not the complete operational runtime. A [separate v2 consensus adapter](operational-consensus.md)
-now connects it to CometBFT. Supervised execution, state sync and worker/gateway integration remain pending. The bounded
+now connects it to CometBFT. The [bounded worker SDK](worker-supervision.md) connects isolated
+execution; unattended services, state sync and uniform v2 gateways remain pending. The bounded
 [task ownership extension](work-tasks.md) now accepts isolated-task commands, but does not
 dispatch candidate code or establish artifact acceptance.
 The separate [work acceptance extension](work-acceptance.md) records funded organizational
@@ -31,11 +32,13 @@ represented as arrays. String normalization is not performed.
 | `history.archive` | Archive selected settled records from retired epochs while paused | Three administrative organizations |
 | `journal.rollover` | Retire active request IDs, carry nonces, emit archive batch | Three administrative organizations |
 
-Each command in this table has payload exactly `{"mission":"CONFIGURED_MISSION"}`.
+Mission mode commands and `journal.rollover` have payload exactly
+`{"mission":"CONFIGURED_MISSION"}`. `history.archive` uses the explicit selection and predecessor
+fields in the [retirement contract](work-archive.md).
 The additional [key lifecycle commands](key-lifecycle.md), `key.schedule` and `key.revoke`, have
 their own exact payloads and the same three-organization approval rule. Unknown kinds and extra fields
-reject. These modes are committed SDK records only: no worker supervisor is connected yet, so
-this is not evidence of actual drain or emergency-stop behavior. No wall clock, storage, network
+reject. The worker SDK checks these modes and its local watchdog before new execution. Full
+service drain, orphan cleanup and external-effect recovery still require qualification. No wall clock, storage, network
 or candidate process runs in a transition. An explicit height tick survives rejected commands.
 
 Repeated admitted commands acknowledge without repeating their state effect. Replaying an old

@@ -3,7 +3,10 @@
 Status: unreleased v2 state-machine and storage component. These transitions establish who may
 start an approved isolated attempt and how its modeled funding settles. They do not dispatch
 code, prove node freshness, establish evidence availability or adopt an artifact. The [separate v2 ABCI adapter](operational-consensus.md) now connects these transitions to
-CometBFT. Worker supervision, artifact verification quorum and conditional reuse remain incomplete.
+CometBFT. The [worker SDK](worker-supervision.md) now connects durable submission and bounded
+repository observation. [Funded verification](work-acceptance.md) and
+[reuse preparation](repository-reuse.md) remain separate decisions. Unattended orchestration and
+complete operational qualification are unfinished.
 
 ## Admission and authority
 
@@ -80,8 +83,8 @@ preserves unknown work. A new revision does not silently acquire the old revisio
 
 This deterministic lease is not a freshness watchdog. During stopped consensus height, a local
 dispatcher must still inhibit work when its own-node information is stale. Local time may stop
-dispatch, but cannot create a consensus extension or fabricate completion. That supervisor
-integration is still a release obligation.
+dispatch, but cannot create a consensus extension or fabricate completion. The worker SDK uses
+the local watchdog before invocation; full service lifecycle and orphan cleanup remain release obligations.
 
 ## Mission controls and accounting
 

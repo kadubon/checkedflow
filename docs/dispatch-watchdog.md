@@ -62,7 +62,8 @@ operators must stop and cold-start the supervisor after host suspension or ambig
 Age starts when the request starts, not when its response arrives. Read failures invalidate the
 observation sequence before propagating to the caller. Scope/profile mismatch does not erase the
 retained high-water state. A restart starts cold but does not provide durable rollback protection;
-protected recovery checkpoints and exclusive supervisor ownership remain separate requirements.
+the [worker coordinator](worker-supervision.md) separately persists observation floors and excludes
+local concurrent senders. Protected checkpoint recovery and cross-host ownership remain requirements.
 
 `poll()` returns an observation even when cold or paused. It must never be used as a dispatch
 permission. Call `current()` immediately before an independently authorized operation, then verify

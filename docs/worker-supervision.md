@@ -29,7 +29,8 @@ lease on a signing identity. Independent workers should have distinct identities
 
 The coordinator serializes callers with a SQLite write lock in `submission-lock.sqlite`; a separate
 `submission.sqlite` durably commits original signed bytes before the first network call. A process
-exit releases the lock but leaves the intent. The journal binds chain, mission and actor, and records
+exit releases the lock but leaves the intent. The journal binds chain, mission and actor, pins the immutable application origin reconstructed
+from the configured validating node's initial identity roots, organizations and journal limits, and records
 monotonic observed height/nonce floors plus the same-height state hash. It retains one outstanding
 command and the most recently resolved command, rather than an unbounded in-memory request list.
 
@@ -110,6 +111,12 @@ def assemble_worker(directory, client, signer, actor, revision, chain, mission,
     )
     return coordinator, watchdog, supervisor
 ```
+
+`Coordinator.origin()` observes and pins the application origin; the execution journal includes
+that same binding. Reusing a chain name with different initial ownership cannot import old execution
+results. Routine application-key rotation preserves the initial roots. This continuity check does
+not replace independent validator/bootstrap trust. Older local journal layouts are rejected and
+need an explicit recovery/migration procedure; never delete pending intent to upgrade.
 
 The caller must warm the watchdog with two fresh observations showing committed-height progress
 before calling `step`. Choose read timeouts shorter than the freshness window; each callback must

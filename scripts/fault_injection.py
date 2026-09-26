@@ -44,6 +44,14 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "worker_submission.py",
+        "test_worker_submission.py",
+        "worker_origin_binding",
+        "not pinned or pinned == origin",
+        "True",
+        "test_origin_pins_identity_roots_even_when_chain_name_and_height_look_valid",
+    ),
+    (
         "worker_supervisor.py",
         "test_worker_supervisor.py",
         "interrupted_worker_nonrepeat",

@@ -60,6 +60,7 @@ class Supervisor:
                     "mission": coordinator.mission,
                     "actor": coordinator.actor,
                     "version": "checkedflow/worker/v1",
+                    "origin": coordinator.origin(),
                 }
             )
             row = db.execute("SELECT binding FROM identity WHERE id=1").fetchone()

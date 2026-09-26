@@ -730,3 +730,23 @@ statement/branch coverage. Static checks, isolated wheel/sdist installations and
 checks passed; the source/distribution publication scan examined 679 members with zero findings.
 These results do not qualify orphan-container cleanup or replace exact-source real infrastructure
 execution. The publication interlock remains closed.
+
+
+A follow-up continuity audit found that chain/mission/actor names alone could allow local execution
+records to cross deployments if names were reused. The coordinator now pins the immutable
+application-origin hash reconstructed from the validating node's initial ownership and limits;
+the execution journal binds the same hash. Four regression cases reject changed initial ownership
+and old local journal layouts while preserving routine key rotation. The combined targeted suite
+now passes 44 cases. This check preserves continuity after a trusted first observation; it does not
+turn discovery or a self-supplied genesis into bootstrap authority. This source change requires
+fresh full and exact-artifact qualification rather than inheriting the earlier run.
+
+
+The origin-binding follow-up passed the full local check: 607 source cases, three Windows-only
+platform skips, all 51 invariant mutants detected, and all required coverage floors satisfied.
+Both development distributions passed isolated installation before the final documentation-link
+clarifications; final hosted artifacts must be built and tested again. The earlier source
+`1f6560627adb90f7bc9ac0ea8f12694c34eea650` completed CI run 36237204531 successfully, including
+17 actual CometBFT/gVisor cases in 260.979 seconds and all six platform/Python jobs. That run
+qualifies the earlier supervisor wiring only, not the subsequent origin-binding change or orphan
+recovery. No full release gate is promoted by either component result.

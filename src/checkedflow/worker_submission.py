@@ -6,7 +6,8 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import cast
 
-from checkedflow.core.operational import State
+from checkedflow.core.key_registry import roots
+from checkedflow.core.operational import State, genesis
 from checkedflow.core.request_journal import Receipt
 from checkedflow.core.values import Failure, Object, integer, obj, require, text
 from checkedflow.core.work_acceptance import VERIFIER_COMMANDS
@@ -48,7 +49,24 @@ class Coordinator:
                 "CREATE TABLE IF NOT EXISTS coordinator (id INTEGER PRIMARY KEY CHECK(id=1), "
                 "binding BLOB NOT NULL, height INTEGER NOT NULL, nonce INTEGER NOT NULL, "
                 "pending BLOB, completed BLOB, attempts INTEGER NOT NULL, "
-                "state_hash TEXT NOT NULL, outcome TEXT NOT NULL)"
+                "state_hash TEXT NOT NULL, outcome TEXT NOT NULL, origin TEXT NOT NULL)"
+            )
+            require(
+                {row[1] for row in db.execute("PRAGMA table_info(coordinator)")}
+                == {
+                    "id",
+                    "binding",
+                    "height",
+                    "nonce",
+                    "pending",
+                    "completed",
+                    "attempts",
+                    "state_hash",
+                    "outcome",
+                    "origin",
+                },
+                "VERSION",
+                "unsupported worker journal; do not migrate by resetting intent",
             )
             binding = dumps(
                 {
@@ -61,7 +79,8 @@ class Coordinator:
             row = db.execute("SELECT binding FROM coordinator WHERE id=1").fetchone()
             if row is None:
                 db.execute(
-                    "INSERT INTO coordinator VALUES (1, ?, 0, 0, NULL, NULL, 0, '', '')", (binding,)
+                    "INSERT INTO coordinator VALUES (1, ?, 0, 0, NULL, NULL, 0, '', '', '')",
+                    (binding,),
                 )
                 db.commit()
             else:
@@ -92,6 +111,18 @@ class Coordinator:
             "own-node scope differs",
         )
         require(state.profile == "checkedflow/control-state/v2", "VERSION", "own-node profile")
+        origin = Runtime(
+            genesis(
+                state.chain,
+                state.mission,
+                state.organizations,
+                roots(state.credentials),
+                limits=state.journal.limits,
+            )
+        ).state_hash
+        pinned = db.execute("SELECT origin FROM coordinator WHERE id=1").fetchone()[0]
+        require(not pinned or pinned == origin, "GENESIS", "own-node identity roots changed")
+        db.execute("UPDATE coordinator SET origin=? WHERE id=1", (origin,))
         nonce = dict(state.journal.actors).get(self.actor)
         require(nonce is not None, "AUTHORITY", "worker identity missing")
         nonce = integer(nonce)
@@ -126,6 +157,13 @@ class Coordinator:
         """Read the configured own node with persistent rollback floors, without dispatch."""
         with self._exclusive() as db:
             return self._state(db)
+
+    def origin(self) -> str:
+        """Bind local execution journals to the configured node's immutable application origin."""
+        with self._exclusive() as db:
+            self._state(db)
+            row = db.execute("SELECT origin FROM coordinator WHERE id=1").fetchone()
+            return str(row[0])
 
     def _confirm(
         self, db: sqlite3.Connection, state: State, raw: bytes, archive: bytes | None = None

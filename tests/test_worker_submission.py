@@ -286,3 +286,47 @@ def test_other_coordinator_cannot_enter_during_network_submission(tmp_path):
     first._submit = submit
     first.send("0:lease", "task.lease", node.lease())
     assert len(node.sent) == 1
+
+
+def test_origin_pins_identity_roots_even_when_chain_name_and_height_look_valid(tmp_path):
+    from checkedflow.operational_runtime import Runtime
+
+    node = Node()
+    c = node.coordinator(tmp_path)
+    assert c.origin() == Runtime(node.h.initial).state_hash
+    state = node.read()
+    changed = (replace(state.credentials[0], public_key="f" * 64), *state.credentials[1:])
+    c._read = lambda: replace(state, height=state.height + 1, credentials=changed)
+    with pytest.raises(Failure, match="GENESIS"):
+        c.observe()
+    assert not node.sent
+
+
+def test_application_key_rotation_preserves_coordinator_origin(tmp_path):
+    node = Node()
+    c = node.coordinator(tmp_path)
+    origin = c.origin()
+    state = node.read()
+    worker = next(item for item in state.credentials if item.identity == "worker")
+    credentials = tuple(
+        replace(item, retired_height=state.height + 1) if item == worker else item
+        for item in state.credentials
+    )
+    successor = replace(worker, revision=2, activated_height=state.height + 1, public_key="f" * 64)
+    c._read = lambda: replace(
+        state,
+        height=state.height + 2,
+        credentials=tuple(
+            sorted((*credentials, successor), key=lambda item: (item.identity, item.revision))
+        ),
+    )
+    assert c.origin() == origin
+
+
+def test_older_local_journal_requires_explicit_migration(tmp_path):
+    node = Node()
+    node.coordinator(tmp_path)
+    with sqlite3.connect(tmp_path / "submission.sqlite") as db:
+        db.execute("ALTER TABLE coordinator DROP COLUMN origin")
+    with pytest.raises(Failure, match="VERSION"):
+        node.coordinator(tmp_path)

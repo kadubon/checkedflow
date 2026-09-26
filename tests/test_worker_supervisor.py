@@ -270,3 +270,16 @@ worker.reopen(execute=execute, publish=publish).step(worker.node.task)
     )
     assert supervisor.step(node.task) == ("unknown" if window == "execution" else "finished")
     assert not calls and (tmp_path / "called").read_text() == "once"
+
+
+def test_execution_journal_cannot_cross_deployment_origins(tmp_path):
+    w = Worker(tmp_path)
+    state = w.node.read()
+    w.node.h.runtime._state = replace(
+        state,
+        height=state.height + 1,
+        credentials=(replace(state.credentials[0], public_key="f" * 64), *state.credentials[1:]),
+    )
+    other = w.node.coordinator(tmp_path / "another-coordinator")
+    with pytest.raises(Failure, match="another identity"):
+        Supervisor(tmp_path / "execution", other, w.watchdog, w.execute, w.publish)
