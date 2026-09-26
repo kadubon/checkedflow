@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Governed work retirement command body",
+  "description": "Requires current administrative quorum, paused mode, nonempty selection, retired request epoch and no unresolved obligations or retained dependants.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "payload"
+  ],
+  "properties": {
+    "kind": {
+      "const": "history.archive"
+    },
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mission",
+        "expected_root",
+        "tickets",
+        "tasks",
+        "candidates"
+      ],
+      "properties": {
+        "mission": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "expected_root": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+        },
+        "tickets": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "tasks": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 128,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "uniqueItems": true,
+          "maxItems": 64,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        }
+      }
+    }
+  }
+}

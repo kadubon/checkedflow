@@ -1,0 +1,1408 @@
+{
+  "description": "Public deterministic signing fixtures, not deployment credentials. Replays completed funded verification, revocation, epoch rollover and work retirement.",
+  "initial": {
+    "chain": "operational-test",
+    "mission": "m",
+    "organizations": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "credentials": [
+      {
+        "identity": "a",
+        "revision": 1,
+        "organization": "a",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "eae1c8793b5597c4b3f490e76ac31172c439690f8ee14142bb851a61f9a49f0e",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "b",
+        "revision": 1,
+        "organization": "b",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "627f17d893e5697a4ba2208bc80b0292e7f58d8120eb353c1b55429db9c6b196",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "c",
+        "revision": 1,
+        "organization": "c",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "2205b70216c0f4ca46301ac84029229db6fd68c34b8aac4f0d0966c1b3975f2b",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "d",
+        "revision": 1,
+        "organization": "d",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "37f227ad83d628cce4a606cb349c6d944ab574a8f98035b0cfaaa77e7da361bf",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "other",
+        "revision": 1,
+        "organization": "b",
+        "role": "executor",
+        "mission": "m",
+        "public_key": "80a10956d620c3f002794ffdc3e9b1fd9c367ebfb48e02c892f875f8894b7562",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "v0",
+        "revision": 1,
+        "organization": "a",
+        "role": "verifier",
+        "mission": "m",
+        "public_key": "d25db34737a982abb5268525683a3953da5fe5db4e9c10ece577f2af7885f82a",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "v1",
+        "revision": 1,
+        "organization": "b",
+        "role": "verifier",
+        "mission": "m",
+        "public_key": "c2c67f5d278405ab172f92fdb2769823f5be11b7e37e36e6c17bc824400bfaef",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "v2",
+        "revision": 1,
+        "organization": "c",
+        "role": "verifier",
+        "mission": "m",
+        "public_key": "343c09357db3cbba0340e0d8366a24e31304bd5a70d2e7f259dd3a53d9b23b91",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "v3",
+        "revision": 1,
+        "organization": "d",
+        "role": "verifier",
+        "mission": "m",
+        "public_key": "dfb0eb876d03bc9774775b0ffe8dfe4c43905f029ff608c1b31c703f0d0988c4",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "worker",
+        "revision": 1,
+        "organization": "a",
+        "role": "executor",
+        "mission": "m",
+        "public_key": "3648e6d8310743d7c9068127edb9b86af83892440713054506837bbcc922758d",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      }
+    ],
+    "journal": {
+      "actors": [
+        [
+          "a",
+          0
+        ],
+        [
+          "b",
+          0
+        ],
+        [
+          "c",
+          0
+        ],
+        [
+          "d",
+          0
+        ],
+        [
+          "other",
+          0
+        ],
+        [
+          "v0",
+          0
+        ],
+        [
+          "v1",
+          0
+        ],
+        [
+          "v2",
+          0
+        ],
+        [
+          "v3",
+          0
+        ],
+        [
+          "worker",
+          0
+        ]
+      ],
+      "limits": {
+        "ordinary_count": 128,
+        "administrative_count": 16,
+        "ordinary_bytes": 24576,
+        "administrative_bytes": 4096
+      },
+      "epoch": 0,
+      "archive_root": "0000000000000000000000000000000000000000000000000000000000000000",
+      "receipts": []
+    },
+    "height": 0,
+    "mode": "paused",
+    "profile": "checkedflow/control-state/v2",
+    "budget": {
+      "budget": 0,
+      "tickets": [],
+      "verification_reserve": 0
+    },
+    "tasks": [],
+    "candidates": []
+  },
+  "events": [
+    {
+      "height": 1,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c1",
+          "kind": "budget.configure",
+          "nonce": 1,
+          "payload": {
+            "budget": 100,
+            "mission": "m",
+            "verification_reserve": 40
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "2eebe18e0470bd2b31a3e534dd24f1b07d50f94111c6f92975bfff937f64afe10f5985fa2171172688da48f1f8790d9baa111881aa45a2fc780a2aceb2c28901",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "8fab16bcb2f9e46ce1aca69e8c0a572c970fa13750d448663b70aba64e31b44ff704b4286a570a901251b6f5c469ddfda513bc29c23cc77f4adf02164dcd8a07",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "55d185d1377be1842782a1a48d7d6218ac83ce2952b93577b9fb339af101af26299bf137d55d08b14450e0036d4c2b92d2975eebe4e1ddd26522c0de10558c06",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 2,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c2",
+          "kind": "mission.resume",
+          "nonce": 2,
+          "payload": {
+            "mission": "m"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "0340667ea5daaf4435e6bb6928eeb55e7abf52db96a54b0ce9f339d47e936dbb723e75d71933a8fd26f34bd632185d1582f622dfe67eb667426aaa2f2a56f809",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "0437cc6c9c6d286c6d629dc1a5373713ac2b1ec68806c6c5137522ac381db97e910839a3af52a70b7db9180e5f6604945cf4926ec2ed9b05e66580488aa8b509",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "47a881fc8cb4d7d9831aa55764f336256b4e22321698a6491be160d8d43a5ce5c1f5e7b6d98a34b175998d4bca3f168c9aa9b3e8ca48cbdf7a760bbb85fa6805",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 3,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c3",
+          "kind": "budget.reserve",
+          "nonce": 3,
+          "payload": {
+            "ceiling": 10,
+            "mission": "m",
+            "phase": "verify",
+            "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "77a55677d63c8e9dbcbdeccf267684f838e747e3ced2a62654d5df6b3fb2d3b069bd22ba3afb7b62bc3dc10b89679aa314e1048a7fe2ed282774ab8da2806803",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "159bb50627e370a10a3a457e5b23d6649dcc17a694ea2cac265acde2bc4c0a7840c97f15f552b941e7d78ad1bdd59e702e862d5af5d083fab3049f1013a5080b",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "e577b8cc46d82d5f9963d6e6d5dd4c7acdb180c60bd748a615412786d0223a637054bf54cf281f2419c09064177919474d116f264a598057987ad8e4f9858305",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 4,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c4",
+          "kind": "task.admit",
+          "nonce": 4,
+          "payload": {
+            "expires": 1000,
+            "lease_blocks": 50,
+            "max_attempts": 1,
+            "mission": "m",
+            "ticket": "0:c3",
+            "workers": [
+              "v0"
+            ]
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "68d565a0922628b116c0e8d34c776dc60a3a3fcd5ade5ada3506245211f28fc955ef96492f22040552118394fc6b7b646fc131f5f9dce619bbd9118ba5e59e05",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "27f2f0d0ea9c72b004fcc605acbfed64e424deb3e22d58f72f9ac58ea6a51490f5667e2fc390ea60d724206ab4a5cccece8f9868edf355f97d4342c501d23008",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "8ef159774cc028daeb65f1559736fae490dd517e947f6213754aca5e3656b0028f37793d2e883226c4cb978edd572bfb42c737efaa0bf296f255e38e998f1c0c",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 5,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c5",
+          "kind": "budget.reserve",
+          "nonce": 5,
+          "payload": {
+            "ceiling": 10,
+            "mission": "m",
+            "phase": "verify",
+            "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "eed37ade0e4a7a7c99c46dbda3dd917ffa3b5fe5d036d90d6ea36fcefc5945ae3ec22b4dcfd8971787f9d8ff0f3acbbb51bd14badb4d227d7403cab2dca87f07",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "3fd488247ebcf5d499bd21b7af908d32da839c3bbfe8fbf824c018d91151ca01677e9d07997ed864eadc817b4c29b4d7a5675e122a16475c3fc422b2051bae04",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "e8d971790f2a00cf143ffcc5fc8f2ea456dbc99f6c00d78318d823fbfdc7b5aeb40e75de7c68bc0579e4006d75d5ff89e0ac14057ce78b0bea0c5afd8096e50f",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 6,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c6",
+          "kind": "task.admit",
+          "nonce": 6,
+          "payload": {
+            "expires": 1000,
+            "lease_blocks": 50,
+            "max_attempts": 1,
+            "mission": "m",
+            "ticket": "0:c5",
+            "workers": [
+              "v1"
+            ]
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "cf7a9d5854ee3a6f3167510c1bf0eedbc50ce3e63af664acee4b2f489dbab38f6b82bf27e221715e1a3517b49f718a74ebdf66dd9c70343f7f141b8e97219807",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "76735b1ddfcfce0a3ce6154b5e17fe81a9142cdbe85bc2d09eb3b4a920ee35d6af72a41eec7e230c2f2e2e6ffb21b41545d7ed1cb8c47373bf6eba331bda660d",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "2824e005f70be6afad3203990163ac18df150a5145b8445c14d5ee4b3d333d42319d283299917188ff423a9d8edffe8fc4ed7fa60e6697169a842e9b6abb1808",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 7,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c7",
+          "kind": "budget.reserve",
+          "nonce": 7,
+          "payload": {
+            "ceiling": 10,
+            "mission": "m",
+            "phase": "verify",
+            "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "358b0029bfb62ae168f2d1038b1a8d23c7fcffb69f951c58699e0525e5139caa9e80f89982563b847c16f04ac258452c4f7c99d7f389a327c562f81b2af75b00",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "8061e6afd6d81bb57e478496bbe6be101fce90a69d1df407e1827a41a1d31ad776f5839e408dcf3d88f2230aaad33a8e39d2b727c66c03322fcd106cc7897400",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "13ca449cd5a8a6da307be427d160cab08e86572138b2fb91c2cfa571ae08e3e7c0c88d323d796212c910b12f3a52f9695b0f3fa0254267c06c87a7a61ca7dc09",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 8,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c8",
+          "kind": "task.admit",
+          "nonce": 8,
+          "payload": {
+            "expires": 1000,
+            "lease_blocks": 50,
+            "max_attempts": 1,
+            "mission": "m",
+            "ticket": "0:c7",
+            "workers": [
+              "v2"
+            ]
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "df8c4065b14488060307a10f68a9e1fe89b6c4429e4ae654a4ed0fcbaaac20a817d46645b6033afbdab2b903ac0027b9b98e67f5119c0f63cc858c27f9574e05",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "c6cb93b30dfab4dcd226792723b45128c9658449c5a0f6066238311155d0ad541fe5f4ad24f9415926db35d0802a964e21d0d706c8248862c3dddf71c00b220c",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "fb3a1572607e56dc4de1f368adc7c41f8a90a77092a6032495f296ee5330bb4973339799dab30fdff2bc14ff3c6e44becc9b8ae9fa2e6858a733ef0d1864ba03",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 9,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c9",
+          "kind": "budget.reserve",
+          "nonce": 9,
+          "payload": {
+            "ceiling": 10,
+            "mission": "m",
+            "phase": "verify",
+            "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "c016cb94e48ecf804ad314fbfabeabd44cc5aba93746890e62d5a9861bf62c3972cf071921c4f709bb47f900bd3fb62f0557853afb155c6a2da359027aa7e308",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "46d0183838d7953b89575bc22bc46f7bfd06e607cdff05ba88cbfe29b2cd7e67e70234b83e6f70421c252b0106372616c2357269a85255d9361f6213fa88c40a",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "7cee30bd2642b9da40f1e641eb1577e4b8258cddc874370e63c353929c262a68269cf0b7687bb64faa4be06ccff925401d7484b9415574a10b03e315294a6a08",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 10,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c10",
+          "kind": "task.admit",
+          "nonce": 10,
+          "payload": {
+            "expires": 1000,
+            "lease_blocks": 50,
+            "max_attempts": 1,
+            "mission": "m",
+            "ticket": "0:c9",
+            "workers": [
+              "v3"
+            ]
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "3127c2eb1d2ec25e1738813eb2b7ff8a2833e01a5680dee8b5b4a72c403a44c5e84244c99cf70355d5a3fb5c928116ee1da6a0007e1beb5a2486f90088eefc07",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "b46f2eae3606ba87e234d8efd8718ed56bad5821197959047e21e6d69298560ea729454186b175b9f9540c98d26e2c78062beebeb683b18991be1142997d2402",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "0fa417ee990dd98980135bcc499dfd0914c948046b1fff5e9afc9f5d9cdf8f4abb1ccc388aa53a742dbf1717db48f0aaa0994c1a0d572e6c3122d6cabcf9b503",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 11,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c11",
+          "kind": "artifact.admit",
+          "nonce": 11,
+          "payload": {
+            "artifact": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "checks": [
+              "0:c4",
+              "0:c6",
+              "0:c8",
+              "0:c10"
+            ],
+            "expires": 1000,
+            "mission": "m",
+            "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "e5b8ffae880309cf37fa2d9bdc9027aaffe3f606620b1ac2d400cd4aec723578f59991b5ebdc025f31e0207355a7eda2a6a1edd8e6405e6aa47de7111f74b701",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "75dc69a2ab45c5f45fffbb7a5de5a6be3d3f8bd701ac92b56087555fef1424bee9701fb4437f5d033cb64505b2cc5b33c2ef04b3c7144b41df12118415c30607",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "c31305c33e83568423d8a0b658f8b414d0e077546e49687753876310911d88af1a6e8444e2c3eed8c5f7c311e743ab18405ebfc286c5d9ff17ca4007d7bacc07",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 12,
+      "envelope": {
+        "command": {
+          "actor": "v0",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c12",
+          "kind": "task.lease",
+          "nonce": 1,
+          "payload": {
+            "mission": "m",
+            "task": "0:c4"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "b5789997084f0fb7108a19688893600b5ddec397428805b078449ed1b1201b3f9949300c9ffb0207b6294868244da6f3fcc35dac7bf472e490f801a655a32c02",
+            "signer": "v0"
+          }
+        ]
+      }
+    },
+    {
+      "height": 13,
+      "envelope": {
+        "command": {
+          "actor": "v0",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c13",
+          "kind": "task.start",
+          "nonce": 2,
+          "payload": {
+            "fence": 1,
+            "mission": "m",
+            "task": "0:c4"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "d44a0683fdb6a384d3b2c12b7593574b479a0312b34ed735413534550448b617e0870c4c738bc9b85770794b07566432dc7fc633c43f4bf594c71f8c899db50a",
+            "signer": "v0"
+          }
+        ]
+      }
+    },
+    {
+      "height": 14,
+      "envelope": {
+        "command": {
+          "actor": "v0",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c14",
+          "kind": "task.finish",
+          "nonce": 3,
+          "payload": {
+            "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "fence": 1,
+            "mission": "m",
+            "outcome": "reported",
+            "task": "0:c4"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "9fdfdbf5aef014f64ee6d0a35c9f8100015e9f5fec3bac4fd2e2d03c94c55b45dc677947b54e2e6c24d866e6b27b8ea7515ee2ad286a1daf627592bc603d6702",
+            "signer": "v0"
+          }
+        ]
+      }
+    },
+    {
+      "height": 15,
+      "envelope": {
+        "command": {
+          "actor": "v0",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c15",
+          "kind": "artifact.attest",
+          "nonce": 4,
+          "payload": {
+            "candidate": "0:c11",
+            "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "mission": "m",
+            "task": "0:c4",
+            "verdict": "pass"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "4ecd7f354e4ade21539f3d9dd5a511f9d72428899442aad8a8af3d9ca8d9dac57f8efd4dc73c7012089830c78a94bd317407eb750137778ee27946178e621601",
+            "signer": "v0"
+          }
+        ]
+      }
+    },
+    {
+      "height": 16,
+      "envelope": {
+        "command": {
+          "actor": "v1",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c16",
+          "kind": "task.lease",
+          "nonce": 1,
+          "payload": {
+            "mission": "m",
+            "task": "0:c6"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "b0c4b968ed4c001fe6338628e160085caeed0a6e60b46c035cf04554160055c4e243deaf4237a6d7960e2e7fc6b7e5e396272a322238878bc262158f01d1250a",
+            "signer": "v1"
+          }
+        ]
+      }
+    },
+    {
+      "height": 17,
+      "envelope": {
+        "command": {
+          "actor": "v1",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c17",
+          "kind": "task.start",
+          "nonce": 2,
+          "payload": {
+            "fence": 1,
+            "mission": "m",
+            "task": "0:c6"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "d6e9c00af8d88630ea68389c06b3a402244f928ae6dfb7d36ca532e8ec280c655d11541c297c4fca5825b6884c8627acc48a45f50b28908fe2444122cef5a009",
+            "signer": "v1"
+          }
+        ]
+      }
+    },
+    {
+      "height": 18,
+      "envelope": {
+        "command": {
+          "actor": "v1",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c18",
+          "kind": "task.finish",
+          "nonce": 3,
+          "payload": {
+            "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "fence": 1,
+            "mission": "m",
+            "outcome": "reported",
+            "task": "0:c6"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "fd5490b855c4177545761f91c6ae71d74fad684282019b20d4967f5d7da85fdc7cb6ce0eb9f741235595c172e44e6dd3f7203048019e3c48c4832142b797730b",
+            "signer": "v1"
+          }
+        ]
+      }
+    },
+    {
+      "height": 19,
+      "envelope": {
+        "command": {
+          "actor": "v1",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c19",
+          "kind": "artifact.attest",
+          "nonce": 4,
+          "payload": {
+            "candidate": "0:c11",
+            "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "mission": "m",
+            "task": "0:c6",
+            "verdict": "pass"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "e125f3788c27657bede7267842788025e16b8b0c133ea7a20846a5872ecb03b60560d4e05a04296ba67567762aec608b739021d62a4895ea220a10d6fc8f5702",
+            "signer": "v1"
+          }
+        ]
+      }
+    },
+    {
+      "height": 20,
+      "envelope": {
+        "command": {
+          "actor": "v2",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c20",
+          "kind": "task.lease",
+          "nonce": 1,
+          "payload": {
+            "mission": "m",
+            "task": "0:c8"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "7e74d205a4611d9bf1862fa61eaba6e972d7e979d6c38ebc5b9aab7496ceb17f75820a7f6b58730753e09caa369e1041c3370b57458c1cb6c5d9f8a8d2380100",
+            "signer": "v2"
+          }
+        ]
+      }
+    },
+    {
+      "height": 21,
+      "envelope": {
+        "command": {
+          "actor": "v2",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c21",
+          "kind": "task.start",
+          "nonce": 2,
+          "payload": {
+            "fence": 1,
+            "mission": "m",
+            "task": "0:c8"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "7c04846c7bd686478fadbbcbc34e86157d28cd6153d1e43252e33fc4a708eee4c58a7813da7545282d0592412ec7ec59e6a061c826fd44f316c23acb3130740d",
+            "signer": "v2"
+          }
+        ]
+      }
+    },
+    {
+      "height": 22,
+      "envelope": {
+        "command": {
+          "actor": "v2",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c22",
+          "kind": "task.finish",
+          "nonce": 3,
+          "payload": {
+            "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "fence": 1,
+            "mission": "m",
+            "outcome": "reported",
+            "task": "0:c8"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "e7ea1d4fd4ba52e5e486e71b3656178f39e78548f98c47d9f0a3df64b1e973c1bb5ab6bc3c58a203d732ba39a262683a6d104d645afbe89fdcc3c7214e5b0a09",
+            "signer": "v2"
+          }
+        ]
+      }
+    },
+    {
+      "height": 23,
+      "envelope": {
+        "command": {
+          "actor": "v2",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c23",
+          "kind": "artifact.attest",
+          "nonce": 4,
+          "payload": {
+            "candidate": "0:c11",
+            "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "mission": "m",
+            "task": "0:c8",
+            "verdict": "pass"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "518cde7ccb3f58a6f0694533e570dc98b156973f42213ca1f5d25ca50c093232fcc2102e830706f297b89b446983c8f4d1327d91dcefcc085e79814f311fc90b",
+            "signer": "v2"
+          }
+        ]
+      }
+    },
+    {
+      "height": 24,
+      "envelope": {
+        "command": {
+          "actor": "v3",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c24",
+          "kind": "task.lease",
+          "nonce": 1,
+          "payload": {
+            "mission": "m",
+            "task": "0:c10"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "df40d3eb84af6475eadbb1f86bca332fd52264f4d3daa91021e026671cfedaea28e3b32b615d276a266e588f4c03045a1838ef7b3ce5615391df87a8b7be150f",
+            "signer": "v3"
+          }
+        ]
+      }
+    },
+    {
+      "height": 25,
+      "envelope": {
+        "command": {
+          "actor": "v3",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c25",
+          "kind": "task.start",
+          "nonce": 2,
+          "payload": {
+            "fence": 1,
+            "mission": "m",
+            "task": "0:c10"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "a4cfee95eb5c7d59efda367d589521ebfa20611f7f175592d6c686915a60e18fb966cf3785c8b8072d9ec5129df8e1fecf6afe002d02cde1d958d3894760c903",
+            "signer": "v3"
+          }
+        ]
+      }
+    },
+    {
+      "height": 26,
+      "envelope": {
+        "command": {
+          "actor": "v3",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c26",
+          "kind": "task.finish",
+          "nonce": 3,
+          "payload": {
+            "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "fence": 1,
+            "mission": "m",
+            "outcome": "reported",
+            "task": "0:c10"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "d49ffc2964a8d522fb725b7246f861e654d485302c534778aadb6414c93e545d5487851f2a02eeeb9f55a26d440647ba6ee90cb16e9b6d4fc28a6af16cf19503",
+            "signer": "v3"
+          }
+        ]
+      }
+    },
+    {
+      "height": 27,
+      "envelope": {
+        "command": {
+          "actor": "v3",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c27",
+          "kind": "artifact.attest",
+          "nonce": 4,
+          "payload": {
+            "candidate": "0:c11",
+            "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "mission": "m",
+            "task": "0:c10",
+            "verdict": "pass"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "fb954a82016b36db80df8d900031071bd4a2b18bd76f19800f0c47a732be929ba177da378288abfa810dc216d07e658fc22bd7f349318a298440b6d763d99102",
+            "signer": "v3"
+          }
+        ]
+      }
+    },
+    {
+      "height": 28,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c28",
+          "kind": "mission.pause",
+          "nonce": 12,
+          "payload": {
+            "mission": "m"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "8ea7e8e429d49b82efc0ca2d5543c798047f4e52e6fdc0bdfc2971f4066704cd5118b4165cbec53548571984b6f4023b62cab20df5730a1ead7209167f80930e",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "d2785ee67802937d29a2ba3d84908e13c8d7c130421992d224a34a25ea4d28a1aae75642e12b6536f01cae59df128a5e1eb1fd92573009762b1a2c66057f3e0d",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "9f1165696a2b01cb036f6eeebfa507711541514cc62db4d3efb74941372b8172057c86c7fcadf8ccec348dc7463bcb856330fb4d81504b9f4ca9d01f394f6603",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 29,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c29",
+          "kind": "artifact.revoke",
+          "nonce": 13,
+          "payload": {
+            "candidate": "0:c11",
+            "mission": "m"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "3df0cef506ab15c3d5bfdb6913ec7b08346267df80245b13e6dfa2cf26369eba080ed5ff8b0a1257f4d1d5b519f7591e6dd70d3324a36ff6b8c15b7343f3ed0c",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "eb6c05f2dc4714baf8e0a45e5889d6a20d020d94e7ab4cc3d6978268e2436b35046eb018652d791e322ae5e9e5ebef0c15d89119d2118e1e2c3f616a3272ea06",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "082851e87cae6591ec430c79c7710e2dc3de40b7a40976962b6c244ad40292e907b77650ff72f6a4831e9c8ace1f11db6b9fcf19075d5d23d1c88aeafb543d05",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 30,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 0,
+          "id": "0:c30",
+          "kind": "journal.rollover",
+          "nonce": 14,
+          "payload": {
+            "mission": "m"
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "a9f06879fd9ec56ff9e69e592c3e8ed155cde4bbc87d6b15a0a2c46f30a69b61a2935472eca4bbd12fde149c6e7735ee8512b0c4ea078c3dcfb1351c0ce7cc0d",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "412d54045029a8c3ab5f72f430557f728a94a01578968ed97d3179ccfcffa97d0babf3a74779cf09251e113590f0f1d16c6988b7be28dcf860f1ce08d54aaa05",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "675753bb56a7e4cd02aa71dbfd1c6ee3a7589fec6cd935973dc2b63cd4fb1b85e776775210a5caec9cc7d1d9be803518e3715b66290033d59ad45163e19ac90c",
+            "signer": "c"
+          }
+        ]
+      }
+    },
+    {
+      "height": 31,
+      "envelope": {
+        "command": {
+          "actor": "a",
+          "api_version": "checkedflow/v2",
+          "chain": "operational-test",
+          "epoch": 1,
+          "id": "1:c31",
+          "kind": "history.archive",
+          "nonce": 15,
+          "payload": {
+            "candidates": [
+              "0:c11"
+            ],
+            "expected_root": "0000000000000000000000000000000000000000000000000000000000000000",
+            "mission": "m",
+            "tasks": [
+              "0:c4",
+              "0:c6",
+              "0:c8",
+              "0:c10"
+            ],
+            "tickets": [
+              "0:c3",
+              "0:c5",
+              "0:c7",
+              "0:c9"
+            ]
+          },
+          "revision": 1
+        },
+        "signatures": [
+          {
+            "revision": 1,
+            "signature": "fc77dc87fdcb3550101adc3cbe7fdfb24f8df8c5460d0def6a3c30b5dee08dd336f8afc2dfc92203b290b4dee7342948a350fde160c2ad0004a0ffcb53feb100",
+            "signer": "a"
+          },
+          {
+            "revision": 1,
+            "signature": "87cbebb6fa434d728e25e202b6c8c4b55bb15d3e4ffc4f40b3f21dea4595bff0b7604c34e2001b712558cc7ffe27a93a50ab162d36ef86b73d16b6b0f196d604",
+            "signer": "b"
+          },
+          {
+            "revision": 1,
+            "signature": "f88d6eece2c93b4178447e8a138c6f162e1ba4af708c9f7cd5eb9c506f705591b04bccc972b7caa5634cde8a2632ccf76dc2ed22dde66c835aeb3b105d1b4b07",
+            "signer": "c"
+          }
+        ]
+      }
+    }
+  ],
+  "state_hash": "cbd9dab654c2144efdcb5aabbf9f91d31170dc9ac597a36dc1bc36486f76de99",
+  "archives": [
+    {
+      "root": "dd4c05518acd0a9ca74a7dd693de8fb82bc8e338322ca29ebbc54d9b50628948",
+      "record": {
+        "body": {
+          "candidates": [
+            {
+              "admitted": 11,
+              "artifact": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "checks": [
+                "0:c10",
+                "0:c4",
+                "0:c6",
+                "0:c8"
+              ],
+              "expires": 1000,
+              "identity": "0:c11",
+              "observations": [
+                {
+                  "actor": "v3",
+                  "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "height": 27,
+                  "organization": "d",
+                  "revision": 1,
+                  "task": "0:c10",
+                  "verdict": "pass",
+                  "withdrawn": 0
+                },
+                {
+                  "actor": "v0",
+                  "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "height": 15,
+                  "organization": "a",
+                  "revision": 1,
+                  "task": "0:c4",
+                  "verdict": "pass",
+                  "withdrawn": 0
+                },
+                {
+                  "actor": "v1",
+                  "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "height": 19,
+                  "organization": "b",
+                  "revision": 1,
+                  "task": "0:c6",
+                  "verdict": "pass",
+                  "withdrawn": 0
+                },
+                {
+                  "actor": "v2",
+                  "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+                  "height": 23,
+                  "organization": "c",
+                  "revision": 1,
+                  "task": "0:c8",
+                  "verdict": "pass",
+                  "withdrawn": 0
+                }
+              ],
+              "revoked": true,
+              "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "chain": "operational-test",
+          "height": 31,
+          "mission": "m",
+          "tasks": [
+            {
+              "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "expires": 1000,
+              "fence": 1,
+              "identity": "0:c10",
+              "lease_blocks": 50,
+              "max_attempts": 1,
+              "owner": "v3",
+              "reason": "result_reported",
+              "revision": 1,
+              "started": 25,
+              "status": "finished",
+              "ticket": "0:c9",
+              "until": 74,
+              "workers": [
+                "v3"
+              ]
+            },
+            {
+              "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "expires": 1000,
+              "fence": 1,
+              "identity": "0:c4",
+              "lease_blocks": 50,
+              "max_attempts": 1,
+              "owner": "v0",
+              "reason": "result_reported",
+              "revision": 1,
+              "started": 13,
+              "status": "finished",
+              "ticket": "0:c3",
+              "until": 62,
+              "workers": [
+                "v0"
+              ]
+            },
+            {
+              "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "expires": 1000,
+              "fence": 1,
+              "identity": "0:c6",
+              "lease_blocks": 50,
+              "max_attempts": 1,
+              "owner": "v1",
+              "reason": "result_reported",
+              "revision": 1,
+              "started": 17,
+              "status": "finished",
+              "ticket": "0:c5",
+              "until": 66,
+              "workers": [
+                "v1"
+              ]
+            },
+            {
+              "evidence": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+              "expires": 1000,
+              "fence": 1,
+              "identity": "0:c8",
+              "lease_blocks": 50,
+              "max_attempts": 1,
+              "owner": "v2",
+              "reason": "result_reported",
+              "revision": 1,
+              "started": 21,
+              "status": "finished",
+              "ticket": "0:c7",
+              "until": 70,
+              "workers": [
+                "v2"
+              ]
+            }
+          ],
+          "tickets": [
+            {
+              "ceiling": 10,
+              "charged": 10,
+              "identity": "0:c3",
+              "phase": "verify",
+              "status": "settled",
+              "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            {
+              "ceiling": 10,
+              "charged": 10,
+              "identity": "0:c5",
+              "phase": "verify",
+              "status": "settled",
+              "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            {
+              "ceiling": 10,
+              "charged": 10,
+              "identity": "0:c7",
+              "phase": "verify",
+              "status": "settled",
+              "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            {
+              "ceiling": 10,
+              "charged": 10,
+              "identity": "0:c9",
+              "phase": "verify",
+              "status": "settled",
+              "target": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ]
+        },
+        "previous_root": "0000000000000000000000000000000000000000000000000000000000000000",
+        "sequence": 1
+      }
+    }
+  ]
+}

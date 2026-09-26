@@ -27,6 +27,9 @@ REQUIRED = [
     "checkedflow/data/operational-envelope.schema.json",
     "checkedflow/data/operational-state.schema.json",
     "checkedflow/data/request-archive.schema.json",
+    "checkedflow/data/work-archive.schema.json",
+    "checkedflow/data/work-archive-command.schema.json",
+    "checkedflow/data/work-archive-vector.json",
     "checkedflow/data/artifact-reference.schema.json",
     "checkedflow/data/retention-plan.schema.json",
     "checkedflow/data/retention-vectors.json",
@@ -211,6 +214,20 @@ for nonce, (kind, extra) in enumerate([
     work.apply(raw, height=nonce + 4)
 assert work.state.tasks[0].status == "finished" and work.state.budget.spent == 30
 assert decode_control(state_bytes(work.state)) == work.state
+from checkedflow.core.work_archive import WorkArchive
+from checkedflow.operational_codec import work_archive_bytes
+retirement = json.loads(
+    r.files("checkedflow").joinpath("data/work-archive-vector.json").read_text())
+retirement_runtime = OperationalRuntime(decode_control(dumps(retirement["initial"])))
+retired_batches = []
+for event in retirement["events"]:
+    batch = retirement_runtime.apply(dumps(event["envelope"]), height=event["height"])
+    if isinstance(batch, WorkArchive):
+        retired_batches.append(
+            {"root": batch.root, "record": json.loads(work_archive_bytes(batch))})
+assert retirement_runtime.state_hash == retirement["state_hash"]
+assert retired_batches == retirement["archives"]
+
 import tempfile
 from pathlib import Path
 from checkedflow.operational_storage import Store

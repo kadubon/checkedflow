@@ -22,8 +22,16 @@ from checkedflow.core.values import (
     require,
     text,
 )
+from checkedflow.core.work_archive import Head, WorkArchive
 from checkedflow.core.work_budget import Ledger
-from checkedflow.operational_codec import archive_bytes, decode, decode_archive, state_bytes
+from checkedflow.operational_codec import (
+    archive_bytes,
+    decode,
+    decode_archive,
+    decode_work_archive,
+    state_bytes,
+    work_archive_bytes,
+)
 from checkedflow.operational_runtime import Runtime
 from checkedflow.wire import MAX_TRANSACTION_BYTES, document, dumps
 
@@ -86,6 +94,7 @@ class Store:
             and initial.mode == "paused"
             and not initial.journal.receipts
             and initial.budget == Ledger()
+            and initial.history == Head()
             and not initial.tasks
             and not initial.candidates
             and all(item.revision == 1 and item.usable_at(0) for item in initial.credentials)
@@ -101,7 +110,12 @@ class Store:
                 row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")
             }
             require(
-                not tables or tables == {"identity", "head", "blocks", "epochs"},
+                not tables
+                or tables
+                in (
+                    {"identity", "head", "blocks", "epochs"},
+                    {"identity", "head", "blocks", "epochs", "work_archives"},
+                ),
                 "VERSION",
                 "store profile",
             )
@@ -121,6 +135,10 @@ class Store:
             )
             db.execute(
                 "CREATE TABLE IF NOT EXISTS epochs (epoch INTEGER PRIMARY KEY, "
+                "root TEXT UNIQUE NOT NULL, body BLOB NOT NULL)"
+            )
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS work_archives (sequence INTEGER PRIMARY KEY, "
                 "root TEXT UNIQUE NOT NULL, body BLOB NOT NULL)"
             )
             prior = db.execute("SELECT genesis FROM identity WHERE id=1").fetchone()
@@ -185,6 +203,25 @@ class Store:
             )
             archive = decode_archive(epoch[1], state.journal.archive_root)
             require(archive.epoch == state.journal.epoch - 1, "STORAGE", "archive epoch differs")
+        if state.history.sequence:
+            row = db.execute(
+                "SELECT root, body FROM work_archives WHERE sequence=?", (state.history.sequence,)
+            ).fetchone()
+            require(
+                row is not None and row[0] == state.history.root,
+                "STORAGE",
+                "missing current work archive",
+            )
+            batch = decode_work_archive(row[1], state.history.root)
+            scope = document(batch.body)
+            require(
+                batch.sequence == state.history.sequence
+                and scope["chain"] == state.chain
+                and scope["mission"] == state.mission
+                and integer(scope["height"]) <= state.height,
+                "STORAGE",
+                "work archive scope differs",
+            )
         return state, str(fingerprint)
 
     def load(self) -> State:
@@ -229,7 +266,12 @@ class Store:
                 except Failure as exc:
                     archive = None
                     code = exc.code
-                if archive is not None:
+                if isinstance(archive, WorkArchive):
+                    db.execute(
+                        "INSERT INTO work_archives VALUES (?, ?, ?)",
+                        (archive.sequence, archive.root, work_archive_bytes(archive)),
+                    )
+                elif archive is not None:
                     db.execute(
                         "INSERT INTO epochs VALUES (?, ?, ?)",
                         (archive.epoch, archive.root, archive_bytes(archive)),
@@ -265,6 +307,18 @@ class Store:
             require(archive.epoch == epoch, "STORAGE", "archive epoch differs")
             return archive
 
+    def work_archive(self, sequence: int, *, expected_root: str) -> WorkArchive:
+        """Materialize retired work only against an independently trusted batch commitment."""
+        integer(sequence, low=1)
+        with self._connect() as db:
+            row = db.execute(
+                "SELECT body FROM work_archives WHERE sequence=?", (sequence,)
+            ).fetchone()
+            require(row is not None, "UNAVAILABLE", "work archive unavailable")
+            archive = decode_work_archive(row[0], expected_root)
+            require(archive.sequence == sequence, "STORAGE", "work archive sequence differs")
+            return archive
+
     def verify_history(
         self, *, expected_hash: str, consume: Callable[[bytes], None] | None = None
     ) -> State:
@@ -293,7 +347,19 @@ class Store:
                     except Failure as exc:
                         archive, code = None, exc.code
                     require(code == outcome, "REPLAY", "recorded outcome differs")
-                    if archive is not None:
+                    if isinstance(archive, WorkArchive):
+                        stored = db.execute(
+                            "SELECT body FROM work_archives WHERE sequence=?", (archive.sequence,)
+                        ).fetchone()
+                        require(
+                            stored is not None, "UNAVAILABLE", "historical work archive unavailable"
+                        )
+                        require(
+                            decode_work_archive(stored[0], archive.root) == archive,
+                            "REPLAY",
+                            "work archive differs",
+                        )
+                    elif archive is not None:
                         stored = db.execute(
                             "SELECT body FROM epochs WHERE epoch=?", (archive.epoch,)
                         ).fetchone()

@@ -1,0 +1,340 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Authenticated retired work batch",
+  "description": "Structure only. The caller supplies an independently trusted root; replay authenticates transitions. Arrays retain state ordering.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "previous_root",
+    "sequence",
+    "body"
+  ],
+  "properties": {
+    "previous_root": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "body": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chain",
+        "mission",
+        "height",
+        "tickets",
+        "tasks",
+        "candidates"
+      ],
+      "properties": {
+        "chain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "mission": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "tickets": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "identity",
+              "phase",
+              "ceiling",
+              "status",
+              "charged",
+              "target"
+            ],
+            "properties": {
+              "identity": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "phase": {
+                "enum": [
+                  "generate",
+                  "execute",
+                  "verify",
+                  "repair"
+                ]
+              },
+              "ceiling": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "status": {
+                "enum": [
+                  "reserved",
+                  "settled",
+                  "unknown",
+                  "released"
+                ]
+              },
+              "charged": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "target": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              }
+            }
+          }
+        },
+        "tasks": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "identity",
+              "ticket",
+              "workers",
+              "lease_blocks",
+              "expires",
+              "max_attempts",
+              "status",
+              "owner",
+              "revision",
+              "fence",
+              "until",
+              "started",
+              "evidence",
+              "reason"
+            ],
+            "properties": {
+              "identity": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "ticket": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "workers": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 64,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                }
+              },
+              "lease_blocks": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10000
+              },
+              "expires": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "max_attempts": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8
+              },
+              "status": {
+                "enum": [
+                  "ready",
+                  "leased",
+                  "running",
+                  "finished",
+                  "unknown",
+                  "cancelled"
+                ]
+              },
+              "owner": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "fence": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 8
+              },
+              "until": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "started": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "evidence": {
+                "oneOf": [
+                  {
+                    "const": ""
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                  }
+                ]
+              },
+              "reason": {
+                "enum": [
+                  "",
+                  "lease_expired",
+                  "authority_unavailable",
+                  "cancelled",
+                  "result_reported",
+                  "result_unknown"
+                ]
+              }
+            }
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "identity",
+              "target",
+              "artifact",
+              "admitted",
+              "expires",
+              "checks",
+              "observations",
+              "revoked"
+            ],
+            "properties": {
+              "identity": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "target": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "artifact": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "admitted": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "expires": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "checks": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                }
+              },
+              "observations": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "task",
+                    "actor",
+                    "revision",
+                    "organization",
+                    "height",
+                    "evidence",
+                    "verdict",
+                    "withdrawn"
+                  ],
+                  "properties": {
+                    "task": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "actor": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "organization": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "height": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "evidence": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                    },
+                    "verdict": {
+                      "enum": [
+                        "pass",
+                        "fail",
+                        "unknown"
+                      ]
+                    },
+                    "withdrawn": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              },
+              "revoked": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

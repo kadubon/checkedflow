@@ -44,6 +44,30 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "core/work_archive.py",
+        "test_work_archive.py",
+        "retirement_preserves_spend",
+        "ledger.archived_spent + sum(ticket.charged for ticket in removed)",
+        "ledger.archived_spent",
+        "test_retirement_preserves_independent_accounting",
+    ),
+    (
+        "core/work_archive.py",
+        "test_work_archive.py",
+        "retirement_keeps_unknown",
+        'all(ticket.status in {"settled", "released"} for ticket in removed)',
+        "True",
+        "test_unknown_or_reserved_funding_is_pinned",
+    ),
+    (
+        "core/work_archive.py",
+        "test_work_archive.py",
+        "retirement_dependency_pin",
+        "not selected_tasks.intersection(candidate.checks)",
+        "True",
+        "test_dependencies_expiry_and_revocation",
+    ),
+    (
         "operational_backup.py",
         "test_operational_backup.py",
         "application_backup_rollback",
@@ -215,7 +239,7 @@ OPERATIONAL_MUTATIONS = [
         "core/work_budget.py",
         "test_work_budget.py",
         "budget_spending_retention",
-        "return sum(ticket.charged for ticket in self.tickets)",
+        "return self.archived_spent + sum(ticket.charged for ticket in self.tickets)",
         "return 0",
         "test_rejects_budget_excess_reconfiguration_and_terminal_rewriting",
     ),

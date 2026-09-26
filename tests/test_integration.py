@@ -607,8 +607,33 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
         )
         with pytest.raises(Failure, match="ACCEPTANCE"):
             prepare(states[0], candidate["request"], contract, reusable, artifacts, access=access)
+        cluster.send("mission.pause", {})
+        cluster.send("artifact.revoke", {"candidate": candidate["request"]})
+        cluster.send("journal.rollover", {})
+        prior = cluster.client(0).state()
+        retired = cluster.send(
+            "history.archive",
+            {
+                "expected_root": prior.history.root,
+                "tickets": sorted(ticket.identity for ticket in prior.budget.tickets),
+                "tasks": sorted(task.identity for task in prior.tasks),
+                "candidates": [candidate["request"]],
+            },
+        )
+        cluster.wait_height(int(retired["receipt"]["height"]) + 1)
+        states = [cluster.client(index).state() for index in range(4)]
+        assert all(
+            state.history == states[0].history
+            and state.history.sequence == 1
+            and state.budget.archived_spent == 70
+            and state.budget.archived_verification == 40
+            and not state.budget.tickets
+            and not state.tasks
+            and not state.candidates
+            for state in states
+        )
         height, app_hash = cluster.common_hash()
-        assert height >= int(withdrawn["receipt"]["height"]) and len(app_hash) == 64
+        assert height >= int(retired["receipt"]["height"]) and len(app_hash) == 64
         cluster.close()
         from checkedflow.operational_backup import export_history, restore_history
 
@@ -630,6 +655,10 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
             )
             assert restored.load() == final
             assert restored.verify_history(expected_hash=checkpoint.state_hash) == final
+            assert restored.work_archive(1, expected_root=final.history.root) == store.work_archive(
+                1, expected_root=final.history.root
+            )
+
             with closing(sqlite3.connect(path)) as db:
                 body, fingerprint = db.execute(
                     "SELECT body, hash FROM blocks WHERE height=?", (height,)

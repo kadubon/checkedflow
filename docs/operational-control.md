@@ -8,7 +8,8 @@ dispatch candidate code or establish artifact acceptance.
 The separate [work acceptance extension](work-acceptance.md) records funded organizational
 observations and scoped acceptance, including quarantine on late adverse information.
 The [local control store](operational-storage.md) now persists control state and emitted archive
-batches atomically. Full work/archive integration remains pending.
+batches atomically. [Settled-work retirement](work-archive.md) reclaims bounded active slots;
+credential retirement and the complete dependency/effect graph remain pending.
 
 ## Authenticated transitions
 
@@ -27,6 +28,7 @@ represented as arrays. String normalization is not performed.
 | `mission.pause` | Record paused mode | Three administrative organizations |
 | `mission.drain` | Record draining mode | Three administrative organizations |
 | `mission.resume` | Record running mode | Three administrative organizations |
+| `history.archive` | Archive selected settled records from retired epochs while paused | Three administrative organizations |
 | `journal.rollover` | Retire active request IDs, carry nonces, emit archive batch | Three administrative organizations |
 
 Each command in this table has payload exactly `{"mission":"CONFIGURED_MISSION"}`.

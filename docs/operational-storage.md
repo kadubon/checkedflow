@@ -1,8 +1,9 @@
 # Atomic control-state and archive persistence
 
 Status: **IMPLEMENTED; SOURCE TESTS EXECUTED**. This stores the initial v2 control profile only.
-It is not the full operational artifact service, a CometBFT adapter, state-sync implementation,
-backup/restore system or complete work-state store. Those integrations remain release requirements.
+The separate [consensus adapter](operational-consensus.md) and
+[application-only backup](application-backup.md) use this store. Full node recovery and the
+complete operational dependency/effect state remain release requirements.
 
 ## What commits atomically
 
@@ -17,7 +18,7 @@ command and derives its transition. It then commits all three together:
 
 - The resulting bounded current-state record and application hash.
 - Original transaction bytes, rejection/acceptance outcomes and block hash-chain record.
-- Every request-epoch archive emitted by rollover in that block.
+- Every request-epoch or [settled-work archive](work-archive.md) emitted in that block.
 
 No caller-provided next-state object bypasses the signed transition. Failed commands retain their
 recorded rejection code and leave the explicit block-height advancement intact. Storage failures
@@ -27,8 +28,8 @@ A conflicting block at that height, a gap or a stale predecessor is rejected.
 
 This acknowledgment applies to storage/consensus block replay. It is not permission to submit a
 retired command as fresh work: a new block containing an old-epoch request still receives
-`RETIRED_REQUEST`. This store does not choose distributed ordering. A future CometBFT adapter
-must bind preparation, finalization and durable commit to the same application-state commitment.
+`RETIRED_REQUEST`. This store does not choose distributed ordering. The separate CometBFT adapter binds preparation,
+finalization and durable commit to the same application-state commitment.
 
 ## Integrity, history and trust
 
@@ -63,7 +64,8 @@ exercise uncommitted page spill. The post-commit crash loses the reply; reopenin
 the same block preserves a single committed rollover. These are process-crash tests, not evidence
 against power loss, dishonest disks or independent validator failures.
 
-Consistent backup including SQLite WAL, staged restore, authenticated snapshot chunks, CometBFT
-catch-up, validator signer ownership, A2A callback configuration and full mission liabilities are
-still pending. Do not copy only the live main database file as a backup. Do not restore consensus
+Application history export verifies a consistent SQLite WAL read transaction and staged restore
+replays signed commands, regenerating both archive kinds. Authenticated consensus snapshot chunks,
+CometBFT catch-up, validator signer ownership, A2A callback configuration and full mission liabilities
+remain pending. Do not copy only the live main database file as a backup. Do not restore consensus
 signer state into two active nodes. See the [implementation record](implementation-0.2.0.md).

@@ -12,6 +12,7 @@ from checkedflow.core.request_journal import Archive, Journal, Limits, Receipt, 
 from checkedflow.core.values import JSON, Object, array, fields, integer, names, obj, require, text
 from checkedflow.core.work_acceptance import MAX_CANDIDATES, Candidate, Observation
 from checkedflow.core.work_acceptance import validate as validate_candidates
+from checkedflow.core.work_archive import MAX_ARCHIVE_BYTES, Head, WorkArchive
 from checkedflow.core.work_budget import MAX_TICKETS, Ledger, Ticket
 from checkedflow.core.work_budget import validate as validate_budget
 from checkedflow.core.work_tasks import MAX_TASKS, ROLE, Task
@@ -23,7 +24,15 @@ MAX_STATE_BYTES = 4194304
 
 
 def encode(state: State) -> Object:
-    return obj(validate(json.loads(json.dumps(asdict(state)))))
+    result = obj(validate(json.loads(json.dumps(asdict(state)))))
+    # Preserve historical v2 hashes before the first retirement, as well as all v1 bytes.
+    if state.history == Head():
+        result.pop("history")
+    if state.budget.archived_spent == state.budget.archived_verification == 0:
+        budget = obj(result["budget"])
+        budget.pop("archived_spent")
+        budget.pop("archived_verification")
+    return result
 
 
 def state_bytes(state: State) -> bytes:
@@ -62,7 +71,7 @@ def decode(raw: bytes) -> State:
     fields(
         value,
         "chain mission organizations credentials journal height mode profile "
-        "budget tasks candidates",
+        "budget tasks candidates" + (" history" if "history" in value else ""),
     )
     require(value["profile"] == "checkedflow/control-state/v2", "VERSION", "state profile")
     credentials = []
@@ -136,7 +145,15 @@ def decode(raw: bytes) -> State:
     mode = text(value["mode"])
     require(mode in {"paused", "running", "draining"}, "STATE", "unsupported control mode")
     budget_value = obj(value["budget"])
-    fields(budget_value, "budget tickets verification_reserve")
+    fields(
+        budget_value,
+        "budget tickets verification_reserve"
+        + (
+            " archived_spent archived_verification"
+            if {"archived_spent", "archived_verification"}.intersection(budget_value)
+            else ""
+        ),
+    )
     tickets = []
     for item in array(budget_value["tickets"], limit=MAX_TICKETS):
         ticket = obj(item)
@@ -155,6 +172,8 @@ def decode(raw: bytes) -> State:
         integer(budget_value["budget"]),
         tuple(tickets),
         integer(budget_value["verification_reserve"]),
+        integer(budget_value.get("archived_spent", 0)),
+        integer(budget_value.get("archived_verification", 0)),
     )
     validate_budget(budget)
     tasks = []
@@ -274,6 +293,16 @@ def decode(raw: bytes) -> State:
         "STATE",
         "receipt class differs from budget admission",
     )
+    history = Head()
+    if "history" in value:
+        record = obj(value["history"])
+        fields(record, "sequence root")
+        history = Head(integer(record["sequence"], low=1), text(record["root"]))
+    require(
+        history.sequence > 0 or budget.archived_spent == 0,
+        "STATE",
+        "archived spending without archive commitment",
+    )
     state = replace(
         initial,
         credentials=tuple(credentials),
@@ -283,6 +312,7 @@ def decode(raw: bytes) -> State:
         budget=budget,
         tasks=tuple(tasks),
         candidates=tuple(candidates),
+        history=history,
     )
     require(encode(state) == value, "STATE", "noncanonical control-state structure")
     return state
@@ -305,4 +335,34 @@ def decode_archive(raw: bytes, expected_root: str) -> Archive:
         tuple(_receipt(item) for item in array(value["receipts"], limit=4161)),
     )
     require(archive.root == expected_root, "STORAGE", "archive commitment mismatch")
+    return archive
+
+
+def work_archive_bytes(archive: WorkArchive) -> bytes:
+    _ = archive.root
+    return dumps(
+        {
+            "previous_root": archive.previous_root,
+            "sequence": archive.sequence,
+            "body": document(archive.body),
+        }
+    )
+
+
+def decode_work_archive(raw: bytes, expected_root: str) -> WorkArchive:
+    require(len(raw) <= MAX_ARCHIVE_BYTES + 256, "LIMIT", "work archive byte ceiling")
+    value = document(raw)
+    fields(value, "previous_root sequence body")
+    body = obj(value["body"])
+    fields(body, "chain mission height tickets tasks candidates")
+    text(body["chain"], limit=128)
+    text(body["mission"], limit=80)
+    integer(body["height"], low=1)
+    for key, limit in (("tickets", 128), ("tasks", 128), ("candidates", 64)):
+        array(body[key], limit=limit)
+    archive = WorkArchive(
+        text(value["previous_root"]), integer(value["sequence"], low=1), dumps(body)
+    )
+    require(archive.root == expected_root, "STORAGE", "work archive commitment mismatch")
+    require(work_archive_bytes(archive) == raw, "STATE", "noncanonical work archive")
     return archive

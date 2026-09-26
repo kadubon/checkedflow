@@ -132,3 +132,8 @@ For [dispatch freshness](docs/dispatch-watchdog.md), use `Client.live_state` wit
 approved own node. `poll()` only observes; `current()` also requires recent height progress.
 Neither grants execution authority. A `STOPPED` instance cannot resume, and unknown in-flight
 effects still require reconciliation. Never restart a watchdog merely to hide a rollback conflict.
+
+For [settled-work retirement](docs/work-archive.md), pause and retire the request epoch before
+selecting known terminal records. Use the [command schema](src/checkedflow/data/work-archive-command.schema.json).
+Never archive unknown liabilities to free capacity or interpret archived objects as currently
+reusable. Retrieve batches only against independently trusted commitments; archival is not erasure.

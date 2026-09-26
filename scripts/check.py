@@ -100,6 +100,7 @@ def main() -> None:
             "core/request_journal.py",
             "core/operational.py",
             "core/work_budget.py",
+            "core/work_archive.py",
             "core/work_tasks.py",
             "core/work_acceptance.py",
         }

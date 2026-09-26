@@ -5,6 +5,7 @@ from hashlib import sha256
 from checkedflow.core.operational import State, advance, transition
 from checkedflow.core.request_journal import Archive
 from checkedflow.core.values import require
+from checkedflow.core.work_archive import WorkArchive
 from checkedflow.operational_codec import state_bytes
 from checkedflow.operational_identity import authenticate
 
@@ -26,7 +27,7 @@ class Runtime:
     def state_hash(self) -> str:
         return sha256(state_bytes(self._state)).hexdigest()
 
-    def apply(self, raw: bytes, *, height: int) -> Archive | None:
+    def apply(self, raw: bytes, *, height: int) -> Archive | WorkArchive | None:
         state = self._state
         command, context = authenticate(
             raw,

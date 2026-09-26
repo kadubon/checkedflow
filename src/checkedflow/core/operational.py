@@ -10,6 +10,7 @@ from checkedflow.core.values import Object, fields, integer, obj, require, text
 from checkedflow.core.work_acceptance import VERIFIER_COMMANDS, Candidate
 from checkedflow.core.work_acceptance import change as change_candidates
 from checkedflow.core.work_acceptance import validate as validate_candidates
+from checkedflow.core.work_archive import Head, WorkArchive, retire
 from checkedflow.core.work_budget import Ledger
 from checkedflow.core.work_budget import change as change_budget
 from checkedflow.core.work_tasks import WORKER_COMMANDS, Task
@@ -31,6 +32,7 @@ class State:
     budget: Ledger = Ledger()
     tasks: tuple[Task, ...] = ()
     candidates: tuple[Candidate, ...] = ()
+    history: Head = Head()
 
 
 def genesis(
@@ -88,7 +90,9 @@ def advance(state: State, height: int) -> State:
     return replace(state, height=height, budget=budget, tasks=tasks)
 
 
-def transition(state: State, command: Object, context: Verified) -> tuple[State, Archive | None]:
+def transition(
+    state: State, command: Object, context: Verified
+) -> tuple[State, Archive | WorkArchive | None]:
     """Context must come from authentication against this state, as in the v1 pure API."""
     require(state.profile == "checkedflow/control-state/v2", "VERSION", "unsupported state profile")
     fields(command, "api_version chain epoch id actor revision nonce kind payload")
@@ -121,6 +125,7 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
             "mission.drain",
             "mission.resume",
             "journal.rollover",
+            "history.archive",
             "key.schedule",
             "key.revoke",
             "budget.configure",
@@ -137,7 +142,7 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
         "command not supported by the initial v2 control profile",
     )
     payload = obj(command["payload"])
-    if not kind.startswith(("key.", "budget.", "task.", "artifact.")):
+    if not kind.startswith(("key.", "budget.", "task.", "artifact.", "history.")):
         fields(payload, "mission")
     require(payload.get("mission") == state.mission, "SCOPE", "mission mismatch")
     state = advance(state, context.height)
@@ -161,6 +166,31 @@ def transition(state: State, command: Object, context: Verified) -> tuple[State,
     journal, duplicate = admit(state.journal, receipt)
     if duplicate:
         return advance(state, context.height), None
+    if kind == "history.archive":
+        history, budget, tasks, candidates, batch = retire(
+            state.history,
+            state.budget,
+            state.tasks,
+            state.candidates,
+            payload,
+            epoch=state.journal.epoch,
+            height=state.height,
+            chain=state.chain,
+            mission=state.mission,
+            mode=state.mode,
+        )
+        validate_tasks(budget, tasks)
+        validate_candidates(
+            candidates, budget, tasks, state.credentials, state.mission, state.height
+        )
+        return replace(
+            state,
+            history=history,
+            budget=budget,
+            tasks=tasks,
+            candidates=candidates,
+            journal=journal,
+        ), batch
     if kind.startswith("artifact."):
         candidates = change_candidates(
             state.candidates,

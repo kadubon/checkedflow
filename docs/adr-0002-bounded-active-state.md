@@ -29,3 +29,18 @@ The durable store atomically commits active state and archive append records. Sn
 commitments and staged imports cannot replace a working store until trust, sizes, chunks and state
 hashes validate. Availability remains an external observation; missing bytes inhibit use without
 changing committed acceptance. This ADR alone does not implement archival, snapshots or scaling.
+
+## Settled-work retirement increment
+
+The draft v2 `history.archive` command requires a paused mission, three-organization
+administrative authority, an expected predecessor root and explicit ticket/task/candidate IDs.
+Only records from retired request epochs qualify. Reserved or unknown funding and unfinished
+or unknown tasks remain active. Retained tasks pin funding; retained candidates pin checks.
+Candidates must be revoked or expired and have terminal, known checks. Accumulated charges and
+verification allocations survive retirement and never enlarge the original mission budget.
+A domain-separated chained digest commits each canonical batch; SQLite commits batch, block
+and new head atomically. Readers need an independently trusted root. Historical objects do not
+regain reuse authority. Pre-retirement v2 encodings omit zero extension fields, preserving their
+hashes. The additive SQLite table requires upgraded readers; take an application backup before
+an offline maintenance upgrade. This increment does not retire credentials or introduce the
+future dependency/effect graph, remote archive availability or automatic archive scheduling.

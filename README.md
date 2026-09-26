@@ -37,6 +37,8 @@ height progress become stale, the
 [retention and recovery](docs/retention-backup.md) for protected catalog backup boundaries,
 [application history recovery](docs/application-backup.md) for independently anchored replay into
 a new database,
+[settled-work retirement](docs/work-archive.md) for reclaiming active record capacity while
+preserving cumulative costs and unresolved obligations,
 [repository-patch guide](docs/repository-patch.md) and
 [implementation ledger](docs/implementation-0.2.0.md) before using development APIs.
 

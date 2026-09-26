@@ -648,3 +648,38 @@ artifact checking and withdrawal. It requires a new exact-source run; the earlie
 it. Application-only recovery does not complete node bootstrap, signing-state ownership, callback
 or provider journals, coordinated service recovery, upgrades, protected checkpoint custody, G6 or
 the final release gates. Those implementation obligations remain open; publication stays disabled.
+
+
+## Settled-work retirement increment
+
+The draft v2 `history.archive` command reclaims selected known terminal funding/task/candidate
+records from retired request epochs during paused maintenance, under current three-organization
+administrative approval. Cumulative spending and verification allocations survive removal; retained
+tasks pin funding and retained candidates pin checks. Unknown obligations cannot be archived.
+Atomic SQLite persistence, independently anchored retrieval, signed replay and application-backup
+restoration preserve the complete retired batch. Existing pre-retirement v2 state hashes remain
+unchanged; a packaged signed conformance vector fixes the new behavior. The database extension
+requires coordinated upgraded binaries, not an implemented rolling-upgrade mechanism.
+
+The initial targeted source run passed 24 retirement cases, including a pure accounting sequence
+of 4,608 records in 36 bounded batches, signed authority checks, dependency pins, storage corruption,
+transaction rollback and backup replay. The 4,608-record case is a deterministic accounting test,
+not a deployed long-running worker experiment. A packaged signed-vector case was subsequently
+added. The first whole-source run passed 555 cases with three Windows platform skips and met
+all coverage floors, but correctly failed because an existing fault-injection target no longer
+matched the changed spending expression. The target was updated without weakening the expected
+invariant. Later final checks and hosted infrastructure evidence must be recorded separately.
+
+The real CometBFT/gVisor test now includes governed retirement after four funded checks and an
+adverse withdrawal, requires all four nodes to agree on cumulative costs, and restores each archive
+from application history. Merely adding this test does not establish an executed result. Credential
+retirement, full dependency/effect graphs, supervised indefinite operation and G1-G7 remain open.
+
+
+The final local source check passed 563 cases on Windows/Python 3.12.10, with three Linux-only
+skips and 19 separately selected infrastructure/service cases. All 47 selected invariant mutants
+were detected. The new retirement core, codec and storage boundaries reached 100% statement and
+branch coverage. Ruff, strict mypy, Bandit, offline contracts and actionlint passed. The isolated
+wheel and sdist installation checks, including signed retirement-vector replay and optional agent
+SDK smoke checks, passed outside the checkout. The source/distribution scan examined 657 members
+with zero findings. These local results do not qualify the new real-infrastructure case or release.

@@ -24,6 +24,8 @@ class Ledger:
     budget: int = 0
     tickets: tuple[Ticket, ...] = ()
     verification_reserve: int = 0
+    archived_spent: int = 0
+    archived_verification: int = 0
 
     @property
     def reserved(self) -> int:
@@ -31,7 +33,7 @@ class Ledger:
 
     @property
     def spent(self) -> int:
-        return sum(ticket.charged for ticket in self.tickets)
+        return self.archived_spent + sum(ticket.charged for ticket in self.tickets)
 
     @property
     def available(self) -> int:
@@ -39,7 +41,7 @@ class Ledger:
 
     @property
     def protected_verification(self) -> int:
-        allocated = sum(
+        allocated = self.archived_verification + sum(
             ticket.ceiling if ticket.status == "reserved" else ticket.charged
             for ticket in self.tickets
             if ticket.phase == "verify"
@@ -49,6 +51,8 @@ class Ledger:
 
 def validate(ledger: Ledger) -> None:
     integer(ledger.budget)
+    integer(ledger.archived_spent, high=ledger.budget)
+    integer(ledger.archived_verification, high=ledger.archived_spent)
     integer(ledger.verification_reserve, low=1 if ledger.budget else 0, high=ledger.budget)
     require(len(ledger.tickets) <= MAX_TICKETS, "CAPACITY", "budget ticket capacity")
     previous = ""
