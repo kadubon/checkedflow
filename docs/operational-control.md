@@ -5,6 +5,8 @@ profile, not the complete operational runtime. A [separate v2 consensus adapter]
 now connects it to CometBFT. Supervised execution, state sync and worker/gateway integration remain pending. The bounded
 [task ownership extension](work-tasks.md) now accepts isolated-task commands, but does not
 dispatch candidate code or establish artifact acceptance.
+The separate [work acceptance extension](work-acceptance.md) records funded organizational
+observations and scoped acceptance, including quarantine on late adverse information.
 The [local control store](operational-storage.md) now persists control state and emitted archive
 batches atomically. Full work/archive integration remains pending.
 
@@ -43,8 +45,9 @@ the same request ID reject. New commands advance actor nonces once; rejected com
 The [pure request journal](../src/checkedflow/core/request_journal.py) stores bounded current-epoch
 receipts and fixed actor nonce slots. Its admission-class Boolean is internal derived accounting:
 it is never accepted as a client's assertion of administrative authority. The runtime derives it
-only after checking three organization signatures. Future work commands must receive ordinary
-admission classification from their transition, not from their payload.
+after checking command authority. Budget reservations, task/candidate admission and worker/verifier
+commands use ordinary capacity; governance controls use administrative capacity. Clients cannot
+select the classification in a payload. Administrative commands require three organization signatures.
 
 Default limits are 128 ordinary receipts / 24,576 encoded bytes and 16 administrative receipts /
 4,096 encoded bytes. Byte ceilings and counts are enforced separately; ordinary work cannot borrow

@@ -2897,7 +2897,7 @@
     },
     {
       "id": "operational-abci-and-own-node-client",
-      "status": "SOURCE_TESTED",
+      "status": "INTEGRATION_TESTED",
       "implementation": [
         "src/checkedflow/distributed/operational_application.py",
         "src/checkedflow/distributed/operational_client.py",
@@ -2912,11 +2912,11 @@
       "evidence": [
         "docs/operational-consensus.md"
       ],
-      "scope": "Separate validator/command keys, transient finalization, atomic commit replay, bounded raw-byte own-node RPC and a mandatory real four-node isolated repository case. Live case is unqualified until exact-source CI inspection. Not four-host operation, supervised dispatch, artifact adoption/reuse or authenticated snapshots."
+      "scope": "Separate validator/command keys, transient finalization, atomic commit replay and bounded raw-byte own-node RPC. Exact-wheel four-node/gVisor repository work and crash recovery passed at 4470200 and 1c4b6a5. Not four-host operation, supervised dispatch, current availability/reuse or authenticated snapshots."
     },
     {
       "id": "funded-organizational-acceptance",
-      "status": "SOURCE_TESTED",
+      "status": "INTEGRATION_TESTED",
       "implementation": [
         "src/checkedflow/core/work_acceptance.py",
         "src/checkedflow/core/operational.py",
@@ -2930,7 +2930,7 @@
       "evidence": [
         "docs/work-acceptance.md"
       ],
-      "scope": "Four funded organization-scoped checks, three passing organizations, retained late negative/contradictory/withdrawn evidence and conservative historical key revocation. Source and mutation cases do not establish live qualification, current availability, full reuse, dependency propagation or sustained archival."
+      "scope": "Four funded organization-scoped checks, three passing organizations, retained late negative/contradictory/withdrawn evidence and conservative historical key revocation. Source and mutation tests plus exact-wheel single-host CometBFT/gVisor acceptance/withdrawal passed at 1c4b6a5. Not independent operators, current availability, full reuse, dependency propagation or sustained archival."
     }
   ],
   "observations": [
@@ -3011,6 +3011,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36215652810",
       "conclusion": "success",
       "scope": "Separate v2 ABCI/client passed all platform jobs, real signer, and installed-wheel four-node/gVisor ownership/observation/recovery case. Predates funded candidate acceptance and its extended live case; not full G1-G7 qualification."
+    },
+    {
+      "source": "1c4b6a5660a3b005fc7d81dab2fb197ec3f980ee",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36216530595",
+      "conclusion": "success",
+      "scope": "Funded acceptance increment: six platform/Python jobs, real installed-wheel managed signer and 16 real single-host infrastructure cases including four verifier invocations, acceptance, retained funding, withdrawal/quarantine and common durable hash replay. Publication job denied; not full G1-G7 qualification."
     }
   ]
 }

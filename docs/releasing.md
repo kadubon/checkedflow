@@ -1,9 +1,19 @@
 # Distribution and Trusted Publishing
 
-The package is `checkedflow` version `0.1.0`, Apache-2.0, Python 3.12+. A release requires explicit
-maintainer authorization, passing checks on exact artifacts and a manual workflow dispatch.
+The published baseline is `checkedflow` version `0.1.0`, Apache-2.0, Python 3.12+. This development
+branch targets **0.2.0 only**, with tag **v0.2.0**, and is not release-qualified. Its temporary package
+metadata remains 0.1.0 for development checks; those distributions must never replace the public
+0.1.0 files. A release requires maintainer authorization, complete mandatory qualification on exact
+artifacts and a manual workflow dispatch.
 The repository is [kadubon/checkedflow](https://github.com/kadubon/checkedflow); distribution is
 through [PyPI](https://pypi.org/project/checkedflow/).
+
+The development workflow currently denies the publication job unconditionally. The existing
+component checks are insufficient for the new operational release. Replace that denial only after
+implementing verification of M0–M8 completeness and G1–G7 evidence bound to the exact source,
+wheel/sdist, approved environment and declared profile. Editing a status ledger, adding a passing
+label or bypassing the workflow condition is not qualification. Missing or skipped mandatory gates
+must prevent publication. See the [implementation record](implementation-0.2.0.md).
 
 The Trusted Publisher must match exactly:
 
@@ -31,13 +41,16 @@ pending publisher creates the PyPI project only after the authorized upload succ
 3. Review the workflow's immutable action revisions when updating dependencies. Current action
    references are full commit hashes; tags in comments are explanatory only. The runtime lock
    and frozen Python lock are separate, independently checked inputs.
-4. After user authorization, provision repository and protected `pypi` environment, matching the
-   pending publisher. Confirm package metadata and reserve the version tag `v0.1.0` for this source.
-5. Dispatch `workflow.yml` manually from that version tag with `publish=true`.
+4. Confirm the existing repository and protected `pypi` environment match the publisher. After all
+   operational prerequisites pass, prepare exact 0.2.0 metadata and qualified distributions. Use
+   `v0.2.0` only for the authorized final source; do not overwrite an existing version or tag.
+5. Once complete operational gate enforcement has replaced the development denial, dispatch
+   `workflow.yml` manually from `v0.2.0` with `publish=true`. Keep all environment approvals intact.
 
 Ordinary main-branch push/pull-request checks do not publish. Qualification uses a fresh hosted
 VM without operator keys or a persistent privileged host. The manual publication job depends on successful build, all six platform
-checks and actual qualification from the same workflow run.
+checks and actual qualification from the same workflow run. Those component dependencies alone
+do not authorize 0.2.0; full operational evidence verification is also required.
 
 `uv build` produces a wheel and sdist once. The build job checks their contents and installation
 outside the checkout and records SHA-256 digests. Matrix jobs download and install those files;

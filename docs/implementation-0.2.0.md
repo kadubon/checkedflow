@@ -311,3 +311,10 @@ tag dispatch. This temporary interlock is not an implementation or PASS result f
 It must be replaced by verification of mandatory exact-artifact operational evidence before release;
 an editable status ledger or operator toggle cannot authorize that replacement. Published 0.1.0
 tag contents are unchanged.
+
+Source 1c4b6a5660a3b005fc7d81dab2fb197ec3f980ee passed hosted run 36216530595: the six
+platform/Python jobs, installed-wheel managed signer and all 16 mandatory single-host infrastructure
+cases, including the extended four-verifier acceptance/withdrawal path. Local source checks passed
+309 tests (three Linux-only skips, infrastructure/signer cases excluded separately), all 28 fault
+injections and isolated wheel/sdist checks. The acceptance core has 100% line and branch coverage.
+These are component results, not G1–G7 qualification or authorization to remove the release interlock.
