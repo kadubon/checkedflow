@@ -56,9 +56,17 @@ def infrastructure(tmp_path, monkeypatch):
                     time.sleep(0.1)
             yield image, binary
         finally:
-            process.terminate()
-            process.wait(timeout=15)
-            recovery.sweep()
+            import sqlite3
+
+            try:
+                recovery.sweep()
+                with sqlite3.connect(directory / "sandbox.sqlite") as db:
+                    pending = db.execute("SELECT name FROM containers").fetchall()
+                for (name,) in pending:
+                    assert recovery.cleanup(name), "unresolved laboratory container creation"
+            finally:
+                process.terminate()
+                process.wait(timeout=15)
 
 
 @pytest.fixture
@@ -119,11 +127,14 @@ GVisorRunner(sys.argv[1], limits=Limits(seconds=8)).run(
                 worker.kill()
             worker.wait(timeout=10)
             assert worker.returncode == (39 if phase == "created" else -9)
-            while engine.inspect(container) is not None:
+            while True:
+                absent = engine.inspect(container) is None
+                with sqlite3.connect(directory / "sandbox.sqlite") as db:
+                    retired = db.execute("SELECT COUNT(*) FROM containers").fetchone()[0] == 0
+                if absent and retired:
+                    break
                 assert time.monotonic() < deadline, "independent container recovery timed out"
                 time.sleep(0.1)
-            with sqlite3.connect(directory / "sandbox.sqlite") as db:
-                assert db.execute("SELECT COUNT(*) FROM containers").fetchone()[0] == 0
         finally:
             if worker.poll() is None:
                 worker.kill()

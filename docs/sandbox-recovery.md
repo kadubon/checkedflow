@@ -22,6 +22,7 @@ uv run python -m checkedflow.sandbox_recovery "$CHECKEDFLOW_SANDBOX_RECOVERY"
 Set the same variable in the worker's terminal. Keep the service running until all work and cleanup
 have settled. There is no host-execution fallback. A missing journal setting, stale recovery heartbeat,
 unavailable daemon, changed daemon identity or full recovery journal prevents new container launch.
+`GVisorRunner.check()` probes the isolation runtime only; actual launch also enforces recovery readiness.
 `python -m checkedflow.sandbox_recovery DIRECTORY --once` performs one recovery pass; it does not
 advertise a continuing service. All commands are available from an installed wheel without a checkout.
 
