@@ -381,3 +381,26 @@ skips and 19 infrastructure/service cases excluded into separate groups. All sta
 32 selected invariant mutations passed. The isolated wheel/sdist package checks also passed.
 The S3 and Vault service cases were executed separately as described above, not counted as source
 passes. These results do not supply the remaining operational implementation or missing inventory.
+
+The first S3 CI increment's Linux service job failed: it required every simultaneous conditional
+write to be immediately confirmed, rather than preserving unknown replies and checking later
+availability. The failure is retained in run 36219168437. A separate local restart check also found
+that bucket-list readiness can precede volume registration, and that Linux graceful termination
+can exceed a ten-second fixture wait. These were fixture assumptions, not grounds to weaken byte
+integrity checks or add implicit write retries.
+
+The revised fixture records every concurrent write outcome, performs only bounded read-based
+reconciliation, waits for actual bytes during recovery, and deliberately kills its own process for
+the outage/crash test. It adds interrupted-input nonpublication, interrupted-download rejection and
+provider-credential replacement with old-credential denial. The 28 protocol cases passed. The
+extended installed-service test passed on Windows/Python 3.12.10 in 31.90 seconds and, after the
+explicit crash adjustment, Linux/WSL Python 3.12.3 in 42.09 seconds. Both used wheel SHA-256
+`d595103221a856ed02ba52f567ad4ee433791e16136a16d2cedce04b15928ce4`; harness records identify dirty
+source based on 4c4f9ff. The new exact-source hosted run remains necessary. No production runtime
+behavior was relaxed, and neither local result claims power-loss durability or full G1–G7 coverage.
+
+The revised local source suite passed 363 cases in 82.25 seconds, with the same three Linux-only
+skips, 19 separately selected infrastructure/service cases, static checks and 32 killed mutations.
+Run 36219168437 finished failed solely at its earlier Linux S3 job; all six platform jobs, managed
+signer, Windows S3 and existing CometBFT/gVisor qualification succeeded. That failure remains a
+failure, regardless of later local corrections.

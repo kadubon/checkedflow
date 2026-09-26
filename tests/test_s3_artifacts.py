@@ -203,6 +203,17 @@ class Chunks(httpx.SyncByteStream):
         yield from self.chunks
 
 
+def test_interrupted_download_never_returns_partial_bytes(monkeypatch):
+    class Interrupted(Chunks):
+        def __iter__(self):
+            yield b"art"
+            raise httpx.ReadError("interrupted fixture stream")
+
+    transport(monkeypatch, lambda _: httpx.Response(200, stream=Interrupted([])))
+    with pytest.raises(Failure, match="TRANSPORT"):
+        store().get(reference(), access=ACCESS)
+
+
 def test_chunked_body_limit_and_empty_object(monkeypatch):
     bodies = iter(([BODY, b"!"], []))
     transport(monkeypatch, lambda _: httpx.Response(200, stream=Chunks(next(bodies))))

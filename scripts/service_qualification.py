@@ -146,6 +146,7 @@ def qualify(provider: str) -> None:
                 "-m",
                 profile["marker"],
                 "-q",
+                "--capture=tee-sys",
                 "--junitxml=" + str(junit),
             ],
             environment=environment,

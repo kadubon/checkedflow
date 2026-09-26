@@ -189,6 +189,19 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
                 method, endpoint + path, content=body, headers=dict(command.headers.items())
             ).status_code
 
+    def available(store, ref, access):
+        # Bucket listing readiness does not imply that master/volume registration has converged.
+        # Only retry reads; never replay publication or turn unknown into a fabricated success.
+        deadline = time.monotonic() + 45
+        while True:
+            try:
+                return store.get(ref, access=access)
+            except Failure as failure:
+                if failure.code not in {"UNAVAILABLE", "TRANSPORT"}:
+                    raise
+                assert time.monotonic() < deadline, "S3 object availability exceeded 45 seconds"
+                time.sleep(0.2)
+
     with (tmp_path / "service.log").open("wb") as log:
         process = subprocess.Popen(
             arguments,
@@ -211,7 +224,7 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
                 time.sleep(0.2)
             assert request("PUT", "/" + bucket) == 200
             assert request("PUT", "/forbidden-bucket") == 200
-            store = S3Store(endpoint, bucket, writer, ca_file=ca, timeout=3)
+            store = S3Store(endpoint, bucket, writer, ca_file=ca, timeout=10)
             body = b"verified service bytes"
             ref = Reference(
                 "sha256",
@@ -223,9 +236,37 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
                 "a" * 64,
             )
             access = Access("worker", frozenset({"mission"}), frozenset({"read", "write"}))
+
+            def publish_once(_):
+                try:
+                    store.put(ref, BytesIO(body), access=access)
+                    return "confirmed"
+                except Failure as failure:
+                    assert failure.code == "OUTCOME_UNKNOWN", failure.code
+                    return "unknown"
+
             with ThreadPoolExecutor(max_workers=4) as pool:
-                list(pool.map(lambda _: store.put(ref, BytesIO(body), access=access), range(4)))
-            assert store.get(ref, access=access) == body
+                outcomes = list(pool.map(publish_once, range(4)))
+            assert available(store, ref, access) == body
+            print("S3 concurrent publication outcomes:", json.dumps(outcomes))
+            partial = b"interrupted source fixture"
+            partial_ref = replace(
+                ref, digest=hashlib.sha256(partial).hexdigest(), length=len(partial)
+            )
+
+            class InterruptedSource:
+                offset = 0
+
+                def read(self, size):
+                    if self.offset:
+                        raise OSError("disposable upload source interrupted")
+                    self.offset += 1
+                    return partial[: min(size, 5)]
+
+            with pytest.raises(OSError, match="upload source interrupted"):
+                store.put(partial_ref, InterruptedSource(), access=access)
+            with pytest.raises(Failure, match="UNAVAILABLE"):
+                store.get(partial_ref, access=access)
             # Empty and chunk-sized objects must use the same verified path, not ETag shortcuts.
             retained = []
             for payload in (b"", b"bounded persistence fixture\n" * 8192):
@@ -261,13 +302,19 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
             assert request("DELETE", path) == 204
             with pytest.raises(Failure, match="UNAVAILABLE"):
                 store.get(ref, access=access)
-            process.terminate()
+            # Deliberate process crash, not a claim about power-loss durability or graceful drain.
+            process.kill()
             process.wait(timeout=10)
             with pytest.raises(Failure, match="TRANSPORT"):
                 store.get(ref, access=access)
             with pytest.raises(Failure, match="OUTCOME_UNKNOWN"):
                 store.put(ref, BytesIO(body), access=access)
-            # Restart the owned service over the same private data, without recreating the bucket.
+            # Rotate the service credential in private configuration while the service is stopped.
+            rotated = Credentials(writer.access_key, secrets.token_hex(24))
+            configuration = json.loads(config.read_text())
+            configuration["identities"][1]["credentials"][0]["secretKey"] = rotated.secret_key
+            config.write_text(json.dumps(configuration))
+            # Restart over the same data without recreating the bucket or retaining the old key.
             process = subprocess.Popen(
                 arguments,
                 cwd=tmp_path,
@@ -287,7 +334,13 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
                 assert time.monotonic() < deadline, "S3 restart exceeded 45 seconds"
                 time.sleep(0.2)
             for item, payload in retained:
-                assert store.get(item, access=access) == payload
+                with pytest.raises(Failure, match="AUTHORITY"):
+                    store.get(item, access=access)
+                assert (
+                    available(S3Store(endpoint, bucket, rotated, ca_file=ca), item, access)
+                    == payload
+                )
+            store = S3Store(endpoint, bucket, rotated, ca_file=ca)
             with pytest.raises(Failure, match="UNAVAILABLE"):
                 store.get(ref, access=access)
         finally:

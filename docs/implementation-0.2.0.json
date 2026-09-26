@@ -2965,7 +2965,7 @@
         "docs/s3-storage.md",
         "docs/implementation-0.2.0.md"
       ],
-      "scope": "Twenty-seven protocol cases and real pinned SeaweedFS 4.47 installed-wheel TLS/conditional-write/corruption/outage/restart test passed on Windows. Exact development wheel b174f96ef041bfa2202acd5b94551ba586034fda708a1a2fcfb830349dcdcef7; dirty harness based on 311f4a6. Hosted Linux result pending. Not availability quorum, retention, multi-host durability or full G1-G7 qualification."
+      "scope": "Twenty-eight protocol cases passed. Real SeaweedFS 4.47 installed-wheel tests passed on Windows and Linux/WSL, including scoped conditional writes, interrupted uploads, corruption, outage/restart and credential replacement. Exact development wheel d595103221a856ed02ba52f567ad4ee433791e16136a16d2cedce04b15928ce4; dirty harness based on 4c4f9ff. First hosted Linux case failed on fixture assumptions; corrected hosted result pending. Not availability quorum, retention, power-loss or multi-host durability, or full G1-G7 qualification."
     }
   ],
   "observations": [
@@ -3070,6 +3070,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36217957291",
       "conclusion": "success",
       "scope": "Repository reuse evidence documentation follow-up passed all required component jobs. Predates S3 implementation and its real-service jobs; not full operational qualification."
+    },
+    {
+      "source": "4c4f9ff419a8822e1c1ffeb27bc6dbdd21beca2b",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36219168437",
+      "conclusion": "failure",
+      "scope": "Build, all six platform/Python jobs, CometBFT/gVisor, real Vault and Windows S3 passed. Linux S3 failed because the fixture demanded immediate confirmation of every concurrent conditional write. Not a qualified run. Corrected bounded read reconciliation, actual data readiness and explicit crash fixture require a new exact-source run."
     }
   ]
 }

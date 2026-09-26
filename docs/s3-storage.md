@@ -106,6 +106,9 @@ The fixture uses checksum-pinned Apache-2.0 SeaweedFS 4.47 separately from the p
 disposable private data, random credentials, an ephemeral CA and loopback listeners. Telemetry and
 optional Iceberg/Lance listeners are disabled. It does not alter Docker, open public ports or execute
 candidate code. Download is bounded to 64 MiB / 120 seconds; each readiness wait to 45 seconds.
+Object recovery uses bounded read-only availability checks; it never resends a PUT. A bucket-list
+response alone is not treated as data-plane readiness. Concurrent write acknowledgements can remain
+unknown; the fixture preserves those outcomes and requires a subsequently verified read.
 The installed test has a 180-second outer process-tree timeout; CI jobs have a 12-minute ceiling.
 
 ```sh
@@ -122,8 +125,11 @@ cases. It records wheel digest and harness revision; dirty source is recorded as
 
 [Protocol tests](../tests/test_s3_artifacts.py) inject malformed responses and lost acknowledgements.
 [Real service tests](../tests/test_s3_service.py) cover TLS, conditional concurrent writes, empty and
-bounded objects, anonymous/wrong-credential/wrong-bucket denial, scope separation, corruption,
-removal, outage and restart persistence. Mock transport results do not qualify a provider.
+bounded objects, interrupted uploads, anonymous/wrong-credential/wrong-bucket denial, scope
+separation, corruption, removal, outage and process-crash restart persistence. It also replaces
+the provider credential during restart and checks old-credential denial and new-credential access.
+This is not a power-loss durability or online provider rotation test. Mock transport results do not
+qualify a provider.
 CI tests the same built wheel on Windows and Linux; inspect actual results before claiming success.
 
 Provider sources: [SeaweedFS 4.47](https://github.com/seaweedfs/seaweedfs/releases/tag/4.47),
