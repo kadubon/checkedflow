@@ -1,0 +1,2724 @@
+{
+  "format": "checkedflow/implementation-ledger/v1",
+  "target_version": "0.2.0",
+  "specification": "docs/specification-0.2.0.md",
+  "specification_sha256": "a3f86a42a7c99f07cc2274dac47c4fdffb89bc579ab36978d6ef0a79f85d60f2",
+  "baseline_source": "a58869e2488bed9550b006d261601240357b2b99",
+  "statuses": [
+    "NOT_STARTED",
+    "IMPLEMENTED",
+    "SOURCE_TESTED",
+    "INSTALLED_TESTED",
+    "INTEGRATION_TESTED",
+    "DEPLOYMENT_QUALIFIED",
+    "BLOCKED"
+  ],
+  "requirements": [
+    {
+      "id": "Rpreamble-0004",
+      "source_line": 4,
+      "text": "You are implementing changes in **`kadubon/checkedflow`**:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "Rpreamble-0006",
+      "source_line": 6,
+      "text": "https://github.com/kadubon/checkedflow",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "Rpreamble-0010",
+      "source_line": 10,
+      "text": "Implement the practical-domain, deployment, security, storage, recovery, observability, and compatibility work described below. Deliver functioning code, tests, documentation, installable distributions, and an evidence-based release decision.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "Rpreamble-0012",
+      "source_line": 12,
+      "text": "The owner wants the previously discussed **“1.0 Stable” operational scope**, but the **only authorized final package version is `0.2.0`, with Git tag `v0.2.0`**. Do not publish 0.3, 0.4, 1.0, or silently select another version. Milestones are implementation checkpoints, not separate public releases.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "Rpreamble-0014",
+      "source_line": 14,
+      "text": "“Stable” is an acceptance target for a **specific documented deployment and workload profile**, not a label to apply merely because the implementation is large or the tests are green. Do not claim universal production readiness, formal verification of the whole system, independent organizational operation, or proven AI acceleration.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "Rpreamble-0016",
+      "source_line": 16,
+      "text": "This is an implementation task, not a documentation-only exercise. Do not replace required implementations with interfaces that raise `NotImplementedError`, prose, fake receipts, mock-only backends, or an attractive deployment diagram.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "Rpreamble-0018",
+      "source_line": 18,
+      "text": "**Preserve the central separations:** authorization, committed ordering, attempted execution, observed results, acceptance under a contract, current reusability, and resource accounting.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0026",
+      "source_line": 26,
+      "text": "Within this repository, implement code, contracts, tests, migrations, deployment assets, documentation, and CI changes needed for this task. Use ordinary branches and pull requests. Subject to existing permissions and required approvals, prepare and publish the final **0.2.0** release through the existing release mechanism only after its gates pass.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0028",
+      "source_line": 28,
+      "text": "This instruction authorizes the normal repository/release actions for this task. It does **not** authorize bypassing branch protections, environment reviewers, GitHub/PyPI policies, or security checks.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0030",
+      "source_line": 30,
+      "text": "Do not change `kadubon/github.io`, the Collective Intelligence Index, companion projects, user organization settings, billing, or unrelated repositories. A later Index refresh is a separate task.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0034",
+      "source_line": 34,
+      "text": "The owner does not want expensive empirical LLM experiments. Accordingly:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0036",
+      "source_line": 36,
+      "text": "- No paid model calls, model-weight downloads, GPUs, training, or broad AI performance campaigns.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0037",
+      "source_line": 37,
+      "text": "- Use deterministic fixture producers and bounded CPU-based engineering tests.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0038",
+      "source_line": 38,
+      "text": "- Real sandbox, consensus, network, storage, and recovery tests are required where specified. Do not misclassify these as experiments that may be skipped.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0039",
+      "source_line": 39,
+      "text": "- Do not provision paid cloud resources, enlarge a billing plan, open public ports, alter a persistent operator Docker daemon, or run unbounded stress loops.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0040",
+      "source_line": 40,
+      "text": "- Use disposable directories, containers, test identities, and already authorized ephemeral runners.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0041",
+      "source_line": 41,
+      "text": "- Record resource/time limits before expensive test stages; stop and report at those limits rather than retrying indefinitely.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0042",
+      "source_line": 42,
+      "text": "- Additional multi-host tests require an explicitly supplied/authorized test inventory. Do not invent infrastructure or bill the owner for it.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0043",
+      "source_line": 43,
+      "text": "- The GitHub draft-PR effect implemented below is disabled by default. Exercise its real write path only against an explicitly authorized disposable target. A configured credential alone is not permission to mutate an arbitrary repository.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0044",
+      "source_line": 44,
+      "text": "- Do not execute generated or submitted repository code on the trusted host or in a privileged CI context.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0048",
+      "source_line": 48,
+      "text": "If a prerequisite is unavailable, finish all independently feasible implementation work, provide the runnable qualification harness, and report the exact blocked gate. Do not stop the entire task at the first missing service. Equally, do not replace a required real test with a mock and call it passed.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0050",
+      "source_line": 50,
+      "text": "Do not publish the final 0.2.0 operational release if a mandatory gate for its declared supported profile is missing, skipped, or failing. Keep the PR/release preparation ready, with status **BLOCKED**, rather than publishing an incomplete release and calling it stable.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R0-0052",
+      "source_line": 52,
+      "text": "No fabricated results, future-dated evidence, inherited PASS labels, or unsupported timing/throughput promises.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0058",
+      "source_line": 58,
+      "text": "Read applicable `AGENTS.md` and contribution rules first. Inspect the current default branch, published tags/releases, PyPI metadata, workflows, and repository rules. Preserve unrelated working-tree changes.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0060",
+      "source_line": 60,
+      "text": "A source inspection for this prompt observed:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0062",
+      "source_line": 62,
+      "text": "- Default-branch commit: `a58869e2488bed9550b006d261601240357b2b99`.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0063",
+      "source_line": 63,
+      "text": "- Published 0.1.0 release source: `cbe6ad8670a8936683d911d5fe216a94fc3a1fff`.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0064",
+      "source_line": 64,
+      "text": "- Package version: 0.1.0; Python 3.12–3.14 documented.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0065",
+      "source_line": 65,
+      "text": "- Signed core protocol: `checkedflow/v1`.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0066",
+      "source_line": 66,
+      "text": "- Four fixed organizations, equal validator power, and three-organization governance/acceptance rules.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0067",
+      "source_line": 67,
+      "text": "- A finite integer-array domain, with 31 declared inputs.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0068",
+      "source_line": 68,
+      "text": "- Whole-state hashing, a 4 MiB application-state admission cap, 64 capabilities, and 4,096 tasks/request identities.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0069",
+      "source_line": 69,
+      "text": "- Block-height deadlines, not wall-clock deadlines.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0070",
+      "source_line": 70,
+      "text": "- No supported snapshots/state sync or complete governance-key rotation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0071",
+      "source_line": 71,
+      "text": "- One-attempt workers without active sandbox heartbeats in the bundled supervisor path.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0072",
+      "source_line": 72,
+      "text": "- Real A2A/MCP adapters and existing real CometBFT/gVisor qualification.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0074",
+      "source_line": 74,
+      "text": "These are orientation facts, not permission to assume HEAD has remained unchanged. Verify them. If 0.2.0 already exists, do not overwrite it or choose another release number; report the conflict and separate already-completed work from missing work.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0076",
+      "source_line": 76,
+      "text": "Inspect at least:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0078",
+      "source_line": 78,
+      "text": "- `README.md`, `AGENTS.md`, `SECURITY.md`, `pyproject.toml`, `uv.lock`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0079",
+      "source_line": 79,
+      "text": "- `docs/protocol.md`, `docs/state-machine.md`, `docs/architecture.md`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0080",
+      "source_line": 80,
+      "text": "- `docs/adapters.md`, `docs/operations.md`, `docs/interoperability.md`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0081",
+      "source_line": 81,
+      "text": "- `docs/security.md`, `docs/conformance.md`, `docs/verification.md`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0082",
+      "source_line": 82,
+      "text": "- `docs/audit.md`, `docs/validation-status.md`, `docs/releasing.md`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0083",
+      "source_line": 83,
+      "text": "- `src/checkedflow/core/`, runtime, wire, identity, storage, runner, worker, recovery",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0084",
+      "source_line": 84,
+      "text": "- `src/checkedflow/agents/` and `src/checkedflow/distributed/`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0085",
+      "source_line": 85,
+      "text": "- Packaged schemas/vectors, `deploy/`, tests, `scripts/check.py`, package and release gates",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0086",
+      "source_line": 86,
+      "text": "- `.github/workflows/workflow.yml`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0088",
+      "source_line": 88,
+      "text": "Run the existing inexpensive baseline checks first in a disposable environment. Preserve failures as baseline evidence and distinguish source checks from installed-artifact checks.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0090",
+      "source_line": 90,
+      "text": "Create:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0092",
+      "source_line": 92,
+      "text": "- `docs/implementation-0.2.0.md`: decisions, milestones, acceptance cases, dependencies.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0093",
+      "source_line": 93,
+      "text": "- A machine-readable implementation status file, using the repository's conventions.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0094",
+      "source_line": 94,
+      "text": "- `docs/operational-profile-0.2.md`: proposed deployment/workload envelope, explicitly marked unqualified until measured.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R1-0096",
+      "source_line": 96,
+      "text": "Track each requirement as `NOT_STARTED`, `IMPLEMENTED`, `SOURCE_TESTED`, `INSTALLED_TESTED`, `INTEGRATION_TESTED`, `DEPLOYMENT_QUALIFIED`, or `BLOCKED`, with evidence references. A count of checked boxes is not a release gate.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0104",
+      "source_line": 104,
+      "text": "A **fixed-membership, four-operator, evidence-preserving runtime for bounded Python repository-patch work**, with:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0106",
+      "source_line": 106,
+      "text": "1. A real `repository-patch/v1` domain.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0107",
+      "source_line": 107,
+      "text": "2. Content-addressed source/patch/evidence storage outside consensus payloads.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0108",
+      "source_line": 108,
+      "text": "3. Sustained bounded operation with safe archival/checkpoint behavior, not eventual administrative lockout.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0109",
+      "source_line": 109,
+      "text": "4. Authenticated snapshot/restore and node bootstrap support.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0110",
+      "source_line": 110,
+      "text": "5. Explicit upgrades and 0.1-to-0.2 migration without rewriting historical meaning.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0111",
+      "source_line": 111,
+      "text": "6. Role-separated keys, rotation/revocation, and a real managed-signer integration.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0112",
+      "source_line": 112,
+      "text": "7. Secure mission/client access and narrowly scoped artifacts.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0113",
+      "source_line": 113,
+      "text": "8. One constrained external effect: optionally open a GitHub **draft** PR for an approved checked patch.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0114",
+      "source_line": 114,
+      "text": "9. Supervision, admission control, observability, and operator runbooks.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0115",
+      "source_line": 115,
+      "text": "10. Actual bounded multi-host qualification for the operational claim.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0117",
+      "source_line": 117,
+      "text": "The core remains model-independent. External agents can propose work through the existing signed-command boundary. A paid model is not required to exercise the implemented lifecycle.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0121",
+      "source_line": 121,
+      "text": "Keep profiles explicit:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0123",
+      "source_line": 123,
+      "text": "- **SDK/offline:** local inspection and replay; no distributed-finality claim.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0124",
+      "source_line": 124,
+      "text": "- **Laboratory:** four colocated nodes; tests mechanics, not organizational independence.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0125",
+      "source_line": 125,
+      "text": "- **Operational:** four separate pre-provisioned Linux node environments, protected keys, authenticated transport, approved artifact store, and the declared bounded workload.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0127",
+      "source_line": 127,
+      "text": "Do not introduce a “single-node production” fallback and preserve a three-of-four assurance claim. Do not silently downgrade operational execution to ordinary Docker or a host subprocess when gVisor is unavailable.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0131",
+      "source_line": 131,
+      "text": "Do not build an agent framework, GUI, plugin marketplace, arbitrary autonomous code synthesizer, payments/email/deployment actuator suite, private computation, ZK system, universal verifier, or elastic validator membership.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0133",
+      "source_line": 133,
+      "text": "Keeping four organizations fixed is acceptable. Key replacement, node replacement, and a governed successor/upgrade procedure still must work.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R2-0135",
+      "source_line": 135,
+      "text": "Do not implement both Kubernetes/Helm and every other deployment platform. One maintained local deployment path plus one real multi-host path is enough.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0141",
+      "source_line": 141,
+      "text": "Before adding fields or changing transitions, write an ADR explaining the version boundary.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0145",
+      "source_line": 145,
+      "text": "Preserve the interpretation of existing `checkedflow/v1` signed bytes, canonicalization, state hashes, commands, error codes, expiry behavior, and replay vectors. Preserve published 0.1.0 tags/assets and historical validation records.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0147",
+      "source_line": 147,
+      "text": "Make frozen golden fixtures from authentic old histories. The new package must verify/replay them with the original semantics. Do not edit expected hashes to make a changed interpretation pass.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0151",
+      "source_line": 151,
+      "text": "Use a new explicitly versioned protocol/state profile, such as `checkedflow/v2`, for changes that reinterpret committed data, including:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0153",
+      "source_line": 153,
+      "text": "- Artifact references replacing inline source.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0154",
+      "source_line": 154,
+      "text": "- Role-separated organization keys and rotation semantics.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0155",
+      "source_line": 155,
+      "text": "- Archival/epoch/snapshot commitments.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0156",
+      "source_line": 156,
+      "text": "- New action-authorization/effect states.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0157",
+      "source_line": 157,
+      "text": "- New configurable consensus-bound capacity rules.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0159",
+      "source_line": 159,
+      "text": "Package version **0.2.0** is separate from wire/state versions. Do not bump the package to 1.0 to express a v2 protocol.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0161",
+      "source_line": 161,
+      "text": "Reject unsupported combinations at startup and request admission. Do not accept v1 bytes under v2 meaning. Do not downgrade a signed request automatically.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0163",
+      "source_line": 163,
+      "text": "Preserve strict JSON lexical admission, duplicate-key rejection, canonical bytes, integer bounds, and domain-separated signatures. Network SDKs must not normalize untrusted input before the signed inner envelope is checked.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0167",
+      "source_line": 167,
+      "text": "The state transition must not call S3, GitHub, Vault, clocks, DNS, randomness, model APIs, metrics, or a sandbox. All outside observations enter through bounded, authenticated, explicitly interpreted records. Local service availability cannot make different validators compute different state transitions.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R3-0169",
+      "source_line": 169,
+      "text": "Local derived indexes and caches are rebuildable, never independent authorization sources. Rejected commands must preserve the established command-versus-block-expiry distinction.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0175",
+      "source_line": 175,
+      "text": "Implement **`repository-patch/v1`** as a restricted Python project profile, not “arbitrary repository execution.”",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0179",
+      "source_line": 179,
+      "text": "An approved contract must bind:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0181",
+      "source_line": 181,
+      "text": "- Repository identity and exact base commit plus content/tree digest.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0182",
+      "source_line": 182,
+      "text": "- Bounded normalized file manifest, patch digest, result-tree digest.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0183",
+      "source_line": 183,
+      "text": "- Allowed paths/extensions, maximum files/bytes, and prohibited file classes.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0184",
+      "source_line": 184,
+      "text": "- Approved dependency lock or prebuilt environment image digest.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0185",
+      "source_line": 185,
+      "text": "- Exact verifier implementation, test selection, lint configuration, and expected test inventory.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0186",
+      "source_line": 186,
+      "text": "- Resource ceilings and deadlines.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0187",
+      "source_line": 187,
+      "text": "- Named receiver/use scope.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0188",
+      "source_line": 188,
+      "text": "- Whether any eventual external PR effect is permitted; default false.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0190",
+      "source_line": 190,
+      "text": "Do not resolve mutable branches during verification. Changing the base, dependency lock, checker, selected tests, or relevant environment creates a new verification target.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0192",
+      "source_line": 192,
+      "text": "Use fixture repositories included under an explicit open license, containing small real Python modules with seeded bugs and independently specified expectations. Include more than trivial integer-array transformations, but keep tests CPU-only and bounded.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0194",
+      "source_line": 194,
+      "text": "The producer may be a deterministic local fixture producer or an external agent supplying a patch through an authorized interface. Do not add an inference service to satisfy this requirement.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0198",
+      "source_line": 198,
+      "text": "Treat patches, archives, repository metadata, build files, filenames, and test code as untrusted.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0200",
+      "source_line": 200,
+      "text": "Reject or explicitly exclude:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0202",
+      "source_line": 202,
+      "text": "- Absolute/traversal paths, mixed-separator escapes, collisions, escaping links, hardlinks, device files, oversized archives, and decompression bombs.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0203",
+      "source_line": 203,
+      "text": "- Git hooks, `.git` metadata, submodules, LFS fetching, executable filters, uncontrolled credential helpers, and network-driven dependency installation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0204",
+      "source_line": 204,
+      "text": "- Changes to protected tests, checker configuration, dependency policy, CI workflows, signing metadata, or security controls unless a separate newly approved contract explicitly allows them.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0206",
+      "source_line": 206,
+      "text": "Validate paths on the actual host/target filesystem; do not rely on a string prefix. Use private workspaces, controlled extraction, no-follow/descriptor-based operations where appropriate, and protection against validation-to-use races.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0208",
+      "source_line": 208,
+      "text": "Repository acquisition is a trusted, constrained host operation or an uploaded immutable bundle. Do not grant network access or credentials to candidate code. A generic repository URL must not become an SSRF, local-file, or arbitrary-git-protocol primitive.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0212",
+      "source_line": 212,
+      "text": "Apply the patch in disposable isolated workspaces. Run candidate code only through the approved gVisor profile, with no network, secrets, Docker socket, writable host paths, or privileged mode.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0214",
+      "source_line": 214,
+      "text": "Bind evidence to the exact patched bytes, base, environment, and checker. Zero collected tests, unexpected skips, malformed reports, timeout, missing sandbox, or uncertain cleanup must not produce a pass.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0216",
+      "source_line": 216,
+      "text": "**Critical:** making test files read-only does not make a test process trustworthy when it imports hostile candidate code. Candidate code can interfere with the interpreter, pytest plugins, exits, and report files without editing protected tests.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0218",
+      "source_line": 218,
+      "text": "Provide a restricted cross-process/output-checking path where the trusted evaluator owns the expected inputs/results and interprets bounded candidate outputs outside the candidate's process. Preserve the distinction between:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0220",
+      "source_line": 220,
+      "text": "- Reported repository test/lint results under a pinned environment.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0221",
+      "source_line": 221,
+      "text": "- Independently checked properties for a declared bounded interface.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0222",
+      "source_line": 222,
+      "text": "- General program correctness, which is not established.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0224",
+      "source_line": 224,
+      "text": "Do not trust candidate-supplied JUnit, stdout containing “PASS,” or a success Boolean as the authoritative verdict. Document residual shared-checker risks. Do not claim secret hidden tests when the candidate can inspect the wrapper or inputs.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0226",
+      "source_line": 226,
+      "text": "For non-exhaustive repository tests, use a scoped test-suite acceptance claim and unknown general behavior/novelty. Do not relabel a digest of test outputs as universal program equivalence.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0230",
+      "source_line": 230,
+      "text": "Distinguish reuse of an exact checked patch against its original base from extraction of a generally reusable procedure. Implement context checks and fresh verification for a new base/environment. Do not automatically cherry-pick a patch onto a new repository and inherit old acceptance.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0232",
+      "source_line": 232,
+      "text": "Demonstrate the whole path:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0234",
+      "source_line": 234,
+      "text": "approved mission -> candidate patch -> isolated execution -> independent checks -> accepted scoped artifact -> allowed same-scope reuse -> changed-base rejection -> new qualification.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R4-0236",
+      "source_line": 236,
+      "text": "Include a valid patch, an incorrect patch, test-tampering attempts, stale evidence, changed dependencies, and timeout cases.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0242",
+      "source_line": 242,
+      "text": "Implement a content-addressed artifact interface with:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0244",
+      "source_line": 244,
+      "text": "- A local filesystem backend for offline/disposable operation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0245",
+      "source_line": 245,
+      "text": "- A real S3-compatible backend, exercised against an approved disposable local service or authorized endpoint.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0247",
+      "source_line": 247,
+      "text": "Use provider-neutral interfaces. Select and pin any external service only after checking its current license, supported distribution, and compatibility. Do not invent a dependency or assume every “S3-compatible” backend has identical consistency semantics.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0251",
+      "source_line": 251,
+      "text": "Consensus records contain small typed references: digest algorithm/value, byte length, content type, artifact kind, scope, and manifest/version identity. Keep credentials, expiring signed URLs, and arbitrary endpoint addresses outside canonical state.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0253",
+      "source_line": 253,
+      "text": "Every read verifies exact bytes and length. S3 ETag is not a substitute for the declared content digest. Handle partial uploads, concurrent identical puts, conflicting content, corruption, interrupted fetches, and bounded streams.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0255",
+      "source_line": 255,
+      "text": "Uploaded bytes become visible only after complete verification and atomic finalization. Use per-scope storage policy; a hash is not authorization. Prevent cross-scope existence leaks, unauthorized presigned access, and unsafe cache reuse. Define encrypted-storage digest semantics explicitly.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0259",
+      "source_line": 259,
+      "text": "A correct digest does not establish that an object can be retrieved. Use explicit publication/availability receipts or other documented admission rules to establish the required replicas/availability before allowing operations that need the artifact.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0261",
+      "source_line": 261,
+      "text": "Do not fetch artifacts during consensus execution. Runtime use fetches and checks bytes; if data is unavailable, it stops with an explicit unavailable/unknown state. A local outage must not silently mutate the global verdict.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0263",
+      "source_line": 263,
+      "text": "Test removal, corruption, stale replicas, and service outage after initial acceptance. Do not return “usable” solely because an old hash exists in committed state.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0267",
+      "source_line": 267,
+      "text": "Implement mark/retain/sweep or an equivalent safe policy with a dry run, protected references, pending-operation roots, historical retention rules, grace periods, and authenticated execution.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0269",
+      "source_line": 269,
+      "text": "Retain live dependencies, unresolved effect evidence, required snapshot manifests, and retained replay material. Do not delete an artifact between admission and use: pin/version the referenced object for the operation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R5-0271",
+      "source_line": 271,
+      "text": "Deletion/tombstoning, revocation, and physical erasure are distinct. Document and test restore-related resurrection prevention.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0277",
+      "source_line": 277,
+      "text": "The legacy global caps can eventually block governance as well as ordinary work. Preserve v1 replay, but do not carry that dead-end behavior into the new operational profile.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0279",
+      "source_line": 279,
+      "text": "Implement a versioned bounded-state/archive strategy. Decide it in an ADR before coding. A bounded active set plus authenticated archived commitments and epoch/checkpoint transitions is acceptable; a transactional indexed state representation is also acceptable if its deterministic commitment and replay are specified.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0281",
+      "source_line": 281,
+      "text": "Whichever strategy is chosen must provide functioning code for:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0283",
+      "source_line": 283,
+      "text": "- Bounded active tasks/capabilities and paginated observations.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0284",
+      "source_line": 284,
+      "text": "- Durable immutable history/commitments and selective materialization.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0285",
+      "source_line": 285,
+      "text": "- Nonce, request-ID, fence, key, dependency, budget, and residual continuity.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0286",
+      "source_line": 286,
+      "text": "- Safe rollover/checkpoint/archive without resetting unfinished obligations.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0287",
+      "source_line": 287,
+      "text": "- Authenticated lookup of historical evidence when required.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0288",
+      "source_line": 288,
+      "text": "- Predictable resource limits for admission, dependency traversal, and invalidation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0290",
+      "source_line": 290,
+      "text": "Do not solve scaling with an environment-variable increase to 64/4,096/4 MiB, an unbounded in-memory dictionary, or whole-history copying per task.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0292",
+      "source_line": 292,
+      "text": "If old idempotency records are retired, specify the retention window and an explicit permanent `RETIRED_REQUEST`/equivalent result. A retired request must never become a fresh dispatch. Do not promise infinite successful duplicate acknowledgment if the design only retains a finite window.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0294",
+      "source_line": 294,
+      "text": "Dependencies crossing archive/epoch boundaries need authenticated identity and lifecycle semantics. Missing archive evidence cannot be interpreted as valid or absent according to convenience.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0298",
+      "source_line": 298,
+      "text": "Ordinary work must not consume the capacity needed for pause, drain, revoke, reconcile, snapshot, and safe rollover. Reserve bounded storage/request/transition capacity for those actions and for invalidation/residual expansion.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0300",
+      "source_line": 300,
+      "text": "Test byte-level as well as object-count exhaustion. A paused or saturated system must still be able to enter its defined safe state. No quorum or signature bypass is permitted.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0304",
+      "source_line": 304,
+      "text": "Keep legacy declared-ceiling charges separate from optional observed CPU/token/currency measurements. Missing observations remain missing; counters do not turn into financial metering by relabeling.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0306",
+      "source_line": 306,
+      "text": "Preserve budget conservation across retries, snapshots, rollover, and restore. A successor epoch or run is not a fresh spending allowance unless separately authorized. Carry unresolved liabilities explicitly and prevent double charging.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R6-0308",
+      "source_line": 308,
+      "text": "Support a bounded deterministic longevity test that crosses the old limits—for example, more than 4,096 accepted identities and more than 64 total artifacts over the lifecycle—without claiming any particular production throughput. Small artifact sizes and batch generation should keep this affordable. Record the test dimensions before running it.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0316",
+      "source_line": 316,
+      "text": "Create a versioned manifest binding:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0318",
+      "source_line": 318,
+      "text": "- Chain/genesis and protocol/state versions.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0319",
+      "source_line": 319,
+      "text": "- Committed height and application-state commitment.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0320",
+      "source_line": 320,
+      "text": "- Relevant consensus/validator identities.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0321",
+      "source_line": 321,
+      "text": "- Chunk identities, sizes, order, total limits, and required artifacts.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0322",
+      "source_line": 322,
+      "text": "- Archive roots, nonces, fences, revoked keys, budget balances, and unresolved operations.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0323",
+      "source_line": 323,
+      "text": "- Schema/checker/runtime compatibility requirements.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0325",
+      "source_line": 325,
+      "text": "Use bounded parsing, streaming, chunk verification, staged import, and atomic activation. A corrupt or partial snapshot must not overwrite a working store.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0327",
+      "source_line": 327,
+      "text": "A self-consistent hash or three signatures in a manifest is not, by itself, bootstrap trust. Verification must use an already trusted genesis/checkpoint/validator set and the supported consensus trust model. Do not accept trust keys from the snapshot being verified.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0331",
+      "source_line": 331,
+      "text": "For the pinned supported CometBFT version, implement the actual snapshot/state-sync ABCI surface where required: listing, offering, loading chunks, applying chunks, and post-import state/hash verification.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0333",
+      "source_line": 333,
+      "text": "Use the documented light-client/trusted-checkpoint mechanism. Verify the exact relation between snapshot height, commit height, and AppHash for that version; add off-by-one negative tests. Do not import semantics from a different documentation version merely because its API names look similar.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0335",
+      "source_line": 335,
+      "text": "If the application cannot safely support arbitrary peer bootstrap, implement and document the narrower authenticated/operator-provisioned checkpoint profile rather than allowing untrusted snapshot bootstrap. The declared operational recovery gate must still be real, not a copy-file demonstration.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0339",
+      "source_line": 339,
+      "text": "Provide CLI/runbooks for consistent backup, validation, restore into a new directory, dry-run inspection, and caught-up verification. Account for SQLite WAL and the A2A journal's non-reconstructible callback configuration.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0341",
+      "source_line": 341,
+      "text": "Protect secrets separately. A snapshot must not embed reusable production private keys or callback credentials in public artifacts.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0343",
+      "source_line": 343,
+      "text": "Do not restore validator signing state into two active nodes or roll it backward to enable double signing. Node replacement must include stop/drain and signer-ownership verification. An application snapshot is not a consensus signer backup.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0345",
+      "source_line": 345,
+      "text": "Test disk/store loss, snapshot corruption, a stopped node rejoining, incomplete backup, stale checkpoint, unknown task restoration, and revoked-evidence restoration.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0349",
+      "source_line": 349,
+      "text": "Implement a reviewed 0.1.0 -> 0.2.0 path using authentic old state/history fixtures, including uncertain work and revoked dependencies.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0351",
+      "source_line": 351,
+      "text": "A maintenance-window, governed successor deployment is acceptable for a protocol-breaking migration. It must bind old and new identities/checkpoints, preserve history and outstanding state, stop old dispatch, and prevent old-chain commands from acquiring new authority.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0353",
+      "source_line": 353,
+      "text": "Legacy captures retain their original meaning; migrating structure cannot mint verification evidence. Unsupported/missing original artifacts remain unresolved.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R7-0355",
+      "source_line": 355,
+      "text": "Within a compatible protocol line, provide a rolling binary-upgrade procedure that retains quorum. For incompatible protocol changes, explicitly reject unsafe mixed versions and use the coordinated procedure. Document the point beyond which rollback is unsafe; use forward recovery instead of silently restoring an older writer.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0363",
+      "source_line": 363,
+      "text": "In the new protocol, separate:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0365",
+      "source_line": 365,
+      "text": "- CometBFT validator signing keys and anti-double-sign state.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0366",
+      "source_line": 366,
+      "text": "- Organization administrative authorization keys.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0367",
+      "source_line": 367,
+      "text": "- Worker/executor keys.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0368",
+      "source_line": 368,
+      "text": "- Verifier identities and attestation keys.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0369",
+      "source_line": 369,
+      "text": "- Gateway transport credentials.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0370",
+      "source_line": 370,
+      "text": "- External-effect credentials.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0372",
+      "source_line": 372,
+      "text": "Do not let a bearer token substitute for signed command authority. Do not give gateways or candidate code administrative signing keys. Keep each organization’s actual ownership boundary explicit.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0374",
+      "source_line": 374,
+      "text": "Preserve the existing separation between consensus progress and artifact acceptance. A negative or contradictory verifier observation must remain visible and trigger the declared quarantine policy; do not discard it merely because a passing quorum was reached. Remaining funded checks and their costs must not disappear after early acceptance. A false/malicious negative may reduce availability; document that trade-off rather than inventing a truth oracle or weakening the policy silently.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0376",
+      "source_line": 376,
+      "text": "Preserve the four-organization membership model. Three signatures from different keys controlled by one organization do not count as three organizations.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0380",
+      "source_line": 380,
+      "text": "Implement pending -> activated -> retired/revoked key lifecycles, explicit activation heights/versions, proof of possession where required, and administrative approval under current valid authority.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0382",
+      "source_line": 382,
+      "text": "Test overlap, old-key requests, mixed key epochs, replay, rotation failure, lost signer, and compromised-key revocation. Distinguish routine rotation from compromised historical evidence; do not automatically invalidate all old observations on every routine rotation or automatically trust them after compromise.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0384",
+      "source_line": 384,
+      "text": "Validator-key rotation must use a supported coordinated validator update or authenticated successor procedure with signing-state protection. Application-key rotation is not evidence that validator rotation works.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0388",
+      "source_line": 388,
+      "text": "Provide a typed signer interface and at least one real non-exporting signing-service integration. A concrete suitable target is **Vault Transit Ed25519**, subject to checking and pinning current documented support.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0390",
+      "source_line": 390,
+      "text": "- Sign the exact canonical domain-separated message, not an accidental hex string or differently prehashed message.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0391",
+      "source_line": 391,
+      "text": "- Bind the public key and provider key version to the committed identity.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0392",
+      "source_line": 392,
+      "text": "- Avoid `latest` key-version ambiguity during a rotation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0393",
+      "source_line": 393,
+      "text": "- No private-key export or plaintext backup is required for normal operation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0394",
+      "source_line": 394,
+      "text": "- Transport/authentication, timeouts, unavailable service, wrong key, wrong algorithm, and rotation have tests.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0395",
+      "source_line": 395,
+      "text": "- Use a real disposable local service for its integration gate; a fake HTTP client alone is insufficient.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0396",
+      "source_line": 396,
+      "text": "- A local development Vault proves API integration, not hardware-backed key custody or secure production Vault operation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0398",
+      "source_line": 398,
+      "text": "Do not claim AWS/Azure/HSM support without a concrete implemented, tested adapter with the required signature algorithm. Keep external service deployment/operator responsibility visible.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0402",
+      "source_line": 402,
+      "text": "Provide authenticated mission-scoped roles for inspection, submission, approval, verification, revocation, and operations. Define actual permissions in one auditable policy source; do not allow the LLM to assert its own roles.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0404",
+      "source_line": 404,
+      "text": "Use the existing OAuth resource-server support where possible, with issuer, audience, expiry, required scope, and key-rotation handling. No new authorization-server implementation is required. Add secure proxy/mTLS deployment support and explicit bearer-secret handling.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0406",
+      "source_line": 406,
+      "text": "Enforce equivalent policy at A2A, MCP, artifact download, pagination, notifications, and callbacks. Test cross-mission and cross-client denial. Protect callback credentials at rest and redact them from responses/logs.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R8-0408",
+      "source_line": 408,
+      "text": "**Confidentiality limit:** validators replicate the shared application state. Gateway ACLs do not hide that state from validator operators. Define the operational trust group accordingly. Confidential compartments require separate deployments/storage scopes; do not advertise cryptographic multi-tenant privacy.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0414",
+      "source_line": 414,
+      "text": "Implement an optional `EffectAdapter` boundary and one concrete effect: opening a **draft pull request** for an accepted repository patch in an explicitly allowed repository.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0416",
+      "source_line": 416,
+      "text": "Do not support automatic merge, direct pushes to protected branches, force pushes, deletion of user branches, production deployment, arbitrary HTTP requests, or secret/permission changes.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0420",
+      "source_line": 420,
+      "text": "Use a versioned state machine such as:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0422",
+      "source_line": 422,
+      "text": "prepared -> authorized -> dispatch_reserved -> dispatched -> observed -> reconciled",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0424",
+      "source_line": 424,
+      "text": "with separate denied, expired, unknown, and compensation-required states as appropriate. Specify exact transition names in schemas and tests rather than treating this illustrative list as sufficient.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0426",
+      "source_line": 426,
+      "text": "Bind the effect to:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0428",
+      "source_line": 428,
+      "text": "- Operation ID, chain/mission, actor and authority revision.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0429",
+      "source_line": 429,
+      "text": "- Repository identity, base commit, exact approved patch and result tree.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0430",
+      "source_line": 430,
+      "text": "- Permitted head-branch namespace and draft-only action.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0431",
+      "source_line": 431,
+      "text": "- Relevant policy/checker evidence, expiry, resource limit, and fence.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0433",
+      "source_line": 433,
+      "text": "Recheck current eligibility and authorization at dispatch. Protect against changing arguments after approval and against stale state during failover.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0435",
+      "source_line": 435,
+      "text": "A separate executor holds a least-privilege GitHub App installation token or equivalent approved credential. Generated code, gateways, and verifiers receive no token.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0439",
+      "source_line": 439,
+      "text": "Creating a draft PR or pushing its branch can trigger destination CI. “Draft” does not make candidate code harmless. Before enabling this adapter, require an operator-reviewed destination policy that prevents candidate-controlled code from receiving repository secrets or privileged CI credentials. Protect `.github/`, build/test control files, and the allowed patch scope.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0441",
+      "source_line": 441,
+      "text": "Do not execute the candidate in `pull_request_target`, a privileged `workflow_run`, or a persistent sensitive runner. The publication pipeline and the candidate-testing pipeline must be separate trust contexts.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0445",
+      "source_line": 445,
+      "text": "Use deterministic operation identities and owned branch names, conditional/create-if-absent behavior where actually supported, and a serialized dispatch claim. Inspect the existing branch/PR against exact expected content before treating it as the result of a retry.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0447",
+      "source_line": 447,
+      "text": "GitHub PR creation is not assumed to expose a universal exactly-once primitive. After an ambiguous reply, reconcile the original operation rather than create a fresh ID or resend blindly. Account for delayed remote visibility and concurrent requests. Preserve `unknown` when absence has not been established reliably.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0449",
+      "source_line": 449,
+      "text": "A fence in CheckedFlow cannot cancel an already in-flight GitHub request. State the exact guarantees and test the failure windows. If the adapter cannot safely resume an ambiguous operation, require explicit authorized reconciliation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0451",
+      "source_line": 451,
+      "text": "Compensation may close an adapter-owned draft PR only under the declared policy and exact identity checks. It cannot erase notifications or claim that the original action never happened. Never delete human-modified content automatically.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R9-0453",
+      "source_line": 453,
+      "text": "Test against a local protocol-faithful fake server for exhaustive failure paths and, separately, an explicitly authorized disposable real repository for the supported external-provider claim. If no disposable target is authorized, keep the live gate blocked and the feature disabled; do not substitute a mock PASS for it.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0459",
+      "source_line": 459,
+      "text": "Implement a persistent worker supervisor with bounded concurrency, backoff/jitter outside consensus, current-fence checks, and explicit heartbeat support where appropriate.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0461",
+      "source_line": 461,
+      "text": "Use one active command-submission/nonce coordinator per signing identity. Prefer separate worker identities for independent workers. Do not introduce racing heartbeats and result submissions that consume the same actor nonce incorrectly.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0463",
+      "source_line": 463,
+      "text": "Do not automatically rerun already-started uncertain work. Classify retryable failures and enforce finite retry/time/budget policies. Reuse the same logical operation identity for reconciliation; new IDs are not a recovery technique.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0465",
+      "source_line": 465,
+      "text": "Keep verification capacity protected. Apply backpressure before generation exhausts verification/storage capacity. Track reservation, commitment, and actual observations separately.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0467",
+      "source_line": 467,
+      "text": "Provide mission-level pause, drain, resume, and local emergency-disable controls:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0469",
+      "source_line": 469,
+      "text": "- Pause blocks new dispatch, not historical reads.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0470",
+      "source_line": 470,
+      "text": "- Drain lets already safe work settle under a declared policy.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0471",
+      "source_line": 471,
+      "text": "- Local emergency disable can stop the operator's dispatcher without quorum, but cannot fabricate a consensus revocation or authorize new work.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0472",
+      "source_line": 472,
+      "text": "- Resume requires current policy, unresolved-effect checks, and appropriate approvals.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0473",
+      "source_line": 473,
+      "text": "- A stopped block height is not a wall-clock lease extension.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R10-0475",
+      "source_line": 475,
+      "text": "During quorum outage or stale own-node state, stop new external dispatch based on a documented local freshness policy. Local watchdog clocks may inhibit execution; they must not alter deterministic consensus time or create authority. In-flight effects remain explicitly uncertain where necessary.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0481",
+      "source_line": 481,
+      "text": "Add structured logs, optional OpenTelemetry spans, Prometheus-compatible metrics, and role-aware `/healthz` and `/readyz` or equivalent endpoints.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0483",
+      "source_line": 483,
+      "text": "Distinguish process liveness from readiness to accept/dispatch protected work. Readiness should reflect required configuration, own-node freshness, storage, signer availability, sandbox readiness for executing roles, and maintenance state without leaking secrets.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0485",
+      "source_line": 485,
+      "text": "At minimum expose:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0487",
+      "source_line": 487,
+      "text": "- Committed height, lag/freshness, rejected commands by bounded reason.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0488",
+      "source_line": 488,
+      "text": "- Queue depth, active leases, expired leases, uncertain tasks.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0489",
+      "source_line": 489,
+      "text": "- Verification backlog and time-to-checked completion.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0490",
+      "source_line": 490,
+      "text": "- Open residuals and oldest age under an explicit time basis.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0491",
+      "source_line": 491,
+      "text": "- Artifact availability failures and storage usage/headroom.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0492",
+      "source_line": 492,
+      "text": "- Spent/reserved/available modeled budget; separate observed metering if present.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0493",
+      "source_line": 493,
+      "text": "- Effect dispatch/unknown/reconciliation counts.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0494",
+      "source_line": 494,
+      "text": "- Signer, backup, snapshot, restore, callback, and protocol errors.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0496",
+      "source_line": 496,
+      "text": "Do not use task IDs, content digests, customer text, tokens, or arbitrary URLs as unbounded metric labels. Put high-cardinality identifiers in protected logs/traces. Prevent replay or monitor restart from double-counting authoritative service events.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0498",
+      "source_line": 498,
+      "text": "Tracing context is untrusted correlation metadata, not authorization. Exporters must be optional, bounded, and unable to affect consensus. Default to no outbound telemetry until the operator configures it.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0500",
+      "source_line": 500,
+      "text": "Supply a small dashboard/alert configuration and runbook mapping, not just metric names. Include alerts for no quorum, unsafe state headroom, unbacked reservations, unresolved-effect age, missing backup, and expired credentials.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R11-0502",
+      "source_line": 502,
+      "text": "Document SLI definitions, denominators, operating envelope, RPO/RTO targets, recovery conditions, and error-budget actions. Publish only measured outcomes; targets are not achieved SLOs, contractual SLAs, or long-duration reliability evidence.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R12-0508",
+      "source_line": 508,
+      "text": "Implement:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R12-0510",
+      "source_line": 510,
+      "text": "1. A local disposable Compose-based laboratory, using the already supported runtime or a justified equivalent.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R12-0511",
+      "source_line": 511,
+      "text": "2. A multi-host inventory/configuration generator and supervised service deployment for four pre-provisioned Linux hosts, for example through systemd and bounded idempotent deployment scripts.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R12-0513",
+      "source_line": 513,
+      "text": "Do not provision machines or change network/firewall rules without an explicitly authorized inventory. Do not configure a permanent Docker daemon automatically. Root-level installation steps must be explicit and confined to disposable/approved hosts.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R12-0515",
+      "source_line": 515,
+      "text": "Separate commands for **plan/preflight**, **apply/start**, **status**, **drain**, **stop**, **backup**, **restore**, and **qualification**. Command names are design proposals: introduce and test them rather than documenting nonexistent commands.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R12-0517",
+      "source_line": 517,
+      "text": "The default must not expose RPC, ABCI, management, artifact, or metrics services publicly. Configure authenticated transport for cross-host services, restrict P2P peers, and pin images/binaries with provenance and hash checks.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R12-0519",
+      "source_line": 519,
+      "text": "Do not ship shared production keys, fixed passwords, copied validator signing state, development CA trust, or writable source checkouts as deployment defaults.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R12-0521",
+      "source_line": 521,
+      "text": "Provide expected prerequisites and measured resource use from actual tests. Do not promise a five-minute installation or an unmeasured low hardware requirement.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R12-0523",
+      "source_line": 523,
+      "text": "One-command laboratory setup is not one-command enterprise deployment. Make this distinction visible.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0529",
+      "source_line": 529,
+      "text": "Create an executable machine-readable matrix, with exact test IDs, requirements, artifact identities, environment dimensions, results, and log references.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0533",
+      "source_line": 533,
+      "text": "Run deterministic/property tests, schema vectors, strict typing/linting, dependency-direction checks, and selected invariant mutation tests.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0535",
+      "source_line": 535,
+      "text": "Preserve existing baseline tests and all legacy signed vectors. Keep at least the current minimum coverage gates for the core; extend coverage to newly authoritative admission, migration, effect, and identity code. Document justified exclusions; do not inflate coverage with trivial wrappers.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0537",
+      "source_line": 537,
+      "text": "Mutations must target skipped authority, missing fence, omitted dependency checks, uncharged retries, duplicated service, weak snapshot trust, bypassed patch checks, and missing cross-scope controls.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0541",
+      "source_line": 541,
+      "text": "Test the exact built wheel and sdist in fresh environments outside the checkout, with recorded import origin. Preserve the supported Windows/Linux and Python-version matrix unless an explicitly justified compatibility decision is documented.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0543",
+      "source_line": 543,
+      "text": "Run existing real CometBFT/gVisor cases, not replacements. Extend them for the new domain, state profile, content store, key service, and protocol projections.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0547",
+      "source_line": 547,
+      "text": "Exercise a real patched fixture project and output checks in gVisor. Include invalid code, test tampering, report forgery, zero/omitted tests, prohibited paths, dependency drift, and malicious fixture behavior.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0549",
+      "source_line": 549,
+      "text": "Run real S3-compatible storage and real supported signer-service tests in disposable infrastructure. Exercise corruption, partial upload, availability, scope, and rotation—not just happy paths.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0551",
+      "source_line": 551,
+      "text": "Exhaustively exercise effect failure windows against the fake provider. The authorized real draft-PR smoke is a separate explicit gate with its exact target and resulting object identity.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0555",
+      "source_line": 555,
+      "text": "Test:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0557",
+      "source_line": 557,
+      "text": "- Worker/ABCI crash before and after commit.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0558",
+      "source_line": 558,
+      "text": "- Loss of a reply after a successful operation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0559",
+      "source_line": 559,
+      "text": "- Pause, drain, stale node, and quorum outage.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0560",
+      "source_line": 560,
+      "text": "- Snapshot export/import, invalid snapshots, and caught-up restoration.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0561",
+      "source_line": 561,
+      "text": "- Archival/rollover and old-request replay after retirement.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0562",
+      "source_line": 562,
+      "text": "- Late dependency/verification withdrawal and residual reopening.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0563",
+      "source_line": 563,
+      "text": "- Normal key rotation, compromised-key revocation, and node replacement.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0564",
+      "source_line": 564,
+      "text": "- 0.1-to-0.2 migration with unresolved work.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0565",
+      "source_line": 565,
+      "text": "- Compatible rolling upgrade and incompatible-version rejection.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0569",
+      "source_line": 569,
+      "text": "Use deterministic workloads, fixed arrival patterns, a specified machine envelope, finite time, and cleanup. Cross old state limits without losing governance capacity or history semantics.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0571",
+      "source_line": 571,
+      "text": "Measure latency distributions, queue growth, memory/disk use, bytes per committed task, recovery duration, and drain behavior. Separate clean acceptance throughput from completed verified-work throughput.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0573",
+      "source_line": 573,
+      "text": "Do not repeatedly alter the workload after seeing failures to manufacture a passing claim. Changes to the declared workload require a new run record.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0577",
+      "source_line": 577,
+      "text": "Use four separate approved Linux node environments. Separate VMs demonstrate distributed fault domains but do not, by themselves, demonstrate independence of administrative organizations.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0579",
+      "source_line": 579,
+      "text": "Run real communication loss, one-node interruption, two-node quorum loss, delayed replies, storage failure, key-service interruption, node replacement, backup restoration, and upgrade cases under bounded controlled conditions.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0581",
+      "source_line": 581,
+      "text": "Do not call four containers on one host multi-host evidence. Record host topology truthfully without publishing private IPs/credentials.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0583",
+      "source_line": 583,
+      "text": "If unavailable, produce the harness and mark G6 BLOCKED. Do not call the overall operational profile qualified.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0587",
+      "source_line": 587,
+      "text": "Review dependency advisories, supply-chain pins, signer exposure, CI trust boundaries, secret/path leakage, archive safety, scope isolation, and documented deployment assumptions.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0589",
+      "source_line": 589,
+      "text": "Automated scans are not an independent penetration test. Preserve adverse findings and limitations. Blocking high-risk findings must be resolved or the release must remain blocked; do not silence the rule globally.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0593",
+      "source_line": 593,
+      "text": "Every PASS needs an actual test result tied to the checked source/artifacts. Missing, skipped, failed, errored, or stale mandatory tests block the corresponding gate.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R13-0595",
+      "source_line": 595,
+      "text": "Synthetic generation is acceptable for engineering tests. It does not establish LLM quality, economic benefit, real organizational independence, or causal collective acceleration.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R14-0601",
+      "source_line": 601,
+      "text": "Work in reviewable increments within the final 0.2.0 effort:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R14-0615",
+      "source_line": 615,
+      "text": "Do not merely commit a stub for each milestone. Implement the vertical path and its rejection/recovery cases.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R14-0617",
+      "source_line": 617,
+      "text": "If the session cannot finish everything, commit a coherent safe increment, update the implementation ledger with precise remaining tasks, and provide a resume instruction. Do not relabel partial work as complete or publish because a session is ending.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R14-0619",
+      "source_line": 619,
+      "text": "Progress through unblocked milestones without repeatedly asking for approval of ordinary code changes. Request only genuinely missing execution/publication permissions, infrastructure, credentials, or policy decisions that cannot be inferred safely.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0625",
+      "source_line": 625,
+      "text": "All new public documentation, comments, schemas, operator messages, and delivery reports should be in clear English.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0627",
+      "source_line": 627,
+      "text": "Update README, tutorials, API references, architecture, protocol, security, operations, conformance, releasing, migration, and agent-facing entry points. Preserve research attribution and non-claims.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0629",
+      "source_line": 629,
+      "text": "Provide:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0631",
+      "source_line": 631,
+      "text": "- What `repository-patch/v1` supports and excludes.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0632",
+      "source_line": 632,
+      "text": "- Which exact tests constitute acceptance, and what they do not establish.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0633",
+      "source_line": 633,
+      "text": "- Which services/operators remain trusted.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0634",
+      "source_line": 634,
+      "text": "- Per-command read/write/network/external-effect behavior.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0635",
+      "source_line": 635,
+      "text": "- Stable public SDK/CLI surfaces and schema compatibility rules for 0.2.x.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0636",
+      "source_line": 636,
+      "text": "- Explicit deprecation policy and upgrade matrix.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0637",
+      "source_line": 637,
+      "text": "- Machine-readable errors, retryability, required operator action, and unresolved statuses.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0638",
+      "source_line": 638,
+      "text": "- Python examples, JSON schemas, canonical vectors, and a language-independent description sufficient for a later port.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0639",
+      "source_line": 639,
+      "text": "- Common incident and recovery procedures, including “do not do this” examples.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0640",
+      "source_line": 640,
+      "text": "- Separate availability, correctness, acceptance, and current-usability status.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0642",
+      "source_line": 642,
+      "text": "Do not announce a stable SemVer 1.x ecosystem while publishing 0.2.0. State the actual compatibility commitment for the supported 0.2.x public interfaces and versioned wire profiles.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0644",
+      "source_line": 644,
+      "text": "Keep old evidence records intact. Add new dated reports rather than overwriting the 2026-09-25 validation report with new numbers.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R15-0646",
+      "source_line": 646,
+      "text": "Do not edit the Collective Intelligence Index or companion repositories. Provide a factual metadata/update summary for a later Index task.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0652",
+      "source_line": 652,
+      "text": "Preserve the existing manual Trusted Publishing identity unless it is independently changed through an authorized process:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0654",
+      "source_line": 654,
+      "text": "- PyPI project: `checkedflow`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0655",
+      "source_line": 655,
+      "text": "- Repository: `kadubon/checkedflow`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0656",
+      "source_line": 656,
+      "text": "- Workflow file: `.github/workflows/workflow.yml`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0657",
+      "source_line": 657,
+      "text": "- Publisher environment: `pypi`",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0658",
+      "source_line": 658,
+      "text": "- OIDC permission only on the publication job",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0660",
+      "source_line": 660,
+      "text": "The current repository requires explicit publication authorization and exact-artifact qualification. This task authorizes only the final 0.2.0 release after the declared mandatory gates pass.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0664",
+      "source_line": 664,
+      "text": "- Pin third-party Actions and external runtimes to verified immutable identities.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0665",
+      "source_line": 665,
+      "text": "- Give ordinary builds/tests no publishing credential or long-lived secret.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0666",
+      "source_line": 666,
+      "text": "- Run untrusted candidates only in disposable isolated test environments.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0667",
+      "source_line": 667,
+      "text": "- Never execute fork-controlled code with secrets through `pull_request_target` or a privileged workflow chain.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0668",
+      "source_line": 668,
+      "text": "- Do not expose persistent sensitive self-hosted runners to public pull requests.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0669",
+      "source_line": 669,
+      "text": "- Use protected, explicitly authorized workflows for tests needing managed infrastructure or disposable-provider credentials.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0670",
+      "source_line": 670,
+      "text": "- Do not bypass required reviews or environmental approvals.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0674",
+      "source_line": 674,
+      "text": "After final source/documentation edits, build the wheel and sdist once for the release candidate. Record source SHA and both hashes. Distribute those exact bytes to installed-artifact and infrastructure tests.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0676",
+      "source_line": 676,
+      "text": "A source-checkout test is not evidence for a different rebuilt wheel. Tests must record import origin and reject accidental imports from the checkout.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0678",
+      "source_line": 678,
+      "text": "For multi-host/external qualification that cannot run in the ordinary matrix, extend the release gate to verify a protected workflow result bound to the same source SHA and exact wheel/sdist hashes. Do not trust a user-editable JSON file that merely says PASS. Preserve the current same-artifact and freshness guarantees.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0680",
+      "source_line": 680,
+      "text": "Store final run reports as CI/release evidence artifacts, not by editing the packaged source after qualification. If packaged content changes, rebuild and requalify. Avoid circular/self-referential “this artifact contains its own final hash” records.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0682",
+      "source_line": 682,
+      "text": "The final gate must check completeness of M0–M8 requirements and G1–G7 evidence, required approvals, tag/version alignment, distribution contents, compatibility fixtures, vulnerability/leakage checks, and declared operational-profile qualification.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0686",
+      "source_line": 686,
+      "text": "After normal-policy merge and successful final qualification:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0688",
+      "source_line": 688,
+      "text": "1. Create immutable-by-policy tag `v0.2.0` at the approved source.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0689",
+      "source_line": 689,
+      "text": "2. Use the authorized manual workflow/publisher path; no ad hoc token upload.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0690",
+      "source_line": 690,
+      "text": "3. Publish those exact distributions with supported PyPI attestations.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0691",
+      "source_line": 691,
+      "text": "4. Attach the same bytes, checksums, SBOM if generated, source reference, qualification manifest, limits, and migration notes to the GitHub release.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0692",
+      "source_line": 692,
+      "text": "5. Fetch public release and PyPI metadata, verify distribution hashes and provenance against the expected publisher identity.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0693",
+      "source_line": 693,
+      "text": "6. Install the public wheel and sdist separately into fresh environments outside the checkout. Verify version, packaged schemas/resources, CLI, SDK, base/optional dependency boundaries, and bounded smoke behavior.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0694",
+      "source_line": 694,
+      "text": "7. Report publication and post-publication installation as separate statuses.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0696",
+      "source_line": 696,
+      "text": "Existing v0.1.0 artifacts and tags remain unchanged. An already existing 0.2.0 is a conflict requiring owner direction, not permission to overwrite or increment silently.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R16-0698",
+      "source_line": 698,
+      "text": "If publication is blocked, leave a ready PR and complete release handoff. Do not publish a release with missing mandatory infrastructure evidence merely because it carries a pre-1.0 number.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0704",
+      "source_line": 704,
+      "text": "Return an English report with:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0706",
+      "source_line": 706,
+      "text": "1. Exact source/merge/tag identities and package version.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0707",
+      "source_line": 707,
+      "text": "2. The supported operational profile and explicit exclusions.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0708",
+      "source_line": 708,
+      "text": "3. Implemented milestones, with file/module references.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0709",
+      "source_line": 709,
+      "text": "4. Legacy compatibility and protocol/state migration results.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0710",
+      "source_line": 710,
+      "text": "5. Practical patch-domain evidence and its assurance scope.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0711",
+      "source_line": 711,
+      "text": "6. Artifact store, capacity/archival, snapshot/restore, key rotation, effect, and supervision results.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0712",
+      "source_line": 712,
+      "text": "7. Real versus simulated versus source-only versus blocked integrations.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0713",
+      "source_line": 713,
+      "text": "8. Exact test matrix, case counts, resource envelope, failures, fixes, and reruns.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0714",
+      "source_line": 714,
+      "text": "9. Measured latency/recovery/storage results where actually available; no invented SLO attainment.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0715",
+      "source_line": 715,
+      "text": "10. Multi-host topology, test scope, and remaining operator-independence limitation.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0716",
+      "source_line": 716,
+      "text": "11. Residual risks, current trust assumptions, and unresolved security/operational obligations.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0717",
+      "source_line": 717,
+      "text": "12. GitHub/PyPI publication status, public artifacts, hashes, attestations, and public-install verification.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0718",
+      "source_line": 718,
+      "text": "13. No paid LLM calls, model training, unauthorized cloud spend, or production-target writes.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0719",
+      "source_line": 719,
+      "text": "14. No changes to the Index or companion repositories.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0720",
+      "source_line": 720,
+      "text": "15. A concise next-action list only for genuine blockers—not a claim that required work is complete when it is not.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0722",
+      "source_line": 722,
+      "text": "Use precise status language:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0724",
+      "source_line": 724,
+      "text": "- IMPLEMENTED",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0725",
+      "source_line": 725,
+      "text": "- TESTED_IN_SOURCE",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0726",
+      "source_line": 726,
+      "text": "- TESTED_AS_INSTALLED_ARTIFACT",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0727",
+      "source_line": 727,
+      "text": "- QUALIFIED_SINGLE_HOST",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0728",
+      "source_line": 728,
+      "text": "- QUALIFIED_MULTI_HOST",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0729",
+      "source_line": 729,
+      "text": "- LIVE_EFFECT_QUALIFIED",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0730",
+      "source_line": 730,
+      "text": "- RELEASE_READY",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0731",
+      "source_line": 731,
+      "text": "- PUBLISHED",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0732",
+      "source_line": 732,
+      "text": "- PUBLIC_ARTIFACT_VERIFIED",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0733",
+      "source_line": 733,
+      "text": "- BLOCKED",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R17-0735",
+      "source_line": 735,
+      "text": "Do not compress them into “all done.”",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0741",
+      "source_line": 741,
+      "text": "The repository's pinned source and contracts are primary. Read current official documentation and pin the actual supported versions; do not assume these general links describe every version identically.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0743",
+      "source_line": 743,
+      "text": "- CheckedFlow protocol: https://github.com/kadubon/checkedflow/blob/main/docs/protocol.md",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0744",
+      "source_line": 744,
+      "text": "- CheckedFlow state machine: https://github.com/kadubon/checkedflow/blob/main/docs/state-machine.md",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0745",
+      "source_line": 745,
+      "text": "- CheckedFlow operations: https://github.com/kadubon/checkedflow/blob/main/docs/operations.md",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0746",
+      "source_line": 746,
+      "text": "- CheckedFlow release process: https://github.com/kadubon/checkedflow/blob/main/docs/releasing.md",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0747",
+      "source_line": 747,
+      "text": "- CometBFT documentation: https://docs.cosmos.network/cometbft/latest/docs/README",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0748",
+      "source_line": 748,
+      "text": "- CometBFT state-sync concepts (verify against the pinned runtime): https://docs.cosmos.network/cometbft/v0.38/docs/core/state-sync",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0749",
+      "source_line": 749,
+      "text": "- gVisor security model: https://gvisor.dev/docs/architecture_guide/security/",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0750",
+      "source_line": 750,
+      "text": "- GitHub Actions secure use: https://docs.github.com/en/actions/reference/security/secure-use",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0751",
+      "source_line": 751,
+      "text": "- GitHub pull-request trust boundary: https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0752",
+      "source_line": 752,
+      "text": "- Vault Transit API: https://developer.hashicorp.com/vault/api-docs/secret/transit",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0753",
+      "source_line": 753,
+      "text": "- Prometheus instrumentation: https://prometheus.io/docs/practices/instrumentation/",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0754",
+      "source_line": 754,
+      "text": "- OpenTelemetry Collector: https://opentelemetry.io/docs/collector/",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0755",
+      "source_line": 755,
+      "text": "- PyPI Trusted Publishing: https://docs.pypi.org/trusted-publishers/",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0756",
+      "source_line": 756,
+      "text": "- PyPI digital attestations: https://docs.pypi.org/attestations/",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "R18-0757",
+      "source_line": 757,
+      "text": "- PyPI provenance verification: https://docs.pypi.org/attestations/consuming-attestations/",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "Rpreamble-0761",
+      "source_line": 761,
+      "text": "Do not make CheckedFlow operational by relaxing what its evidence means.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "Rpreamble-0763",
+      "source_line": 763,
+      "text": "Make it operational by giving the existing distinctions durable implementations:",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "Rpreamble-0765",
+      "source_line": 765,
+      "text": "**a useful task, a controlled execution boundary, appropriate checks, explicit authority, sustainable state, recoverable history, observable operation, and a tested upgrade path.**",
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    {
+      "id": "Rpreamble-0767",
+      "source_line": 767,
+      "text": "Deliver that work as **CheckedFlow 0.2.0** only when its stated release conditions are actually satisfied.",
+      "status": "NOT_STARTED",
+      "evidence": []
+    }
+  ],
+  "gates": {
+    "G1": {
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    "G2": {
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    "G3": {
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    "G4": {
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    "G5": {
+      "status": "NOT_STARTED",
+      "evidence": []
+    },
+    "G6": {
+      "status": "BLOCKED",
+      "reason": "Four-host authorized Linux inventory not supplied. Harness implementation remains required.",
+      "evidence": []
+    },
+    "G7": {
+      "status": "NOT_STARTED",
+      "evidence": []
+    }
+  },
+  "not_release_authority": true,
+  "components": [
+    {
+      "id": "legacy-v1-capture",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/data/legacy-v1.json"
+      ],
+      "tests": [
+        "tests/test_legacy_capture.py"
+      ],
+      "scope": "Frozen published 0.1.0 execution; 4 source tests; development wheel/sdist replay succeeded. Does not qualify migration.",
+      "evidence": [
+        "docs/legacy-capture-0.1.md"
+      ],
+      "installed_development_artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "f99fd5201ecc36d970bf84b8bb9030c2c0a5b9beb4e883716c8c2ac567200033",
+        "checkedflow-0.1.0.tar.gz": "af46d2f8ce437b4d26e914cd14a07b1ec5cbdca00d1863b197a2654c062d405e"
+      }
+    },
+    {
+      "id": "patch-admission-primitives",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/domains/repository_patch.py",
+        "src/checkedflow/data/repository-patch.schema.json"
+      ],
+      "tests": [
+        "tests/test_repository_patch.py"
+      ],
+      "scope": "17 source tests for in-memory patch admission and evaluator-owned output comparison. No candidate execution, no sandbox qualification, no transport integration.",
+      "evidence": [
+        "docs/repository-patch.md"
+      ]
+    }
+  ]
+}

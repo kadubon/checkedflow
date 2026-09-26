@@ -23,6 +23,7 @@ REQUIRED = [
     "checkedflow/data/agents.json",
     "checkedflow/data/commands.json",
     "checkedflow/data/vectors.json",
+    "checkedflow/data/legacy-v1.json",
     "checkedflow/data/research.json",
     "checkedflow/data/examples/sdk.py",
     "checkedflow/data/examples/agents.py",
@@ -48,6 +49,11 @@ assert runtime.state_hash == v["lifecycle"]["final_hash"]
 suffix = v["lifecycle"]["empty_block_suffix"]
 runtime.tick(suffix["height"])
 assert runtime.state_hash == suffix["final_hash"]
+from checkedflow.recovery import replay_blocks
+legacy = json.loads(r.files("checkedflow").joinpath("data/legacy-v1.json").read_text())
+assert replay_blocks(decode(legacy["initial"]), legacy["blocks"]).state_hash == (
+    "9c12eea3393f018bbac48ad1660b1077c9e8fb6d1b6665eede9ca50cf1817950"
+)
 runpy.run_path(str(r.files("checkedflow").joinpath("data/examples/sdk.py")), run_name="__main__")
 assert main(["example"]) == 0
 from checkedflow.agents.gateway import profile
