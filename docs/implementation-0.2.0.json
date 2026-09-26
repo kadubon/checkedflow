@@ -2827,6 +2827,22 @@
         "docs/managed-signer.md"
       ],
       "scope": "Five protocol-server cases and one real pinned Vault 2.1.1 Windows TLS process case, including governed application rotation. Final installed-wheel and hosted Linux results require separate inspection. Not hardware/production custody, full G4, or multi-host qualification."
+    },
+    {
+      "id": "nested-repository-tree-runner",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/tree_workspace.py",
+        "src/checkedflow/runner.py"
+      ],
+      "tests": [
+        "tests/test_tree_workspace.py",
+        "tests/test_integration.py"
+      ],
+      "evidence": [
+        "docs/repository-patch.md"
+      ],
+      "scope": "Four Linux filesystem cases passed under WSL, including directory replacement by a symlink; Windows source suite and strict type checks passed. Real gVisor nested-tree case is mandatory but not yet observed for this increment. Not approved task execution, independent checker integration or full repository-patch acceptance."
     }
   ],
   "observations": [
@@ -2871,6 +2887,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36209264395",
       "conclusion": "success",
       "scope": "Pending-key recovery, hosted matrix and existing infrastructure cases. Predates managed signer."
+    },
+    {
+      "source": "c5dfb1abd2743ade0350d2e14e72239610f85985",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36210750042",
+      "conclusion": "success",
+      "scope": "Managed signer increment: six platform/Python jobs, existing infrastructure and real installed-wheel Vault TLS service on Linux. Predates nested repository-tree runner."
     }
   ]
 }

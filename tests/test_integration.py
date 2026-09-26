@@ -11,6 +11,7 @@ from network import FaultNetwork
 from checkedflow.core.values import Failure
 from checkedflow.distributed.cluster import Cluster
 from checkedflow.distributed.demo import bootstrap, run_scenario
+from checkedflow.domains.repository_patch import Tree
 from checkedflow.runner import GVisorRunner, Limits
 
 
@@ -286,3 +287,23 @@ else:
 """
     result = runner.run(("python", "-c", script), {"check.py": "fixed"}, None)
     assert result.status == "reported" and result.stdout.strip() == b"blocked"
+
+
+@pytest.mark.sandbox
+@pytest.mark.qualification
+def test_sandbox_nested_repository_tree(infrastructure):
+    image, _ = infrastructure
+    tree = Tree((("pkg/logic.py", b"def solve(value):\n    return value + 7\n"),))
+    script = """import json, os, sys
+from pkg.logic import solve
+assert os.getuid() == 65534
+try:
+    open('/work/pkg/logic.py', 'w').write('modified')
+except OSError:
+    pass
+else:
+    raise RuntimeError('source was writable')
+print(json.dumps(solve(json.load(sys.stdin))))
+"""
+    result = GVisorRunner(image).run_tree(("python", "-B", "-s", "-c", script), tree, 5)
+    assert result.status == "reported" and result.stdout.strip() == b"12"

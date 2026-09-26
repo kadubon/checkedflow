@@ -212,3 +212,14 @@ and worker execution. The journal alone does not preserve work obligations that 
 Update individual
 ledger entries only when their evidence exists. Keep all G1–G7 gates unqualified until their exact
 required cases execute against the final artifacts. Never promote the ledger itself to PASS evidence.
+
+
+### Repository-tree runner increment
+
+A separate `GVisorRunner.run_tree` path materializes bounded UTF-8 repository trees using Linux
+no-follow directory descriptors inside a fresh private temporary parent. Candidate files are never
+imported or executed by host-side materialization. Existing flat-file execution semantics remain.
+The shared execution routine retains the existing gVisor restrictions and cleanup behavior.
+Filesystem tests cover exact bytes, modes, private-parent enforcement and existing/symlink
+rejection. A mandatory real sandbox case exercises nested module import and write denial.
+This increment does not establish a complete approved repository-patch workflow or satisfy G1–G7.

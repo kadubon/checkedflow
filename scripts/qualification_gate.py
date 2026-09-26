@@ -10,6 +10,7 @@ REQUIRED = {
     "test_competing_leases_one_stop_partition_quorum_loss_and_recovery": 1,
     "test_sandbox_resource_exhaustion": 4,
     "test_sandbox_network_paths_nonroot_and_checker_protection": 1,
+    "test_sandbox_nested_repository_tree": 1,
 }
 
 

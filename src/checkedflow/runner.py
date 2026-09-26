@@ -12,6 +12,8 @@ from pathlib import Path
 from typing import BinaryIO, cast
 
 from checkedflow.core.values import JSON, Failure, Object, array, obj, require
+from checkedflow.domains.repository_patch import Tree
+from checkedflow.tree_workspace import materialize
 from checkedflow.wire import document, dumps, loads
 
 
@@ -139,77 +141,92 @@ class GVisorRunner:
                 target = work / filename
                 target.write_text(content, encoding="utf-8")
                 target.chmod(0o444)
-            name = "checkedflow-" + uuid.uuid4().hex
-            args = command(self.image, work, name, argv, self.limits, self.docker)
-            process = subprocess.Popen(  # nosec B603
-                args,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                start_new_session=True,
-            )
-            stdout, stderr = bytearray(), bytearray()
-            overflow = threading.Event()
+            return self._execute(argv, work, input_bytes)
 
-            def drain(stream: BinaryIO, output: bytearray) -> None:
-                # A separate thread per pipe prevents a child from blocking on stderr.
-                while True:
-                    chunk = stream.read(4096)
-                    if not chunk:
-                        break
-                    remaining = self.limits.output_bytes - len(output)
-                    output.extend(chunk[: max(remaining, 0)])
-                    if len(chunk) > remaining:
-                        overflow.set()
+    def run_tree(self, argv: tuple[str, ...], tree: Tree, stdin: JSON) -> Result:
+        """Execute bounded repository bytes under the same closed isolation profile.
 
-            threads = [
-                threading.Thread(target=drain, args=(process.stdout, stdout), daemon=True),
-                threading.Thread(target=drain, args=(process.stderr, stderr), daemon=True),
-            ]
+        Callers must separately authenticate the contract and compare external evidence.
+        A successful process exit is not verification or authorization.
+        """
+        input_bytes = dumps(stdin) + b"\n"
+        self.check()
+        with tempfile.TemporaryDirectory(prefix="checkedflow-tree-") as temporary:
+            work = materialize(Path(temporary), tree)
+            return self._execute(argv, work, input_bytes)
 
-            def feed() -> None:
-                stream = cast(BinaryIO, process.stdin)
-                try:
-                    stream.write(input_bytes)
-                    stream.close()
-                except (BrokenPipeError, OSError):
-                    pass
+    def _execute(self, argv: tuple[str, ...], work: Path, input_bytes: bytes) -> Result:
+        name = "checkedflow-" + uuid.uuid4().hex
+        args = command(self.image, work, name, argv, self.limits, self.docker)
+        process = subprocess.Popen(  # nosec B603
+            args,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True,
+        )
+        stdout, stderr = bytearray(), bytearray()
+        overflow = threading.Event()
 
-            threads.append(threading.Thread(target=feed, daemon=True))
-            for thread in threads:
-                thread.start()
-            reason = "completed"
+        def drain(stream: BinaryIO, output: bytearray) -> None:
+            # A separate thread per pipe prevents a child from blocking on stderr.
+            while True:
+                chunk = stream.read(4096)
+                if not chunk:
+                    break
+                remaining = self.limits.output_bytes - len(output)
+                output.extend(chunk[: max(remaining, 0)])
+                if len(chunk) > remaining:
+                    overflow.set()
+
+        threads = [
+            threading.Thread(target=drain, args=(process.stdout, stdout), daemon=True),
+            threading.Thread(target=drain, args=(process.stderr, stderr), daemon=True),
+        ]
+
+        def feed() -> None:
+            stream = cast(BinaryIO, process.stdin)
             try:
-                deadline = time.monotonic() + self.limits.seconds
-                while process.poll() is None:
-                    if overflow.is_set() or time.monotonic() >= deadline:
-                        reason = "output_limit" if overflow.is_set() else "timeout"
-                        break
-                    time.sleep(0.02)
-            finally:
-                try:
-                    cleanup = subprocess.run(  # nosec B603
-                        [self.docker, "rm", "--force", name],
-                        capture_output=True,
-                        timeout=15,
-                        check=False,
-                    )
-                    cleanup_known = cleanup.returncode == 0
-                except (OSError, subprocess.TimeoutExpired):
-                    cleanup_known = False
-                if process.poll() is None:
-                    process.kill()
-                process.wait(timeout=5)
-                for thread in threads:
-                    thread.join(timeout=5)
-                if not cleanup_known:
-                    reason = "cleanup_unknown"
-            if overflow.is_set() and reason == "completed":
-                reason = "output_limit"
-            if process.returncode != 0 and reason == "completed":
-                reason = f"exit_nonzero:{process.returncode}"
-            status = "reported" if reason == "completed" and process.returncode == 0 else "unknown"
-            return Result(status, process.returncode, bytes(stdout), bytes(stderr), reason)
+                stream.write(input_bytes)
+                stream.close()
+            except (BrokenPipeError, OSError):
+                pass
+
+        threads.append(threading.Thread(target=feed, daemon=True))
+        for thread in threads:
+            thread.start()
+        reason = "completed"
+        try:
+            deadline = time.monotonic() + self.limits.seconds
+            while process.poll() is None:
+                if overflow.is_set() or time.monotonic() >= deadline:
+                    reason = "output_limit" if overflow.is_set() else "timeout"
+                    break
+                time.sleep(0.02)
+        finally:
+            try:
+                cleanup = subprocess.run(  # nosec B603
+                    [self.docker, "rm", "--force", name],
+                    capture_output=True,
+                    timeout=15,
+                    check=False,
+                )
+                cleanup_known = cleanup.returncode == 0
+            except (OSError, subprocess.TimeoutExpired):
+                cleanup_known = False
+            if process.poll() is None:
+                process.kill()
+            process.wait(timeout=5)
+            for thread in threads:
+                thread.join(timeout=5)
+            if not cleanup_known:
+                reason = "cleanup_unknown"
+        if overflow.is_set() and reason == "completed":
+            reason = "output_limit"
+        if process.returncode != 0 and reason == "completed":
+            reason = f"exit_nonzero:{process.returncode}"
+        status = "reported" if reason == "completed" and process.returncode == 0 else "unknown"
+        return Result(status, process.returncode, bytes(stdout), bytes(stderr), reason)
 
     def python(self, source: str, inputs: list[JSON]) -> list[JSON]:
         # Expected outputs are compared outside the sandbox. Candidate code cannot edit the checker.

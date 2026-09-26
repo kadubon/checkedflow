@@ -48,9 +48,20 @@ follows from a digest of test outputs.
 
 ## Remaining integration obligations
 
-The no-follow filesystem materializer, controlled acquisition, gVisor runner, pinned checker and
-test inventory, evidence signatures, artifact storage and v2 lifecycle integration are pending.
-String validation alone is not filesystem race protection. No current function extracts or
-executes candidate files. Runtime reuse must bind the original repository, base, environment,
+`GVisorRunner.run_tree` now accepts the bounded immutable `Tree` representation. It creates
+an inaccessible temporary parent, then materializes a fresh source directory with Linux
+no-follow, directory-relative operations. Files contain exact bytes and are read-only; directories
+allow the sandbox's nonroot user to traverse the read-only bind mount. Existing output directories
+are rejected. The parent and all same-UID host processes must be operator-controlled. This is
+not a general archive extractor or a defense against a compromised host.
+
+The runner uses the same pinned-image, no-network, nonroot gVisor profile and bounded cleanup
+as flat-file execution. Missing infrastructure still fails closed. A reported process result
+establishes only execution status; callers must authenticate the contract and compare outputs
+outside the sandbox. The separate legacy `run` method continues to reject nested filenames.
+
+Controlled acquisition, pinned checker and test inventory, evidence signatures, artifact storage
+integration and the v2 task lifecycle are pending. The nested-tree infrastructure test is mandatory
+in the qualification gate; source-only filesystem tests cannot establish sandbox isolation. Runtime reuse must bind the original repository, base, environment,
 receiver and unexpired evidence; a different base requires a new approved target and fresh checks.
 See the [0.2 implementation record](implementation-0.2.0.md) for release gates.
