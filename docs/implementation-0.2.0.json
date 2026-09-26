@@ -2931,6 +2931,22 @@
         "docs/work-acceptance.md"
       ],
       "scope": "Four funded organization-scoped checks, three passing organizations, retained late negative/contradictory/withdrawn evidence and conservative historical key revocation. Source and mutation tests plus exact-wheel single-host CometBFT/gVisor acceptance/withdrawal passed at 1c4b6a5. Not independent operators, current availability, full reuse, dependency propagation or sustained archival."
+    },
+    {
+      "id": "exact-repository-reuse-preparation",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/repository_reuse.py",
+        "src/checkedflow/data/repository-tree.schema.json"
+      ],
+      "tests": [
+        "tests/test_repository_reuse.py",
+        "tests/test_integration.py"
+      ],
+      "evidence": [
+        "docs/repository-reuse.md"
+      ],
+      "scope": "Snapshot-bound exact target and current scoped byte validation, immutable in-memory patch reconstruction, typed evidence consistency and fresh qualification for changed bases. Local source/provider fault tests; mandatory live changed-base case remains pending exact-source CI. Not supervised dispatch, replicated availability receipts, retention or complete lifecycle reuse accounting."
     }
   ],
   "observations": [
@@ -3017,6 +3033,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36216530595",
       "conclusion": "success",
       "scope": "Funded acceptance increment: six platform/Python jobs, real installed-wheel managed signer and 16 real single-host infrastructure cases including four verifier invocations, acceptance, retained funding, withdrawal/quarantine and common durable hash replay. Publication job denied; not full G1-G7 qualification."
+    },
+    {
+      "source": "825a04d193707b3bc6f1ea300f99da9e9ad87ff6",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36216918034",
+      "conclusion": "success",
+      "scope": "Acceptance evidence and release-procedure documentation follow-up passed all platform, installed-wheel infrastructure and managed signer jobs. Predates repository reuse preparation and changed-base qualification."
     }
   ]
 }

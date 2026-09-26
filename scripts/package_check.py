@@ -34,6 +34,7 @@ REQUIRED = [
     "checkedflow/data/acceptance-command.schema.json",
     "checkedflow/data/operational-configuration.schema.json",
     "checkedflow/data/repository-patch.schema.json",
+    "checkedflow/data/repository-tree.schema.json",
     "checkedflow/data/invoice-fixture.json",
     "checkedflow/data/repository-cases.schema.json",
     "checkedflow/data/research.json",
@@ -57,6 +58,10 @@ request, expected = inventory(dumps(fixture["inventory"]))
 assert len(expected) == 4 and request["path"] == "shop/invoice.py"
 assert len(CHECKER_DIGEST) == 64
 print("Installed repository checker:", CHECKER_DIGEST)
+from checkedflow.repository_reuse import decode_tree, tree_bytes
+from checkedflow.domains.repository_patch import Tree
+bundle_tree = Tree((("empty.py", b""),))
+assert decode_tree(tree_bytes(bundle_tree)) == bundle_tree
 from checkedflow.runtime import Runtime
 from checkedflow.serialization import decode
 from checkedflow.wire import dumps, loads

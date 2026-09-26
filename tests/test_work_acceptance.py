@@ -40,12 +40,12 @@ class Harness(TaskHarness):
         self.checks = []
         self.candidate = ""
 
-    def prepare_checks(self):
+    def prepare_checks(self, target="a" * 64):
         self.send("budget.configure", {"budget": 100, "verification_reserve": 40})
         self.send("mission.resume", {})
         for index in range(4):
             ticket, _ = self.send(
-                "budget.reserve", {"phase": "verify", "ceiling": 10, "target": "a" * 64}
+                "budget.reserve", {"phase": "verify", "ceiling": 10, "target": target}
             )
             task, _ = self.send(
                 "task.admit",

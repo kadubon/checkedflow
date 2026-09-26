@@ -361,6 +361,7 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
     from checkedflow.distributed.operational_cluster import Cluster as OperationalCluster
     from checkedflow.operational_runtime import Runtime as OperationalRuntime
     from checkedflow.operational_storage import Store as OperationalStore
+    from checkedflow.repository_reuse import Inputs, prepare, tree_bytes
     from checkedflow.wire import digest, dumps, validate
 
     image, binary = infrastructure
@@ -487,6 +488,18 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
             },
         )
         cluster.wait_height(int(candidate["receipt"]["height"]))
+        stored_inputs = []
+        for kind, body in (
+            ("source-tree", tree_bytes(base)),
+            ("patch", patch),
+            ("evidence", cases),
+        ):
+            stored = replace(
+                reference, digest=sha256(body).hexdigest(), length=len(body), kind=kind
+            )
+            artifacts.put(stored, BytesIO(body), access=access)
+            stored_inputs.append(stored)
+        verifier_refs = []
         for index, check in enumerate(checks):
             verifier = f"v{index}"
             cluster.send("task.lease", {"task": check}, actor=verifier, node=index)
@@ -503,6 +516,7 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
                 verifier, frozenset({"repository"}), frozenset({"read", "write"})
             )
             artifacts.put(checked_ref, BytesIO(checked_bytes), access=verifier_access)
+            verifier_refs.append(checked_ref)
             assert artifacts.get(checked_ref, access=verifier_access) == checked_bytes
             cluster.send(
                 "task.finish",
@@ -528,6 +542,21 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
             ) == ("accepted" if index >= 2 else "pending")
             assert observed.budget.spent == 30 + 10 * (index + 1)
             assert observed.budget.reserved == 10 * (3 - index)
+        reusable = Inputs(*stored_inputs, tuple(verifier_refs))
+        prepared = prepare(
+            observed, candidate["request"], contract, reusable, artifacts, access=access
+        )
+        assert prepared.tree.digest == contract.result_tree
+        assert prepared.state_hash == OperationalRuntime(observed).state_hash
+        with pytest.raises(Failure, match="BINDING"):
+            prepare(
+                observed,
+                candidate["request"],
+                replace(contract, base_commit="f" * 40),
+                reusable,
+                artifacts,
+                access=access,
+            )
         withdrawn = cluster.send(
             "artifact.withdraw",
             {
@@ -546,6 +575,8 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
             and state.budget.reserved == 0
             for state in states
         )
+        with pytest.raises(Failure, match="ACCEPTANCE"):
+            prepare(states[0], candidate["request"], contract, reusable, artifacts, access=access)
         height, app_hash = cluster.common_hash()
         assert height >= int(withdrawn["receipt"]["height"]) and len(app_hash) == 64
         cluster.close()
@@ -560,5 +591,159 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
                 ).fetchone()
             assert sha256(body).hexdigest() == fingerprint
             assert json.loads(body)["state_hash"] == app_hash.lower()
+    finally:
+        cluster.close()
+
+
+@pytest.mark.integration
+@pytest.mark.sandbox
+@pytest.mark.qualification
+def test_v2_changed_base_requires_fresh_funded_verification(infrastructure, tmp_path):
+    import json
+    import subprocess
+    from dataclasses import asdict, replace
+    from io import BytesIO
+
+    from patch_fixture import successor
+
+    from checkedflow.artifacts import Access, LocalStore
+    from checkedflow.core.artifact import Reference
+    from checkedflow.distributed.operational_cluster import Cluster as OperationalCluster
+    from checkedflow.domains.repository_patch import digest_bytes
+    from checkedflow.repository_reuse import Inputs, contract_digest, prepare, tree_bytes
+    from checkedflow.wire import dumps, validate
+
+    image, binary = infrastructure
+    cluster = OperationalCluster(tmp_path / "requalification", binary)
+    store = LocalStore(tmp_path / "objects.sqlite")
+    access = Access("reviewer", frozenset({"repository"}), frozenset({"read", "write"}))
+    base, patch, original, cases = invoice(image)
+    original = replace(original, deadline_height=100000)
+    changed, renewed, commit = successor(base, patch, original)
+    # Hashing inert fixture commit bytes neither executes candidate code nor writes Git objects.
+    assert (
+        subprocess.run(
+            ["git", "hash-object", "-t", "commit", "--stdin"],
+            input=commit,
+            capture_output=True,
+            check=True,
+            timeout=10,
+        )
+        .stdout.strip()
+        .decode()
+        == renewed.base_commit
+    )
+    try:
+        cluster.start()
+        cluster.send("budget.configure", {"budget": 100, "verification_reserve": 80})
+        cluster.send("mission.resume", {})
+        previous = None
+        for round_number, (tree, contract) in enumerate(((base, original), (changed, renewed))):
+            target = contract_digest(contract)
+            refs = []
+
+            def put(body, kind, target=target):
+                ref = Reference(
+                    "sha256",
+                    digest_bytes(body),
+                    len(body),
+                    "application/json",
+                    kind,
+                    "repository",
+                    target,
+                )
+                store.put(ref, BytesIO(body), access=access)
+                return ref
+
+            inputs = [
+                put(tree_bytes(tree), "source-tree"),
+                put(patch, "patch"),
+                put(cases, "evidence"),
+            ]
+            if previous is not None:
+                old_candidate, old_inputs = previous
+                with pytest.raises(Failure, match="BINDING"):
+                    prepare(
+                        cluster.client().state(),
+                        old_candidate,
+                        contract,
+                        old_inputs,
+                        store,
+                        access=access,
+                    )
+            checks = []
+            for index in range(4):
+                ticket = cluster.send(
+                    "budget.reserve", {"phase": "verify", "ceiling": 10, "target": target}
+                )["request"]
+                checks.append(
+                    cluster.send(
+                        "task.admit",
+                        {
+                            "ticket": ticket,
+                            "workers": [f"v{index}"],
+                            "lease_blocks": 1000,
+                            "expires": 100000,
+                            "max_attempts": 1,
+                        },
+                    )["request"]
+                )
+            admitted = cluster.send(
+                "artifact.admit",
+                {
+                    "target": target,
+                    "artifact": contract.result_tree,
+                    "expires": contract.deadline_height,
+                    "checks": checks,
+                },
+            )
+            candidate = admitted["request"]
+            cluster.wait_height(int(admitted["receipt"]["height"]))
+            with pytest.raises(Failure, match="ACCEPTANCE"):
+                prepare(
+                    cluster.client().state(),
+                    candidate,
+                    contract,
+                    Inputs(*inputs, ()),
+                    store,
+                    access=access,
+                )
+            for index, check in enumerate(checks):
+                actor = f"v{index}"
+                cluster.send("task.lease", {"task": check}, actor=actor, node=index)
+                cluster.send("task.start", {"task": check, "fence": 1}, actor=actor, node=index)
+                observation = observe_patch(
+                    tree, patch, contract, cases, height=cluster.client(index).state().height
+                )
+                assert observation.case_match is True and observation.contract_digest == target
+                ref = put(dumps(validate(json.loads(json.dumps(asdict(observation))))), "evidence")
+                refs.append(ref)
+                cluster.send(
+                    "task.finish",
+                    {"task": check, "fence": 1, "outcome": "reported", "evidence": ref.digest},
+                    actor=actor,
+                    node=index,
+                )
+                attested = cluster.send(
+                    "artifact.attest",
+                    {
+                        "candidate": candidate,
+                        "task": check,
+                        "evidence": ref.digest,
+                        "verdict": "pass",
+                    },
+                    actor=actor,
+                    node=index,
+                )
+                cluster.wait_height(int(attested["receipt"]["height"]))
+            reusable = Inputs(*inputs, tuple(refs))
+            for index in range(4):
+                state = cluster.client(index).state()
+                prepared = prepare(state, candidate, contract, reusable, store, access=access)
+                assert prepared.tree.digest == contract.result_tree
+                assert state.budget.spent == (round_number + 1) * 40 and state.budget.reserved == 0
+            previous = candidate, reusable
+        height, app_hash = cluster.common_hash()
+        assert height > 0 and len(app_hash) == 64
     finally:
         cluster.close()

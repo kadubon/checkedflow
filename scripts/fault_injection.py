@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "repository_reuse.py",
+        "test_repository_reuse.py",
+        "reuse_typed_verdict_consistency",
+        'report["case_match"] is expected',
+        "True",
+        "test_signed_pass_does_not_hide_inconsistent_evidence",
+    ),
+    (
+        "repository_reuse.py",
+        "test_repository_reuse.py",
+        "reuse_provider_byte_integrity",
+        "len(raw) == ref.length and digest_bytes(raw) == ref.digest",
+        "True",
+        "test_provider_cannot_bypass_final_byte_integrity",
+    ),
+    (
         "core/work_acceptance.py",
         "test_work_acceptance.py",
         "contradictory_verdict_retention",

@@ -318,3 +318,28 @@ cases, including the extended four-verifier acceptance/withdrawal path. Local so
 309 tests (three Linux-only skips, infrastructure/signer cases excluded separately), all 28 fault
 injections and isolated wheel/sdist checks. The acceptance core has 100% line and branch coverage.
 These are component results, not G1–G7 qualification or authorization to remove the release interlock.
+
+### Exact-target repository reuse preparation
+
+The repository adapter now reads scoped base/patch/inventory/observation objects on every preparation,
+independently verifies their bytes, matches the complete intended contract and reconstructs the exact
+result tree without executing code. Typed verdicts and report/attempt bindings must agree with retained
+signed observations. Missing, corrupt or unavailable bytes reject despite old acceptance. The result
+binds a committed snapshot and is not a future execution/effect permit.
+
+The existing real laboratory case now prepares accepted bytes and rejects changed scope and withdrawn
+evidence. A new mandatory case uses two content-distinct fixture bases with a reconstructible successor
+Git commit, rejects inherited acceptance and funds four fresh actual sandbox checks for each target.
+Its scope is bounded to two targets/eight invocations. Those later live changes remain unqualified until
+their exact-source CI is inspected. Supervised freshness, replicated availability, lifecycle retention
+and complete reuse accounting remain open.
+
+Documentation predecessor 825a04d passed run 36216918034. This does not qualify the subsequent reuse
+adapter or changed-base test.
+
+Local source checks passed 335 cases, with three Linux-only skips and 18 infrastructure/signer
+cases kept in their separate groups. All 30 invariant mutations were detected; the reuse adapter
+has 100% line and branch coverage. Wheel/sdist isolated installation and packaged-resource checks
+passed on Windows/Python 3.12. The successor fixture's Git commit ID and changed SHA-256 tree
+bindings were independently exercised without executing candidate code. Live reuse qualification
+is still required for the current source revision.

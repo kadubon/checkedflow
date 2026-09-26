@@ -25,8 +25,9 @@ The v2 path also includes signed task ownership, a separate CometBFT adapter and
 specific artifact; late contradictions, withdrawal or revoked evidence keys quarantine it.
 For example, the repository fixture checks an invoice quantity fix by comparing declared inputs
 and expected outputs outside the candidate process. This produces an observation that a verifier
-can attest separately. Current availability, safe reuse and permission to open a pull request still
-require further integrations. See the
+can attest separately. [Reuse preparation](docs/repository-reuse.md) reads and validates exact bytes
+again and rejects a changed base or destination. Supervised dispatch and permission to open a pull
+request still require further integrations. See the
 [repository-patch guide](docs/repository-patch.md) and
 [implementation ledger](docs/implementation-0.2.0.md) before using development APIs.
 

@@ -1,9 +1,11 @@
 """Trusted fixture preparation; all candidate strings stay inert on the host."""
 
 import json
+from dataclasses import replace
+from hashlib import sha1
 from importlib.resources import files
 
-from checkedflow.domains.repository_patch import Contract, Tree, digest_bytes
+from checkedflow.domains.repository_patch import Contract, Tree, apply_patch, digest_bytes
 from checkedflow.repository_execution import CHECKER_DIGEST
 from checkedflow.wire import dumps
 
@@ -45,3 +47,50 @@ def invoice(image, source=None):
         deadline_height=100,
     )
     return base, patch, contract, cases
+
+
+def successor(base, patch, contract):
+    """A real Git commit object for a content-changed fixture, without invoking Git hooks."""
+    addition = ("REBASE.txt", b"A distinct approved fixture base.\n")
+    changed = Tree(tuple(sorted((*base.files, addition))))
+    result = Tree(tuple(sorted((*apply_patch(base, patch, contract).files, addition))))
+
+    def git_object(kind, body):
+        # Git object identity only; security bindings use the separate SHA-256 tree digests.
+        return sha1(
+            kind.encode() + b" " + str(len(body)).encode() + b"\0" + body, usedforsecurity=False
+        ).digest()
+
+    def git_tree(entries):
+        grouped = {}
+        for path, body in entries:
+            head, separator, tail = path.partition("/")
+            if separator:
+                grouped.setdefault(head, []).append((tail, body))
+            else:
+                grouped[head] = body
+        rows = []
+        for name, body in sorted(
+            grouped.items(), key=lambda pair: pair[0] + ("/" if isinstance(pair[1], list) else "")
+        ):
+            directory = isinstance(body, list)
+            identity = git_tree(body) if directory else git_object("blob", body)
+            rows.append((b"40000 " if directory else b"100644 ") + name.encode() + b"\0" + identity)
+        return git_object("tree", b"".join(rows))
+
+    commit = (
+        f"tree {git_tree(changed.files).hex()}\nparent {contract.base_commit}\n"
+        "author CheckedFlow Fixture <fixture@example.invalid> 1 +0000\n"
+        "committer CheckedFlow Fixture <fixture@example.invalid> 1 +0000\n\n"
+        "Change the immutable repository fixture base.\n"
+    ).encode()
+    return (
+        changed,
+        replace(
+            contract,
+            base_commit=git_object("commit", commit).hex(),
+            base_tree=changed.digest,
+            result_tree=result.digest,
+        ),
+        commit,
+    )

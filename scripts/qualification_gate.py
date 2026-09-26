@@ -13,6 +13,7 @@ REQUIRED = {
     "test_sandbox_nested_repository_tree": 1,
     "test_repository_patch_independent_observation": 6,
     "test_v2_consensus_patch_execution_and_crash_recovery": 1,
+    "test_v2_changed_base_requires_fresh_funded_verification": 1,
 }
 
 

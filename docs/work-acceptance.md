@@ -68,7 +68,8 @@ quarantine the candidate, even if a passing quorum was reached earlier.
 
 **Accepted is not currently usable.** A consumer must additionally establish exact intended target,
 current evidence/artifact availability, dependency validity, scope, execution authority and freshness.
-The complete reuse/availability service remains separate implementation work. Never expose this
+The [repository reuse preparation](repository-reuse.md) now checks exact scope and available bytes
+against a committed snapshot. The complete supervised reuse/availability service remains separate work. Never expose this
 status alone as an authorization to execute, apply a patch or create a pull request.
 
 ## Withdrawal, retirement and compromise
