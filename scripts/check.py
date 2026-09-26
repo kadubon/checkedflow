@@ -51,6 +51,7 @@ def main() -> None:
                 "not integration and not sandbox",
                 "--cov=checkedflow.core",
                 "--cov=checkedflow.operational_identity",
+                "--cov=checkedflow.operational_runtime",
                 "--cov=checkedflow.domains.repository_patch",
                 "--cov-branch",
                 "--cov-report=json:reports/coverage.json",
@@ -63,11 +64,23 @@ def main() -> None:
             key: 0
             for key in ("covered_lines", "num_statements", "covered_branches", "num_branches")
         }
-        boundaries = {"operational_identity.py", "domains/repository_patch.py"}
+        boundaries = {
+            "operational_identity.py",
+            "operational_runtime.py",
+            "domains/repository_patch.py",
+            "core/authority.py",
+            "core/request_journal.py",
+            "core/operational.py",
+        }
         found = set()
         for name, report in coverage["files"].items():
             normalized = name.replace("\\", "/")
-            if "/checkedflow/core/" in normalized:
+            if "/checkedflow/core/" in normalized and normalized.rsplit("/", 1)[-1] in {
+                "__init__.py",
+                "model.py",
+                "machine.py",
+                "values.py",
+            }:
                 for key in core:
                     core[key] += report["summary"][key]
             for boundary in boundaries:

@@ -44,7 +44,23 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
-        "operational_identity.py",
+        "core/operational.py",
+        "test_operational_runtime.py",
+        "duplicate_control_application",
+        "if duplicate:",
+        "if False:",
+        "test_replaying_an_old_pause_does_not_pause_newly_resumed_mission",
+    ),
+    (
+        "core/request_journal.py",
+        "test_request_journal.py",
+        "checkpoint_nonce_continuity",
+        "actors=_advance_actor(journal, command)",
+        "actors=journal.actors",
+        "test_ordinary_saturation_preserves_control_and_checkpoint_capacity",
+    ),
+    (
+        "core/authority.py",
         "test_operational_identity.py",
         "organization_quorum",
         "len(organizations) >= 3",
@@ -52,7 +68,7 @@ OPERATIONAL_MUTATIONS = [
         "test_three_organizations_and_purposes_are_separate",
     ),
     (
-        "operational_identity.py",
+        "core/authority.py",
         "test_operational_identity.py",
         "mission_scope",
         "self.actor.mission == mission",
@@ -60,7 +76,7 @@ OPERATIONAL_MUTATIONS = [
         "test_worker_cannot_promote_its_role_or_mission",
     ),
     (
-        "operational_identity.py",
+        "core/authority.py",
         "test_operational_identity.py",
         "key_purpose",
         "self.actor.role == role",

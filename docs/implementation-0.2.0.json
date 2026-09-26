@@ -2734,6 +2734,31 @@
         "docs/operational-identity.md"
       ],
       "scope": "12 tests for original signed-byte admission, revision/purpose/mission validity and independent organization approvals. No v2 state transition, managed signer or rotation governance qualification."
+    },
+    {
+      "id": "v2-control-and-request-journal",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/core/authority.py",
+        "src/checkedflow/core/request_journal.py",
+        "src/checkedflow/core/operational.py",
+        "src/checkedflow/operational_runtime.py"
+      ],
+      "tests": [
+        "tests/test_request_journal.py",
+        "tests/test_operational_runtime.py"
+      ],
+      "evidence": [
+        "docs/operational-control.md"
+      ],
+      "scope": "Seven authenticated-control and fourteen journal tests; fixed 5000-request component run; no durable archive, work lifecycle, key rotation or multi-host claim.",
+      "installed_smoke": {
+        "scope": "Windows Python 3.12 fresh wheel and sdist environments; signed pause and rollover plus existing package checks. Does not qualify the full installed test matrix. Builds precede final evidence prose.",
+        "artifacts": {
+          "checkedflow-0.1.0-py3-none-any.whl": "cdcc4178207260537dfbbce9be4fa89c2bc1023a1f1fb58dd35b22e23d037578",
+          "checkedflow-0.1.0.tar.gz": "97bf26f771149c521e635246bb707dd9eb8378f0aaea8e76f2649c60027098ed"
+        }
+      }
     }
   ],
   "observations": [
@@ -2742,6 +2767,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36204053007",
       "conclusion": "success",
       "scope": "Initial foundation build, six matrix jobs and existing infrastructure cases. Not evidence for later identity changes or new operational gates."
+    },
+    {
+      "source": "7a0d70d9274145f75fa3e606232a872310ce6ca2",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36204933803",
+      "conclusion": "success",
+      "scope": "Identity increment, six matrix jobs and existing infrastructure cases. Predates control/journal implementation."
     }
   ]
 }

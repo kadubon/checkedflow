@@ -1,8 +1,11 @@
 # Operational identity boundary
 
-Status: **SOURCE-TESTED AUTHENTICATION PRIMITIVE**. The v2 state machine, key lifecycle commands,
+Status: **SOURCE-TESTED AUTHENTICATION PRIMITIVE**. The complete v2 work state machine, key lifecycle commands,
 managed signing service, snapshot bootstrap and gateway integration are still pending. This API
 does not turn a v1 node into an operational v2 deployment.
+
+The initial [control runtime](operational-control.md) now connects this boundary to authenticated
+pause/drain/resume and request-journal rollover. Work execution and durable archival remain pending.
 
 `checkedflow.operational_identity.authenticate` accepts original envelope bytes, not a decoded
 SDK object. Strict lexical admission runs before signature verification. The signature message is

@@ -111,7 +111,26 @@ and test the final increment. None of these development artifacts is authorized 
 
 ## Next implementation order
 
-Use the frozen legacy captures as regression evidence. Implement the v2 deterministic state,
-bounded request/epoch journal and governed key lifecycle before connecting storage and workers. Update individual
+The [initial v2 control runtime](operational-control.md) now connects signed admission to
+pause/drain/resume and bounded request rollover. Seven control tests and fourteen journal tests
+cover duplicate effects, saturation, nonce continuity, authenticated scope and retired IDs. The
+fixed journal test admits 5,000 requests while retaining at most 64 active receipts; it does not
+qualify full-state longevity. The full Windows Python 3.12.10 check passed 214 tests in 41.36
+seconds, all static checks and twelve selected invariant mutations. Eight infrastructure tests
+were deselected locally. A stale-context regression additionally rejects a previously authenticated
+context after its registry credential is withdrawn.
+
+The [identity increment CI run](https://github.com/kadubon/checkedflow/actions/runs/36204933803)
+passed for `7a0d70d9274145f75fa3e606232a872310ce6ca2`. It predates these control changes. Initial
+control development wheel and sdist passed fresh Windows Python 3.12 installation checks,
+including signed pause and rollover, the legacy capture, CLI/SDK examples and optional-agent
+discovery. Hashes are retained in the implementation ledger. These builds precede this evidence
+prose and retain development 0.1.0 metadata; they must not be published. Only the final 0.2.0
+source/artifact qualification can authorize release.
+
+Use the frozen legacy captures as regression evidence. Extend the initial control profile with
+governed key lifecycle and bounded work/budget/dependency state, then connect atomic archive storage
+and worker execution. The journal alone does not preserve work obligations that are not yet modeled.
+Update individual
 ledger entries only when their evidence exists. Keep all G1–G7 gates unqualified until their exact
 required cases execute against the final artifacts. Never promote the ledger itself to PASS evidence.

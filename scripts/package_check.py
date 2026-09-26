@@ -77,6 +77,18 @@ parsed, verified = authenticate(
 )
 assert parsed == command
 verified.require_administration()
+from checkedflow.core.operational import genesis as operational_genesis
+from checkedflow.operational_runtime import Runtime as OperationalRuntime
+control = OperationalRuntime(operational_genesis(
+    "installed-auth-only", "m", tuple("abcd"), tuple(registry.values())
+))
+command["id"] = "0:pause"
+control.apply(sign_command(command, keys), height=1)
+assert control.state.mode == "paused"
+command.update(id="0:checkpoint", nonce=2, kind="journal.rollover")
+archive = control.apply(sign_command(command, keys), height=2)
+assert archive.root == control.state.journal.archive_root
+assert control.state.journal.epoch == 1
 runpy.run_path(str(r.files("checkedflow").joinpath("data/examples/sdk.py")), run_name="__main__")
 assert main(["example"]) == 0
 from checkedflow.agents.gateway import profile

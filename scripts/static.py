@@ -70,6 +70,7 @@ def inspect() -> list[str]:
             "serialization.py",
             "runtime.py",
             "operational_identity.py",
+            "operational_runtime.py",
         }:
             for name in imports:
                 if name.startswith(
