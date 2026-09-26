@@ -1,7 +1,7 @@
 """Atomic local control-state, block and epoch storage; consensus ordering is external."""
 
 import sqlite3
-from collections.abc import Iterator, Sequence
+from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from hashlib import sha256
@@ -265,7 +265,9 @@ class Store:
             require(archive.epoch == epoch, "STORAGE", "archive epoch differs")
             return archive
 
-    def verify_history(self, *, expected_hash: str) -> State:
+    def verify_history(
+        self, *, expected_hash: str, consume: Callable[[bytes], None] | None = None
+    ) -> State:
         """Stream signed local history against a separately trusted final application hash."""
         runtime = Runtime(self.initial)
         with self._connect() as db:
@@ -302,5 +304,7 @@ class Store:
                             "archive differs",
                         )
                 require(runtime.state_hash == block["state_hash"], "REPLAY", "block state differs")
+                if consume is not None:
+                    consume(row[1])
             require(runtime.state == head, "REPLAY", "final state differs")
         return runtime.state

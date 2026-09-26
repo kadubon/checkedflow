@@ -31,6 +31,9 @@ REQUIRED = [
     "checkedflow/data/retention-plan.schema.json",
     "checkedflow/data/retention-vectors.json",
     "checkedflow/data/retention-checkpoint.schema.json",
+    "checkedflow/data/application-checkpoint.schema.json",
+    "checkedflow/data/application-backup-vector.json",
+    "checkedflow/data/application-recovery.json",
     "checkedflow/data/retention-backup-vector.json",
     "checkedflow/data/github-draft-plan.schema.json",
     "checkedflow/data/github-draft-vector.json",
@@ -108,6 +111,18 @@ from checkedflow.runtime import Runtime
 from checkedflow.serialization import decode
 from checkedflow.wire import dumps, loads
 from checkedflow.cli import main
+with TemporaryDirectory(prefix="checkedflow-installed-history-cli-") as temporary:
+    from checkedflow.operational_codec import state_bytes, decode as decode_control
+    directory = Path(temporary)
+    vector = json.loads(
+        r.files("checkedflow").joinpath("data/application-backup-vector.json").read_text())
+    (directory / "initial.json").write_bytes(state_bytes(decode_control(dumps(vector["initial"]))))
+    (directory / "checkpoint.json").write_bytes(dumps(vector["checkpoint"]))
+    (directory / "history.jsonl").write_text(vector["jsonl"], encoding="utf-8", newline="")
+    assert main(["application-backup", "restore", "--genesis", str(directory / "initial.json"),
+        "--source", str(directory / "history.jsonl"),
+        "--checkpoint", str(directory / "checkpoint.json"),
+        "--current-height", "2", "--destination", str(directory / "restored")]) == 0
 assert checkedflow.__version__ == "0.1.0"
 v = json.loads(r.files("checkedflow").joinpath("data/vectors.json").read_text())
 for row in v["canonical"]:
@@ -210,6 +225,13 @@ with tempfile.TemporaryDirectory() as folder:
         previous_hash=OperationalRuntime(initial_control).state_hash
     )
     assert store.verify_history(expected_hash=committed.state_hash) == store.load()
+    from checkedflow.operational_backup import export_history, restore_history
+    history_output = BytesIO()
+    checkpoint = export_history(store, history_output, expected_hash=committed.state_hash)
+    recovered_application = restore_history(BytesIO(history_output.getvalue()),
+        Path(folder) / "restored-application", initial=initial_control,
+        checkpoint=checkpoint, current_height=store.load().height)
+    assert recovered_application.load() == store.load()
     from checkedflow.operational_identity import prove_possession
     replacement = Ed25519PrivateKey.generate()
     proposal = command | {

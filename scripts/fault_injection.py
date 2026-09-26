@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "operational_backup.py",
+        "test_operational_backup.py",
+        "application_backup_rollback",
+        "checkpoint.height >= current_height",
+        "True",
+        "test_rollback_floor_checked_before_destination_creation",
+    ),
+    (
+        "operational_backup.py",
+        "test_operational_backup.py",
+        "application_backup_replay_outcomes",
+        'committed.outcomes == outcomes and committed.state_hash == row["state_hash"]',
+        "True",
+        "test_invalid_history_never_activates_even_with_matching_content_digest",
+    ),
+    (
         "dispatch_watchdog.py",
         "test_dispatch_watchdog.py",
         "stalled_height_watchdog",

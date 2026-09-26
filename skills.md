@@ -111,6 +111,12 @@ The [plan schema](src/checkedflow/data/retention-plan.schema.json) and
 For [retention backup and restoration](docs/retention-backup.md), obtain the checkpoint and current
 revision floor from independently protected operator records. Decoding the packaged
 [checkpoint schema](src/checkedflow/data/retention-checkpoint.schema.json) is not authentication.
+
+For [application history backups](docs/application-backup.md), independently establish the genesis,
+checkpoint and current height floor. Restore only into a new operator-owned directory; preserve
+failed staging for inspection. The [application checkpoint schema](src/checkedflow/data/application-checkpoint.schema.json)
+and [portable vector](src/checkedflow/data/application-backup-vector.json) are packaged contracts.
+Application restoration does not restore consensus signing state or authorize starting a validator.
 Restore into a new directory; never rename an interrupted pending database into service. Stop the
 old controller before activating its replacement. Catalog restoration performs no provider I/O
 and is not consensus state sync or evidence that referenced bytes are available.

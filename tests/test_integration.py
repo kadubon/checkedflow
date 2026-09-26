@@ -610,11 +610,26 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
         height, app_hash = cluster.common_hash()
         assert height >= int(withdrawn["receipt"]["height"]) and len(app_hash) == 64
         cluster.close()
+        from checkedflow.operational_backup import export_history, restore_history
+
         for index in range(4):
             path = cluster.directory / f"node{index}" / "operational.sqlite"
             store = OperationalStore(path, cluster.initial)
             final = store.load()
             assert store.verify_history(expected_hash=OperationalRuntime(final).state_hash) == final
+            backup_output = BytesIO()
+            checkpoint = export_history(
+                store, backup_output, expected_hash=OperationalRuntime(final).state_hash
+            )
+            restored = restore_history(
+                BytesIO(backup_output.getvalue()),
+                tmp_path / f"restored-application-{index}",
+                initial=cluster.initial,
+                checkpoint=checkpoint,
+                current_height=final.height,
+            )
+            assert restored.load() == final
+            assert restored.verify_history(expected_hash=checkpoint.state_hash) == final
             with closing(sqlite3.connect(path)) as db:
                 body, fingerprint = db.execute(
                     "SELECT body, hash FROM blocks WHERE height=?", (height,)

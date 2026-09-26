@@ -35,6 +35,8 @@ height progress become stale, the
 [GitHub draft provider guide](docs/github-drafts.md) for the disabled-by-default transport component,
 [S3 storage guide](docs/s3-storage.md) for the optional verified object-store adapter,
 [retention and recovery](docs/retention-backup.md) for protected catalog backup boundaries,
+[application history recovery](docs/application-backup.md) for independently anchored replay into
+a new database,
 [repository-patch guide](docs/repository-patch.md) and
 [implementation ledger](docs/implementation-0.2.0.md) before using development APIs.
 

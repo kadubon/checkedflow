@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import sqlite3
 import sys
 from importlib.resources import files
 from pathlib import Path
@@ -30,6 +31,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="checkedflow", description=__doc__)
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="action", required=True)
+    from checkedflow.operational_backup_cli import configure as backup_arguments
+
+    backup_arguments(commands.add_parser("application-backup"))
     for name in ("generator", "example"):
         commands.add_parser(name)
     resource = commands.add_parser("schema")
@@ -102,7 +106,11 @@ def main(argv: list[str] | None = None) -> int:
     demo.add_argument("--cometbft", default="cometbft")
     args = parser.parse_args(argv)
     try:
-        if args.action == "schema":
+        if args.action == "application-backup":
+            from checkedflow.operational_backup_cli import run as backup_command
+
+            emit(backup_command(args))
+        elif args.action == "schema":
             filename = {
                 "envelope": "envelope.schema.json",
                 "state": "state.schema.json",
@@ -211,13 +219,15 @@ def main(argv: list[str] | None = None) -> int:
 
             emit(demonstrate(Path(args.directory), args.image, args.cometbft))
         return 0
-    except (Failure, OSError, ValueError, ImportError) as exc:
+    except (Failure, OSError, ValueError, ImportError, sqlite3.Error) as exc:
         error = (
             exc.code
             if isinstance(exc, Failure)
             else (
                 "DEPENDENCY_UNAVAILABLE"
                 if isinstance(exc, ImportError)
+                else "STORAGE"
+                if isinstance(exc, sqlite3.Error)
                 else "IO"
                 if isinstance(exc, OSError)
                 else "INVALID_INPUT"

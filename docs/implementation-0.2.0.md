@@ -26,12 +26,13 @@ source revision, artifact hashes, environment and executed results before qualif
 The initial import retained every nonempty source paragraph, including reference links and
 reporting instructions. Those 377 records are not equally sized engineering requirements and must
 not be used as a completion percentage. An audit found that their statuses remained `NOT_STARTED`
-despite separate component records. Twenty component records now link to 88 affected paragraphs,
+despite separate component records. The initial traceability audit linked twenty components to 88 paragraphs,
 with reciprocal evidence references and `IN_PROGRESS` status. This deliberately does not promote
 partial component evidence to complete paragraph acceptance. Read each component's scope and the
 remaining milestone obligations. Offline static checks validate frozen text/line/hash identity,
 unique IDs, reciprocal references and local implementation/test/document paths. They do not
-authenticate a test result or authorize publication; G1–G7 remain unqualified.
+authenticate a test result or authorize publication; G1–G7 remain unqualified. Subsequent components
+add reciprocal links without converting partial implementation into completed requirements.
 
 1. Preserve the v1 interpreter and signed bytes; add a separate v2 profile. See
    [the protocol boundary ADR](adr-0001-versioned-operational-state.md).
@@ -592,3 +593,58 @@ the maintained deployment harness, delayed replies, storage/key-service outages,
 coordinated restoration, upgrades and complete declared workload remain required. Private operator
 fixtures do not supply the deployment product or protected release evidence. Other incomplete
 implementation milestones remain unchanged. No 0.2.0 publication occurred.
+
+### Application history backup and staged replay
+
+The preceding source `fb0f0134548e7bdeba28c2af25b110ed42dab446` passed every component job in
+[run 36233055924](https://github.com/kadubon/checkedflow/actions/runs/36233055924). Publication was
+skipped; that run predates this recovery component.
+
+The [application recovery adapter](application-backup.md) streams a verified consistent WAL read
+snapshot and restores original signed bytes into a new private application database. A separately
+trusted genesis, checkpoint and current height floor are mandatory. Replay reconstructs archives
+and retains rejections, unknown charges, nonce/key history, tasks and evidence state. Full content
+checks precede activation. Failed staging is preserved; existing destinations are never replaced.
+The format has a packaged JSON Schema and canonical public conformance vector.
+
+Thirty-five dedicated source cases passed at 100% statement/branch coverage. They include a writer
+committing during export, real process exit immediately before/after activation, corrupted histories,
+rollback floors, uncertain costs and persistence errors. An initial Windows run found that syncing
+a read-only file descriptor failed; the owned pending database is now opened for read/write sync.
+The corrected full Windows/Python 3.12.10 check passed 531 cases in 115.36 seconds, with three
+Linux-only filesystem skips and 19 infrastructure/service cases selected separately. All static
+checks and all 44 selected invariant mutations passed, including omitted restore-floor and replay
+checks. A source/distribution publication scan checked 633 members with no findings.
+
+The development wheel `41b2cb412edb9941df36ed1a8f9e4c60ea98d716b20f4b0f37d7116c39ede60d`
+and sdist `0e972784411f42411638291e53722766b5c869eeec856a8b3f23682206b7ba42` passed isolated
+installed-package checks. They contain uncommitted source based on fb0f013, before this evidence
+entry, and retain unpublishable 0.1.0 development metadata. They cannot replace public 0.1.0.
+
+The owner-approved four-VM lab was resumed for a new bounded session using its existing disks.
+The exact same wheel was installed in all four guests; each of its 129 package members was compared
+with the archive. Each guest exported and restored its retained 36-block history from the earlier
+real communication-fault experiment. All restored states, task ownership and budgets matched the
+originals. The controller retained checkpoints before restoration; this is local operator custody,
+not protected consensus checkpoint distribution. No validator was started or signing state copied.
+All guests and the network helper were subsequently stopped cleanly, retaining private evidence.
+
+A subsequent review found that a locally reformatted unsigned block container could verify yet
+produce a noncanonical export rejected by restoration. Export now canonicalizes that container,
+preserving the original transaction bytes. A new regression case raises the dedicated suite to
+36 passing cases with 100% statement/branch coverage. The VM and development-distribution
+observations above precede this final normalization change; they are not reclassified as tests
+of a different artifact. The complete final source and hosted artifact checks remain separate.
+
+The base CLI now provides `application-backup export`, `inspect-checkpoint` and `restore`, with
+a packaged machine-readable command catalogue. Six CLI tests cover normal round-trip operation,
+metadata-only inspection, overwrite refusal, missing/corrupt storage, bounded inputs and failed
+exports without a completion checkpoint. SQLite errors return the machine-readable `STORAGE`
+code. Together with the 36 SDK cases, these checks cover the application-only operator path;
+they do not provide service drain/start, full node recovery or a protected release workflow.
+
+The extended installed-wheel CometBFT/gVisor CI case now restores each stopped node after actual
+artifact checking and withdrawal. It requires a new exact-source run; the earlier run cannot qualify
+it. Application-only recovery does not complete node bootstrap, signing-state ownership, callback
+or provider journals, coordinated service recovery, upgrades, protected checkpoint custody, G6 or
+the final release gates. Those implementation obligations remain open; publication stays disabled.

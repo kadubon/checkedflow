@@ -1173,7 +1173,8 @@
       "text": "Preserve budget conservation across retries, snapshots, rollover, and restore. A successor epoch or run is not a fresh spending allowance unless separately authorized. Carry unresolved liabilities explicitly and prevent double charging.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:governed-work-budget"
+        "component:governed-work-budget",
+        "component:application-history-backup"
       ]
     },
     {
@@ -1243,8 +1244,10 @@
       "id": "R7-0327",
       "source_line": 327,
       "text": "A self-consistent hash or three signatures in a manifest is not, by itself, bootstrap trust. Verification must use an already trusted genesis/checkpoint/validator set and the supported consensus trust model. Do not accept trust keys from the snapshot being verified.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:application-history-backup"
+      ]
     },
     {
       "id": "R7-0331",
@@ -1264,8 +1267,10 @@
       "id": "R7-0335",
       "source_line": 335,
       "text": "If the application cannot safely support arbitrary peer bootstrap, implement and document the narrower authenticated/operator-provisioned checkpoint profile rather than allowing untrusted snapshot bootstrap. The declared operational recovery gate must still be real, not a copy-file demonstration.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:application-history-backup"
+      ]
     },
     {
       "id": "R7-0339",
@@ -1273,7 +1278,8 @@
       "text": "Provide CLI/runbooks for consistent backup, validation, restore into a new directory, dry-run inspection, and caught-up verification. Account for SQLite WAL and the A2A journal's non-reconstructible callback configuration.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:retention-catalog-backup"
+        "component:retention-catalog-backup",
+        "component:application-history-backup"
       ]
     },
     {
@@ -1287,15 +1293,19 @@
       "id": "R7-0343",
       "source_line": 343,
       "text": "Do not restore validator signing state into two active nodes or roll it backward to enable double signing. Node replacement must include stop/drain and signer-ownership verification. An application snapshot is not a consensus signer backup.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:application-history-backup"
+      ]
     },
     {
       "id": "R7-0345",
       "source_line": 345,
       "text": "Test disk/store loss, snapshot corruption, a stopped node rejoining, incomplete backup, stale checkpoint, unknown task restoration, and revoked-evidence restoration.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:application-history-backup"
+      ]
     },
     {
       "id": "R7-0349",
@@ -1921,8 +1931,10 @@
       "id": "R12-0515",
       "source_line": 515,
       "text": "Separate commands for **plan/preflight**, **apply/start**, **status**, **drain**, **stop**, **backup**, **restore**, and **qualification**. Command names are design proposals: introduce and test them rather than documenting nonexistent commands.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:application-history-backup"
+      ]
     },
     {
       "id": "R12-0517",
@@ -3370,6 +3382,40 @@
         "R9-0449",
         "R9-0453"
       ]
+    },
+    {
+      "id": "application-history-backup",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/operational_backup.py",
+        "src/checkedflow/operational_storage.py",
+        "src/checkedflow/data/application-checkpoint.schema.json",
+        "src/checkedflow/data/application-backup-vector.json",
+        "src/checkedflow/operational_backup_cli.py",
+        "src/checkedflow/data/application-recovery.json"
+      ],
+      "tests": [
+        "tests/test_operational_backup.py",
+        "tests/test_integration.py",
+        "scripts/package_check.py",
+        "tests/test_operational_backup_cli.py"
+      ],
+      "documentation": [
+        "docs/application-backup.md"
+      ],
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ],
+      "requirements": [
+        "R6-0306",
+        "R7-0327",
+        "R7-0335",
+        "R7-0339",
+        "R7-0343",
+        "R7-0345",
+        "R12-0515"
+      ],
+      "scope": "Application-only consistent signed-history export and independently anchored staged replay. Preserves rejection outcomes, epoch archives, unknown charges and current height floor. Not protected checkpoint custody, CometBFT bootstrap, consensus WAL/signing-state restore, service coordination or complete G6 qualification."
     }
   ],
   "observations": [
