@@ -18,30 +18,23 @@ Version **0.1.0** is an experimental reference implementation. Its complete demo
 31 finite inputs and actual generated Python. See the [audit against the original plan](docs/audit.md) and
 [executed validation record](docs/validation-status.md) for the current scope.
 
-The **0.2.0 development branch is not release-qualified**. It adds separate components for
-operational control, managed signing, artifact storage and bounded repository-patch checks.
-The [four-VM experiment report](docs/vm-laboratory-2026-09-26.md) records actual process and network
-fault observations, alongside the operational cases still required before release.
-The v2 path also includes signed task ownership, a separate CometBFT adapter and
-[funded organizational verification](docs/work-acceptance.md). A passing quorum can accept a
-specific artifact; late contradictions, withdrawal or revoked evidence keys quarantine it.
-For example, the repository fixture checks an invoice quantity fix by comparing declared inputs
-and expected outputs outside the candidate process. This produces an observation that a verifier
-can attest separately. [Reuse preparation](docs/repository-reuse.md) reads and validates exact bytes
-again and rejects a changed base or destination. The [bounded worker SDK](docs/worker-supervision.md) now connects owned tasks to durable command
-submission, one gVisor observation and evidence publication without replaying interrupted code.
-The unattended scheduler and permission to open a pull request still require further integrations. See the
-[dispatch watchdog](docs/dispatch-watchdog.md) for local inhibition when node reads or committed
-height progress become stale, the
-[GitHub draft provider guide](docs/github-drafts.md) for the disabled-by-default transport component,
-[S3 storage guide](docs/s3-storage.md) for the optional verified object-store adapter,
-[retention and recovery](docs/retention-backup.md) for protected catalog backup boundaries,
-[application history recovery](docs/application-backup.md) for independently anchored replay into
-a new database,
-[settled-work retirement](docs/work-archive.md) for reclaiming active record capacity while
-preserving cumulative costs and unresolved obligations,
-[repository-patch guide](docs/repository-patch.md) and
-[implementation ledger](docs/implementation-0.2.0.md) before using development APIs.
+The **0.2.0 development branch is not release-qualified**. Its separate v2 path handles bounded
+repository-patch work. For example, a worker runs a proposed invoice calculation fix in gVisor;
+the trusted observer compares declared inputs and expected outputs outside the candidate process.
+Independent organizations then attest to the evidence. A committed completion is not acceptance,
+and acceptance of one patch does not authorize opening a pull request or reusing it on another base.
+
+Start with the concepts below for the published reference runtime. For development APIs, use these
+guides; the unattended scheduler and complete operational deployment are still unfinished.
+
+| Development question | Guide |
+|---|---|
+| How is a patch checked, accepted and reused? | [Patch contract](docs/repository-patch.md), [organizational verification](docs/work-acceptance.md), [reuse](docs/repository-reuse.md) |
+| What happens after a worker crashes? | [Durable worker SDK](docs/worker-supervision.md), [sandbox recovery](docs/sandbox-recovery.md), [freshness watchdog](docs/dispatch-watchdog.md) |
+| How are evidence and bounded records retained? | [S3 storage](docs/s3-storage.md), [retention](docs/retention-backup.md), [settled-work retirement](docs/work-archive.md) |
+| How is application state restored? | [Application history recovery](docs/application-backup.md); validator ownership needs separate recovery |
+| Can it open a pull request automatically? | [Draft provider](docs/github-drafts.md); disabled by default and not yet integrated with complete effect authority |
+| What has actually been tested? | [Implementation ledger](docs/implementation-0.2.0.md), [four-VM observations](docs/vm-laboratory-2026-09-26.md) |
 
 ## The concepts in one minute
 

@@ -730,7 +730,11 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
         )
         with pytest.raises(Failure, match="ACCEPTANCE"):
             prepare(states[0], candidate["request"], contract, reusable, artifacts, access=access)
-        cluster.send("mission.pause", {})
+        paused = cluster.send("mission.pause", {})
+        cluster.wait_height(int(paused["receipt"]["height"]) + 1)
+        assert supervisor.retire((task,)) == 1
+        assert supervisor.retire((task,)) == 0
+        assert artifacts.get(reference, access=access) == raw and len(executed) == 1
         cluster.send("artifact.revoke", {"candidate": candidate["request"]})
         cluster.send("journal.rollover", {})
         prior = cluster.client(0).state()

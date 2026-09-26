@@ -794,3 +794,30 @@ It uses the same wheel import boundary, injects worker and recovery-service SIGK
 automatic service restart plus container/journal retirement. This new required case is pending
 exact-source execution; the preceding 19-case result does not qualify it. No release gate is
 promoted on the strength of the added test or the service template.
+
+CI 36277633882 passed for `ee0f3dfa362c0959a96d23f20fe89ecdc6c08ec1`: all component jobs,
+six OS/Python jobs and 20 installed-wheel infrastructure cases passed, with no infrastructure skips,
+errors or failures (301.563 seconds). On systemd 255 (255.4-1ubuntu8.17), the transient recovery
+service restarted once after SIGKILL; orphan execution and its journal entry were retired in an
+observed total 15.605 seconds from worker launch for a 15-second container deadline. That measured
+total includes provisioning/observation latency; it is not a hard real-time or production SLO claim.
+The exact wheel remained `73025ba6462f5688cc671449f3f55ee037ec17337702449460189bbd791576a4`;
+the sdist is `316d1830b54bc4217460b6b940b0c9f272de29868463892e1d15a66eb5e9d750`.
+
+## Bounded local execution records
+
+A longevity review found that consensus history could be retired while worker recovery buffers
+continued growing. The worker now checks a 128-record local ceiling before leasing or starting new
+work. Existing records can still reconcile. During a committed pause, explicit `Supervisor.retire`
+republishes exact known-finished evidence, rechecks the completion and pause, then removes selected
+buffers atomically. It must precede consensus history archival. Unknown results, absent active proof,
+pending commands, changed completion and publication errors retain the local data. No budget is
+refunded, artifact accepted, or execution retried by this operation.
+
+Seventeen targeted retirement cases pass, including real process exits during evidence retention
+and after local commit. Worker supervisor statement/branch coverage remains 100% in the combined
+targeted suite before these two extra process-exit cases. The actual v2 infrastructure case now also
+checks buffer retirement and exact evidence retrieval before consensus archival. Fresh full and
+same-artifact qualification is pending for this new source; prior infrastructure results do not
+qualify the added maintenance path. Logical record bounds do not replace disk quotas, archive-based
+worker recovery, artifact replicas or coordinated disaster recovery.

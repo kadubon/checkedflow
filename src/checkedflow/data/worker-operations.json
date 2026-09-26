@@ -78,6 +78,24 @@
       ],
       "network": [],
       "retry": "Idempotent local inhibition; does not cancel in-flight execution or revoke consensus authority."
+    },
+    {
+      "api": "Supervisor.retire",
+      "writes": [
+        "verified evidence retention",
+        "atomic removal of selected known-finished local buffers"
+      ],
+      "network": [
+        "own-node observation",
+        "configured artifact store"
+      ],
+      "preconditions": [
+        "committed pause",
+        "current active finished-task proof",
+        "matching owner, revision, fence and evidence",
+        "no unresolved command"
+      ],
+      "retry": "Idempotent for active finished tasks; run before history.archive. Unknowns and missing proofs stay pinned."
     }
   ],
   "errors": {
@@ -88,7 +106,8 @@
     "FENCE": "Retain evidence and inspect current ownership; do not execute under another fence.",
     "LIMIT": "Do not reset counters to retry; reconcile the original operation.",
     "RETIRED_REQUEST": "The closed epoch cannot admit this original request.",
-    "STOPPED": "Local emergency inhibition is latched; operator-controlled restart must warm readiness again."
+    "STOPPED": "Local emergency inhibition is latched; operator-controlled restart must warm readiness again.",
+    "CAPACITY": "Stop new attempts; retain known-finished evidence during a committed pause before retiring buffers. Unknown records are not reclaimable."
   },
   "sandbox_recovery": {
     "module": "checkedflow.sandbox_recovery",
@@ -100,5 +119,6 @@
     "restart_authorizes_reexecution": false,
     "service_template": "sandbox-recovery.service",
     "poll_interval_milliseconds": 250
-  }
+  },
+  "max_local_attempt_records": 128
 }

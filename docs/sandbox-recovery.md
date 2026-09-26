@@ -86,9 +86,9 @@ create-before-start ordering. The real installed-wheel qualification adds hard w
 binding a created container and after observing a running gVisor container; a separate process must
 remove it. Only a successful exact-artifact run qualifies those cases.
 
-The systemd template is not evidence of an operated four-host recovery service. Service-manager
-restart fault tests, coordinated journal/daemon disaster recovery, and collection of temporary
-workspace directories left by hard-killed workers remain unqualified. This mechanism recovers OCI
+The systemd template is not evidence of an operated four-host recovery service. Coordinated
+journal/daemon disaster recovery and collection of temporary workspace directories left by
+hard-killed workers remain unqualified. This mechanism recovers OCI
 containers; it does not delete arbitrary host directories, restore validator keys, reconcile GitHub
 effects or complete the G1–G7 release gates.
 

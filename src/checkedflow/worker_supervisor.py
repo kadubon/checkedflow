@@ -1,20 +1,22 @@
 """One bounded invocation per committed task attempt, with conservative crash recovery."""
 
 import sqlite3
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from contextlib import closing, contextmanager
 from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
 from typing import cast
 
 from checkedflow.core.operational import State
-from checkedflow.core.values import Failure, Object, require
+from checkedflow.core.values import Failure, Object, names, require
 from checkedflow.core.work_tasks import ROLE, Task, funding
 from checkedflow.dispatch_watchdog import Watchdog
 from checkedflow.wire import digest, document, dumps
 from checkedflow.worker_submission import Coordinator
 
 MAX_EVIDENCE_BYTES = 1048576
+MAX_LOCAL_ATTEMPTS = 128
 
 
 @dataclass(frozen=True)
@@ -49,7 +51,7 @@ class Supervisor:
         self.directory, self.coordinator, self.watchdog = directory, coordinator, watchdog
         self._execute, self._publish = execute, publish
         directory.mkdir(mode=0o700, parents=True, exist_ok=True)
-        with sqlite3.connect(directory / "worker.sqlite") as db:
+        with closing(sqlite3.connect(directory / "worker.sqlite")) as db, db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS identity (id INTEGER PRIMARY KEY CHECK(id=1), "
                 "binding BLOB NOT NULL)"
@@ -134,17 +136,89 @@ class Supervisor:
         task = self._task(state, identity)
         return self._command(state, "task.heartbeat", {"task": identity, "fence": task.fence})
 
-    def step(self, identity: str) -> str:
-        """One bounded attempt or reconciliation. Caller controls finite scheduling/backoff."""
+    @contextmanager
+    def _exclusive(self) -> Iterator[None]:
         lock = sqlite3.connect(self.directory / "worker-lock.sqlite", timeout=0)
         try:
             try:
                 lock.execute("BEGIN IMMEDIATE")
             except sqlite3.OperationalError as exc:
                 raise Failure("BUSY", "worker already executing or reconciling") from exc
-            return self._step(identity)
+            yield
         finally:
             lock.close()
+
+    def step(self, identity: str) -> str:
+        """One bounded attempt or reconciliation. Caller controls finite scheduling/backoff."""
+        with self._exclusive():
+            return self._step(identity)
+
+    def _room(self, identity: str) -> None:
+        with closing(sqlite3.connect(self.directory / "worker.sqlite", timeout=0)) as db:
+            exists = db.execute("SELECT task FROM attempts WHERE task=?", (identity,)).fetchone()
+            count = db.execute("SELECT COUNT(*) FROM attempts").fetchone()[0]
+            require(
+                exists is not None or count < MAX_LOCAL_ATTEMPTS,
+                "CAPACITY",
+                "local execution recovery capacity exhausted",
+            )
+
+    def retire(self, identities: tuple[str, ...]) -> int:
+        """During a committed pause, retain exact finished evidence before retiring local buffers.
+
+        Run before consensus history archival. Unknowns, running work and missing active-state
+        proofs stay pinned. This removes recovery buffers, not signed history or artifact roots.
+        """
+        identities = names(list(identities), limit=MAX_LOCAL_ATTEMPTS)
+        require(bool(identities), "SHAPE", "nonempty retirement selection required")
+        with self._exclusive():
+            require(self.coordinator.reconcile() != "pending", "OUTCOME_UNKNOWN", "pending command")
+            state = self.coordinator.observe()
+            require(state.mode == "paused", "PAUSED", "pause before local retirement")
+            with closing(sqlite3.connect(self.directory / "worker.sqlite", timeout=0)) as db, db:
+                db.execute("PRAGMA synchronous=FULL")
+                db.execute("BEGIN IMMEDIATE")
+                verified: list[Task] = []
+                for identity in identities:
+                    task = self._task(state, identity)
+                    require(task.status == "finished", "PENDING", "known finished task required")
+                    row = db.execute(
+                        "SELECT fence, revision, outcome, evidence FROM attempts WHERE task=?",
+                        (identity,),
+                    ).fetchone()
+                    if row is None:
+                        continue
+                    require(
+                        row[:2] == (task.fence, task.revision)
+                        and row[2] == "reported"
+                        and isinstance(row[3], bytes)
+                        and task.owner == self.coordinator.actor,
+                        "BINDING",
+                        "local result differs from committed completion",
+                    )
+                    evidence = cast(bytes, row[3])
+                    require(
+                        0 < len(evidence) <= MAX_EVIDENCE_BYTES
+                        and sha256(evidence).hexdigest() == task.evidence,
+                        "BINDING",
+                        "local evidence differs from committed completion",
+                    )
+                    require(
+                        self._publish(state, task, evidence) == task.evidence,
+                        "BINDING",
+                        "retained evidence differs",
+                    )
+                    verified.append(task)
+                current = self.coordinator.observe()
+                require(current.mode == "paused", "PAUSED", "mission resumed during retirement")
+                for task in verified:
+                    require(
+                        self._task(current, task.identity) == task,
+                        "CONFLICT",
+                        "completion changed during retirement",
+                    )
+                    db.execute("DELETE FROM attempts WHERE task=?", (task.identity,))
+                return len(verified)
 
     def _step(self, identity: str) -> str:
         require(self.coordinator.reconcile() != "pending", "OUTCOME_UNKNOWN", "pending command")
@@ -152,6 +226,7 @@ class Supervisor:
         task = self._task(state, identity)
         if task.status in {"finished", "unknown", "cancelled"}:
             return task.status
+        self._room(identity)
         started_here = False
         if task.status in {"ready", "leased"}:
             state, task = self._ready(identity)
@@ -166,7 +241,7 @@ class Supervisor:
             "AUTHORITY",
             "task belongs to another worker or key revision",
         )
-        with sqlite3.connect(self.directory / "worker.sqlite", timeout=0) as db:
+        with closing(sqlite3.connect(self.directory / "worker.sqlite", timeout=0)) as db, db:
             db.execute("PRAGMA synchronous=FULL")
             row = db.execute(
                 "SELECT fence, revision, outcome, evidence FROM attempts WHERE task=?", (identity,)

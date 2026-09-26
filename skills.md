@@ -143,6 +143,10 @@ through the same durable coordinator. See the [SDK catalogue](src/checkedflow/da
 Preserve pending bytes after transport uncertainty. Never restart already-started code because a
 completion reply was lost. Use the concrete gVisor repository executor; candidate-defined callbacks
 are not trusted supervisor adapters. No unattended worker service is supplied by this SDK increment.
+The execution journal stops new attempts at 128 records. During a committed pause, use
+`Supervisor.retire` for known finished records only, before consensus `history.archive`; the verified
+publisher must retain exact evidence before local buffers are removed. Never discard unknowns or
+reset a journal to recover capacity. Retirement does not refund work or authorize execution again.
 
 Before candidate execution, start the [independent sandbox recovery service](docs/sandbox-recovery.md)
 and set `CHECKEDFLOW_SANDBOX_RECOVERY` to its private host journal. Use one journal per local Docker

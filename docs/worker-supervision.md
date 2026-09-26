@@ -130,6 +130,29 @@ filesystem writes, network effects and retry behavior. There is no new worker CL
 
 ## Persistence and qualification limits
 
+The execution journal permits at most 128 local attempt records. Capacity is checked before a new
+lease/start, so a full journal does not authorize execution or consume another task merely to make
+room. Existing attempts can still be reconciled. The limit bounds logical recovery records and their
+1 MiB evidence ceiling, not total artifact storage, SQLite overhead or a host disk quota.
+
+During a committed mission pause, `Supervisor.retire((task_id, ...))` can retire local buffers for
+explicitly selected tasks still present as `finished` in current own-node state. It matches owner,
+revision, fence and evidence digest, republishes the exact bytes through the configured verified
+publisher, and rechecks the paused state and unchanged completion before an atomic local deletion.
+A publication failure leaves every selected buffer intact. The return value is the number removed;
+repeating the operation for an active finished task already retired returns zero.
+
+Perform this maintenance **before** the administrators archive those tasks with `history.archive`.
+Missing active-state proof, an uncertain command, a running/unknown task, mismatched bytes, or a
+mission resumed during publication prevents retirement. There is no absence-based deletion or
+automatic reset of the journal. Records whose tasks were already archived need a future authenticated
+archive recovery path; they cannot be cleared by this method. Unknown obligations remain pinned.
+
+A `finished` work receipt means a reported execution completed, not that its candidate was accepted.
+The operation can retain evidence for a quarantined candidate without making it reusable. It does
+not remove signed history or artifact-retention roots, reset costs, establish replicas, or change
+the rule against repeating started work. Routine key rotation does not erase historical records.
+
 Directories must be private, operator-controlled and protected by appropriate Windows ACLs or POSIX
 permissions. They are local recovery state, not portable untrusted import formats. Private signing
 keys are not stored, but signed commands and evidence can contain confidential mission information.

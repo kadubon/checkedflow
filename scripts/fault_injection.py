@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "worker_supervisor.py",
+        "test_worker_retirement.py",
+        "local_recovery_capacity_before_execution",
+        "exists is not None or count < MAX_LOCAL_ATTEMPTS",
+        "True",
+        "test_local_capacity_denies_before_lease_start_or_execution",
+    ),
+    (
+        "worker_supervisor.py",
+        "test_worker_retirement.py",
+        "retained_evidence_before_buffer_retirement",
+        "self._publish(state, task, evidence) == task.evidence",
+        "True",
+        "test_retention_failure_or_state_change_preserves_local_buffer",
+    ),
+    (
         "sandbox_recovery.py",
         "test_sandbox_recovery.py",
         "orphan_ownership_label",

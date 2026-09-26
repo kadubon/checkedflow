@@ -3486,7 +3486,8 @@
         "tests/test_worker_supervisor.py",
         "tests/test_repository_worker.py",
         "tests/test_integration.py",
-        "scripts/fault_injection.py"
+        "scripts/fault_injection.py",
+        "tests/test_worker_retirement.py"
       ],
       "documentation": [
         "docs/worker-supervision.md",
@@ -3505,7 +3506,7 @@
         "R10-0473",
         "R10-0475"
       ],
-      "scope": "Concurrency-one persistent worker SDK, original-byte nonce coordinator, bounded explicit retransmission, conservative interruption recovery, gVisor-only repository adapter and verified evidence publication. Does not provide an unattended scheduler, generation loop, cross-host identity leader election, coordinated journal recovery, effect authority, full G6 or complete release qualification."
+      "scope": "Concurrency-one persistent worker SDK, original-byte nonce coordinator, bounded explicit retransmission, conservative interruption recovery, gVisor-only repository adapter and verified evidence publication. Does not provide an unattended scheduler, generation loop, cross-host identity leader election, coordinated journal recovery, effect authority, full G6 or complete release qualification. Local execution buffers have a 128-record admission ceiling and paused, verified-evidence retirement before consensus history archival; unknowns remain pinned."
     },
     {
       "id": "independent-sandbox-recovery",
