@@ -62,6 +62,41 @@ No private validator key, P2P key, signing-state file, default password or devel
 is produced. Existing signing state must never be replaced by generation, copying another active
 node, or resetting a directory. See [validator custody](validator-custody.md).
 
+## Verify approved files and artifact bytes
+
+Retain the reviewed plan's SHA-256 through a protected operator channel. Do not obtain the expected
+hash from the untrusted bundle being checked. Supply the already built wheel and CometBFT binary:
+
+```sh
+checkedflow deployment-verify \
+  --directory /protected/review-001 \
+  --expected-plan <independently-approved-plan-sha256> \
+  --wheel /protected/dist/checkedflow-0.2.0-py3-none-any.whl \
+  --cometbft /protected/runtime/cometbft
+```
+
+Use the actual candidate filename; development artifacts still carry 0.1.0 metadata and must not
+replace public 0.1.0. The verifier requires the wheel project/version to match the installed planner.
+It verifies the approved manifest, rejects extra/missing files and links/junctions, regenerates the
+expected files from the reviewed public configuration and compares every byte. It also checks
+both supplied artifact digests. The reported file count includes the manifest and all 20 node files.
+Reads are bounded: 128 KiB for the manifest, 4 MiB for a generated
+file, 16 MiB for the wheel, 256 MiB for the binary and 64 KiB for wheel metadata.
+
+The resulting JSON follows `checkedflow schema deployment-verification`. `BUNDLE_VERIFIED`
+means the current file reads match the approved plan and artifact hashes. The result explicitly
+retains `host_preflight: NOT_PERFORMED` and `hosts_changed: false`. It does not execute the binary,
+prove its provenance or native version, verify a remote installation, establish key custody, test
+kernel confinement or authorize service startup. A binary hash alone cannot prove that its contents
+are a working CometBFT executable. Native host checks remain mandatory. The supplied artifact
+paths are local verification inputs, not evidence about the executable paths on the four hosts.
+
+Verification is an observation, not a lease on filesystem contents. Protected ownership must
+prevent concurrent modification; revalidate while applying rather than trusting an old JSON result.
+Original input hashes in the manifest preserve the approved provenance record; original source
+files are not recovered or independently authenticated by reading that record. A partial or changed
+bundle fails closed and is never repaired automatically.
+
 ## Service and network requirements
 
 The units use separate non-root accounts `cf-<name>-app` and `cf-<name>-val`, a read-only system
@@ -90,5 +125,6 @@ approval or as an executable authorization for an agent to change hosts.
 Source tests cover deterministic output, cross-input genesis binding, purpose-separated public
 identities, no generated signer material, duplicate/private-peer validation, injection/traversal
 rejection, byte limits and refusal to overwrite a plan. TOML syntax is parsed by the standard library.
-Native installed-artifact and four-host service application tests remain required. No measured
+Installed-artifact checks cover the offline CLI. Native runtime, kernel enforcement and four-host
+service application tests remain required. No measured
 hardware minimum or deployment-time promise is asserted.

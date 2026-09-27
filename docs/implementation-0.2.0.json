@@ -4358,11 +4358,14 @@
       "implementation": [
         "src/checkedflow/distributed/deployment.py",
         "src/checkedflow/cli.py",
-        "src/checkedflow/data/deployment-inventory.schema.json"
+        "src/checkedflow/data/deployment-inventory.schema.json",
+        "src/checkedflow/distributed/deployment_verification.py",
+        "src/checkedflow/data/deployment-verification.schema.json"
       ],
       "tests": [
         "tests/test_deployment.py",
-        "scripts/package_check.py"
+        "scripts/package_check.py",
+        "tests/test_deployment_verification.py"
       ],
       "documentation": [
         "docs/deployment-planning.md"
@@ -4374,10 +4377,10 @@
         "R12-0517",
         "R12-0519"
       ],
-      "scope": "Offline fresh-genesis four-node review-file generation only.40sourcecasespassed;119statements16branches100%. Declared runtime hashes are not verified, native consensus parameters and systemd confinement need live preflight. No host mutation, no generated private signer material. Managed apply/start/status/drain/stop/restore and installed/four-host qualification remain unfinished. WindowsPython3.12 isolated wheel and sdist CLI planning passed, outside source checkout. Latest static checks passed. Native CometBFT/systemd and Linux/four-host deployment remain unverified. Later evidence metadata does not change generated runtime files.",
+      "scope": "Offline fresh-genesis four-node review-file generation only.40sourcecasespassed;119statements16branches100%. Declared runtime hashes are not verified, native consensus parameters and systemd confinement need live preflight. No host mutation, no generated private signer material. Managed apply/start/status/drain/stop/restore and installed/four-host qualification remain unfinished. WindowsPython3.12 isolated wheel and sdist CLI planning passed, outside source checkout. Latest static checks passed. Native CometBFT/systemd and Linux/four-host deployment remain unverified. Later evidence metadata does not change generated runtime files. Added independently approved bundle verification: exact generated file set/bytes, no links/junctions, bounded artifact hashing and matching wheel identity.28sourcecasespassed;88statements10branches100%. It reports host preflight NOT_PERFORMED and grants no apply/start authority. WindowsPython3.12 isolated wheel and sdist verification CLI passed using actual candidate wheel bytes and an explicit non-native binary fixture. This proves offline byte checks, not native binary or host qualification. Two selected fault injections (omitted independent plan digest and omitted current file-byte check) were detected. Registered total122; complete current mutation sweep pending CI.",
       "installed_development_artifacts": {
-        "checkedflow-0.1.0-py3-none-any.whl": "d31ad873be4320f2e326574c967077f168e9f65381bf93f7a7e1394d96378afc",
-        "checkedflow-0.1.0.tar.gz": "14848cc218b18d6fcf70a37edabdfdc7db459bdf9c3e03d04f755df001c548e1"
+        "checkedflow-0.1.0-py3-none-any.whl": "8dd42530fa1a894c862d8aa12485f6a9f112798445512f0a2376f86bfbb0127c",
+        "checkedflow-0.1.0.tar.gz": "69c52971a26d9de825fb8f8a0a9130ee00ef511d55848e3e611e782d57de3cd0"
       }
     }
   ],

@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "distributed/deployment_verification.py",
+        "test_deployment_verification.py",
+        "deployment_independent_plan_root",
+        "sha256(raw).hexdigest() == expected_plan",
+        "True",
+        "test_independent_approval_cannot_be_inferred_from_manifest",
+    ),
+    (
+        "distributed/deployment_verification.py",
+        "test_deployment_verification.py",
+        "deployment_current_file_bytes",
+        "_read(directory / path, MAX_INPUT) == body",
+        "True",
+        "test_bundle_cannot_include_unreviewed_or_rewritten_files",
+    ),
+    (
         "dispatch_watchdog.py",
         "test_dispatch_retention.py",
         "inherited_dispatch_requires_current_retention",
@@ -979,7 +995,9 @@ def main() -> None:
             shutil.copytree(
                 ROOT / "src/checkedflow",
                 directory / "checkedflow",
-                ignore=shutil.ignore_patterns("__pycache__", "proto"),
+                ignore=shutil.ignore_patterns(
+                    "__pycache__", *([] if module.startswith("distributed/") else ["proto"])
+                ),
             )
             path = directory / "checkedflow" / module
             source = path.read_text()

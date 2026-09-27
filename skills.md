@@ -288,3 +288,7 @@ actual old-epoch ABCI rejection; never relabel OUTCOME_UNKNOWN as a committed re
 `checkedflow deployment-plan` is offline review-file generation, not host authorization or verified
 installation. Never apply it over active validator state or treat declared runtime hashes/private
 addresses as verified custody or confinement. See [deployment planning](docs/deployment-planning.md).
+
+`deployment-verify` requires an independently protected expected plan digest. Its unsigned result
+verifies current bundle/artifact bytes only; do not reuse it as host preflight or startup authority.
+Revalidate at application time, and preserve native runtime/confinement/custody checks.

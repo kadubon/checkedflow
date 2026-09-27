@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:deployment-verification:v1",
+  "title": "Offline deployment verification observation",
+  "description": "Unsigned observation of approved bundle and artifact bytes. Not native host qualification, custody evidence or authority to apply/start. Revalidate bytes at use.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "wheel_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "cometbft_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "version": {
+      "const": "checkedflow/deployment-verification/v1"
+    },
+    "status": {
+      "const": "BUNDLE_VERIFIED"
+    },
+    "files": {
+      "const": 21
+    },
+    "artifact_hashes_verified": {
+      "const": true
+    },
+    "host_preflight": {
+      "const": "NOT_PERFORMED"
+    },
+    "hosts_changed": {
+      "const": false
+    }
+  },
+  "required": [
+    "plan_sha256",
+    "wheel_sha256",
+    "cometbft_sha256",
+    "version",
+    "status",
+    "files",
+    "artifact_hashes_verified",
+    "host_preflight",
+    "hosts_changed"
+  ]
+}

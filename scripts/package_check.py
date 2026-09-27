@@ -36,6 +36,7 @@ REQUIRED = [
     "checkedflow/data/legacy-retention-local.schema.json",
     "checkedflow/data/load-profile.json",
     "checkedflow/data/deployment-inventory.schema.json",
+    "checkedflow/data/deployment-verification.schema.json",
     "checkedflow/data/succession-vector.json",
     "checkedflow/data/operational-envelope.schema.json",
     "checkedflow/data/operational-state.schema.json",
@@ -595,9 +596,12 @@ from checkedflow.core.operational import genesis as fresh_genesis
 fresh = Configuration(fresh_genesis(configuration.initial.chain, configuration.initial.mission,
     configuration.initial.organizations, configuration.initial.credentials),
     configuration.validators)
+approved_wheel = Path(sys.argv[1])
+comet_fixture = b"fixture-only: no native execution claim"
 inventory = {"version": "checkedflow/deployment/v1", "name": "install",
     "runtime": {"python": "/opt/checkedflow/bin/python", "cometbft": "/opt/checkedflow/cometbft",
-                "cometbft_sha256": "a" * 64, "wheel_sha256": "b" * 64},
+                "cometbft_sha256": hashlib.sha256(comet_fixture).hexdigest(),
+                "wheel_sha256": hashlib.sha256(approved_wheel.read_bytes()).hexdigest()},
     "nodes": [{"name": f"node{i}", "organization": org, "address": f"10.23.0.{i+1}",
                "node_id": hashlib.sha256(("installed-p2p-"+org).encode()).hexdigest()[:40]}
               for i, org in enumerate(fresh.initial.organizations)]}
@@ -624,6 +628,15 @@ with TemporaryDirectory() as directory:
     outcome = json.loads(checked.stdout)
     assert outcome["status"] == "REVIEW_REQUIRED" and outcome["hosts_changed"] is False
     assert outcome["files"] == 21 and (plan_root / "plan" / "plan.json").is_file()
+    binary = plan_root / "candidate-comet"
+    binary.write_bytes(comet_fixture)
+    checked = subprocess.run([sys.executable, "-I", "-m", "checkedflow.cli", "deployment-verify",
+        "--directory", str(plan_root / "plan"), "--expected-plan", outcome["plan_sha256"],
+        "--wheel", str(approved_wheel), "--cometbft", str(binary)], check=True, capture_output=True)
+    verified = json.loads(checked.stdout)
+    assert verified["status"] == "BUNDLE_VERIFIED" and verified["artifact_hashes_verified"] is True
+    assert verified["files"] == 21
+    assert verified["host_preflight"] == "NOT_PERFORMED" and verified["hosts_changed"] is False
 print("Installed agent extras smoke passed on", sys.version.split()[0])
 """
 
@@ -682,7 +695,7 @@ def main() -> None:
                 ],
                 directory,
             )
-            run([str(executable), "-I", "-c", AGENT_SMOKE], directory)
+            run([str(executable), "-I", "-c", AGENT_SMOKE, str(wheel)], directory)
     manifest = {
         path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in (wheel, source)
     }

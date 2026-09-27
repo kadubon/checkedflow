@@ -1561,6 +1561,19 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
         )
         monkeypatch.setattr(provider, "_request", provider_request)
         client = cluster.client()
+
+        def read_current():
+            # Isolate the report-reply fault from a normal status/ABCI commit interleaving.
+            # Only reads are repeated; all coordinator/provider writes keep their original identity.
+            deadline = time.monotonic() + 3
+            for attempt in range(10):
+                try:
+                    return client.live_state()
+                except Failure as error:
+                    if error.code != "STALE" or attempt == 9 or time.monotonic() >= deadline:
+                        raise
+                    time.sleep(0.05)
+
         sent = []
 
         def submit(raw):
@@ -1572,7 +1585,7 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
 
         coordinator = Coordinator(
             tmp_path / "commands",
-            client.live_state,
+            read_current,
             submit,
             cluster.keys[("e0", 1)],
             chain=cluster.initial.chain,
@@ -1581,7 +1594,7 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
             revision=1,
         )
         watchdog = Watchdog(
-            client.live_state,
+            read_current,
             chain=cluster.initial.chain,
             mission="repository",
             max_read_age_ns=30_000_000_000,
@@ -1653,14 +1666,14 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
             "effect_executor",
             {
                 "configuration": lambda: bool(
-                    Policy(path).authorize(client.live_state(), intent, provider, "e0", 1)
+                    Policy(path).authorize(read_current(), intent, provider, "e0", 1)
                 ),
                 "storage": storage_ready,
                 "signer": lambda: any(
                     credential.identity == "e0"
                     and credential.revision == 1
                     and credential.public_key == public_key(cluster.keys[("e0", 1)])
-                    for credential in client.live_state().credentials
+                    for credential in read_current().credentials
                 ),
                 "provider": lambda: provider.enabled is True,
             },

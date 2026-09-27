@@ -37,6 +37,11 @@ def main(argv: list[str] | None = None) -> int:
     deployment = commands.add_parser("deployment-plan", help="generate review files; never apply")
     for option in ("inventory", "configuration", "genesis", "destination"):
         deployment.add_argument("--" + option, required=True)
+    deployment_verify = commands.add_parser(
+        "deployment-verify", help="verify an approved plan and artifact bytes; never apply"
+    )
+    for option in ("directory", "expected-plan", "wheel", "cometbft"):
+        deployment_verify.add_argument("--" + option, required=True)
     for name in ("generator", "example"):
         commands.add_parser(name)
     monitoring = commands.add_parser("monitoring")
@@ -68,6 +73,7 @@ def main(argv: list[str] | None = None) -> int:
             "legacy-retained",
             "legacy-retention-local",
             "deployment-inventory",
+            "deployment-verification",
             "effect-command",
             "github-effect-intent",
             "effect-policy",
@@ -164,6 +170,14 @@ def main(argv: list[str] | None = None) -> int:
                     "plan_sha256": write_new(Path(args.destination), planned_files),
                 }
             )
+        elif args.action == "deployment-verify":
+            from checkedflow.distributed.deployment_verification import verify as verify_deployment
+
+            emit(
+                verify_deployment(
+                    Path(args.directory), args.expected_plan, Path(args.wheel), Path(args.cometbft)
+                )
+            )
         elif args.action == "schema":
             filename = {
                 "envelope": "envelope.schema.json",
@@ -186,6 +200,7 @@ def main(argv: list[str] | None = None) -> int:
                 "legacy-retained": "legacy-retained.schema.json",
                 "legacy-retention-local": "legacy-retention-local.schema.json",
                 "deployment-inventory": "deployment-inventory.schema.json",
+                "deployment-verification": "deployment-verification.schema.json",
                 "access-policy": "access-policy.schema.json",
                 "access-roles": "access-roles.json",
                 "access-vectors": "access-vectors.json",
