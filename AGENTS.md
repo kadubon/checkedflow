@@ -150,3 +150,9 @@ deployment-service is an explicit local operator action against independently ap
 START_REQUESTED is not readiness. STOPPED requires inactive units, no main PID, empty cgroups and
 retained signing material. Preserve OUTCOME_UNKNOWN; never force-kill, delete custody locks or
 reset signing state to obtain a passing result. Mission draining and cross-host custody stay separate.
+
+`deployment-apply` installs only approved public files on an explicitly provisioned, stopped Linux
+node. Existing differing files are conflicts, not upgrade targets. Preserve partial files and unknown
+reload outcomes. Apply/start/stop share the persistent deployment lock; never delete it to retry.
+Selected-node configuration must match before any service action. See
+[deployment planning](docs/deployment-planning.md) and `checkedflow schema deployment-apply`.

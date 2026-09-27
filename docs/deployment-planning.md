@@ -186,7 +186,8 @@ request reply, stuck process, populated group or unverified signing state return
 Inspect current status and preserve the original home; do not delete a lock or reinitialize to retry.
 
 Stopping does not require a wheel or execute a potentially damaged CometBFT binary. It still requires
-the approved plan and matching loaded unit definitions. A changed or foreign service definition is
+the approved plan, selected node's local configuration and matching loaded unit definitions.
+A wrong node selection is rejected before requesting a stop. A changed or foreign service definition is
 not an approved automated stop target; use the operator's separate incident containment procedure.
 These commands operate only the named local ABCI/validator services. They do not drain mission work,
 stop independent workers, prove that no external signer copy exists, or authorize key relocation.
@@ -194,7 +195,8 @@ Use governed mission draining before planned work-service maintenance and the se
 [custody procedure](validator-custody.md) before transferring or replacing a validator.
 
 `checkedflow schema deployment-service` is the machine-readable observation contract. Status is
-read-only; start/stop change service state only. No command installs units, enables boot startup,
+read-only; start/stop serialize through a persistent root-owned deployment lock. These service
+commands do not install units, enable boot startup,
 changes firewall rules, rolls back a database, or performs automatic artifact repair.
 
 An [installed four-VM lifecycle run](evidence/deployment-service-20260927.json) exercised these
@@ -240,6 +242,43 @@ while preserving signing state. Earlier failed attempts remain recorded. In part
 executables must be accessible to the non-root service accounts; copying private file modes is not
 installation. The successful run used the corrected gRPC resolver target above.
 
-This experiment used private orchestration on one physical host and one operator. A maintained
-deployment lifecycle, adversarial kernel enforcement checks and complete G6 remain unfinished.
+This experiment used private orchestration on one physical host and one operator. Full work-service
+deployment recovery, adversarial kernel enforcement checks and complete G6 remain unfinished.
 No measured hardware minimum or deployment-time promise is asserted.
+
+## Apply reviewed public files
+
+Use `deployment-apply` after explicitly provisioning the reviewed runtime, separate non-root service
+accounts, owned application/validator homes, native keys, signing state and persistent custody lock.
+It does not provision these prerequisites. The supported local filesystems are ext4 (reported by
+`stat` as `ext2/ext3`), XFS and Btrfs. Remote filesystems and temporary memory filesystems are rejected.
+
+```sh
+sudo /opt/checkedflow/runtime/bin/python -I -m checkedflow.cli deployment-apply \
+  --directory /etc/checkedflow/review --expected-plan APPROVED_PLAN_SHA256 \
+  --node node0 --wheel /opt/checkedflow/checkedflow-0.1.0-py3-none-any.whl
+```
+
+The command authenticates the reviewed bundle and installed runtime, verifies account separation
+and local key identities, and requires stopped services with no pending jobs or remaining processes.
+It holds both the root-owned deployment lock shared with start/stop and the validator custody lock.
+Direct administrator actions outside these commands still require operator coordination.
+
+It checks all five destinations for conflicts before installing any file. Existing identical files
+are retained; different files are rejected. New public files use anchored directory descriptors,
+exclusive staging and non-replacing links, followed by file and directory synchronization. The
+command reloads systemd and repeats preflight, but never enables or starts services. Read the
+`deployment-apply` schema: `FILES_APPLIED` and `startup_authorized: false` mean verified file
+installation, not deployment readiness. First application reports five created files; an unchanged
+repeat reports zero. Account permissions and selected-node binding are checked again at startup.
+
+This is not an all-files transaction or an upgrade mechanism. A failure can leave a subset of new
+files or a staging file. Preserve them, inspect the exact destinations and retry the same approved
+plan after resolving the reported cause. A lost reload/readback result is `OUTCOME_UNKNOWN`;
+never remove validator state or replace conflicting files to manufacture success.
+
+The [installed four-VM apply experiment](evidence/deployment-apply-20260928.json) passed new-file
+application and unchanged repetition on every node, followed by startup, three-node progress during
+one-node interruption, recovery to a common state hash, and confirmed shutdown. Native Linux source
+tests also exercise non-overwrite, symlink-parent rejection, FIFO rejection without blocking and
+exclusive locking. This evidence remains component-scoped and predates final release artifacts.

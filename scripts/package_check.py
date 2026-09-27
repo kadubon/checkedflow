@@ -37,6 +37,9 @@ REQUIRED = [
     "checkedflow/data/load-profile.json",
     "checkedflow/data/deployment-inventory.schema.json",
     "checkedflow/data/deployment-verification.schema.json",
+    "checkedflow/data/deployment-preflight.schema.json",
+    "checkedflow/data/deployment-service.schema.json",
+    "checkedflow/data/deployment-apply.schema.json",
     "checkedflow/data/succession-vector.json",
     "checkedflow/data/operational-envelope.schema.json",
     "checkedflow/data/operational-state.schema.json",
@@ -591,6 +594,17 @@ with telemetry.measure("worker.step"):
     pass
 trace(telemetry.drain(), NoOpTracerProvider().get_tracer("installed-smoke"))
 # Offline deployment planning uses installed modules and resources only.
+for command in ("deployment-preflight", "deployment-service", "deployment-apply"):
+    help_result = subprocess.run(
+        [sys.executable, "-I", "-m", "checkedflow.cli", command, "--help"],
+        capture_output=True, text=True, check=True,
+    )
+    assert "--expected-plan" in help_result.stdout and "--node" in help_result.stdout
+    schema_result = subprocess.run(
+        [sys.executable, "-I", "-m", "checkedflow.cli", "schema", command],
+        capture_output=True, text=True, check=True,
+    )
+    assert json.loads(schema_result.stdout)["type"] == "object"
 import base64, hashlib, subprocess
 from checkedflow.core.operational import genesis as fresh_genesis
 fresh = Configuration(fresh_genesis(configuration.initial.chain, configuration.initial.mission,

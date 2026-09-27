@@ -1,0 +1,877 @@
+{
+  "version": "checkedflow/qualification-observation/v1",
+  "status": "COMPONENT_PASSED",
+  "release_authority": false,
+  "source_basis": "abfb0b67b3e28c5a8b544e68d283e0a9b912bc2e",
+  "runtime_source_members_sha256": {
+    "checkedflow/cli.py": "ddcfc80aa17ebf9713774b8afd8222de7ad0bc6f2e9760338637d0be51ece449",
+    "checkedflow/distributed/deployment_apply.py": "6ea3d8d3cfe1c01ab91b0eb141b64a240a2493574099039aa67aad06e3e3b2c5",
+    "checkedflow/distributed/deployment_lock.py": "8f18abd13acd3269f3ae438b32ae6a24a52dbed70ade861d3a1af7bff3685c9c",
+    "checkedflow/distributed/deployment_preflight.py": "614fc5d7fdfa5cd4bc6e59849f3ec4a09cee1cc58e13ba1e02771e4d4cdf151d",
+    "checkedflow/distributed/deployment_service.py": "e852214ab8ebcbd828b1cc5b7249b651a1fc1f0b2eae03e4830aec87c809b944"
+  },
+  "scope": "Installed maintained apply/preflight/service CLI on four separate Linux VM kernels, shared physical host and operator. Existing public files preserved separately to exercise five new installations per node; second applications created zero files. Not full G6.",
+  "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c",
+  "apply": [
+    {
+      "files_created": 5,
+      "files_verified": 5,
+      "node": "node0",
+      "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+      "preflight": {
+        "cometbft_module_version": "v0.40.0",
+        "cometbft_version": "0.39.0",
+        "hosts_changed": false,
+        "installed_package_members": 203,
+        "node": "node0",
+        "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+        "remaining": [
+          "network confinement",
+          "validator custody",
+          "candidate isolation",
+          "live quorum and recovery"
+        ],
+        "services": {
+          "abci": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          },
+          "validator": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          }
+        },
+        "startup_authorized": false,
+        "status": "HOST_FILES_VERIFIED",
+        "version": "checkedflow/deployment-preflight/v1",
+        "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c"
+      },
+      "services_started": false,
+      "startup_authorized": false,
+      "status": "FILES_APPLIED",
+      "version": "checkedflow/deployment-apply/v1"
+    },
+    {
+      "files_created": 0,
+      "files_verified": 5,
+      "node": "node0",
+      "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+      "preflight": {
+        "cometbft_module_version": "v0.40.0",
+        "cometbft_version": "0.39.0",
+        "hosts_changed": false,
+        "installed_package_members": 203,
+        "node": "node0",
+        "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+        "remaining": [
+          "network confinement",
+          "validator custody",
+          "candidate isolation",
+          "live quorum and recovery"
+        ],
+        "services": {
+          "abci": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          },
+          "validator": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          }
+        },
+        "startup_authorized": false,
+        "status": "HOST_FILES_VERIFIED",
+        "version": "checkedflow/deployment-preflight/v1",
+        "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c"
+      },
+      "services_started": false,
+      "startup_authorized": false,
+      "status": "FILES_APPLIED",
+      "version": "checkedflow/deployment-apply/v1"
+    },
+    {
+      "files_created": 5,
+      "files_verified": 5,
+      "node": "node1",
+      "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+      "preflight": {
+        "cometbft_module_version": "v0.40.0",
+        "cometbft_version": "0.39.0",
+        "hosts_changed": false,
+        "installed_package_members": 203,
+        "node": "node1",
+        "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+        "remaining": [
+          "network confinement",
+          "validator custody",
+          "candidate isolation",
+          "live quorum and recovery"
+        ],
+        "services": {
+          "abci": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          },
+          "validator": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          }
+        },
+        "startup_authorized": false,
+        "status": "HOST_FILES_VERIFIED",
+        "version": "checkedflow/deployment-preflight/v1",
+        "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c"
+      },
+      "services_started": false,
+      "startup_authorized": false,
+      "status": "FILES_APPLIED",
+      "version": "checkedflow/deployment-apply/v1"
+    },
+    {
+      "files_created": 0,
+      "files_verified": 5,
+      "node": "node1",
+      "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+      "preflight": {
+        "cometbft_module_version": "v0.40.0",
+        "cometbft_version": "0.39.0",
+        "hosts_changed": false,
+        "installed_package_members": 203,
+        "node": "node1",
+        "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+        "remaining": [
+          "network confinement",
+          "validator custody",
+          "candidate isolation",
+          "live quorum and recovery"
+        ],
+        "services": {
+          "abci": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          },
+          "validator": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          }
+        },
+        "startup_authorized": false,
+        "status": "HOST_FILES_VERIFIED",
+        "version": "checkedflow/deployment-preflight/v1",
+        "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c"
+      },
+      "services_started": false,
+      "startup_authorized": false,
+      "status": "FILES_APPLIED",
+      "version": "checkedflow/deployment-apply/v1"
+    },
+    {
+      "files_created": 5,
+      "files_verified": 5,
+      "node": "node2",
+      "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+      "preflight": {
+        "cometbft_module_version": "v0.40.0",
+        "cometbft_version": "0.39.0",
+        "hosts_changed": false,
+        "installed_package_members": 203,
+        "node": "node2",
+        "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+        "remaining": [
+          "network confinement",
+          "validator custody",
+          "candidate isolation",
+          "live quorum and recovery"
+        ],
+        "services": {
+          "abci": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          },
+          "validator": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          }
+        },
+        "startup_authorized": false,
+        "status": "HOST_FILES_VERIFIED",
+        "version": "checkedflow/deployment-preflight/v1",
+        "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c"
+      },
+      "services_started": false,
+      "startup_authorized": false,
+      "status": "FILES_APPLIED",
+      "version": "checkedflow/deployment-apply/v1"
+    },
+    {
+      "files_created": 0,
+      "files_verified": 5,
+      "node": "node2",
+      "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+      "preflight": {
+        "cometbft_module_version": "v0.40.0",
+        "cometbft_version": "0.39.0",
+        "hosts_changed": false,
+        "installed_package_members": 203,
+        "node": "node2",
+        "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+        "remaining": [
+          "network confinement",
+          "validator custody",
+          "candidate isolation",
+          "live quorum and recovery"
+        ],
+        "services": {
+          "abci": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          },
+          "validator": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          }
+        },
+        "startup_authorized": false,
+        "status": "HOST_FILES_VERIFIED",
+        "version": "checkedflow/deployment-preflight/v1",
+        "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c"
+      },
+      "services_started": false,
+      "startup_authorized": false,
+      "status": "FILES_APPLIED",
+      "version": "checkedflow/deployment-apply/v1"
+    },
+    {
+      "files_created": 5,
+      "files_verified": 5,
+      "node": "node3",
+      "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+      "preflight": {
+        "cometbft_module_version": "v0.40.0",
+        "cometbft_version": "0.39.0",
+        "hosts_changed": false,
+        "installed_package_members": 203,
+        "node": "node3",
+        "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+        "remaining": [
+          "network confinement",
+          "validator custody",
+          "candidate isolation",
+          "live quorum and recovery"
+        ],
+        "services": {
+          "abci": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          },
+          "validator": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          }
+        },
+        "startup_authorized": false,
+        "status": "HOST_FILES_VERIFIED",
+        "version": "checkedflow/deployment-preflight/v1",
+        "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c"
+      },
+      "services_started": false,
+      "startup_authorized": false,
+      "status": "FILES_APPLIED",
+      "version": "checkedflow/deployment-apply/v1"
+    },
+    {
+      "files_created": 0,
+      "files_verified": 5,
+      "node": "node3",
+      "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+      "preflight": {
+        "cometbft_module_version": "v0.40.0",
+        "cometbft_version": "0.39.0",
+        "hosts_changed": false,
+        "installed_package_members": 203,
+        "node": "node3",
+        "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+        "remaining": [
+          "network confinement",
+          "validator custody",
+          "candidate isolation",
+          "live quorum and recovery"
+        ],
+        "services": {
+          "abci": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          },
+          "validator": {
+            "ActiveState": "inactive",
+            "LoadState": "loaded",
+            "MainPID": "0",
+            "SubState": "dead"
+          }
+        },
+        "startup_authorized": false,
+        "status": "HOST_FILES_VERIFIED",
+        "version": "checkedflow/deployment-preflight/v1",
+        "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c"
+      },
+      "services_started": false,
+      "startup_authorized": false,
+      "status": "FILES_APPLIED",
+      "version": "checkedflow/deployment-apply/v1"
+    }
+  ],
+  "lifecycle": [
+    {
+      "name": "start",
+      "data": {
+        "node": 0,
+        "observation": {
+          "action": "start",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node0",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "status": "START_REQUESTED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "start",
+      "data": {
+        "node": 1,
+        "observation": {
+          "action": "start",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node1",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "status": "START_REQUESTED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "start",
+      "data": {
+        "node": 2,
+        "observation": {
+          "action": "start",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node2",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "status": "START_REQUESTED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "start",
+      "data": {
+        "node": 3,
+        "observation": {
+          "action": "start",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node3",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "status": "START_REQUESTED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "status",
+      "data": {
+        "node": 0,
+        "observation": {
+          "action": "status",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node0",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": false,
+          "services": {
+            "abci": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1591",
+              "SubState": "running"
+            },
+            "validator": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1592",
+              "SubState": "running"
+            }
+          },
+          "status": "OBSERVED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "status",
+      "data": {
+        "node": 1,
+        "observation": {
+          "action": "status",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node1",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": false,
+          "services": {
+            "abci": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1588",
+              "SubState": "running"
+            },
+            "validator": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1589",
+              "SubState": "running"
+            }
+          },
+          "status": "OBSERVED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "status",
+      "data": {
+        "node": 2,
+        "observation": {
+          "action": "status",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node2",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": false,
+          "services": {
+            "abci": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1592",
+              "SubState": "running"
+            },
+            "validator": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1593",
+              "SubState": "running"
+            }
+          },
+          "status": "OBSERVED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "status",
+      "data": {
+        "node": 3,
+        "observation": {
+          "action": "status",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node3",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": false,
+          "services": {
+            "abci": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1577",
+              "SubState": "running"
+            },
+            "validator": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1578",
+              "SubState": "running"
+            }
+          },
+          "status": "OBSERVED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "stop",
+      "data": {
+        "node": 0,
+        "observation": {
+          "action": "stop",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node0",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "signing_state_sha256": "1fba460c6d305390b2d4628f047d2a0adcddb7c56569ef6544bc78870519db81",
+          "status": "STOPPED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "three_node_progress",
+      "data": {
+        "before": 12,
+        "after": 15
+      }
+    },
+    {
+      "name": "start",
+      "data": {
+        "node": 0,
+        "observation": {
+          "action": "start",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node0",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "status": "START_REQUESTED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "four_node_recovery",
+      "data": {
+        "block_height": 17,
+        "app_hash": "B057C77786CFFC96B172E9354D47E22053C9DA5188246AD07064EE542C802CFC"
+      }
+    },
+    {
+      "name": "stop",
+      "data": {
+        "node": 0,
+        "observation": {
+          "action": "stop",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node0",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "signing_state_sha256": "f5ba41544f34fdfa94fb61642428a479e7760a486cd821e00ef38cef49dac71e",
+          "status": "STOPPED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "stop",
+      "data": {
+        "node": 1,
+        "observation": {
+          "action": "stop",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node1",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "signing_state_sha256": "e26f755800ed9c42488ec0dddd856c9cbbc47a0a0a0e9fdfd2b79f9c1136f617",
+          "status": "STOPPED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "stop",
+      "data": {
+        "node": 2,
+        "observation": {
+          "action": "stop",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node2",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "signing_state_sha256": "fcc9939004c8e4e3f7f8706445a0a224de3d01b101cb7fe56d5c6d2342dbc5cc",
+          "status": "STOPPED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "stop",
+      "data": {
+        "node": 3,
+        "observation": {
+          "action": "stop",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node3",
+          "plan_sha256": "9c5816836fa23c4d79ea0ed88c4a586db560a67b94f145f466d4c45539933181",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "signing_state_sha256": "12980f82d866b6a0925d6d46f31a6438788413b4a072cf9e380c927aecce0bff",
+          "status": "STOPPED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    }
+  ],
+  "installed": [
+    {
+      "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c",
+      "cometbft_sha256": "23752877fe1d856009551beca2a326296b5cf846d6bc64fd72ae35d251811d1b",
+      "installed_package_members": 203,
+      "services_stopped": true,
+      "signing_state_preserved": true,
+      "deployed_files_compared": 5
+    },
+    {
+      "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c",
+      "cometbft_sha256": "23752877fe1d856009551beca2a326296b5cf846d6bc64fd72ae35d251811d1b",
+      "installed_package_members": 203,
+      "services_stopped": true,
+      "signing_state_preserved": true,
+      "deployed_files_compared": 5
+    },
+    {
+      "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c",
+      "cometbft_sha256": "23752877fe1d856009551beca2a326296b5cf846d6bc64fd72ae35d251811d1b",
+      "installed_package_members": 203,
+      "services_stopped": true,
+      "signing_state_preserved": true,
+      "deployed_files_compared": 5
+    },
+    {
+      "wheel_sha256": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c",
+      "cometbft_sha256": "23752877fe1d856009551beca2a326296b5cf846d6bc64fd72ae35d251811d1b",
+      "installed_package_members": 203,
+      "services_stopped": true,
+      "signing_state_preserved": true,
+      "deployed_files_compared": 5
+    }
+  ],
+  "cleanup": "All four services and guests stopped; disks and signing state preserved. Earlier bounded session expired before this experiment; no process/socket was live before restart.",
+  "remaining": [
+    "work draining",
+    "cross-host key custody and replacement",
+    "adversarial confinement",
+    "full G1-G7 on final 0.2.0 artifacts"
+  ]
+}

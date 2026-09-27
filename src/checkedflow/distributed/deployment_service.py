@@ -10,6 +10,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from checkedflow.core.values import Failure, Object, array, obj, require, text
 from checkedflow.distributed.deployment import _inventory
+from checkedflow.distributed.deployment_lock import exclusive
 from checkedflow.distributed.deployment_preflight import (
     command,
     host,
@@ -34,6 +35,14 @@ def bound(directory: Path, expected: str, node: str) -> tuple[Object, Object, st
     matches = [obj(row) for row in array(inventory["nodes"]) if obj(row)["name"] == node]
     require(len(matches) == 1, "BINDING", "node absent from reviewed plan")
     name = text(inventory["name"])
+    native_configuration = Path("/var/lib/checkedflow") / name / "validator/config/config.toml"
+    protected(native_configuration, owners=(0, validator_uid(name)))
+    require(
+        sha256(_read(native_configuration, 4194304)).hexdigest()
+        == obj(manifest.get("files")).get(f"{node}/config.toml"),
+        "BINDING",
+        "local node configuration differs from selected node",
+    )
     configuration = _read(directory / node / "operational.json", 4194304)
     require(
         sha256(configuration).hexdigest()
@@ -133,6 +142,15 @@ def request(arguments: list[str]) -> None:
 
 
 def operate(directory: Path, expected: str, wheel: Path | None, node: str, action: str) -> Object:
+    require(action in {"status", "start", "stop"}, "ACTION", "supported lifecycle action required")
+    if action == "status":
+        return _operate(directory, expected, wheel, node, action)
+    _, _, name = bound(directory, expected, node)
+    with exclusive(Path("/etc/checkedflow") / name / "deployment.lock", 0, create=True):
+        return _operate(directory, expected, wheel, node, action)
+
+
+def _operate(directory: Path, expected: str, wheel: Path | None, node: str, action: str) -> Object:
     require(action in {"status", "start", "stop"}, "ACTION", "supported lifecycle action required")
     _, entry, name = bound(directory, expected, node)
     observed = service_status(name)

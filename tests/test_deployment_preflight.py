@@ -27,6 +27,7 @@ def host_files(tmp_path, monkeypatch):
     (directory / "plan.json").write_bytes(dumps(manifest))
     monkeypatch.setattr(module, "host", lambda: None)
     monkeypatch.setattr(module, "validator_uid", lambda name: 1001)
+    monkeypatch.setattr(module, "account_ids", lambda name: (1002, 1001))
     monkeypatch.setattr(module, "protected", lambda path, **kw: Path(sys.executable).resolve())
     monkeypatch.setattr(module, "installed_members", lambda path: 196)
     monkeypatch.setattr(
@@ -220,6 +221,28 @@ def test_validator_account_must_exist_and_be_nonroot(monkeypatch, identity):
     else:
         with pytest.raises(Failure, match="CUSTODY"):
             module.validator_uid("test")
+
+
+@pytest.mark.parametrize("change", ["none", "alias", "root", "group", "missing"])
+def test_service_accounts_have_distinct_nonroot_ids_and_matching_groups(monkeypatch, change):
+    def user(name):
+        if change == "missing":
+            raise KeyError(name)
+        uid = 1001 if name.endswith("app") or change == "alias" else 1002
+        return SimpleNamespace(pw_uid=0 if change == "root" else uid, pw_gid=uid)
+
+    def group(name):
+        return SimpleNamespace(
+            gr_gid=1001 if name.endswith("app") or change == "alias" or change == "group" else 1002
+        )
+
+    monkeypatch.setitem(sys.modules, "pwd", SimpleNamespace(getpwnam=user))
+    monkeypatch.setitem(sys.modules, "grp", SimpleNamespace(getgrnam=group))
+    if change == "none":
+        assert module.account_ids("test") == (1001, 1002)
+    else:
+        with pytest.raises(Failure, match="CUSTODY"):
+            module.account_ids("test")
 
 
 @pytest.mark.parametrize("change", ["replacement", "protocol"])

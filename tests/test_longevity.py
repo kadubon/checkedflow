@@ -446,13 +446,14 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
                 evidence = publish(
                     "evidence", dumps(document(json.dumps(asdict(observation)).encode()))
                 )
-                measurement.send(
+                finished = measurement.send(
                     "task.finish",
                     {"task": task, "fence": 1, "outcome": "reported", "evidence": evidence},
                     actor=actor,
                     node=verifier,
                 )
                 if injected:
+                    cluster.wait_height(int(str(finished["receipt"]["height"])), nodes=(0,))
                     in_flight_drain_ns = time.monotonic_ns() - drain_started
                     observed = cluster.client().state()
                     assert observed.mode == "draining"

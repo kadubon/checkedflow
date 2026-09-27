@@ -108,8 +108,8 @@ passed 31 infrastructure cases and failed the new short workload at artifact adm
 runner funded only three checks; the protocol requires four funded organizational checks and three
 passing observations. No candidate was accepted. Its manifest and partial measurements remain in
 the qualification artifact. Profile `repository-longevity-2` explicitly funds four checks, executes three,
-and cancels/refunds the unused fourth check. Neither the original full profile nor the revised full
-profile has been measured. This correction does not weaken the admission contract.
+and cancels/refunds the unused fourth check. The revised full profile was subsequently measured
+as recorded below. This correction does not weaken the admission contract.
 
 [CI run 36311707314](https://github.com/kadubon/checkedflow/actions/runs/36311707314)
 completed both candidates, six verifier tasks and the in-flight drain, but failed its final replay
@@ -120,3 +120,21 @@ checks that business state is unchanged after further committed progress. It doe
 ambiguous RPC reply into a rejection receipt. The workload itself is unchanged; the failed record
 is retained and the corrected test requires a fresh execution. The long job was skipped because
 its mandatory short-path dependency failed.
+
+## Completed full-profile measurement
+
+The [full-profile record](evidence/longevity-full-20260928.json) binds the successful longevity job
+108614307342 to source `6e9ba23` and hashes its detailed reports. It completed 4,097 control requests,
+65 verified candidates and 195 verifier tasks in approximately 75.45 minutes. Cleanup succeeded;
+all four nodes agreed at the recorded checkpoint. Command p95 was approximately 703 ms and verified
+candidate p95 approximately 15.13 seconds on that runner. These are observations, not service targets.
+
+The overall workflow was cancelled despite that job's success; do not report the entire workflow
+as passing. This run used one hosted Linux runner and development artifacts. It does not complete
+four-environment operational qualification or qualify the final 0.2.0 distributions. The previous
+[failed full run](evidence/longevity-full-failure-20260927.json) remains preserved.
+
+A later short-path CI run at `abfb0b6` observed an old `running` task state on node zero after another
+node committed completion. The harness now waits for the completion receipt's height on the reader
+before checking the in-flight drain result, just as it already does for attestations. The workload,
+acceptance rules and resource limits are unchanged. This correction requires its own CI rerun.

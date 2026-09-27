@@ -2056,7 +2056,8 @@
       "evidence": [
         "component:offline-deployment-plan",
         "component:native-deployment-preflight",
-        "component:local-node-service-lifecycle"
+        "component:local-node-service-lifecycle",
+        "component:native-deployment-apply"
       ]
     },
     {
@@ -2075,7 +2076,8 @@
         "component:application-history-backup",
         "component:offline-deployment-plan",
         "component:native-deployment-preflight",
-        "component:local-node-service-lifecycle"
+        "component:local-node-service-lifecycle",
+        "component:native-deployment-apply"
       ]
     },
     {
@@ -2086,7 +2088,8 @@
       "evidence": [
         "component:offline-deployment-plan",
         "component:native-deployment-preflight",
-        "component:local-node-service-lifecycle"
+        "component:local-node-service-lifecycle",
+        "component:native-deployment-apply"
       ]
     },
     {
@@ -2097,7 +2100,8 @@
       "evidence": [
         "component:offline-deployment-plan",
         "component:native-deployment-preflight",
-        "component:local-node-service-lifecycle"
+        "component:local-node-service-lifecycle",
+        "component:native-deployment-apply"
       ]
     },
     {
@@ -4444,6 +4448,30 @@
         "R12-0519"
       ],
       "scope": "Explicit root isolated local start/status/stop against independently approved units. Start repeats native preflight and local key identity/state checks; stop permits an unavailable runtime but requires approved loaded units, inactive main processes, empty cgroups and retained signing state. Unknown outcomes remain unknown; no force kill/reset/automatic repair. Installed CLI exercised4VMstart,3nodeprogresswith1stopped,node restart/commonhash recovery and final stop;200package members/node byte-compared. Private SSH/provisioning remains outside maintained interface. No complete managed apply/work drain/custody/upgrade or G6/G7 claim."
+    },
+    {
+      "id": "native-deployment-apply",
+      "status": "INTEGRATION_TESTED",
+      "evidence": [
+        "docs/evidence/deployment-apply-20260928.json"
+      ],
+      "scope": "Four installed Linux VM nodes: five new public files and idempotent repeat per node, repeated preflight, start/status/stop, three-node progress and recovered common hash, exact installed bytes and shutdown. Shared operator lock, distinct service accounts and selected-node configuration binding. Windows focused 68 passed/3 Linux-only skipped; Linux source apply 11 passed. Not full G6 or final artifacts.",
+      "requirements": [
+        "R12-0511",
+        "R12-0515",
+        "R12-0517",
+        "R12-0519"
+      ],
+      "implementation": [
+        "src/checkedflow/distributed/deployment_apply.py",
+        "src/checkedflow/distributed/deployment_lock.py"
+      ],
+      "tests": [
+        "tests/test_deployment_apply.py"
+      ],
+      "documentation": [
+        "docs/deployment-planning.md"
+      ]
     }
   ],
   "observations": [
@@ -4755,6 +4783,10 @@
       "source": "033aab4",
       "conclusion": "component_passed",
       "scope": "Generated units/configuration reached consensus across4 approved VM kernels, compared196 installed package members per guest and5 deployed files per guest; services/VMs stopped and signing state preserved. Evidence:docs/evidence/deployment-native-20260927.json. Private orchestration and shared physical host/operator; not maintained lifecycle, adversarial BPF confinement or completeG6."
+    },
+    {
+      "id": "full-longevity-6e9ba23",
+      "scope": "Longevity job108614307342 succeeded:4097controls65candidates195tasks, cleanup passed; overall workflow36316699453 cancelled. Evidence docs/evidence/longevity-full-20260928.json binds reports/source. Full original G5/G6/G7 remain unqualified. Later short run atabfb0b6 failed stale reader check; completion receipt-height barrier added without workload changes."
     }
   ]
 }

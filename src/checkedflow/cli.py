@@ -57,6 +57,11 @@ def main(argv: list[str] | None = None) -> int:
     service.add_argument(
         "--action", dest="service_action", choices=["status", "start", "stop"], required=True
     )
+    apply_command = commands.add_parser(
+        "deployment-apply", help="install approved public files on an inactive Linux node"
+    )
+    for option in ("directory", "expected-plan", "wheel", "node"):
+        apply_command.add_argument("--" + option, required=True)
     for name in ("generator", "example"):
         commands.add_parser(name)
     monitoring = commands.add_parser("monitoring")
@@ -91,6 +96,7 @@ def main(argv: list[str] | None = None) -> int:
             "deployment-verification",
             "deployment-preflight",
             "deployment-service",
+            "deployment-apply",
             "effect-command",
             "github-effect-intent",
             "effect-policy",
@@ -211,6 +217,10 @@ def main(argv: list[str] | None = None) -> int:
                     args.service_action,
                 )
             )
+        elif args.action == "deployment-apply":
+            from checkedflow.distributed.deployment_apply import apply
+
+            emit(apply(Path(args.directory), args.expected_plan, Path(args.wheel), args.node))
         elif args.action == "schema":
             filename = {
                 "envelope": "envelope.schema.json",
@@ -236,6 +246,7 @@ def main(argv: list[str] | None = None) -> int:
                 "deployment-verification": "deployment-verification.schema.json",
                 "deployment-preflight": "deployment-preflight.schema.json",
                 "deployment-service": "deployment-service.schema.json",
+                "deployment-apply": "deployment-apply.schema.json",
                 "access-policy": "access-policy.schema.json",
                 "access-roles": "access-roles.json",
                 "access-vectors": "access-vectors.json",

@@ -154,17 +154,9 @@ def inspect(directory: Path, expected_plan: str, wheel: Path, node: str) -> Obje
     verified = verify(directory, expected_plan, wheel, binary)
     names = {text(obj(item)["name"]) for item in array(inventory["nodes"])}
     require(node in names, "BINDING", "node absent from reviewed inventory")
-    interpreter = protected(Path(text(runtime["python"])), executable=True)
-    require(
-        Path(sys.executable).absolute() == Path(text(runtime["python"])).absolute()
-        and interpreter == Path(sys.executable).resolve(),
-        "PACKAGE",
-        "reviewed interpreter required",
-    )
-    protected(binary, executable=True)
-    count = installed_members(wheel)
+    runtime_result = runtime_check(runtime, wheel)
     name = text(inventory["name"])
-    owner = validator_uid(name)
+    _, owner = account_ids(name)
     etc = Path("/etc/checkedflow") / name
     home = Path("/var/lib/checkedflow") / name
     declared = obj(manifest["files"])
@@ -188,22 +180,6 @@ def inspect(directory: Path, expected_plan: str, wheel: Path, node: str) -> Obje
             "BINDING",
             "installed configuration differs",
         )
-    build = command(["/usr/bin/go", "version", "-m", str(binary)])
-    lines = [line.split() for line in build.splitlines()]
-    require(
-        [tuple(line[1:]) for line in lines if line and line[0] == "mod"] == [COMET_MODULE]
-        and not any(line and line[0] == "=>" for line in lines),
-        "VERSION",
-        "pinned native CometBFT module required without replacements",
-    )
-    version = document(command([str(binary), "version", "--verbose"]).encode())
-    require(
-        version.get("abci") == "2.0.0"
-        and version.get("block_protocol") == 11
-        and version.get("p2p_protocol") == 8,
-        "VERSION",
-        "native CometBFT protocol versions differ",
-    )
     services = service_status(name)
     return {
         "version": "checkedflow/deployment-preflight/v1",
@@ -211,8 +187,8 @@ def inspect(directory: Path, expected_plan: str, wheel: Path, node: str) -> Obje
         "plan_sha256": verified["plan_sha256"],
         "wheel_sha256": verified["wheel_sha256"],
         "node": node,
-        "installed_package_members": count,
-        "cometbft_version": text(version.get("cometbft"), limit=80),
+        "installed_package_members": runtime_result["installed_package_members"],
+        "cometbft_version": runtime_result["cometbft_version"],
         "cometbft_module_version": COMET_MODULE[1],
         "services": services,
         "hosts_changed": False,
@@ -254,3 +230,62 @@ def service_status(name: str) -> Object:
             key: properties[key] for key in ("LoadState", "ActiveState", "SubState", "MainPID")
         }
     return result
+
+
+def runtime_check(runtime: Object, wheel: Path) -> Object:
+    """Check protected installed runtime after the caller authenticates its artifact hashes."""
+    binary = Path(text(runtime["cometbft"]))
+    interpreter = protected(Path(text(runtime["python"])), executable=True)
+    require(
+        Path(sys.executable).absolute() == Path(text(runtime["python"])).absolute()
+        and interpreter == Path(sys.executable).resolve(),
+        "PACKAGE",
+        "reviewed interpreter required",
+    )
+    protected(binary, executable=True)
+    count = installed_members(wheel)
+    build = command(["/usr/bin/go", "version", "-m", str(binary)])
+    lines = [line.split() for line in build.splitlines()]
+    require(
+        [tuple(line[1:]) for line in lines if line and line[0] == "mod"] == [COMET_MODULE]
+        and not any(line and line[0] == "=>" for line in lines),
+        "VERSION",
+        "pinned native CometBFT module required without replacements",
+    )
+    version = document(command([str(binary), "version", "--verbose"]).encode())
+    require(
+        version.get("abci") == "2.0.0"
+        and version.get("block_protocol") == 11
+        and version.get("p2p_protocol") == 8,
+        "VERSION",
+        "native CometBFT protocol versions differ",
+    )
+    return {
+        "installed_package_members": count,
+        "cometbft_version": text(version.get("cometbft"), limit=80),
+    }
+
+
+def account_ids(name: str) -> tuple[int, int]:
+    """Require separate existing non-root service users and their declared primary groups."""
+    import grp
+    import pwd
+
+    identities: list[int] = []
+    for role in ("app", "val"):
+        account = f"cf-{name}-{role}"
+        try:
+            user = getattr(pwd, "getpwnam")(account)  # noqa: B009 - Linux API
+            group = getattr(grp, "getgrnam")(account)  # noqa: B009 - Linux API
+        except KeyError:
+            raise Failure("CUSTODY", "service account or primary group missing") from None
+        require(
+            user.pw_uid > 0 and group.gr_gid > 0 and user.pw_gid == group.gr_gid,
+            "CUSTODY",
+            "non-root service user and matching primary group required",
+        )
+        identities.append(int(user.pw_uid))
+    require(
+        identities[0] != identities[1], "CUSTODY", "service users must have distinct identities"
+    )
+    return identities[0], identities[1]

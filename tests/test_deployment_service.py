@@ -3,6 +3,7 @@
 import base64
 import json
 import os
+from contextlib import nullcontext
 from copy import deepcopy
 from hashlib import sha256
 from importlib.resources import files
@@ -21,6 +22,7 @@ from checkedflow.distributed import deployment_service as module
 @pytest.fixture
 def lifecycle(tmp_path, monkeypatch):
     calls = []
+    monkeypatch.setattr(module, "exclusive", lambda *args, **kwargs: nullcontext())
     services = {
         role: {"LoadState": "loaded", "ActiveState": "inactive", "SubState": "dead", "MainPID": "0"}
         for role in ("abci", "validator")
@@ -233,14 +235,21 @@ def test_native_key_mismatch_is_rejected(key_file, change):
         module.key(path, 1001)
 
 
-@pytest.mark.parametrize("change", ["none", "root", "node", "unit", "configuration"])
+@pytest.mark.parametrize("change", ["none", "root", "node", "unit", "configuration", "local_node"])
 def test_bound_operator_plan_precedes_service_actions(tmp_path, monkeypatch, change):
     directory, approved, _, _ = bundle(tmp_path)
     monkeypatch.setattr(module, "host", lambda: None)
     monkeypatch.setattr(module, "protected", lambda path, **kw: path)
+    monkeypatch.setattr(module, "validator_uid", lambda name: 1001)
     original = module._read
 
     def read(path, limit):
+        if path.name == "config.toml":
+            return (
+                b"foreign node"
+                if change == "local_node"
+                else original(directory / "node0/config.toml", limit)
+            )
         if path.suffix == ".service":
             return (
                 b"modified unit"

@@ -305,3 +305,9 @@ Keep native display versions, pinned module identity and independently reviewed 
 `deployment-service --action start|status|stop` operates already provisioned local node units.
 Use the `deployment-service` schema to distinguish accepted requests, observed state and confirmed
 stops. It does not establish consensus readiness, drain work or authorize moving signing material.
+
+`deployment-apply` installs only approved public files on an explicitly provisioned, stopped Linux
+node. Existing differing files are conflicts, not upgrade targets. Preserve partial files and unknown
+reload outcomes. Apply/start/stop share the persistent deployment lock; never delete it to retry.
+Selected-node configuration must match before any service action. See
+[deployment planning](docs/deployment-planning.md) and `checkedflow schema deployment-apply`.

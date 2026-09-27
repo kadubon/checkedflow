@@ -1760,3 +1760,19 @@ and limitations. Old generation/reuse, unknown lease, revocations, owned-process
 four-store replay now have actual single-host execution evidence before successor startup.
 This does not establish four-host custody, external-effect cancellation, full rolling upgrade,
 bounded operational load or final G1-G7. The remaining OS/Python matrix jobs were still running.
+
+## Reviewed file application and completed load measurement
+
+The maintained `deployment-apply` command installs approved public files without replacing conflicts
+or touching native signing state. Four installed Linux VM nodes passed first application, unchanged
+repetition and the start/interruption/recovery/stop sequence. Separate accounts, selected-node binding
+and a shared persistent operator lock protect the local boundary. See the
+[apply evidence](evidence/deployment-apply-20260928.json) for exact runtime hashes and scope.
+Windows focused tests passed 68 cases with three Linux-only skips; Linux source tests passed all 11
+apply cases. These component results do not establish the remaining cross-host recovery requirements.
+
+The unchanged full longevity profile completed 4,097 control requests, 65 candidates and 195 tasks.
+Its job succeeded with cleanup, while the containing workflow was cancelled. The
+[record](evidence/longevity-full-20260928.json) preserves that distinction. A later short run's stale
+reader assertion was corrected with an explicit completion-height barrier; no workload limits were
+relaxed. Final artifact qualification and original G1–G7 remain incomplete; publication stays closed.
