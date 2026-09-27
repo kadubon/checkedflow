@@ -102,6 +102,9 @@ def observe_during_drain(measurement, base, patch, contract, cases, height):
         started = time.monotonic_ns()
         measurement.send("mission.drain", {})
         assert measurement.cluster.client().state().mode == "draining"
+        observed = engine.inspect(name)
+        assert observed and observed["State"]["Running"], "sandbox ended before drain committed"
+        assert observed["Config"]["Labels"][LABEL] == token
         with pytest.raises(Failure, match="REJECTED"):
             measurement.cluster.send(
                 "budget.reserve",

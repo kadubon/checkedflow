@@ -4340,7 +4340,7 @@
       ],
       "evidence": [],
       "requirements": [],
-      "scope": "Frozen 4097-control/65-candidate profile and separately named short installed-wheel qualification path. Static checks and two measurement helper tests passed; actual short path and full profile not yet executed. No G5/G6/G7 or release qualification claim."
+      "scope": "Frozen 4097-control/65-candidate profile and separately named short installed-wheel qualification path. Static checks and five measurement and admission-preservation helper cases passed; actual short path and full profile not yet executed. No G5/G6/G7 or release qualification claim."
     }
   ],
   "observations": [

@@ -39,3 +39,25 @@ def test_wheel_identity_rejects_changed_bytes_and_traversal(tmp_path, monkeypatc
     monkeypatch.setattr(load.sysconfig, "get_path", lambda key: str(tmp_path / "another"))
     with pytest.raises(AssertionError):
         load.distribution_identity(wheel("checkedflow/__init__.py", b"expected"))
+
+
+@pytest.mark.parametrize("mode", ["running", "paused", "draining"])
+def test_journal_maintenance_preserves_admission_mode(tmp_path, mode):
+    state = SimpleNamespace(
+        mode=mode, journal=SimpleNamespace(receipts=[SimpleNamespace(administrative=True)] * 8)
+    )
+    sent = []
+    cluster = SimpleNamespace(
+        client=lambda: SimpleNamespace(state=lambda: state),
+        send=lambda kind, payload, **kwargs: sent.append(kind),
+    )
+    measurement = load.Measurement(cluster, tmp_path, {})
+    measurement.send("task.finish", {})
+    assert sent[:2] == ["mission.pause", "journal.rollover"]
+    assert sent[-1] == "task.finish"
+    if mode == "running":
+        assert sent[2:-1] == ["mission.resume"]
+    elif mode == "draining":
+        assert sent[2:-1] == ["mission.drain"]
+    else:
+        assert sent[2:-1] == []
