@@ -22,6 +22,7 @@ REQUIRED = [
     "checkedflow/data/agent-vectors.json",
     "checkedflow/data/agents.json",
     "checkedflow/data/callback-keyring.schema.json",
+    "checkedflow/data/artifact-publication.schema.json",
     "checkedflow/data/access-policy.schema.json",
     "checkedflow/data/access-roles.json",
     "checkedflow/data/access-vectors.json",
@@ -387,6 +388,37 @@ async def main():
         assert card.supported_interfaces[0].protocol_version == "1.0"
         assert card.capabilities.streaming and card.capabilities.push_notifications
 asyncio.run(main())
+from checkedflow.agents.access import LOCAL, Policy
+from checkedflow.agents.download import Reader
+from checkedflow.artifacts import LocalStore, Access
+from checkedflow.core.artifact import Reference
+from hashlib import sha256
+from io import BytesIO
+with TemporaryDirectory(prefix="checkedflow-published-bytes-") as directory:
+    root = Path(directory)
+    grant = {k: v for k, v in LOCAL.record().items() if k != "expires"}
+    grant.update(chain="install", mission="example", roles=["inspect"], actors=[])
+    (root / "policy.json").write_text(json.dumps({
+        "profile": "checkedflow/access-policy/v1", "grants": [grant]}))
+    ref = Reference("sha256", sha256(b"installed").hexdigest(), 9,
+                    "text/plain", "evidence", "example", "1" * 64)
+    (root / "catalog.json").write_text(json.dumps({
+        "profile": "checkedflow/artifact-publication/v1", "chain": "install",
+        "mission": "example", "artifacts": [ref.record()]}))
+    store = LocalStore(root / "artifacts.sqlite")
+    store.put(ref, BytesIO(b"installed"), access=Access(
+        "publisher", frozenset({"example"}), frozenset({"write"})))
+    reader = Reader(store, root / "catalog.json",
+                    Policy(root / "policy.json", "install", "example"))
+    assert reader.read(LOCAL, ref.digest) == (ref, b"installed")
+    (root / "policy.json").write_text(json.dumps({
+        "profile": "checkedflow/access-policy/v1", "grants": []}))
+    try:
+        reader.read(LOCAL, ref.digest)
+    except Failure as error:
+        assert error.code == "ACCESS"
+    else:
+        raise AssertionError("withdrawn publication access must fail")
 print("Installed agent extras smoke passed on", sys.version.split()[0])
 """
 

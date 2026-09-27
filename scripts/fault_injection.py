@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "agents/download.py",
+        "test_agent_download.py",
+        "publication_reference_recheck",
+        "self._load().get(fingerprint) == ref",
+        "True",
+        "test_read_rechecks_authority_and_provider_integrity",
+    ),
+    (
+        "agents/download.py",
+        "test_agent_download.py",
+        "download_provider_integrity",
+        "verify(ref, body)",
+        "None",
+        "test_read_rechecks_authority_and_provider_integrity",
+    ),
+    (
         "agents/access.py",
         "test_agent_access.py",
         "client_role_enforcement",

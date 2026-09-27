@@ -34,6 +34,7 @@ guides; complete generation orchestration and operational deployment are still u
 | How are retries kept finite? | [Persistent scheduling](docs/worker-scheduling.md); fixed call limits, deadlines and local stop survive process restarts |
 | How do agents connect to v2? | [Operational A2A/MCP](docs/operational-agents.md); explicit protocol selection and native signed-command admission |
 | How are client permissions checked? | [Client access](docs/client-access.md); operator-owned mission roles, signed actors and callback ownership |
+| How can agents read artifact bytes? | [Authorized downloads](docs/artifact-download.md); explicit mission publication, HTTP bytes and an MCP read tool |
 | Where are callback credentials kept? | [Callback custody](docs/callback-secrets.md); encrypted private journal and separately provisioned keys |
 | How are evidence and bounded records retained? | [S3 storage](docs/s3-storage.md), [retention](docs/retention-backup.md), [settled-work retirement](docs/work-archive.md) |
 | How is application state restored? | [Application history recovery](docs/application-backup.md); validator ownership needs separate recovery |

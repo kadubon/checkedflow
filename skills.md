@@ -177,3 +177,8 @@ server. Use `checkedflow schema access-policy`, `access-roles` and `access-vecto
 contracts. Bind OAuth issuer/client/subject and signed actor IDs explicitly; request metadata cannot
 assert roles. Removing a JWT verification key does not revoke an existing callback delegation: withdraw
 its policy grant or delete its owned configuration. Keep unresolved delivery records during migration.
+
+Artifact downloads require a protected mission publication catalog as well as current client policy.
+See [authorized downloads](docs/artifact-download.md) and `checkedflow schema artifact-publication`.
+Never turn a client-supplied digest/reference or an unverified state pointer into publication authority.
+Keep catalogs outside candidate workspaces. Archive downloads do not establish trusted replay roots.

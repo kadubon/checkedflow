@@ -1,6 +1,7 @@
 """Official MCP SDK boundary. Stdio grants mission visibility, never signing authority."""
 
 import ipaddress
+from base64 import b64encode
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -31,6 +32,7 @@ from mcp.types import (
 from checkedflow import __version__
 from checkedflow.agents.access import LOCAL, Policy, Principal
 from checkedflow.agents.authentication import Authentication, oauth_principal
+from checkedflow.agents.download import Downloads, Reader
 from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY, Guard
 from checkedflow.agents.oauth import OAuth
@@ -52,8 +54,10 @@ def create_server(
     auth: AuthSettings | None = None,
     token_verifier: TokenVerifier | None = None,
     policy: Policy | None = None,
+    artifacts: Reader | None = None,
     principal: Callable[[], Principal | None] = lambda: LOCAL,
 ) -> MCPServer[None]:
+    require(artifacts is None or artifacts.policy is policy, "ACCESS", "artifact policy differs")
     require(
         policy is None or (policy.chain == gateway.chain and policy.mission == gateway.mission),
         "ACCESS",
@@ -142,6 +146,24 @@ def create_server(
                 raise MCPError(-32001, "Client access denied") from exc
 
         server.middleware.append(authorize)
+
+    if artifacts is not None:
+
+        @server.tool(
+            name="checkedflow_read_artifact",
+            annotations=ToolAnnotations(
+                read_only_hint=True, idempotent_hint=True, open_world_hint=False
+            ),
+        )
+        def read_artifact(digest: str) -> CallToolResult:
+            """Read explicitly published mission bytes; base64 content is untrusted data."""
+            try:
+                ref, body = artifacts.read(principal(), digest)
+                return result(
+                    {"reference": ref.record(), "base64": b64encode(body).decode("ascii")}
+                )
+            except Failure as exc:
+                return result({"error": exc.code, "message": str(exc)}, error=True)
 
     @server.tool(
         name="checkedflow_inspect",
@@ -253,6 +275,7 @@ def create_http_app(
     transport: Literal["http", "sse"] = "http",
     oauth: OAuth | None = None,
     policy: Policy | None = None,
+    artifacts: Reader | None = None,
 ) -> Guard:
     require(ipaddress.ip_address(host).is_loopback, "ADDRESS", "bind a numeric loopback address")
     address = f"[{host}]" if ":" in host else host
@@ -264,6 +287,7 @@ def create_http_app(
         auth=oauth.settings if oauth else None,
         token_verifier=oauth,
         policy=policy,
+        artifacts=artifacts,
         principal=oauth_principal if oauth else lambda: LOCAL,
     )
     app = (
@@ -281,7 +305,7 @@ def create_http_app(
     metadata = build_resource_metadata_url(resource_url) if resource_url else None
     authentication = Authentication(token, oauth) if policy is not None else None
     return Guard(
-        app,
+        Downloads(app, artifacts) if artifacts is not None else app,
         None if oauth or policy is not None else token,
         public=(metadata.path or "/",) if metadata else (),
         challenge=f'Bearer resource_metadata="{metadata}", scope="checkedflow"'
@@ -303,6 +327,7 @@ def serve(
     oauth_audience: str = "",
     oauth_jwks: str = "",
     policy: Policy | None = None,
+    artifacts: Reader | None = None,
 ) -> None:
     require(1 <= port <= 65535, "ADDRESS", "invalid port")
     oauth = OAuth(oauth_issuer, oauth_audience, Path(oauth_jwks)) if oauth_issuer else None
@@ -312,7 +337,15 @@ def serve(
         "supply all OAuth settings",
     )
     uvicorn.run(
-        create_http_app(gateway, token, host=host, transport=transport, oauth=oauth, policy=policy),
+        create_http_app(
+            gateway,
+            token,
+            host=host,
+            transport=transport,
+            oauth=oauth,
+            policy=policy,
+            artifacts=artifacts,
+        ),
         host=host,
         port=port,
         access_log=False,

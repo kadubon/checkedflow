@@ -26,6 +26,7 @@ from starlette.requests import Request
 from checkedflow.agents.a2a import Handler, card
 from checkedflow.agents.access import Policy
 from checkedflow.agents.authentication import Authentication, authenticated_headers
+from checkedflow.agents.download import Downloads, Reader
 from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY, Guard
 from checkedflow.agents.journal import Journal
@@ -157,7 +158,9 @@ def application(
     callback_keys: Keyring | None = None,
     policy: Policy | None = None,
     oauth: OAuth | None = None,
+    artifacts: Reader | None = None,
 ) -> Guard:
+    require(artifacts is None or artifacts.policy is policy, "ACCESS", "artifact policy differs")
     authentication = Authentication(token, oauth)
     agent_card = card(url, grpc_url)
     journal = Journal(gateway, journal_path, keyring=callback_keys)
@@ -201,8 +204,9 @@ def application(
             handler, path_prefix="/v1", context_builder=HttpContext(), enable_v0_3_compat=False
         )
     )
+    app = Starlette(routes=routes, lifespan=lifespan)
     return Guard(
-        Starlette(routes=routes, lifespan=lifespan),
+        Downloads(app, artifacts) if artifacts is not None else app,
         None,
         authenticate=authentication.verify,
         policy=policy,
@@ -221,6 +225,7 @@ def serve(
     callback_keys: Keyring | None = None,
     policy: Policy | None = None,
     oauth: OAuth | None = None,
+    artifacts: Reader | None = None,
 ) -> None:
     require(ipaddress.ip_address(host).is_loopback, "ADDRESS", "bind a numeric loopback address")
     require(
@@ -239,6 +244,7 @@ def serve(
         callback_keys=callback_keys,
         policy=policy,
         oauth=oauth,
+        artifacts=artifacts,
     )
     asyncio.run(
         uvicorn.Server(

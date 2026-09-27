@@ -74,3 +74,10 @@ This increment does not complete the uniform operational security profile: authe
 and coordinated gateway recovery still require implementation/qualification against the frozen
 0.2.0 specification. The implemented [client policy](client-access.md) must not be described as satisfying those wider
 requirements. Full G1-G7 remain incomplete and publication stays disabled.
+
+## Optional artifact reads
+
+Both HTTP services can expose `/artifacts/<digest>` under their existing authentication and mission
+policy. MCP additionally provides `checkedflow_read_artifact` when configured. Supply a private
+publication catalog and existing local store; no digest implies permission. See
+[authorized downloads](artifact-download.md) for byte bounds, revocation and archive trust limits.

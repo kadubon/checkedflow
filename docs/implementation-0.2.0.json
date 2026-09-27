@@ -3607,14 +3607,17 @@
         "src/checkedflow/agents/http.py",
         "src/checkedflow/agents/a2a.py",
         "src/checkedflow/agents/a2a_server.py",
-        "src/checkedflow/agents/mcp.py"
+        "src/checkedflow/agents/mcp.py",
+        "src/checkedflow/agents/download.py"
       ],
       "tests": [
         "tests/test_agent_access.py",
-        "tests/test_integration.py"
+        "tests/test_integration.py",
+        "tests/test_agent_download.py"
       ],
       "documentation": [
-        "docs/client-access.md"
+        "docs/client-access.md",
+        "docs/artifact-download.md"
       ],
       "evidence": [
         "docs/implementation-0.2.0.md"
@@ -3622,7 +3625,7 @@
       "requirements": [
         "R8-0406"
       ],
-      "scope": "Shared protected-file mission/client roles and signed actor bindings across A2A/MCP, OAuth identity and live egress checks, callback ownership and bounded delegation. V2 CLI policy mandatory. Unified artifact download/archive policy, mTLS and coordinated recovery remain open."
+      "scope": "Shared protected-file mission/client roles and signed actors across A2A/MCP, OAuth identity, egress checks, callback ownership and bounded delegation. Explicit artifact publication catalog applies the same policy to HTTP and MCP byte reads, including archived bytes; no automatic archive publication or trusted historical query. V2 CLI policy mandatory. mTLS and coordinated recovery remain open."
     }
   ],
   "observations": [

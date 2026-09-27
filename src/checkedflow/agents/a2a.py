@@ -23,6 +23,7 @@ from starlette.types import ASGIApp
 
 from checkedflow import __version__
 from checkedflow.agents.access import Policy, Principal
+from checkedflow.agents.download import Reader
 from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY as MAX_BODY
 from checkedflow.agents.journal import Journal
@@ -654,6 +655,7 @@ def create_app(
     callback_keys: Keyring | None = None,
     policy: Policy | None = None,
     oauth: OAuth | None = None,
+    artifacts: Reader | None = None,
 ) -> ASGIApp:
     from checkedflow.agents.a2a_server import application
 
@@ -667,6 +669,7 @@ def create_app(
         callback_keys=callback_keys,
         policy=policy,
         oauth=oauth,
+        artifacts=artifacts,
     )
 
 
@@ -682,6 +685,7 @@ def serve(
     callback_keys: Keyring | None = None,
     policy: Policy | None = None,
     oauth: OAuth | None = None,
+    artifacts: Reader | None = None,
 ) -> None:
     from checkedflow.agents.a2a_server import serve as run
 
@@ -696,4 +700,5 @@ def serve(
         callback_keys=callback_keys,
         policy=policy,
         oauth=oauth,
+        artifacts=artifacts,
     )

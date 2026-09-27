@@ -54,6 +54,7 @@ def main(argv: list[str] | None = None) -> int:
             "access-policy",
             "access-roles",
             "access-vectors",
+            "artifact-publication",
         ],
     )
     keys = commands.add_parser("keygen")
@@ -92,6 +93,8 @@ def main(argv: list[str] | None = None) -> int:
         agent.add_argument(
             "--access-policy", help="private operator mission/client grants; required for v2"
         )
+        agent.add_argument("--artifact-catalog", help="protected mission publication catalog")
+        agent.add_argument("--artifact-store", help="private local artifact database")
         agent.add_argument("--oauth-issuer", default="")
         agent.add_argument("--oauth-audience", default="")
         agent.add_argument("--oauth-jwks", default="", help="operator-managed public JWKS file")
@@ -132,6 +135,7 @@ def main(argv: list[str] | None = None) -> int:
                 "agent-request": "agent-request.schema.json",
                 "agent-vectors": "agent-vectors.json",
                 "callback-keyring": "callback-keyring.schema.json",
+                "artifact-publication": "artifact-publication.schema.json",
                 "access-policy": "access-policy.schema.json",
                 "access-roles": "access-roles.json",
                 "access-vectors": "access-vectors.json",
@@ -222,6 +226,24 @@ def main(argv: list[str] | None = None) -> int:
                 if args.oauth_issuer
                 else None
             )
+            require(
+                bool(args.artifact_catalog) == bool(args.artifact_store),
+                "ACCESS",
+                "supply both artifact catalog and store",
+            )
+            artifacts = None
+            if args.artifact_catalog:
+                from checkedflow.agents.download import Reader
+                from checkedflow.artifacts import LocalStore
+
+                require(policy is not None, "ACCESS", "artifact downloads require client policy")
+                require(
+                    Path(args.artifact_store).is_file(), "UNAVAILABLE", "artifact store missing"
+                )
+                if policy is not None:
+                    artifacts = Reader(
+                        LocalStore(Path(args.artifact_store)), Path(args.artifact_catalog), policy
+                    )
             gateway: AgentGateway
             if args.protocol == "v2":
                 from checkedflow.agents.operational_gateway import Gateway as OperationalGateway
@@ -249,6 +271,7 @@ def main(argv: list[str] | None = None) -> int:
                     push_hosts=tuple(args.push_host),
                     grpc_port=args.grpc_port,
                     policy=policy,
+                    artifacts=artifacts,
                     oauth=oauth,
                     callback_keys=(
                         Keyring.load(Path(args.callback_key_file))
@@ -265,7 +288,9 @@ def main(argv: list[str] | None = None) -> int:
                         "AUTH",
                         "OAuth is an HTTP transport; stdio uses process ownership",
                     )
-                    create_server(gateway, policy=policy).run(transport="stdio")
+                    create_server(gateway, policy=policy, artifacts=artifacts).run(
+                        transport="stdio"
+                    )
                 else:
                     from checkedflow.agents.mcp import serve as serve_mcp
 
@@ -279,6 +304,7 @@ def main(argv: list[str] | None = None) -> int:
                         oauth_audience=args.oauth_audience,
                         oauth_jwks=args.oauth_jwks,
                         policy=policy,
+                        artifacts=artifacts,
                     )
         elif args.action == "demo":
             from checkedflow.distributed.demo import demonstrate

@@ -26,3 +26,8 @@ Use the packaged access-roles contract for every client command decision. Never 
 messages or lose issuer/client/subject binding. Recheck policy at egress and callback dispatch; preserve
 expired/revoked callback records for explicit reconciliation. Administrative transport grants still need
 current quorum signatures. V2 CLI deployments require an explicit protected access-policy file.
+
+Artifact downloads require a protected mission publication catalog as well as current client policy.
+See [authorized downloads](docs/artifact-download.md) and `checkedflow schema artifact-publication`.
+Never turn a client-supplied digest/reference or an unverified state pointer into publication authority.
+Keep catalogs outside candidate workspaces. Archive downloads do not establish trusted replay roots.

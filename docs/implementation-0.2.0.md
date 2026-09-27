@@ -954,3 +954,33 @@ new archive rather than remaining in the active journal. The gateway now confirm
 committed root matching the independently predicted batch. A concurrent change to the batch leaves
 `OUTCOME_UNKNOWN`, and an old-epoch duplicate is still rejected. Forty-one targeted gateway/access
 cases passed, with 100% statement/branch gateway coverage; full follow-up checks are pending.
+
+
+The rollover follow-up `a355374023e0838d4cd5b86ce26b46bf32d89a2b` passed 744 source tests
+(three Windows platform skips and 22 separately qualified infrastructure cases), all coverage gates,
+and all 68 selected fault mutants. These source results precede the download increment below.
+
+## Explicit artifact publication
+
+An optional protected catalog binds complete references to a chain and mission before bytes can be
+served. A2A and MCP HTTP applications share the authenticated download boundary; MCP also exposes
+an optional read tool using the same Reader. Policy, reference publication and provider integrity
+are checked around storage reads. Catalogs are bounded and fail closed. The CLI requires both a
+catalog and an existing local database under v2 client policy. Archived bytes use the same rules;
+no automatic publication, trusted replay root or indexed historical query is inferred.
+
+The first targeted suite passed 117 protocol/access/download cases. Download statement and branch
+coverage were both 100%. Full-source, installed-package and mutation checks for the final increment
+are recorded separately; these component results do not qualify a release. R8-0406 remains in
+progress pending broader operational integration and original G1-G7 evidence.
+
+
+The pre-download source `a355374023e0838d4cd5b86ce26b46bf32d89a2b` also passed
+[CI 36283956247](https://github.com/kadubon/checkedflow/actions/runs/36283956247): six OS/Python
+jobs, managed Vault signing, both real object-store jobs and all 20 installed-wheel infrastructure
+cases. The downloaded infrastructure report independently passed the required-case gate with no
+skips, failures or errors. Wheel SHA-256 is
+`e9897b956825daf1a607d5f69f61399fd11671e4a95ee423f480fa6e125725eb`; sdist is
+`cde1ea9966ca006f393f76c365241940ebd746ec65b8e42ed94f633e585a3865`.
+These development artifacts retain 0.1.0 metadata and must not overwrite the published 0.1.0.
+They do not qualify subsequent publication-catalog changes.

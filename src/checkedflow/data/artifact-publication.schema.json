@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Operator artifact publication catalog",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile",
+    "chain",
+    "mission",
+    "artifacts"
+  ],
+  "properties": {
+    "profile": {
+      "const": "checkedflow/artifact-publication/v1"
+    },
+    "chain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "mission": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "artifacts": {
+      "type": "array",
+      "maxItems": 256,
+      "items": {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "title": "CheckedFlow artifact reference v1",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "version",
+          "algorithm",
+          "digest",
+          "length",
+          "content_type",
+          "kind",
+          "scope",
+          "manifest"
+        ],
+        "properties": {
+          "version": {
+            "const": "checkedflow/artifact/v1"
+          },
+          "algorithm": {
+            "const": "sha256"
+          },
+          "digest": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "length": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4194304
+          },
+          "content_type": {
+            "enum": [
+              "application/json",
+              "application/octet-stream",
+              "text/plain"
+            ]
+          },
+          "kind": {
+            "enum": [
+              "source-tree",
+              "patch",
+              "evidence",
+              "archive",
+              "snapshot"
+            ]
+          },
+          "scope": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9_-]+(?![\\s\\S])"
+          },
+          "manifest": {
+            "type": "string",
+            "minLength": 64,
+            "maxLength": 64,
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  }
+}

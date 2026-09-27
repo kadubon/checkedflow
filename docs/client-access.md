@@ -118,6 +118,8 @@ qualification is necessary but does not complete the operational deployment gate
 
 Inspection grants expose the shared mission; this is not per-record secrecy among approved readers.
 Validators replicate the application state and remain part of the trust group. Artifact-store access
-uses its separate `Access` contract: a unified authenticated download endpoint and archived-record
-policy are still required. mTLS/proxy deployment, coordinated policy/key recovery, migration and full
+uses its separate `Access` contract. The optional [download service](artifact-download.md) now applies
+this policy to explicitly catalogued current or archived bytes, with before/after-read checks. Automatic
+archive publication and trusted historical query integration remain open. mTLS/proxy deployment,
+coordinated policy/key recovery, migration and full
 G1-G7 evidence remain unfinished. Do not present this implementation as universal production readiness.
