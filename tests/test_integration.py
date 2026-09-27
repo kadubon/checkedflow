@@ -1157,26 +1157,40 @@ def test_v2_effect_reservation_expiry_reconciliation_and_replica_recovery(infras
                 )
         cluster.start_node(0)
         cluster.wait_height(until + 2)
+        # Applied height alone does not mean the restarted node has left catch-up.
+        # Probe readiness without sending anything, then exercise rejection on a continuously
+        # running node. An ambiguous broadcast response is never accepted as rejection evidence.
+        deadline = time.monotonic() + 45
+        while True:
+            try:
+                recovered = cluster.client(0).live_state()
+                assert recovered.effects[0].status == "unknown"
+                break
+            except Failure:
+                if time.monotonic() >= deadline:
+                    raise
+                time.sleep(0.1)
         with pytest.raises(Failure, match="REJECTED"):
-            cluster.send("effect.reserve", {"effect": effect}, actor="e0")
+            cluster.send("effect.reserve", {"effect": effect}, actor="e0", node=1)
         # This is an explicit governed observation fixture, not a GitHub call or proof of truth.
         reconciled = cluster.send(
             "effect.reconcile",
             {"effect": effect, "outcome": "observed", "number": 7, "evidence": "f" * 64},
+            node=1,
         )
         cluster.wait_height(int(reconciled["receipt"]["height"]))
         assert all(cluster.client(i).state().effects[0].status == "reconciled" for i in range(4))
         withdrawn = cluster.send(
-            "artifact.withdraw", {"candidate": candidate, "task": checks[0]}, actor="v0"
+            "artifact.withdraw", {"candidate": candidate, "task": checks[0]}, actor="v0", node=1
         )
         cluster.wait_height(int(withdrawn["receipt"]["height"]))
         for index in range(4):
             state = cluster.client(index).state()
             assert state.effects[0].status == "compensation_required"
             assert state.effects[0].number == 7 and state.budget.spent == 50
-        cluster.send("mission.pause", {})
+        cluster.send("mission.pause", {}, node=1)
         with pytest.raises(Failure, match="REJECTED"):
-            cluster.send("mission.resume", {})
+            cluster.send("mission.resume", {}, node=1)
         height, app_hash = cluster.common_hash()
         assert height > 0 and len(app_hash) == 64
     finally:

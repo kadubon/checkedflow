@@ -104,3 +104,6 @@ and candidates. A possibly sent operation consumes its full modeled ceiling and 
 for retry. The GitHub intent resolver derives exact provider arguments from a validated current
 reservation; provider I/O and local freshness remain outside consensus. The maintained actuator,
 compensation and effect archival are not yet complete. See [ADR 0004](adr-0004-effect-reservations.md).
+The [supervised dispatcher](effect-dispatch.md) bridges a live reservation to provider dispatch:
+it reloads protected intent policy and verifies scoped artifacts before preflight and at the
+final send check. Reporting, staging and coordinated recovery remain separate responsibilities.

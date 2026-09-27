@@ -132,6 +132,10 @@ Use current own-node state with `reserved_plan`; its output is snapshot-bound an
 send-time freshness, policy and artifact checks. Never treat unknown absence as retry permission.
 Use the provider's `before_send` callback to repeat those checks after remote preflight; an entry
 check alone is insufficient. A rejected callback retains the unknown claim and forbids retries.
+Prefer `effect_dispatch.Dispatcher` for an existing reservation: it reloads protected exact-intent
+policy, validates current stored evidence and own-node state before provider I/O and before POST.
+Inspect `checkedflow schema effect-policy`; its canonical digest must match the committed effect.
+The returned provider observation still needs an original signed report or governed reconciliation.
 Never give the token or journal to candidate code. Do not recreate a journal or use a new operation
 to retry an unknown POST. Read reconciliation cannot treat absence as permission to resend.
 The operator fixture writes to a real repository: run it only against an explicitly authorized

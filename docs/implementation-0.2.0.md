@@ -1144,3 +1144,38 @@ all 80 selected fault mutants were detected. Its wheel
 isolated installation. Publication pattern scanning covered 788 source/distribution members
 without findings. The preceding source's CI36289212339 finished successfully across all jobs,
 including Windows/Linux Python 3.12–3.14. That CI predates this hook and does not qualify it.
+
+### Current-policy and evidence dispatch integration
+
+`effect_dispatch.Dispatcher` now binds an existing reservation to a protected exact-intent
+policy, current own-node progress and all retained repository verification bytes. The policy is
+bounded, reloaded per decision and bound by canonical digest to the quorum-approved effect.
+Both entry and final provider checks reconstruct evidence and inspect policy again after I/O;
+changed observations, stale progress, unavailable bytes or a disabled policy prohibit sending.
+It does not automatically reserve, report, reconcile, stage branches or compensate operations.
+
+The focused dispatch/reuse suite passed 58 cases. The complete source check passed 886 tests
+with three Windows descriptor skips and 23 infrastructure cases deselected; static/coverage
+gates passed, including 100% statement/branch coverage for the new dispatcher. Fault-injection
+results are recorded separately when finished. Wheel
+`77d7c9caa6ec8939268257389f07dc4fed8e4b1a2f8163e7837495d40dcda716` and sdist
+`c8b055704fa7507d4ff953f6e4fb9724d4fb07422ec7cfaacde61edcb6d1b4d8` passed isolated
+installation. All 32 dispatcher fixtures also ran successfully against that installed wheel
+outside the source checkout. Its 162 package files match current source bytes; the publication
+pattern scan checked 798 source/distribution members without findings. No candidate code or
+real GitHub writes were involved in these new dispatch fixtures.
+
+The preceding final-send source's CI36289916718 failed installed qualification: the deliberate
+duplicate reservation submitted immediately after node restart returned `OUTCOME_UNKNOWN`
+instead of the required `REJECTED`. The downloaded report failed independent validation and
+is not qualification evidence. Applied block height alone is not an explicit readiness check.
+The fixture now waits for the recovered node's `live_state` to confirm it is not catching up,
+then sends the deliberate rejection and subsequent control commands through continuously
+running node 1. It still requires explicit rejection, all-node state checks and durable replay;
+uncertainty is not accepted as success and no transaction is blindly retried. The exact source
+must run again on actual infrastructure before this correction is qualified.
+
+The dispatcher increment's completed local full-check process exited successfully: all 82
+selected fault mutants were detected, including removal of final dependency rechecks and of the
+post-read observation-inventory comparison. The failed hosted report above remains a failure;
+the read-readiness fixture correction still needs its new installed infrastructure run.

@@ -82,6 +82,9 @@ claim. A trusted executor can use it to repeat the current reservation, policy a
 checks before a new POST. Rejection preserves the unknown claim, so later callers cannot
 silently retry without supervision. The hook is an integration boundary, not an implemented
 full executor; see [its exact ordering and limitations](github-drafts.md#final-local-dispatch-check).
+The [supervised dispatcher](effect-dispatch.md) now connects that hook to a reloaded protected
+intent policy, current own-node reservations and complete stored verification evidence. Automatic
+reporting, staging, compensation and recovery orchestration remain separate requirements.
 
 ## Persistence, bounds and remaining integration
 

@@ -19,6 +19,8 @@ ID. See docs/github-drafts.md. Keep SHA-256 application identities distinct from
 never execute candidate code or checkout filters to calculate these bindings.
 Operational provider callers must use the final `before_send` check after remote preflight.
 Do not remove a durable claim when that check rejects or crashes; it still prohibits retry.
+Use the supervised dispatcher to bind current protected policy and artifact evidence. Never treat
+its provider observation as a committed report or allow candidates to modify the policy path.
 
 V2 effect reservations retain full modeled cost once a send becomes possible. Never reset a
 reservation, clear unknowns, release attached funding or mint a fresh intent to retry a provider

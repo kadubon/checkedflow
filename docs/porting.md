@@ -64,3 +64,11 @@ exactly as the Python encoder does; adding an empty array would change historica
 full modeled charges once reserved and never interpret absent provider observations as retry rights.
 The [GitHub intent schema](../src/checkedflow/data/github-effect-intent.schema.json) binds provider
 arguments through canonical SHA-256 independently of the Git SHA-1 tree compatibility encoding.
+
+The [effect policy schema](../src/checkedflow/data/effect-policy.schema.json) is a separate
+operator-owned input. Its digest covers canonical JSON, with unique sorted intent digests;
+an empty allowlist denies dispatch. Ports must reload it and revalidate scoped evidence and
+own-node freshness after I/O, including at the provider's final send boundary. Preserve durable
+unknown claims when that check fails. See [dispatch ordering](effect-dispatch.md#dispatch-ordering)
+for the adapter algorithm and its non-atomic cross-system limits. These local checks never alter
+deterministic block time or replace signed reservation authority.

@@ -20,6 +20,8 @@ its credential and private journal away from candidates, ordinary workers, verif
 Constructing or decoding a plan does not prove authority to send it.
 The [v2 effect state machine](work-effects.md) now supplies governed reservations and a strict
 intent-to-plan resolver. Maintained send-time orchestration and compensation remain incomplete.
+The [supervised dispatch SDK](effect-dispatch.md) connects current protected policy, scoped
+evidence and own-node freshness to the final check. Automatic reporting and recovery remain open.
 
 ## Exact destination and content checks
 

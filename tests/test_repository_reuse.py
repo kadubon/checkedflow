@@ -19,10 +19,11 @@ from checkedflow.repository_reuse import Inputs, contract_digest, decode_tree, p
 from checkedflow.wire import dumps, loads
 
 
-def fixture(tmp_path, report_change=None, unknown_fourth=False):
+def fixture(tmp_path, report_change=None, unknown_fourth=False, *, harness=None, draft=False):
     base, patch, contract, cases = invoice("python@sha256:" + "1" * 64)
+    contract = replace(contract, allow_draft_pr=draft)
     target = contract_digest(contract)
-    h = Harness()
+    h = harness or Harness()
     h.prepare_checks(target)
     h.admit(target=target, artifact=contract.result_tree, expires=contract.deadline_height)
     store = LocalStore(tmp_path / "reuse.sqlite")

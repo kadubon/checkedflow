@@ -1653,7 +1653,8 @@
       "text": "- Relevant policy/checker evidence, expiry, resource limit, and fence.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:governed-effect-reservations"
+        "component:governed-effect-reservations",
+        "component:supervised-effect-dispatch"
       ]
     },
     {
@@ -1663,7 +1664,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:governed-effect-reservations",
-        "component:effect-final-send-check"
+        "component:effect-final-send-check",
+        "component:supervised-effect-dispatch"
       ]
     },
     {
@@ -1679,7 +1681,8 @@
       "text": "Creating a draft PR or pushing its branch can trigger destination CI. “Draft” does not make candidate code harmless. Before enabling this adapter, require an operator-reviewed destination policy that prevents candidate-controlled code from receiving repository secrets or privileged CI credentials. Protect `.github/`, build/test control files, and the allowed patch scope.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:github-draft-provider"
+        "component:github-draft-provider",
+        "component:supervised-effect-dispatch"
       ]
     },
     {
@@ -1837,7 +1840,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:dispatch-freshness-watchdog",
-        "component:durable-worker-supervision"
+        "component:durable-worker-supervision",
+        "component:supervised-effect-dispatch"
       ]
     },
     {
@@ -3755,6 +3759,34 @@
       "requirements": [
         "R9-0433"
       ]
+    },
+    {
+      "id": "supervised-effect-dispatch",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/effect_dispatch.py",
+        "src/checkedflow/data/effect-policy.schema.json",
+        "src/checkedflow/cli.py"
+      ],
+      "tests": [
+        "tests/test_effect_dispatch.py",
+        "tests/test_repository_reuse.py",
+        "scripts/check.py",
+        "scripts/fault_injection.py",
+        "scripts/package_check.py"
+      ],
+      "documentation": [
+        "docs/effect-dispatch.md",
+        "docs/work-effects.md",
+        "docs/github-drafts.md"
+      ],
+      "scope": "SDK dispatch of an existing reservation with protected canonical exact-intent policy, current own-node progress, scoped verified base/patch/inventory/observation bytes and final provider callback. Rechecks state, changed evidence inventory and policy after artifact I/O. Focused dispatcher/reuse suite: 58 passed. Full source suite: 886 passed, three Windows descriptor skips, 23 infrastructure deselected; static and all coverage gates passed. New dispatcher boundary at 100 percent statement/branch. Completed full-check process passed with all 82 selected fault mutants detected. Corrected infrastructure restart fixture is still unqualified until a new actual installed run. Installed wheel dispatcher fixtures: 32 passed outside source checkout; wheel and sdist package smoke passed. Publication pattern scan: 798 members, zero findings. No automatic signed reporting, staging, compensation, coordinated journal recovery or live G3 claim.",
+      "requirements": [
+        "R9-0431",
+        "R9-0433",
+        "R9-0439",
+        "R10-0475"
+      ]
     }
   ],
   "observations": [
@@ -3919,6 +3951,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36289212339",
       "conclusion": "success",
       "scope": "All six OS/Python jobs, Vault, both S3 jobs and all 26 installed infrastructure cases passed. Downloaded 26-case JUnit independently validated. Real four-node/gVisor reservation expiry and recovery uses a signed provider-observation fixture, not a live consensus-to-GitHub actuator. Predates final-send hook. Full G1-G7 remains unqualified."
+    },
+    {
+      "source": "1595271fd180092fb434f4ce685b1618790bb965",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36289916718",
+      "conclusion": "failure",
+      "scope": "Installed qualification failed: immediately after restarting node0, the deliberate duplicate reservation broadcast returned OUTCOME_UNKNOWN rather than required REJECTED. Downloaded JUnit independently rejected; not counted as a pass. Fixture now waits for explicit non-catching-up live_state and submits subsequent commands through continuously running node1, while checking all replicas and durable replay. Requires a new actual qualification run; provider/source invariants were not relaxed."
     }
   ]
 }

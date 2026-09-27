@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "effect_dispatch.py",
+        "test_effect_dispatch.py",
+        "dispatch_rechecks_current_dependencies",
+        "checked = self._checked(effect, intent, contract, inputs)",
+        "checked = (plan, base, patch)",
+        "test_loss_during_remote_preflight_inhibits_post_and_preserves_claim",
+    ),
+    (
+        "effect_dispatch.py",
+        "test_effect_dispatch.py",
+        "dispatch_rechecks_observation_inventory",
+        "next(row for row in current.candidates if row.identity == candidate_id) == candidate",
+        "True",
+        "test_state_policy_and_freshness_rechecked_after_artifact_reads",
+    ),
+    (
         "github_drafts.py",
         "test_github_drafts.py",
         "effect_send_time_guard",

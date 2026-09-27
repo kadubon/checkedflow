@@ -10,6 +10,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [Architecture](architecture.md) | Which component owns each decision and effect? |
 | [State machine](state-machine.md) | Which transitions, bounds and accounting rules are enforced? |
 | [Governed external operations](work-effects.md) | How are provider intent, dispatch authority, uncertainty and reconciliation separated? |
+| [Supervised effect dispatch](effect-dispatch.md) | How are current operator policy, stored evidence and node freshness checked immediately before a draft request? |
 | [Protocol](protocol.md) | Which bytes are signed and how are commands replayed? |
 | [Adapters](adapters.md) | How do storage, generators, workers and sandboxes connect? |
 | [Agent communication](interoperability.md) | How do A2A and MCP clients discover, submit and inspect the same work? |

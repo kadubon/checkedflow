@@ -372,6 +372,7 @@ from checkedflow.agents.a2a import create_app
 from checkedflow.agents.gateway import Gateway
 from checkedflow.agents.mcp import create_server
 from checkedflow.github_drafts import Drafts, Token, decode_plan
+from checkedflow.effect_dispatch import Dispatcher, Policy
 from checkedflow.core.values import Failure
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -388,7 +389,13 @@ vector = json.loads(
     resources.files("checkedflow").joinpath("data/github-draft-vector.json").read_text()
 )
 from checkedflow.wire import dumps
+assert Dispatcher.__module__ == "checkedflow.effect_dispatch"
+policy_schema = json.loads(
+    resources.files("checkedflow").joinpath("data/effect-policy.schema.json").read_text()
+)
+assert policy_schema["properties"]["profile"]["const"] == "checkedflow/effect-policy/v1"
 with TemporaryDirectory(prefix="checkedflow-disabled-draft-") as directory:
+    policy = Policy(Path(directory) / "operator-owned.json")
     journal = Path(directory) / "never-created.sqlite"
     provider = Drafts("owner/fixture", 42, "owner", Token("fixture"), journal)
     try:
