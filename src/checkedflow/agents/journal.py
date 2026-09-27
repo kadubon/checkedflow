@@ -144,13 +144,17 @@ class Journal:
         return document(raw[32:])
 
     def configurations(self, task: str) -> list[Object]:
+        return self.configuration_snapshot(task)[0]
+
+    def configuration_snapshot(self, task: str) -> tuple[list[Object], str]:
+        """Read configurations and their cursor revision from one locked SQLite snapshot."""
         with self.lock:
-            return [
-                self._open(task, str(row[0]), bytes(row[1]))
-                for row in self.db.execute(
-                    "SELECT id,value FROM notifications WHERE task=? ORDER BY id", (task,)
-                )
-            ]
+            rows = self.db.execute(
+                "SELECT id,value FROM notifications WHERE task=? ORDER BY id", (task,)
+            ).fetchall()
+            values = [self._open(task, str(identity), bytes(raw)) for identity, raw in rows]
+            revision = digest({"sealed_values": [bytes(raw).hex() for _, raw in rows]})
+            return values, revision
 
     def put_config(self, task: str, identity: str, value: Object) -> None:
         with self.lock, self.db:
@@ -223,14 +227,7 @@ class Journal:
         return self._keyring().open(value, self._binding(task, identity))
 
     def configuration_revision(self, task: str) -> str:
-        with self.lock:
-            values = [
-                bytes(row[0]).hex()
-                for row in self.db.execute(
-                    "SELECT value FROM notifications WHERE task=? ORDER BY id", (task,)
-                )
-            ]
-            return digest({"sealed_values": [value for value in values]})
+        return self.configuration_snapshot(task)[1]
 
     def rewrap(self, keyring: Keyring) -> int:
         """Authenticate all old rows and atomically reseal without resetting delivery state."""

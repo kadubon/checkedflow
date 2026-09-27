@@ -908,3 +908,10 @@ filesystem skips and 22 infrastructure cases separated from this suite. An addit
 keyring-schema boundary case was then added and all 21 callback cases passed. Static checks,
 coverage thresholds and the publication-pattern scan passed. Mutation and exact installed-wheel
 results are recorded separately when complete; these component results do not close G1-G7.
+
+
+A follow-up audit found that callback page values and the ciphertext revision were read separately.
+They now come from one locked SQLite snapshot. A deterministic interleaving regression replaces a
+configuration during page projection and verifies that the cursor describes the returned values,
+then rejects continuation against the changed state. This closes a pagination race introduced by
+the ciphertext-revision change; its source and installed-artifact checks require the follow-up commit.

@@ -498,11 +498,11 @@ class Handler(RequestHandler):
                 "SHAPE",
                 "pageSize bound",
             )
-            values = self.journal.configurations(params.task_id)
+            values, revision = self.journal.configuration_snapshot(params.task_id)
             size = params.page_size or 50
             binding: Object = {
                 "task": params.task_id,
-                "revision": self.journal.configuration_revision(params.task_id),
+                "revision": revision,
                 "size": size,
             }
             offset = self.page_offset(params.page_token, binding, len(values))

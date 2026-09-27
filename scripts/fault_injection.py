@@ -44,6 +44,15 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "agents/a2a.py",
+        "test_callback_secrets.py",
+        "callback_page_snapshot_revision",
+        "values, revision = self.journal.configuration_snapshot(params.task_id)",
+        "values = self.journal.configurations(params.task_id)\n"
+        "            revision = self.journal.configuration_revision(params.task_id)",
+        "test_callback_page_cursor_describes_the_returned_snapshot",
+    ),
+    (
         "agents/secrets.py",
         "test_callback_secrets.py",
         "callback_credentials_response_redaction",

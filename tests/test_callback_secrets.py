@@ -302,3 +302,49 @@ def test_packaged_keyring_contract_matches_loader_boundaries(tmp_path):
         path.write_text(json.dumps(value))
         with pytest.raises(Failure, match="SECRET_KEY"):
             Keyring.load(path)
+
+
+def test_callback_page_cursor_describes_the_returned_snapshot(h, monkeypatch):
+    from a2a.utils.errors import InvalidParamsError
+
+    async def scenario():
+        h.task(start=False)
+        handler = Handler(Backend(h).gateway(), push=Push(("callbacks.example",)))
+        try:
+            await handler.refresh()
+            for identity in ("a", "b"):
+                handler.journal.put_config("t", identity, VALUE | {"id": identity})
+            original_revision = handler.journal.configuration_revision("t")
+            original_open = handler.journal._open
+            replaced = False
+
+            def interleaved_open(task, identity, raw):
+                nonlocal replaced
+                value = original_open(task, identity, raw)
+                if not replaced:
+                    replaced = True
+                    handler.journal.put_config(
+                        "t", "a", VALUE | {"id": "a", "url": "https://callbacks.example/changed"}
+                    )
+                return value
+
+            monkeypatch.setattr(handler.journal, "_open", interleaved_open)
+            listing = await handler.on_list_task_push_notification_configs(
+                pb.ListTaskPushNotificationConfigsRequest(task_id="t", page_size=1),
+                ServerCallContext(),
+            )
+            assert listing.configs[0].url == VALUE["url"]
+            cursor = handler.journal.read_cursor(listing.next_page_token)
+            assert cursor["binding"]["revision"] == original_revision
+            assert handler.journal.configuration_revision("t") != original_revision
+            with pytest.raises(InvalidParamsError, match="CURSOR"):
+                await handler.on_list_task_push_notification_configs(
+                    pb.ListTaskPushNotificationConfigsRequest(
+                        task_id="t", page_size=1, page_token=listing.next_page_token
+                    ),
+                    ServerCallContext(),
+                )
+        finally:
+            handler.journal.close()
+
+    asyncio.run(scenario())
