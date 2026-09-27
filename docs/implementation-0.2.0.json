@@ -4183,6 +4183,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36296518498",
       "conclusion": "success",
       "scope": "All required jobs passed, including six OS/Python jobs, both S3 services, Vault and all 27 installed infrastructure cases. Downloaded report independently accepted. Wheel9f9f1dd4c69cb24179d112127b4faa7f90a8891012ce9ba7c419f4251f55967f; sdist86905ab27b2afafcecd61a4fe3ac8c98eebd587450f5a49a8b888586c8137a92. Qualifies the replica-backed component case, not the later monitoring extension or final G1-G7."
+    },
+    {
+      "source": "726573a74f8cb6695393cd807c2bf4d193da9f6c",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36297746913",
+      "conclusion": "failure",
+      "scope": "Both real S3 jobs failed initial replica publication with UNAVAILABLE. Run remains unqualified regardless of other jobs. The fixture now requires its existing verified data-plane read before replica checks; no write retries, weaker threshold or timeout increase. Unchanged local run did not reproduce CI failure. Full source1036 and102mutants passed, not a substitute for the failed installed service jobs."
     }
   ]
 }

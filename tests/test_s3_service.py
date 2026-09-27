@@ -240,6 +240,21 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
             )
             access = Access("worker", frozenset({"mission"}), frozenset({"read", "write"}))
 
+            def publish_once(_):
+                try:
+                    store.put(ref, BytesIO(body), access=access)
+                    return "confirmed"
+                except Failure as failure:
+                    assert failure.code == "OUTCOME_UNKNOWN", failure.code
+                    return "unknown"
+
+            with ThreadPoolExecutor(max_workers=4) as pool:
+                outcomes = list(pool.map(publish_once, range(4)))
+            assert available(store, ref, access) == body
+            print("S3 concurrent publication outcomes:", json.dumps(outcomes))
+
+            # Listing/bucket readiness is not data-plane readiness. The verified read above
+            # establishes actual storage before testing the four-copy publication contract.
             # Four real storage namespaces on one service: component behavior, not G6 topology.
             replicated = ReplicatedStore(
                 tuple(
@@ -264,18 +279,6 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
                 "operator-1",
             )
 
-            def publish_once(_):
-                try:
-                    store.put(ref, BytesIO(body), access=access)
-                    return "confirmed"
-                except Failure as failure:
-                    assert failure.code == "OUTCOME_UNKNOWN", failure.code
-                    return "unknown"
-
-            with ThreadPoolExecutor(max_workers=4) as pool:
-                outcomes = list(pool.map(publish_once, range(4)))
-            assert available(store, ref, access) == body
-            print("S3 concurrent publication outcomes:", json.dumps(outcomes))
             partial = b"interrupted source fixture"
             partial_ref = replace(
                 ref, digest=hashlib.sha256(partial).hexdigest(), length=len(partial)

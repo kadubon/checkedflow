@@ -1400,7 +1400,7 @@ They do not invent lag, residual age, latency or physical storage measurements.
 The full local suite passed 1,036 tests in 372.49 seconds, with three Windows descriptor skips
 and 24 separately selected infrastructure cases. Static and authoritative coverage checks passed.
 The observation module covered all 70 statements and ten measured branches; its HTTP adapter
-covered all 22 statements and eight branches. The expanded 102-mutant gate is running.
+covered all 22 statements and eight branches. The expanded fault gate completed successfully: all 102 selected mutants were killed.
 Nineteen tests also passed from the installed wheel outside the source checkout. Initial isolated
 test collection lacked copied test helpers; after including those helpers the actual tests passed.
 Wheel and sdist isolated package smoke passed. All 173 package files match current source, and
@@ -1422,3 +1422,19 @@ The downloaded report independently passed the required gate. Its wheel is
 `86905ab27b2afafcecd61a4fe3ac8c98eebd587450f5a49a8b888586c8137a92`.
 The earlier staging CI36295642776 also finished all required jobs successfully after the earlier
 partial observation above. Neither run qualifies the later monitoring extension or full G1-G7.
+
+
+## Storage fixture readiness correction
+
+Both real S3 jobs in [CI36297746913](https://github.com/kadubon/checkedflow/actions/runs/36297746913)
+failed the initial replicated publication with `UNAVAILABLE`: fewer than three copies could be
+verified. This run is not qualified. The adapter correctly rejected the missing threshold;
+the failed result is retained. Bucket listing and creation alone do not prove usable data storage.
+
+The fixture now establishes its existing concurrent publication and bounded verified read before
+checking replica publication, corruption, deletion and outage. It does not retry any write, weaken
+the three-copy threshold, increase a timeout or replace a failed read with success. An unchanged
+local run did not reproduce the CI failure; startup convergence is a fixture precondition being
+corrected, not a conclusively isolated provider diagnosis. The revised fixture passed against the
+installed observation wheel and the pinned Windows and Linux services. New CI must
+qualify the correction on both hosted environments; prior failures remain failures.
