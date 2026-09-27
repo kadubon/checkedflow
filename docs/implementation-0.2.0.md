@@ -1750,3 +1750,13 @@ case). The downloaded report also passed the historical required-case checker fr
 [Component evidence](evidence/retention-admission-20260927.json) records its source and report
 hash. The OS/Python workflow remained active at observation; the later live-old-chain variant
 and original final G1-G7 are not established by this component result.
+
+
+The live-old-chain successor case subsequently passed installed CI at b20d958 in 97.549 seconds;
+the frozen published-capture variant passed in 20.053 seconds. The downloaded JUnit report
+passed the current 31-case gate with zero failures, errors or skips. The new
+[component evidence](evidence/live-legacy-cutover-20260927.json) records source/report identities
+and limitations. Old generation/reuse, unknown lease, revocations, owned-process shutdown and
+four-store replay now have actual single-host execution evidence before successor startup.
+This does not establish four-host custody, external-effect cancellation, full rolling upgrade,
+bounded operational load or final G1-G7. The remaining OS/Python matrix jobs were still running.

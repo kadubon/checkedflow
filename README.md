@@ -283,4 +283,6 @@ from catalog erasure and verifies existing roots without silently recreating mis
 Inherited node startup now requires the protected local retention configuration and replays its
 retained history before opening the ABCI listener. See [startup admission](docs/legacy-retention.md#startup-admission).
 Worker/effect supervisors also revalidate retention through their watchdog before dispatch.
+An installed single-host trial covers old-node shutdown and successor recovery; see the
+[recorded migration result](docs/evidence/live-legacy-cutover-20260927.json).
 Final multi-host qualification remains unfinished.

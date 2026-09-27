@@ -149,7 +149,9 @@ and chain are separate. All four successor nodes reopen their own retained copie
 charges and unknown obligations, execute new signed accounting, restart one node and compare
 replay. Releasing one retention pin must inhibit that node's dispatch watchdog.
 
-The case is registered but its current live variant has not yet been executed. It does not claim
+The installed CI run at b20d958 passed both variants: 20.053 seconds for the published capture
+and 97.549 seconds for the live cutover. All 31 infrastructure cases passed without skips; see
+[recorded evidence](evidence/live-legacy-cutover-20260927.json). This does not claim
 four separate host environments, independently managed organizations, physical signer transfer,
 external-effect cancellation or protection from an administrator restarting the retired chain.
 Production cutover still requires protected restart fencing and the four-host G6 evidence. Keep
@@ -158,4 +160,4 @@ old and new credentials separate and recover forward after the first new commitm
 
 The published-fixture variant including retained startup and dispatch checks passed the installed
 CI infrastructure suite at 08ee6c6: [report evidence](evidence/retention-admission-20260927.json).
-The later live-old-chain variant remains pending and must pass independently.
+The later live-old-chain variant subsequently passed at b20d958, as recorded above.

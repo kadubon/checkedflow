@@ -116,3 +116,7 @@ independent positive revision floor. Never initialize a missing inventory or rep
 
 Inherited worker/effect watchdogs require a protected DispatchGuard. Retention I/O must not
 extend freshness or block emergency stop; never reuse a returned state as a future dispatch permit.
+
+For live legacy cutover evidence, retain worker/capability revocation, confirmed old-process stop,
+four-store replay and the independently observed checkpoint. Do not treat a published fixture or
+a single-host trial as four-host custody qualification. See docs/legacy-migration.md.

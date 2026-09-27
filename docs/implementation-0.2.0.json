@@ -1340,7 +1340,8 @@
         "component:legacy-checkpoint-inventory",
         "component:legacy-successor-accounting",
         "component:legacy-obligation-reconciliation",
-        "component:legacy-retention"
+        "component:legacy-retention",
+        "component:legacy-live-cutover"
       ]
     },
     {
@@ -1353,7 +1354,8 @@
         "component:succession-approval",
         "component:succession-approval-custody",
         "component:succession-startup-admission",
-        "component:legacy-retention"
+        "component:legacy-retention",
+        "component:legacy-live-cutover"
       ]
     },
     {
@@ -1365,7 +1367,8 @@
         "component:legacy-checkpoint-inventory",
         "component:legacy-successor-accounting",
         "component:legacy-obligation-reconciliation",
-        "component:legacy-retention"
+        "component:legacy-retention",
+        "component:legacy-live-cutover"
       ]
     },
     {
@@ -4291,6 +4294,36 @@
         "checkedflow-0.1.0-py3-none-any.whl": "cf0f75cdeb315ff9f79a11c1b4d959f0669a3f2516acbce1eda77b5f21a68537",
         "checkedflow-0.1.0.tar.gz": "e8b970842d60711de4bb076ba542d554ca6bb8de78534d23b9a75f287e1fdf18"
       }
+    },
+    {
+      "id": "legacy-live-cutover",
+      "status": "INTEGRATION_TESTED",
+      "implementation": [
+        "src/checkedflow/legacy_inventory.py",
+        "src/checkedflow/legacy_successor.py",
+        "src/checkedflow/legacy_retention.py",
+        "src/checkedflow/succession.py",
+        "src/checkedflow/distributed/operational_application.py",
+        "src/checkedflow/dispatch_watchdog.py"
+      ],
+      "tests": [
+        "tests/live_legacy.py",
+        "tests/test_integration.py"
+      ],
+      "documentation": [
+        "docs/legacy-migration.md",
+        "docs/legacy-retention.md",
+        "docs/succession-approval.md"
+      ],
+      "evidence": [
+        "docs/evidence/live-legacy-cutover-20260927.json"
+      ],
+      "requirements": [
+        "R7-0349",
+        "R7-0351",
+        "R7-0353"
+      ],
+      "scope": "Installed development artifacts, single-host CI. Published capture and live old four-node generation/reuse, expired unknown, capability/worker revocation, process shutdown, four-history replay, successor approval, four new nodes, crash/restart and retention-loss dispatch inhibition. Not four separate Linux environments, physical signer transfer, an in-flight external effect cancellation, full lifecycle/upgrade qualification or final G1-G7. Overall OS/Python workflow was still running at observation."
     }
   ],
   "observations": [
@@ -4577,6 +4610,13 @@
       "scope": "CI36307407339 qualification job108586789812 completed success at08ee6c6. Downloaded JUnit report:30executed,0failures,0errors,0skips; independently accepted by the historical gate from08ee6c6. Inherited-accounting case28.332seconds. Overall matrix workflow still running at observation. Later live migration variant and final G1-G7 remain unqualified.",
       "evidence": [
         "docs/evidence/retention-admission-20260927.json"
+      ]
+    },
+    {
+      "id": "live-legacy-installed-infrastructure-result",
+      "scope": "Downloaded CI36308412721 report passed current31case gate with0failures0errors0skips. Published inherited case20.053sec; live legacy cutover97.549sec. This component evidence does not complete original G1-G7; OS/Python workflow remained active at observation.",
+      "evidence": [
+        "docs/evidence/live-legacy-cutover-20260927.json"
       ]
     }
   ]
