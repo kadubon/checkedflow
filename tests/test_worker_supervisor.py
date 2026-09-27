@@ -18,6 +18,7 @@ class Worker:
         self.node = Node()
         self.calls = 0
         self.published = []
+        self.now = 0
         self.coordinator = self.node.coordinator(path / "commands")
         self.watchdog = Watchdog(
             self.progress,
@@ -25,6 +26,7 @@ class Worker:
             mission="m",
             max_read_age_ns=10_000_000_000,
             max_stall_ns=10_000_000_000,
+            clock=lambda: self.now,
         )
         self.watchdog.poll()
         self.supervisor = self.reopen()
@@ -58,6 +60,14 @@ def test_run_once_and_resume_without_reexecuting(tmp_path):
     assert w.reopen().step(w.node.task) == "finished"
     assert w.calls == 1
     assert w.node.read().budget.spent == 30
+
+
+def test_expired_supervisor_observation_blocks_execution(tmp_path):
+    w = Worker(tmp_path)
+    w.now = 10_000_000_001
+    with pytest.raises(Failure, match="NOT_READY"):
+        w.supervisor.step(w.node.task)
+    assert w.calls == 0
 
 
 def test_publication_failure_retains_report_without_rerunning(tmp_path):

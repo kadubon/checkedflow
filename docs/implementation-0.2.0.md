@@ -1666,3 +1666,10 @@ full statement/branch coverage. Updated portable vectors and isolated wheel/sdis
 The expanded four-node crash/reconciliation case and full current-source gates remain pending.
 See [the accounting contract](legacy-reconciliation.md); physical cutover, retained-artifact
 availability and old residual/dependency reconciliation are still separate unfinished work.
+
+
+CI36303952537's Windows 3.14 unit job failed on a benign observer fixture whose real-time
+watchdog observation aged beyond ten seconds under load. The test fixture now uses an explicit
+clock and separately verifies expiry prevents execution. Production thresholds and timeout
+behavior are unchanged. All 50 supervisor/scheduler cases passed in 8.98 seconds. The prior
+failed run remains unqualified; current source still needs complete CI.

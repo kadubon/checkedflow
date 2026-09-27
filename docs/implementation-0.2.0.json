@@ -4488,6 +4488,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36303211145",
       "conclusion": "failure",
       "scope": "Multiple OS/Python checks failed before newer mutation-fixture fix. The superseded run still had Windows checks active; cancellation requested to allow current qualification to proceed. Cancellation is not a passing result; no exact-final-source qualification claim."
+    },
+    {
+      "source": "9fed81e",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36303952537",
+      "conclusion": "failure",
+      "scope": "Windows3.14 unit job108577303324 failed benign invalid-observation fixture with NOT_READY after real watchdog time exceeded10seconds;1109passed1failed4skipped26deselected. Production freshness bound is unchanged. Supervisor unit fixture now uses an explicit clock plus a deadline-expiry rejection regression;50supervisor/schedulercasespassed8.98sec. Exact-source CI remains required."
     }
   ]
 }
