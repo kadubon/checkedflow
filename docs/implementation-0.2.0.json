@@ -364,29 +364,39 @@
       "id": "R1-0092",
       "source_line": 92,
       "text": "- `docs/implementation-0.2.0.md`: decisions, milestones, acceptance cases, dependencies.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ]
     },
     {
       "id": "R1-0093",
       "source_line": 93,
       "text": "- A machine-readable implementation status file, using the repository's conventions.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "docs/implementation-0.2.0.json",
+        "scripts/static.py"
+      ]
     },
     {
       "id": "R1-0094",
       "source_line": 94,
       "text": "- `docs/operational-profile-0.2.md`: proposed deployment/workload envelope, explicitly marked unqualified until measured.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IMPLEMENTED",
+      "evidence": [
+        "docs/operational-profile-0.2.md"
+      ]
     },
     {
       "id": "R1-0096",
       "source_line": 96,
       "text": "Track each requirement as `NOT_STARTED`, `IMPLEMENTED`, `SOURCE_TESTED`, `INSTALLED_TESTED`, `INTEGRATION_TESTED`, `DEPLOYMENT_QUALIFIED`, or `BLOCKED`, with evidence references. A count of checked boxes is not a release gate.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "docs/implementation-0.2.0.json",
+        "scripts/static.py"
+      ]
     },
     {
       "id": "R2-0104",
@@ -1562,8 +1572,10 @@
       "id": "R8-0402",
       "source_line": 402,
       "text": "Provide authenticated mission-scoped roles for inspection, submission, approval, verification, revocation, and operations. Define actual permissions in one auditable policy source; do not allow the LLM to assert its own roles.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:mission-client-access"
+      ]
     },
     {
       "id": "R8-0404",
@@ -3701,13 +3713,14 @@
       "id": "mission-client-access",
       "status": "SOURCE_TESTED",
       "implementation": [
-        "src/checkedflow/agents/access.py",
-        "src/checkedflow/agents/authentication.py",
-        "src/checkedflow/agents/http.py",
         "src/checkedflow/agents/a2a.py",
         "src/checkedflow/agents/a2a_server.py",
+        "src/checkedflow/agents/access.py",
+        "src/checkedflow/agents/authentication.py",
+        "src/checkedflow/agents/download.py",
+        "src/checkedflow/agents/http.py",
         "src/checkedflow/agents/mcp.py",
-        "src/checkedflow/agents/download.py"
+        "src/checkedflow/data/access-roles.json"
       ],
       "tests": [
         "tests/test_agent_access.py",
@@ -3722,6 +3735,7 @@
         "docs/implementation-0.2.0.md"
       ],
       "requirements": [
+        "R8-0402",
         "R8-0406"
       ],
       "scope": "Shared protected-file mission/client roles and signed actors across A2A/MCP, OAuth identity, egress checks, callback ownership and bounded delegation. Explicit artifact publication catalog applies the same policy to HTTP and MCP byte reads, including archived bytes; no automatic archive publication or trusted historical query. V2 CLI policy mandatory. Transport deployment qualification and coordinated recovery remain open; see agent-mutual-tls."
@@ -4553,6 +4567,10 @@
     {
       "id": "legacy-live-cutover-case-registered",
       "scope": "Prior CI36306049589 at797acbd completed success across all jobs. Startup/dispatch guard commits pushed together at08ee6c6; CI36307407339 running at observation. Current integration family now requires published and live variants (31 infrastructure cases total). Live variant generates/reuses on old4nodes, preserves expired unknown, revokes capability/dependents and allworkers, rejects oldworker command, stops allowned oldprocesses, then verifies fourdurable replays against common committed AppHash before signing successor. Same-host test registration only; current live execution and full G1-G7 remain pending."
+    },
+    {
+      "id": "requirement-ledger-document-audit",
+      "scope": "Corrected five stale NOT_STARTED entries after reading the actual implementation document, milestone/dependency table, machine ledger validator, explicitly unqualified operational profile and shared mission access-role contract. R1-0092/0093/0094 are IMPLEMENTED for the requested document artifacts; R1-0096 and R8-0402 are IN_PROGRESS. This does not promote runtime/deployment evidence or any original G1-G7 gate."
     }
   ]
 }
