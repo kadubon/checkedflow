@@ -104,8 +104,8 @@ OPERATIONAL_MUTATIONS = [
         "agents/operational_gateway.py",
         "test_operational_gateway.py",
         "gateway_current_signature_and_epoch",
-        "Runtime(state).apply(raw, height=state.height + 1)",
-        "pass",
+        "predicted_archive = Runtime(state).apply(raw, height=state.height + 1)",
+        "predicted_archive = None",
         "test_bad_inputs_governance_signature_and_retired_duplicate",
     ),
     (

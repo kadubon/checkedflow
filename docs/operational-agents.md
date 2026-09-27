@@ -23,7 +23,9 @@ validating full node. Every read checks its synchronization state and the config
 Submission accepts the original UTF-8 envelope bytes; it never translates or resigns v1 data.
 The temporary v2 runtime authenticates and evaluates the proposed transition before a single send.
 The gateway returns a commit acknowledgment only after observing the exact command digest in the
-committed request journal. An HTTP/RPC success alone is insufficient. A missing receipt, lost reply,
+committed request journal. Rollover can instead be confirmed by an exact committed archive root
+matching the locally predicted batch containing its receipt. A different batch remains unknown.
+An HTTP/RPC success alone is insufficient. A missing receipt, lost reply,
 or unavailable post-send read returns `OUTCOME_UNKNOWN`, without automatic retransmission.
 
 The ordinary SDK gateway exposes only worker/verifier commands. The v2 CLI additionally enables

@@ -79,7 +79,9 @@ The command actor must also appear in that grant's `actors`. A transport role ne
 Only the explicitly configured v2 CLI gateway enables administrative submission; the ordinary SDK
 `Gateway` defaults to worker/verifier commands. A caller that deliberately enables SDK administration
 must also install client policy. Consensus still checks organization quorum, actor purpose, current
-key revision, mission scope, nonce and command-specific constraints. Unknown work cannot be cancelled
+key revision, mission scope, nonce and command-specific constraints. A rollover moves its own receipt
+into an archive: the gateway confirms only an exact committed root matching its independently
+predicted batch. Concurrent changes to that batch leave the result unknown until archive reconciliation. Unknown work cannot be cancelled
 by assigning a transport `revoke` role.
 
 ## Revocation, notifications and callbacks

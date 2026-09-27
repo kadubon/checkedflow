@@ -7,6 +7,7 @@ from checkedflow.agents.access import COMMAND_ROLES
 from checkedflow.agents.gateway import profile
 from checkedflow.core.key_registry import roots
 from checkedflow.core.operational import State, genesis
+from checkedflow.core.request_journal import Archive
 from checkedflow.core.values import Failure, Object, array, fields, obj, require, text
 from checkedflow.core.work_acceptance import VERIFIER_COMMANDS, status
 from checkedflow.core.work_tasks import WORKER_COMMANDS
@@ -149,13 +150,21 @@ class Gateway:
         require(obj(command["payload"]).get("mission") == self.mission, "SCOPE", "mission mismatch")
         state = self.state()
         raw = envelope_json.encode("utf-8")
-        Runtime(state).apply(raw, height=state.height + 1)
+        predicted_archive = Runtime(state).apply(raw, height=state.height + 1)
         expected = digest(command)
 
         def confirmed(value: State) -> bool:
-            return any(
+            if any(
                 r.request == identity and r.command_digest == expected
                 for r in value.journal.receipts
+            ):
+                return True
+            # Rollover moves its own receipt into the archive. Only an exact committed root
+            # matching the independently predicted batch confirms it without an archive fetch.
+            return (
+                isinstance(predicted_archive, Archive)
+                and value.journal.epoch == predicted_archive.epoch + 1
+                and value.journal.archive_root == predicted_archive.root
             )
 
         if not confirmed(state):

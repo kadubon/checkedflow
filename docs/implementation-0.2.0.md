@@ -947,3 +947,10 @@ subscription filtering and dispatch rechecks after DNS. The installed v2 CometBF
 uses the policy-enabled MCP server. Full exact-source qualification for this increment is pending.
 R8-0406 remains in progress: unified artifact-download/archive authorization, mTLS deployment and
 coordinated recovery are not completed by transport policy. No G1-G7 release gate is promoted.
+
+
+A follow-up to client-policy admission handles signed journal rollover receipts: they move into the
+new archive rather than remaining in the active journal. The gateway now confirms only an exact
+committed root matching the independently predicted batch. A concurrent change to the batch leaves
+`OUTCOME_UNKNOWN`, and an old-epoch duplicate is still rejected. Forty-one targeted gateway/access
+cases passed, with 100% statement/branch gateway coverage; full follow-up checks are pending.

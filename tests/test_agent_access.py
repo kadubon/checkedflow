@@ -546,3 +546,40 @@ def test_v2_cli_cannot_start_without_operator_policy():
         )
         assert result.returncode != 0
         assert b"v2 requires --access-policy" in result.stderr
+
+
+def test_rollover_confirmation_requires_the_exact_committed_archive_root(policy):
+    def envelope(n):
+        command = n.h.template | {
+            "id": "0:rollover-client",
+            "epoch": n.read().journal.epoch,
+            "kind": "journal.rollover",
+            "actor": "a",
+            "nonce": dict(n.read().journal.actors)["a"] + 1,
+            "payload": {"mission": "m"},
+        }
+        return sign_command(
+            command, {pair: key for pair, key in n.h.keys.items() if pair[0] in "abc"}
+        ).decode()
+
+    n = Node()
+    gateway = Gateway(n, "operational-test", "m", administration=True)
+    raw = envelope(n)
+    policy.command(LOCAL, gateway.command(raw))
+    assert gateway.submit(raw)["status"] == "committed"
+    assert n.read().journal.epoch == 1 and not n.read().journal.receipts
+    with pytest.raises(Failure):
+        gateway.submit(raw)
+    assert len(n.sent) == 1
+
+    class Changed(Node):
+        def submit(self, raw):
+            # Concurrent work changes the archived batch even if this command also commits.
+            self.h.send("task.lease", self.lease(), actor="worker")
+            return super().submit(raw)
+
+    n = Changed()
+    gateway = Gateway(n, "operational-test", "m", administration=True)
+    with pytest.raises(Failure, match="OUTCOME_UNKNOWN"):
+        gateway.submit(envelope(n))
+    assert n.read().journal.epoch == 1 and len(n.sent) == 1
