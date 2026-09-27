@@ -2054,7 +2054,8 @@
       "text": "2. A multi-host inventory/configuration generator and supervised service deployment for four pre-provisioned Linux hosts, for example through systemd and bounded idempotent deployment scripts.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:offline-deployment-plan"
+        "component:offline-deployment-plan",
+        "component:native-deployment-preflight"
       ]
     },
     {
@@ -2071,7 +2072,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:application-history-backup",
-        "component:offline-deployment-plan"
+        "component:offline-deployment-plan",
+        "component:native-deployment-preflight"
       ]
     },
     {
@@ -2080,7 +2082,8 @@
       "text": "The default must not expose RPC, ABCI, management, artifact, or metrics services publicly. Configure authenticated transport for cross-host services, restrict P2P peers, and pin images/binaries with provenance and hash checks.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:offline-deployment-plan"
+        "component:offline-deployment-plan",
+        "component:native-deployment-preflight"
       ]
     },
     {
@@ -2089,7 +2092,8 @@
       "text": "Do not ship shared production keys, fixed passwords, copied validator signing state, development CA trust, or writable source checkouts as deployment defaults.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:offline-deployment-plan"
+        "component:offline-deployment-plan",
+        "component:native-deployment-preflight"
       ]
     },
     {
@@ -4382,6 +4386,31 @@
         "checkedflow-0.1.0-py3-none-any.whl": "8dd42530fa1a894c862d8aa12485f6a9f112798445512f0a2376f86bfbb0127c",
         "checkedflow-0.1.0.tar.gz": "69c52971a26d9de825fb8f8a0a9130ee00ef511d55848e3e611e782d57de3cd0"
       }
+    },
+    {
+      "id": "native-deployment-preflight",
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "src/checkedflow/distributed/deployment_preflight.py",
+        "src/checkedflow/data/deployment-preflight.schema.json",
+        "src/checkedflow/cli.py"
+      ],
+      "tests": [
+        "tests/test_deployment_preflight.py"
+      ],
+      "documentation": [
+        "docs/deployment-planning.md"
+      ],
+      "evidence": [
+        "docs/evidence/deployment-preflight-20260927.json"
+      ],
+      "requirements": [
+        "R12-0511",
+        "R12-0515",
+        "R12-0517",
+        "R12-0519"
+      ],
+      "scope": "Read-only root/isolated Linux CLI verifies approved bundle, installed package and host configuration bytes, operator path ownership/modes, executable access, pinned Go module/version/checksum and protocol versions, and loaded unit identity without overrides.29 source cases pass. Installed predecessor ran on4 approved VM kernels; exact wheel hash and remaining checks are recorded in evidence. Additional ancestor-search guard is unit-tested only. No startup authority, maintained apply/lifecycle completion, adversarial confinement or G6 claim."
     }
   ],
   "observations": [

@@ -42,6 +42,12 @@ def main(argv: list[str] | None = None) -> int:
     )
     for option in ("directory", "expected-plan", "wheel", "cometbft"):
         deployment_verify.add_argument("--" + option, required=True)
+    preflight = commands.add_parser(
+        "deployment-preflight",
+        help="inspect provisioned Linux host files using root isolated Python",
+    )
+    for option in ("directory", "expected-plan", "wheel", "node"):
+        preflight.add_argument("--" + option, required=True)
     for name in ("generator", "example"):
         commands.add_parser(name)
     monitoring = commands.add_parser("monitoring")
@@ -74,6 +80,7 @@ def main(argv: list[str] | None = None) -> int:
             "legacy-retention-local",
             "deployment-inventory",
             "deployment-verification",
+            "deployment-preflight",
             "effect-command",
             "github-effect-intent",
             "effect-policy",
@@ -178,6 +185,10 @@ def main(argv: list[str] | None = None) -> int:
                     Path(args.directory), args.expected_plan, Path(args.wheel), Path(args.cometbft)
                 )
             )
+        elif args.action == "deployment-preflight":
+            from checkedflow.distributed.deployment_preflight import inspect
+
+            emit(inspect(Path(args.directory), args.expected_plan, Path(args.wheel), args.node))
         elif args.action == "schema":
             filename = {
                 "envelope": "envelope.schema.json",
@@ -201,6 +212,7 @@ def main(argv: list[str] | None = None) -> int:
                 "legacy-retention-local": "legacy-retention-local.schema.json",
                 "deployment-inventory": "deployment-inventory.schema.json",
                 "deployment-verification": "deployment-verification.schema.json",
+                "deployment-preflight": "deployment-preflight.schema.json",
                 "access-policy": "access-policy.schema.json",
                 "access-roles": "access-roles.json",
                 "access-vectors": "access-vectors.json",

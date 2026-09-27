@@ -97,6 +97,54 @@ Original input hashes in the manifest preserve the approved provenance record; o
 files are not recovered or independently authenticated by reading that record. A partial or changed
 bundle fails closed and is never repaired automatically.
 
+## Inspect an already provisioned Linux host
+
+Use `deployment-preflight` from the exact interpreter declared in the reviewed inventory:
+
+```sh
+sudo /opt/checkedflow/runtime/bin/python -I -m checkedflow.cli deployment-preflight \
+  --directory /etc/checkedflow/review \
+  --expected-plan INDEPENDENTLY_APPROVED_PLAN_SHA256 \
+  --wheel /opt/checkedflow/checkedflow-0.1.0-py3-none-any.whl \
+  --node node0
+```
+
+Paths above are placeholders for the approved inventory. Provision the runtime, accounts, all
+21 review files, deployed configuration and units explicitly first. The command installs nothing,
+does not start or stop services, and does not create, reset or copy signing state. Root access is
+needed to inspect protected configuration; isolated Python prevents user environment settings
+and the current directory from becoming import paths. Go must already be available at
+`/usr/bin/go` for its native build-information inspector. It is an inspection prerequisite, not
+an application runtime dependency.
+
+The command verifies the independently approved bundle and artifact hashes, exact interpreter,
+installed package bytes, protected path ancestry and service-account executable access. Runtime,
+review and application-configuration paths must be root-owned and not group/world writable;
+validator configuration ancestry may additionally belong to its non-root validator account.
+Unexpected package source, changed configuration, alternate loaded unit paths, drop-ins, pending
+daemon reloads and wrong service-account declarations fail closed. File modes are inspected, not
+silently repaired. Protect ACLs, mount configuration and operator access separately; these mode
+checks do not prove a complete host security policy.
+
+Native version checking uses the fixed CometBFT main Go module version and checksum, rejects
+module replacements, and checks the ABCI/block/P2P protocol versions. A display string alone
+does not prove a build's origin: the upstream
+[v0.40.0 source](https://raw.githubusercontent.com/cometbft/cometbft/v0.40.0/version/version.go)
+retains a `0.39.0` display constant. The output preserves that reported value separately from
+`cometbft_module_version`. Build metadata is checked against the approved binary hash; it is not
+a substitute for an independently reviewed source/build provenance record.
+
+`checkedflow schema deployment-preflight` describes the JSON result. `HOST_FILES_VERIFIED` is
+a current observation with `hosts_changed: false` and `startup_authorized: false`. Its remaining
+checks explicitly include network confinement, validator custody, candidate isolation and live
+quorum/recovery. No service lifecycle action may treat this result alone as permission to start.
+Readiness can change after the observation; repeat inspection at use.
+
+The [four-VM preflight observation](evidence/deployment-preflight-20260927.json) records actual
+installed CLI results and retained failed attempts. It identifies the tested wheel and explicitly
+separates a later unit-tested ancestry guard from that installed result. It is component evidence,
+not final-artifact release qualification.
+
 ## Service and network requirements
 
 The units use separate non-root accounts `cf-<name>-app` and `cf-<name>-val`, a read-only system

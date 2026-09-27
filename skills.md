@@ -296,3 +296,8 @@ Revalidate at application time, and preserve native runtime/confinement/custody 
 For native node setup, preserve the generated gRPC passthrough target and provision executable
 access for separate service accounts. See the deployment guide's scoped four-VM evidence;
 complete lifecycle and confinement qualification remain required before release.
+
+`deployment-preflight` inspects an already provisioned Linux host through the reviewed isolated
+Python interpreter. See `checkedflow schema deployment-preflight` for its observation contract.
+It checks installed files and loaded units, never changes host state, and never authorizes startup.
+Keep native display versions, pinned module identity and independently reviewed provenance separate.

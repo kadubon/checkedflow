@@ -1,0 +1,152 @@
+{
+  "version": "checkedflow/qualification-observation/v1",
+  "status": "COMPONENT_PASSED",
+  "release_authority": false,
+  "scope": "Installed deployment-preflight CLI on four approved Linux VMs sharing a physical host and operator. No services were started by this command.",
+  "wheel_sha256": "73930b37d4ba44aa5caf8f7da19575270111293986d34ffad263cf804205dd8f",
+  "cometbft_sha256": "23752877fe1d856009551beca2a326296b5cf846d6bc64fd72ae35d251811d1b",
+  "node_results": [
+    {
+      "cometbft_module_version": "v0.40.0",
+      "cometbft_version": "0.39.0",
+      "hosts_changed": false,
+      "installed_package_members": 198,
+      "node": "node0",
+      "plan_sha256": "972a70e8f6f233c7b9dac772ad70b34c217156bb05f6140e7b5dd757dabfa686",
+      "remaining": [
+        "network confinement",
+        "validator custody",
+        "candidate isolation",
+        "live quorum and recovery"
+      ],
+      "services": {
+        "abci": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead"
+        },
+        "validator": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead"
+        }
+      },
+      "startup_authorized": false,
+      "status": "HOST_FILES_VERIFIED",
+      "version": "checkedflow/deployment-preflight/v1",
+      "wheel_sha256": "73930b37d4ba44aa5caf8f7da19575270111293986d34ffad263cf804205dd8f"
+    },
+    {
+      "cometbft_module_version": "v0.40.0",
+      "cometbft_version": "0.39.0",
+      "hosts_changed": false,
+      "installed_package_members": 198,
+      "node": "node1",
+      "plan_sha256": "972a70e8f6f233c7b9dac772ad70b34c217156bb05f6140e7b5dd757dabfa686",
+      "remaining": [
+        "network confinement",
+        "validator custody",
+        "candidate isolation",
+        "live quorum and recovery"
+      ],
+      "services": {
+        "abci": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead"
+        },
+        "validator": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead"
+        }
+      },
+      "startup_authorized": false,
+      "status": "HOST_FILES_VERIFIED",
+      "version": "checkedflow/deployment-preflight/v1",
+      "wheel_sha256": "73930b37d4ba44aa5caf8f7da19575270111293986d34ffad263cf804205dd8f"
+    },
+    {
+      "cometbft_module_version": "v0.40.0",
+      "cometbft_version": "0.39.0",
+      "hosts_changed": false,
+      "installed_package_members": 198,
+      "node": "node2",
+      "plan_sha256": "972a70e8f6f233c7b9dac772ad70b34c217156bb05f6140e7b5dd757dabfa686",
+      "remaining": [
+        "network confinement",
+        "validator custody",
+        "candidate isolation",
+        "live quorum and recovery"
+      ],
+      "services": {
+        "abci": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead"
+        },
+        "validator": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead"
+        }
+      },
+      "startup_authorized": false,
+      "status": "HOST_FILES_VERIFIED",
+      "version": "checkedflow/deployment-preflight/v1",
+      "wheel_sha256": "73930b37d4ba44aa5caf8f7da19575270111293986d34ffad263cf804205dd8f"
+    },
+    {
+      "cometbft_module_version": "v0.40.0",
+      "cometbft_version": "0.39.0",
+      "hosts_changed": false,
+      "installed_package_members": 198,
+      "node": "node3",
+      "plan_sha256": "972a70e8f6f233c7b9dac772ad70b34c217156bb05f6140e7b5dd757dabfa686",
+      "remaining": [
+        "network confinement",
+        "validator custody",
+        "candidate isolation",
+        "live quorum and recovery"
+      ],
+      "services": {
+        "abci": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead"
+        },
+        "validator": {
+          "ActiveState": "inactive",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead"
+        }
+      },
+      "startup_authorized": false,
+      "status": "HOST_FILES_VERIFIED",
+      "version": "checkedflow/deployment-preflight/v1",
+      "wheel_sha256": "73930b37d4ba44aa5caf8f7da19575270111293986d34ffad263cf804205dd8f"
+    }
+  ],
+  "package_members_compared_per_node": [
+    198,
+    198,
+    198,
+    198
+  ],
+  "services_stopped": true,
+  "vm_shutdown": "GRACEFUL_DISKS_PRESERVED",
+  "failed_attempts_preserved": [
+    "Copied runtime had group-writable paths; inspection rejected it. Operator fixture removed group/world write bits before retry.",
+    "Initial display-string-only version check rejected upstream v0.40.0 because its display constant is0.39.0. Revised checker verifies pinned Go module checksum/version, rejects replacements and checks native protocols."
+  ],
+  "source_followup": "A subsequent executable-ancestor search-permission guard is unit-tested but is not included in this installed wheel. Final artifact native qualification remains required.",
+  "report_sha256": "3e70c3c802b059b203bc88e6e7db12637c947a576edf461c281299ef6d6d251c"
+}

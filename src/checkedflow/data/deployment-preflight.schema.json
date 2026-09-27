@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:deployment-preflight:v1",
+  "title": "Read-only native host file and loaded-unit observation",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": "checkedflow/deployment-preflight/v1"
+    },
+    "status": {
+      "const": "HOST_FILES_VERIFIED"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "wheel_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "node": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,31}$"
+    },
+    "installed_package_members": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4096
+    },
+    "cometbft_version": {
+      "type": "string",
+      "maxLength": 80
+    },
+    "hosts_changed": {
+      "const": false
+    },
+    "startup_authorized": {
+      "const": false
+    },
+    "remaining": {
+      "const": [
+        "network confinement",
+        "validator custody",
+        "candidate isolation",
+        "live quorum and recovery"
+      ]
+    },
+    "services": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "abci": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "LoadState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "ActiveState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "SubState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "MainPID": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          "required": [
+            "LoadState",
+            "ActiveState",
+            "SubState",
+            "MainPID"
+          ]
+        },
+        "validator": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "LoadState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "ActiveState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "SubState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "MainPID": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          "required": [
+            "LoadState",
+            "ActiveState",
+            "SubState",
+            "MainPID"
+          ]
+        }
+      },
+      "required": [
+        "abci",
+        "validator"
+      ]
+    },
+    "cometbft_module_version": {
+      "const": "v0.40.0"
+    }
+  },
+  "required": [
+    "version",
+    "status",
+    "plan_sha256",
+    "wheel_sha256",
+    "node",
+    "installed_package_members",
+    "cometbft_version",
+    "hosts_changed",
+    "startup_authorized",
+    "remaining",
+    "services",
+    "cometbft_module_version"
+  ]
+}

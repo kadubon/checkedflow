@@ -139,3 +139,9 @@ Revalidate at application time, and preserve native runtime/confinement/custody 
 Generated CometBFT gRPC targets require the passthrough resolver; socket tcp targets are not
 interchangeable. Test service-account executable access explicitly. Four-VM component evidence
 does not establish the maintained deployment lifecycle or adversarial kernel confinement.
+
+Run deployment-preflight with the reviewed isolated interpreter on an explicitly provisioned Linux
+host. It never repairs permissions or starts services. Preserve reported version strings separately
+from pinned Go module identity: the upstream v0.40.0 source reports a 0.39.0 display constant.
+Require approved binary hashes and module/protocol checks; never infer source provenance from
+the version string alone. HOST_FILES_VERIFIED is not startup authority or complete host qualification.
