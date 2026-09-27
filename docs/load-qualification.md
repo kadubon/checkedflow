@@ -18,7 +18,9 @@ for any subsequent experiment.
   organizational checks are funded at admission; the unused fourth check is cancelled and refunded.
 - Preserve ordinary/governance journal headroom through explicit pause/rollover/resume. Revoke
   and retire each completed candidate and its settled funding; retain every history root and verify
-  the actual four SQLite journals and archive objects after shutdown.
+  the actual four SQLite journals and archive objects after shutdown. Each replay must contain the
+  independently observed common-height CometBFT application hash; a self-consistent truncated
+  local journal cannot substitute for that checkpoint.
 - Crash and restart one node with its existing signing state. Confirm renewed committed progress,
   compare common-height hashes and reject an old-epoch command after repeated rollover.
 - During the designated candidate, witness an owned sandbox running, commit drain, reject new

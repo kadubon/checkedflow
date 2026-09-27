@@ -300,6 +300,7 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
     success, failure = False, None
     recovery_ns = drain_ns = in_flight_drain_ns = None
     old_request_result = None
+    checkpoint = None
     control_completed = control_elapsed_ns = verified_elapsed_ns = 0
 
     def deadline(signum, frame):
@@ -494,6 +495,7 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
                 for tx in document(body)["transactions"]
             )
         old_request_result = retired_request(cluster, bytes.fromhex(first))
+        checkpoint = cluster.common_hash()
         success = True
     except BaseException as error:
         failure = type(error).__name__
@@ -504,12 +506,27 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
         try:
             cluster.close()
             if success:
+                assert checkpoint is not None
                 for index in range(4):
                     store = Store(
                         cluster.directory / f"node{index}" / "operational.sqlite", cluster.initial
                     )
                     state = store.load()
-                    assert store.verify_history(expected_hash=Runtime(state).state_hash) == state
+                    anchored = []
+
+                    def check_anchor(raw, seen=anchored):
+                        block = document(raw)
+                        if block["height"] == checkpoint[0]:
+                            assert block["state_hash"].upper() == checkpoint[1].upper()
+                            seen.append(True)
+
+                    assert (
+                        store.verify_history(
+                            expected_hash=Runtime(state).state_hash, consume=check_anchor
+                        )
+                        == state
+                    )
+                    assert anchored == [True], "committed checkpoint missing from stored history"
                     for sequence, root in enumerate(measurement.archive_roots, 1):
                         store.work_archive(sequence, expected_root=root)
         except BaseException as error:
@@ -537,6 +554,9 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
             "empty_drain_ns": drain_ns,
             "in_flight_drain_ns": in_flight_drain_ns,
             "retired_request": old_request_result,
+            "common_checkpoint": (
+                {"height": checkpoint[0], "app_hash": checkpoint[1]} if checkpoint else None
+            ),
             "queue_peak": max((row["queued_intents"] for row in measurement.arrivals), default=0),
             "disk_growth_bytes": disk_growth,
             "completed_tasks": completed_tasks,
