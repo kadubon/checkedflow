@@ -83,8 +83,9 @@ checks before a new POST. Rejection preserves the unknown claim, so later caller
 silently retry without supervision. The hook is an integration boundary, not an implemented
 full executor; see [its exact ordering and limitations](github-drafts.md#final-local-dispatch-check).
 The [supervised dispatcher](effect-dispatch.md) now connects that hook to a reloaded protected
-intent policy, current own-node reservations and complete stored verification evidence. Automatic
-reporting, staging, compensation and recovery orchestration remain separate requirements.
+intent policy, current own-node reservations and complete stored verification evidence. The
+[durable supervisor](effect-supervision.md) connects ordinary reservation, reporting and local
+crash recovery. Staging, compensation and cross-host recovery remain separate requirements.
 
 ## Persistence, bounds and remaining integration
 
@@ -106,7 +107,7 @@ death, automatic expiry, catch-up, administrative reconciliation and common hash
 observation is explicitly a signed fixture, not a real GitHub result. Installed qualification must
 execute this named case; a previous report lacking it cannot qualify this increment.
 
-Still required for the complete effect lifecycle: maintained executor orchestration connecting
-current artifacts/policy/freshness and original-byte recovery to send-time checks; governed staging;
-production credential custody; exact-identity compensation and retirement; complete crash-window
+Still required for the complete effect lifecycle: governed staging and remote reconciliation;
+production credential custody and cross-host executor recovery; exact-identity compensation
+and retirement; complete crash-window
 and multi-host qualification. Do not enable publication from these component checks alone.

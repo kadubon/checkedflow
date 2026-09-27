@@ -39,7 +39,7 @@ guides; complete generation orchestration and operational deployment are still u
 | Where are callback credentials kept? | [Callback custody](docs/callback-secrets.md); encrypted private journal and separately provisioned keys |
 | How are evidence and bounded records retained? | [S3 storage](docs/s3-storage.md), [retention](docs/retention-backup.md), [settled-work retirement](docs/work-archive.md) |
 | How is application state restored? | [Application history recovery](docs/application-backup.md); validator ownership needs separate recovery |
-| Can it open a pull request automatically? | [Supervised dispatch](docs/effect-dispatch.md) checks approved intent, current policy and available evidence before an exact draft operation; disabled by default, with staging and full recovery orchestration still incomplete |
+| Can it open a pull request automatically? | [Effect supervision](docs/effect-supervision.md) connects approval, current checks, one draft operation and signed reporting; disabled by default, with staging and complete deployment recovery still incomplete |
 | What if an external request loses its reply? | [V2 effect records](docs/work-effects.md) keep the original reservation, full modeled charge and unknown result; governed reconciliation cannot authorize a second send |
 | What has actually been tested? | [Implementation ledger](docs/implementation-0.2.0.md), [four-VM observations](docs/vm-laboratory-2026-09-26.md) |
 

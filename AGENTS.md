@@ -21,6 +21,9 @@ Operational provider callers must use the final `before_send` check after remote
 Do not remove a durable claim when that check rejects or crashes; it still prohibits retry.
 Use the supervised dispatcher to bind current protected policy and artifact evidence. Never treat
 its provider observation as a committed report or allow candidates to modify the policy path.
+Preserve the effect supervisor, coordinator and provider journals together. A recovered invocation
+claim means unknown, never permission to call the dispatcher again. Verify published observation
+bytes before reporting, and use governed reconciliation when the reporting window has closed.
 
 V2 effect reservations retain full modeled cost once a send becomes possible. Never reset a
 reservation, clear unknowns, release attached funding or mint a fresh intent to retry a provider

@@ -44,6 +44,38 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "effect_supervisor.py",
+        "test_effect_supervisor.py",
+        "effect_invocation_never_repeats_after_crash",
+        'if phase == "prepared":',
+        'if phase in {"prepared", "dispatching"}:',
+        "test_process_exit_recovers_without_second_provider_invocation",
+    ),
+    (
+        "effect_supervisor.py",
+        "test_effect_supervisor.py",
+        "effect_reservation_requires_original_coordinator_proof",
+        'elif effect.status == "dispatch_reserved":',
+        "elif False:",
+        "test_another_reservation_cannot_fill_prepared_journal",
+    ),
+    (
+        "effect_supervisor.py",
+        "test_effect_supervisor.py",
+        "effect_original_arguments_retained",
+        'row[0] == binding, "BINDING", "retained effect arguments changed"',
+        'True, "BINDING", "retained effect arguments changed"',
+        "test_journal_argument_changes_and_cross_identity_are_rejected",
+    ),
+    (
+        "effect_supervisor.py",
+        "test_effect_supervisor.py",
+        "effect_observation_publication_requires_bytes",
+        "verify(ref, self.dispatcher.store.get(ref, access=self.dispatcher.access))",
+        "pass",
+        "test_publication_acknowledgment_without_bytes_cannot_authorize_report",
+    ),
+    (
         "effect_dispatch.py",
         "test_effect_dispatch.py",
         "dispatch_rechecks_current_dependencies",

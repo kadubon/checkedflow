@@ -1665,7 +1665,8 @@
       "evidence": [
         "component:governed-effect-reservations",
         "component:effect-final-send-check",
-        "component:supervised-effect-dispatch"
+        "component:supervised-effect-dispatch",
+        "component:durable-effect-supervision"
       ]
     },
     {
@@ -1698,7 +1699,8 @@
       "text": "Use deterministic operation identities and owned branch names, conditional/create-if-absent behavior where actually supported, and a serialized dispatch claim. Inspect the existing branch/PR against exact expected content before treating it as the result of a retry.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:github-draft-provider"
+        "component:github-draft-provider",
+        "component:durable-effect-supervision"
       ]
     },
     {
@@ -1708,7 +1710,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:github-draft-provider",
-        "component:governed-effect-reservations"
+        "component:governed-effect-reservations",
+        "component:durable-effect-supervision"
       ]
     },
     {
@@ -1718,7 +1721,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:github-draft-provider",
-        "component:governed-effect-reservations"
+        "component:governed-effect-reservations",
+        "component:durable-effect-supervision"
       ]
     },
     {
@@ -1764,7 +1768,8 @@
       "evidence": [
         "component:bounded-isolated-task-ownership",
         "component:durable-worker-supervision",
-        "component:independent-sandbox-recovery"
+        "component:independent-sandbox-recovery",
+        "component:durable-effect-supervision"
       ]
     },
     {
@@ -1774,7 +1779,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:governed-work-budget",
-        "component:funded-organizational-acceptance"
+        "component:funded-organizational-acceptance",
+        "component:durable-effect-supervision"
       ]
     },
     {
@@ -1841,7 +1847,8 @@
       "evidence": [
         "component:dispatch-freshness-watchdog",
         "component:durable-worker-supervision",
-        "component:supervised-effect-dispatch"
+        "component:supervised-effect-dispatch",
+        "component:durable-effect-supervision"
       ]
     },
     {
@@ -3787,6 +3794,39 @@
         "R9-0439",
         "R10-0475"
       ]
+    },
+    {
+      "id": "durable-effect-supervision",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/effect_supervisor.py",
+        "src/checkedflow/data/effect-observation.schema.json",
+        "src/checkedflow/cli.py"
+      ],
+      "tests": [
+        "tests/test_effect_supervisor.py",
+        "tests/test_effect_dispatch.py",
+        "tests/test_integration.py",
+        "scripts/check.py",
+        "scripts/fault_injection.py",
+        "scripts/qualification_gate.py",
+        "scripts/package_check.py"
+      ],
+      "documentation": [
+        "docs/effect-supervision.md",
+        "docs/effect-dispatch.md",
+        "docs/work-effects.md"
+      ],
+      "scope": "Authorized effect to original signed reservation, at-most-one supervised invocation, persisted canonical observation, scoped publish/readback, signed reporting and conservative local crash recovery. No adoption of an unrelated reservation; no reexecution of interrupted provider calls. Five real child-process exits and lost command replies tested. Full source: 924 passed, three Windows descriptor skips, 24 infrastructure cases separately selected; static/coverage passed and supervisor 100 percent line/branch. Completed full check passed with all 86 selected fault mutants killed. Installed wheel passed all 70 dispatcher/supervisor fixtures outside the source checkout, including actual child-process exits; wheel/sdist package smoke passed. Source/distribution pattern scan: 808 members, zero findings. New required 27-case installed infrastructure run is pending. No cross-host journal failover, governed remote reconciliation, staging, compensation, retirement or full G1-G7 claim.",
+      "requirements": [
+        "R9-0433",
+        "R9-0445",
+        "R9-0447",
+        "R9-0449",
+        "R10-0463",
+        "R10-0465",
+        "R10-0475"
+      ]
     }
   ],
   "observations": [
@@ -3957,6 +3997,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36289916718",
       "conclusion": "failure",
       "scope": "Installed qualification failed: immediately after restarting node0, the deliberate duplicate reservation broadcast returned OUTCOME_UNKNOWN rather than required REJECTED. Downloaded JUnit independently rejected; not counted as a pass. Fixture now waits for explicit non-catching-up live_state and submits subsequent commands through continuously running node1, while checking all replicas and durable replay. Requires a new actual qualification run; provider/source invariants were not relaxed."
+    },
+    {
+      "source": "88de00c840a64f455708ab6bd442064581f2dbef",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36290596648",
+      "conclusion": "success",
+      "scope": "All jobs and all 26 required installed infrastructure cases passed; downloaded report independently checked with that source's historical gate. Includes corrected recovered-node readiness fixture. Hosted wheel0689c48c939e013e52cd7a8be1b2adc28fba6b993bc0e21176a38401103e089c; sdistcdfbf3d67edd819c5b1815b49cf95f65cf7f90dd1ad2c050bb975e3ac9c17d2e. Predates durable supervisor/new27case gate. Prior failed report remains failed; not final G1-G7 qualification."
     }
   ]
 }

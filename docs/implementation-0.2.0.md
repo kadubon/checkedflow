@@ -1179,3 +1179,42 @@ The dispatcher increment's completed local full-check process exited successfull
 selected fault mutants were detected, including removal of final dependency rechecks and of the
 post-read observation-inventory comparison. The failed hosted report above remains a failure;
 the read-readiness fixture correction still needs its new installed infrastructure run.
+
+### Durable effect reporting and local crash recovery
+
+Source `88de00c840a64f455708ab6bd442064581f2dbef` subsequently passed every job in
+CI36290596648. Its downloaded 26-case infrastructure report passed the historical gate for that
+source, including the corrected recovered-node readiness case. Hosted wheel
+`0689c48c939e013e52cd7a8be1b2adc28fba6b993bc0e21176a38401103e089c` and sdist
+`cdfbf3d67edd819c5b1815b49cf95f65cf7f90dd1ad2c050bb975e3ac9c17d2e` are that run's
+artifacts. The earlier failed report remains failed. This success predates the supervisor below.
+
+`effect_supervisor.Supervisor` now connects a quorum-authorized effect to an original signed
+reservation, one supervised invocation, durable canonical observation, scoped artifact publication
+with readback, and signed reporting. A reservation without local ownership becomes unknown;
+an interrupted invocation is never reexecuted. Lost report replies reconcile original signed
+bytes. Reporting that outlives its authority window preserves evidence for governed recovery.
+The closed packaged observation schema distinguishes attributed provider evidence from external
+truth and from committed reporting. Local journal capacity is 64; records are not silently evicted.
+
+The complete local check passed 924 tests in 282.37 seconds, with three Windows descriptor skips
+and 24 infrastructure cases deselected. All static and authoritative coverage gates passed; the
+new supervisor reached 100% statement/branch coverage. All 86 selected fault mutants were killed,
+including repeated invocation, missing reservation ownership, changed original arguments and
+unverified observation publication. Five actual child-process exits covered reservation, possible
+invocation, fixture provider response, evidence publication and committed reporting windows.
+
+Wheel `0627062e4250e0b81377d51e9371ce953c93ba12795c1a94d32fb80fb1a21aee` and sdist
+`68e2a474aa43ec3738fde8aa7e20a071ac7e175ad756d2ed3be8840e0ca6fc78` passed isolated
+installation. Their installed wheel also passed all 70 dispatcher/supervisor fixtures outside the
+checkout, including child-process exits. Publication pattern scanning examined 808 members with
+no findings; this is not independent penetration testing. Subsequent ledger/document updates do
+not change package code, and these development artifacts are not the final release candidate.
+
+A new required installed infrastructure case combines real four-node CometBFT, four actual gVisor
+observations, retained SQLite evidence, current policy, one fixture-provider response and lost
+committed report-reply recovery. It checks common node state/accounting and published observation
+bytes. The required gate now contains 27 cases. It has not run locally on Windows and the prior
+26-case report cannot qualify it. The provider response in this case is an explicit fixture;
+live GitHub staging, governed remote reconciliation, compensation, coordinated cross-host recovery,
+retirement and the complete original G1–G7 profile remain unfinished.

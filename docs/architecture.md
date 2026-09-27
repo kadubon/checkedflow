@@ -106,4 +106,6 @@ reservation; provider I/O and local freshness remain outside consensus. The main
 compensation and effect archival are not yet complete. See [ADR 0004](adr-0004-effect-reservations.md).
 The [supervised dispatcher](effect-dispatch.md) bridges a live reservation to provider dispatch:
 it reloads protected intent policy and verifies scoped artifacts before preflight and at the
-final send check. Reporting, staging and coordinated recovery remain separate responsibilities.
+final send check. The [effect supervisor](effect-supervision.md) retains invocation and observation
+records, verifies published evidence, and submits ordinary reports through the nonce coordinator.
+Staging, remote reconciliation and coordinated cross-host recovery remain separate responsibilities.

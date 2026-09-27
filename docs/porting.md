@@ -72,3 +72,10 @@ own-node freshness after I/O, including at the provider's final send boundary. P
 unknown claims when that check fails. See [dispatch ordering](effect-dispatch.md#dispatch-ordering)
 for the adapter algorithm and its non-atomic cross-system limits. These local checks never alter
 deterministic block time or replace signed reservation authority.
+
+Use the [effect observation schema](../src/checkedflow/data/effect-observation.schema.json) for
+attributed provider results. Preserve canonical bytes, original provider plan and zero object
+number for unknown results. The local invocation-height lower bound is not the external creation
+time. Persist the invocation claim before entering an adapter; an interrupted claim must not call
+the adapter again. Preserve original signed reports separately from provider receipts, and verify
+stored evidence bytes before reporting. Local SQL phases are not consensus effect classifications.

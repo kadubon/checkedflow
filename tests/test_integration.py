@@ -1203,3 +1203,252 @@ def test_v2_effect_reservation_expiry_reconciliation_and_replica_recovery(infras
         assert store.verify_history(expected_hash=OperationalRuntime(durable).state_hash) == durable
         assert durable.effects[0].status == "compensation_required"
         assert durable.budget.spent == 50
+
+
+@pytest.mark.integration
+@pytest.mark.sandbox
+@pytest.mark.qualification
+def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
+    infrastructure, tmp_path, monkeypatch
+):
+    """Real consensus and gVisor; the fixed provider response is explicitly a protocol fixture."""
+    from dataclasses import asdict, replace
+    from io import BytesIO
+
+    from test_github_drafts import pull
+
+    from checkedflow.artifacts import Access, LocalStore
+    from checkedflow.core.artifact import Reference
+    from checkedflow.dispatch_watchdog import Watchdog
+    from checkedflow.distributed.operational_cluster import Cluster as OperationalCluster
+    from checkedflow.domains.repository_patch import apply_patch, digest_bytes
+    from checkedflow.effect_dispatch import Dispatcher, Policy
+    from checkedflow.effect_supervisor import Supervisor
+    from checkedflow.git_tree import tree_id
+    from checkedflow.github_drafts import Drafts, Token
+    from checkedflow.github_effects import Intent
+    from checkedflow.repository_reuse import Inputs, contract_digest, tree_bytes
+    from checkedflow.wire import digest, document, dumps, validate
+    from checkedflow.worker_submission import Coordinator
+
+    image, binary = infrastructure
+    cluster = OperationalCluster(tmp_path / "supervised-effects", binary)
+    objects = LocalStore(tmp_path / "objects.sqlite")
+    access = Access("executor", frozenset({"repository"}), frozenset({"read", "write"}))
+    base, patch, contract, cases = invoice(image)
+    contract = replace(contract, allow_draft_pr=True, deadline_height=100000)
+    target = contract_digest(contract)
+    intent = Intent(
+        contract.repository,
+        42,
+        "main",
+        contract.base_commit,
+        "b" * 40,
+        tree_id(apply_patch(base, patch, contract)),
+        contract.result_tree,
+        target,
+        contract.patch_digest,
+    )
+
+    def put(raw, kind):
+        ref = Reference(
+            "sha256", digest_bytes(raw), len(raw), "application/json", kind, "repository", target
+        )
+        objects.put(ref, BytesIO(raw), access=access)
+        return ref
+
+    base_ref, patch_ref, inventory_ref = (
+        put(tree_bytes(base), "source-tree"),
+        put(patch, "patch"),
+        put(cases, "evidence"),
+    )
+    try:
+        cluster.start()
+        cluster.send("budget.configure", {"budget": 100, "verification_reserve": 40})
+        cluster.send("mission.resume", {})
+        checks = []
+        for index in range(4):
+            ticket = cluster.send(
+                "budget.reserve", {"phase": "verify", "ceiling": 10, "target": target}
+            )["request"]
+            checks.append(
+                cluster.send(
+                    "task.admit",
+                    {
+                        "ticket": ticket,
+                        "workers": [f"v{index}"],
+                        "lease_blocks": 1000,
+                        "expires": 100000,
+                        "max_attempts": 1,
+                    },
+                )["request"]
+            )
+        candidate = cluster.send(
+            "artifact.admit",
+            {"target": target, "artifact": intent.result, "expires": 100000, "checks": checks},
+        )["request"]
+        refs = []
+        for index, task in enumerate(checks):
+            actor = f"v{index}"
+            cluster.send("task.lease", {"task": task}, actor=actor, node=index)
+            cluster.send("task.start", {"task": task, "fence": 1}, actor=actor, node=index)
+            observed = observe_patch(
+                base, patch, contract, cases, height=cluster.client(index).state().height
+            )
+            assert observed.case_match is True
+            ref = put(dumps(validate(asdict(observed))), "evidence")
+            refs.append(ref)
+            cluster.send(
+                "task.finish",
+                {"task": task, "fence": 1, "outcome": "reported", "evidence": ref.digest},
+                actor=actor,
+                node=index,
+            )
+            cluster.send(
+                "artifact.attest",
+                {"candidate": candidate, "task": task, "evidence": ref.digest, "verdict": "pass"},
+                actor=actor,
+                node=index,
+            )
+        policy = {
+            "profile": "checkedflow/effect-policy/v1",
+            "chain": cluster.initial.chain,
+            "mission": "repository",
+            "repository": intent.repository,
+            "repository_id": 42,
+            "actor": "owner",
+            "executor": "e0",
+            "revision": 1,
+            "enabled": True,
+            "intents": [intent.digest],
+        }
+        path = tmp_path / "policy.json"
+        path.write_bytes(dumps(policy))
+        ticket = cluster.send(
+            "budget.reserve", {"phase": "execute", "ceiling": 10, "target": intent.digest}
+        )["request"]
+        identity = cluster.send(
+            "effect.prepare",
+            {
+                "candidate": candidate,
+                "ticket": ticket,
+                "intent": intent.digest,
+                "policy": digest(policy),
+                "executor": "e0",
+                "revision": 1,
+                "expires": 100000,
+                "lease_blocks": 200,
+            },
+        )["request"]
+        cluster.send("effect.authorize", {"effect": identity})
+        approved = cluster.client().state().effects[0]
+        plan = intent._plan(approved.operation, approved.authorization)
+        calls = []
+
+        def provider_request(method, suffix, **kwargs):
+            calls.append((method, suffix))
+            if method == "POST":
+                assert suffix == "/pulls" and kwargs["payload"]["draft"] is True
+                assert kwargs["payload"]["body"] == plan.body
+                return pull(plan)
+            if suffix == "":
+                return {"id": 42, "full_name": intent.repository, "archived": False}
+            if suffix == "/actions/permissions":
+                return {"enabled": False}
+            if suffix.startswith("/git/ref/heads/"):
+                return {
+                    "object": {
+                        "type": "commit",
+                        "sha": intent.base_commit
+                        if suffix.endswith("/main")
+                        else intent.head_commit,
+                    }
+                }
+            if suffix == "/git/commits/" + intent.base_commit:
+                return {"sha": intent.base_commit, "tree": {"sha": tree_id(base)}}
+            if suffix == "/git/commits/" + intent.head_commit:
+                return {
+                    "sha": intent.head_commit,
+                    "tree": {"sha": intent.git_tree},
+                    "parents": [{"sha": intent.base_commit}],
+                }
+            assert suffix == "/pulls"
+            return []
+
+        provider = Drafts(
+            intent.repository,
+            42,
+            "owner",
+            Token("fixture"),
+            tmp_path / "provider.sqlite",
+            enabled=True,
+        )
+        monkeypatch.setattr(provider, "_request", provider_request)
+        client = cluster.client()
+        sent = []
+
+        def submit(raw):
+            sent.append(raw)
+            result = client.submit(raw)
+            if document(raw)["command"]["kind"] == "effect.report":
+                raise OSError("fixture drops already committed report reply")
+            return result
+
+        coordinator = Coordinator(
+            tmp_path / "commands",
+            client.live_state,
+            submit,
+            cluster.keys[("e0", 1)],
+            chain=cluster.initial.chain,
+            mission="repository",
+            actor="e0",
+            revision=1,
+        )
+        watchdog = Watchdog(
+            client.live_state,
+            chain=cluster.initial.chain,
+            mission="repository",
+            max_read_age_ns=30_000_000_000,
+            max_stall_ns=30_000_000_000,
+        )
+        first = watchdog.poll()
+        cluster.wait_height(first.height + 1)
+        watchdog.poll()
+        dispatcher = Dispatcher(
+            provider, watchdog, Policy(path), objects, access, executor="e0", revision=1
+        )
+        inputs = Inputs(base_ref, patch_ref, inventory_ref, tuple(refs))
+        supervisor = Supervisor(tmp_path / "executor", coordinator, dispatcher)
+        with pytest.raises(Failure, match="OUTCOME_UNKNOWN"):
+            supervisor.step(identity, intent, contract, inputs)
+        original = coordinator.pending()
+        assert original is not None and document(original)["command"]["kind"] == "effect.report"
+        supervisor = Supervisor(tmp_path / "executor", coordinator, dispatcher)
+        assert supervisor.step(identity, intent, contract, inputs) == "observed"
+        assert len(sent) == 2 and sent.count(original) == 1
+        assert sum(method == "POST" for method, _ in calls) == 1
+        raw = supervisor.observation(identity)
+        assert raw is not None
+        row = document(raw)
+        assert row["outcome"] == "observed" and row["number"] == 7
+        report_ref = Reference(
+            "sha256",
+            digest_bytes(raw),
+            len(raw),
+            "application/json",
+            "evidence",
+            "repository",
+            intent.digest,
+        )
+        assert objects.get(report_ref, access=access) == raw
+        cluster.wait_height(client.state().height)
+        for index in range(4):
+            state = cluster.client(index).state()
+            assert (
+                state.effects[0].status == "observed"
+                and state.effects[0].evidence == report_ref.digest
+            )
+            assert state.budget.spent == 50 and state.budget.reserved == 0
+        assert len(cluster.common_hash()[1]) == 64
+    finally:
+        cluster.close()

@@ -19,9 +19,10 @@ or interpret consensus approvals. The caller must be a separate trusted effect e
 its credential and private journal away from candidates, ordinary workers, verifiers and gateways.
 Constructing or decoding a plan does not prove authority to send it.
 The [v2 effect state machine](work-effects.md) now supplies governed reservations and a strict
-intent-to-plan resolver. Maintained send-time orchestration and compensation remain incomplete.
+intent-to-plan resolver. Complete operational deployment and compensation remain incomplete.
 The [supervised dispatch SDK](effect-dispatch.md) connects current protected policy, scoped
-evidence and own-node freshness to the final check. Automatic reporting and recovery remain open.
+evidence and own-node freshness to the final check. The [durable supervisor](effect-supervision.md)
+adds ordinary signed reporting and local crash recovery; cross-host failover remains open.
 
 ## Exact destination and content checks
 
@@ -168,8 +169,9 @@ provider credentials.
 
 ## Remaining operational integration
 
-Required work still includes a consensus-bound effect state machine, separate current action
-authorization, exact patch-to-Git staging, funded dispatch/fences, credential custody, supervised
-freshness, coordinated journal recovery, governed reconciliation and compensation. A provider
+Consensus effect states, funded reservations, current dispatch checks and durable ordinary reporting
+are implemented as development components. Required work still includes exact patch-to-Git staging,
+production credential custody, coordinated cross-host journal recovery, governed remote
+reconciliation and compensation. A provider
 smoke is not `LIVE_EFFECT_QUALIFIED` for the complete 0.2 operational profile. G3 and final release
 remain blocked until the full path and all required failure windows are qualified.

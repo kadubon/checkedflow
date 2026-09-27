@@ -182,3 +182,6 @@ The coordinator also accepts the purpose-scoped `effect.reserve` and `effect.rep
 They retain the same nonce, original-byte and lost-reply rules. The task Supervisor does not thereby
 become an external-effect executor: [effect orchestration](work-effects.md) must separately enforce
 policy, current reservation, provider-journal ownership and send-time freshness.
+The separate [effect supervisor](effect-supervision.md) now performs ordinary effect reservation,
+one supervised invocation, verified observation publication and signed reporting. Its local claim
+and provider journal are independent of the task execution journal; never substitute one for another.

@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 REQUIRED = {
+    "test_v2_supervised_effect_report_recovery_with_verified_artifacts": 1,
     "test_v2_effect_reservation_expiry_reconciliation_and_replica_recovery": 1,
     "test_http_mtls_does_not_replace_bearer_or_client_policy": 2,
     "test_actual_grpc_requires_certificate_token_and_current_grant": 1,

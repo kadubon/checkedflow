@@ -373,6 +373,7 @@ from checkedflow.agents.gateway import Gateway
 from checkedflow.agents.mcp import create_server
 from checkedflow.github_drafts import Drafts, Token, decode_plan
 from checkedflow.effect_dispatch import Dispatcher, Policy
+from checkedflow.effect_supervisor import Supervisor as EffectSupervisor
 from checkedflow.core.values import Failure
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -390,6 +391,7 @@ vector = json.loads(
 )
 from checkedflow.wire import dumps
 assert Dispatcher.__module__ == "checkedflow.effect_dispatch"
+assert EffectSupervisor.__module__ == "checkedflow.effect_supervisor"
 policy_schema = json.loads(
     resources.files("checkedflow").joinpath("data/effect-policy.schema.json").read_text()
 )

@@ -136,6 +136,10 @@ Prefer `effect_dispatch.Dispatcher` for an existing reservation: it reloads prot
 policy, validates current stored evidence and own-node state before provider I/O and before POST.
 Inspect `checkedflow schema effect-policy`; its canonical digest must match the committed effect.
 The returned provider observation still needs an original signed report or governed reconciliation.
+`effect_supervisor.Supervisor` connects an authorized effect to reservation, one invocation,
+verified observation publication and signed reporting. Inspect `checkedflow schema effect-observation`.
+It preserves uncertain signed submissions and interrupted dispatches; only explicit original-byte
+command retransmission is allowed, never a repeated provider operation. Keep all three journals.
 Never give the token or journal to candidate code. Do not recreate a journal or use a new operation
 to retry an unknown POST. Read reconciliation cannot treat absence as permission to resend.
 The operator fixture writes to a real repository: run it only against an explicitly authorized

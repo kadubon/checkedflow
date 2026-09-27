@@ -17,13 +17,12 @@ from checkedflow.dispatch_watchdog import Watchdog
 from checkedflow.effect_dispatch import Dispatcher, Policy
 from checkedflow.git_tree import tree_id
 from checkedflow.github_drafts import Drafts, Outcome, Token
-from checkedflow.github_effects import Intent, reserved_plan
+from checkedflow.github_effects import Intent
 from checkedflow.repository_reuse import contract_digest, decode_tree, prepare
 from checkedflow.wire import digest, dumps, loads
 
 
-@pytest.fixture
-def setup(tmp_path, monkeypatch):
+def fixture(tmp_path, monkeypatch, *, reserve=True):
     h, contract, inputs, store, access = reuse_fixture(tmp_path, harness=Harness(), draft=True)
     tree = prepare(h.runtime.state, h.candidate, contract, inputs, store, access=access).tree
     intent = Intent(
@@ -68,7 +67,8 @@ def setup(tmp_path, monkeypatch):
         },
     )
     h.action("authorize")
-    h.action("reserve")
+    if reserve:
+        h.action("reserve")
     f = SimpleNamespace(
         h=h,
         intent=intent,
@@ -100,15 +100,7 @@ def setup(tmp_path, monkeypatch):
         tmp_path / "provider.sqlite",
         enabled=True,
     )
-    selected = reserved_plan(
-        h.runtime.state,
-        h.effect,
-        intent,
-        contract,
-        executor="effects",
-        revision=1,
-        policy=digest(policy_record),
-    )
+    selected = intent._plan(h.current.operation, h.current.authorization)
     base_tree = tree_id(decode_tree(store.get(inputs.base, access=access)))
 
     def request(method, suffix, **kwargs):
@@ -146,6 +138,11 @@ def setup(tmp_path, monkeypatch):
     )
     f.run = lambda: f.dispatcher.dispatch(h.effect, intent, contract, inputs)
     return f
+
+
+@pytest.fixture
+def setup(tmp_path, monkeypatch):
+    return fixture(tmp_path, monkeypatch)
 
 
 def test_verified_reservation_and_current_evidence_dispatch_once(setup):

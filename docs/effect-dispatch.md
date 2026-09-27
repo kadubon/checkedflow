@@ -73,9 +73,11 @@ permission. Once the reservation expires or observations are recorded, this disp
 no longer eligible; it is not a recovery method for historical effects.
 
 The owning service must retain original signed submissions, publish bounded observation evidence
-and report through the [nonce coordinator](worker-supervision.md). It must use governed read
-reconciliation when the result or reporting window is uncertain. Automatic observation/report
-orchestration, least-privilege production token custody, staging writes, compensation, retirement
+and report through the [nonce coordinator](worker-supervision.md). The
+[durable supervisor](effect-supervision.md) now performs ordinary reservation, one invocation,
+evidence publication and signed reporting with conservative local crash recovery. It must use governed read
+reconciliation when the result or reporting window is uncertain. Least-privilege production
+token custody, staging writes, compensation, retirement
 and separate-host failure qualification remain unfinished. Source fixtures use signed state and
 actual SQLite artifacts with fixed provider responses; they do not claim a live GitHub gate.
 
