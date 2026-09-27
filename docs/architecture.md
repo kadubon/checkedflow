@@ -128,3 +128,10 @@ current-state gauges do not count a replayed event again.
 Local worker/effect/service invocations can opt into [bounded operation logs and optional traces](telemetry.md).
 These observations are lossy diagnostics, not committed events, task acceptance or execution authority.
 No outbound exporter is enabled by default.
+
+[Legacy preparation](legacy-migration.md) verifies an independent old checkpoint before
+constructing a paused successor. Its budget holds original spending and reservations separately
+from new tickets; the complete old snapshot remains the source for fences, dependencies and
+residuals. The core performs only integer accounting and retained-root validation. Node shutdown,
+cutover approvals, artifact retention and validator signer transfer remain external obligations
+and are not established by a self-consistent prepared state.

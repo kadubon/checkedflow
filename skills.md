@@ -235,3 +235,6 @@ proof of an installed monitoring service or achieved availability.
 For [legacy migration inventory](docs/legacy-migration.md), provision checkpoint trust independently.
 Keep the full snapshot and signed history; zero reservation does not mean no uncertain work.
 The inspection SDK cannot stop validators, authorize successor dispatch or reset old balances.
+The successor preparation SDK creates a paused accounting baseline with locked inherited
+reservations. Its portable vector and state schema do not establish cutover approval, artifact
+retention or validator ownership. Old commands and results do not acquire v2 authority.

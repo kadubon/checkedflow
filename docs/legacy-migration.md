@@ -1,9 +1,10 @@
 # Legacy migration inventory
 
 The development SDK can inspect a complete v1 snapshot against a separately trusted
-checkpoint. This is a read-only prerequisite for migration, **not an implemented successor
-deployment or permission to resume work**. The maintenance-window cutover, inherited v2
-accounting, reconciliation, validator custody and mixed-version recovery remain unfinished.
+checkpoint and prepare a paused v2 genesis with conserved funding. These are migration
+components, **not a qualified successor deployment or permission to resume work**. The
+maintenance-window cutover, inherited-obligation reconciliation, validator custody and
+mixed-version recovery remain unfinished.
 
 ## Why preserve more than the available budget?
 
@@ -45,15 +46,56 @@ wire protocol. The returned bytes use the original v1 canonicalization contract.
 
 ## Remaining cutover requirements
 
-Before enabling a successor, the implementation must bind its genesis to old authority and
-the frozen checkpoint, preserve outstanding balances without new allowances, retain the
+### Preparing conserved successor funding
+
+`checkedflow.legacy_successor.prepare(raw, trusted, initial, mission="old-mission")` accepts
+the original snapshot, its independent checkpoint and a pristine paused v2 genesis. It
+returns a paused successor for one explicitly selected old mission. The successor chain
+must differ from the old chain. Existing tasks, receipts, configured funding or a running
+mode in `initial` are rejected. Other old missions are retained in the committed snapshot;
+this function does not create a deployment mapping for them or distribute their allowance.
+
+The successor budget contains an `inheritance` record with old chain, mission, height, state
+hash, original budget, spent and reserved values. The hash commits the full original snapshot,
+including fences, nonces, dependencies and residuals. Retain those bytes and signed history
+under protected storage. This reference alone neither proves storage availability nor pins
+objects against deletion; operational retention and governance still need integration.
+
+The runtime counts inherited spent units exactly once and keeps inherited reservations held
+separately from new tickets. Ordinary settlement, request rollover and settled-work retirement
+cannot release them. An already charged unknown attempt is not charged again. No old task is
+made executable, and no old artifact becomes a new accepted candidate. New tasks use the
+new chain's signatures and identities; old signed commands are rejected.
+
+The successor protects the smaller of the original verification reserve and the remaining
+available balance for new verification. It does not infer old verification-phase charges
+from incomplete final task records or invent metering. An exhausted inherited budget may
+have zero protected balance and permits no new reservation. The original verification policy
+remains in the historical snapshot. This explicit v2 allocation must be included in cutover review.
+
+The actual SQLite store and signed-history backup/replay accept this prepared baseline while
+rejecting preloaded new work. Genesis trust is still independently provisioned: storing or
+replaying a self-consistent genesis does not prove that old or new administrators approved it.
+The SDK creates no validator configuration, signer state, listeners or external operations.
+
+`legacy-successor-vector.json` ships the exact old checkpoint, public test genesis, prepared
+state, expected hash and balances for ports. `operational-state.schema.json` defines the
+optional inheritance object. When absent, serialization omits it, preserving earlier v2 hashes
+as well as all v1 hashes. Older development writers reject the new field and must not join a
+successor deployment. This is not a claim of rolling-upgrade compatibility for those writers.
+
+### Activation and reconciliation still required
+
+Before enabling a successor, the implementation must bind its prepared genesis to old authority
+and the frozen checkpoint, qualify outstanding-balance conservation, retain the
 authenticated history and artifacts, stop old dispatch, and establish exclusive validator
 signer ownership. Missing evidence must remain unresolved. Migration cannot manufacture
 verification signatures or translate old commands into new execution authority.
 
 This inventory does not prove that a supplied old checkpoint is the latest one, that a
 validator has stopped, or that artifact storage is complete. It does not contain a cleanup,
-activation or balance-reset operation. Keep snapshots protected: candidate source and result
+activation or balance-reset operation. Inherited reservations remain locked until a separate
+governed reconciliation lifecycle is implemented and qualified. Keep snapshots protected: candidate source and result
 fields may contain application data even though signing private keys are not state fields.
 
 ## Verification
@@ -63,6 +105,17 @@ fields may contain application data even though signing private keys are not sta
 It checks independent checkpoint mismatches, malformed input, inconsistent accounting and
 lossless preservation. The fixture's existing hash and checkpoint expectations remain fixed.
 These source tests do not qualify an installed multi-node migration or G4/G6.
+
+`tests/test_legacy_successor.py` also exercises actual signed new work, held legacy reservations,
+budget exhaustion, old-command rejection, pristine-genesis checks, SQLite replay, backup
+restoration and the portable state vector. No physical node cutover is claimed by these tests.
+
+The required infrastructure suite now includes
+`test_v2_inherited_accounting_commits_and_recovers_on_four_nodes`: a prepared baseline, signed
+new work, journal rollover, one process crash/restart, common-height hash comparison and durable
+replay of all four application stores. This new case is pending actual execution. Even a pass
+will qualify successor accounting on four local CometBFT processes, not physical host replacement,
+old-validator retirement, independent organizations or the complete G4/G6 migration path.
 
 See [the original capture](legacy-capture-0.1.md), [the protocol decision](adr-0001-versioned-operational-state.md)
 and [the implementation record](implementation-0.2.0.md).

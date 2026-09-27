@@ -79,3 +79,6 @@ credential and evidence diagnoses; examples and recovery targets are not achieve
 Legacy inventory requires an independently trusted checkpoint and retains the complete old state.
 Do not treat summaries as migration authority or charge already charged unknown attempts twice.
 Successor activation and signer custody remain separate requirements; see docs/legacy-migration.md.
+Prepared successor accounting holds inheritance separately from ordinary tickets. Never release
+it through ticket settlement, remove its history root, or manufacture past verification charges.
+Pristine successor preparation is not proof of old-node shutdown or administrator approval.

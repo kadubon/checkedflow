@@ -30,7 +30,8 @@ repair together can initially reserve at most 70. Verification may use the prote
 Releasing a verification reservation restores its protection. Completed or unknown verification
 charges count toward the allocation already used; the same units are never available twice.
 
-`spent` is the sum of ticket charges. `reserved` is the sum of ceilings of open reservations.
+`spent` is inherited spending plus archived spending and active ticket charges. `reserved` is
+inherited held reservations plus the ceilings of active open reservations.
 `available = budget - spent - reserved`. Every transition and decoded state checks the overall
 budget and the unused protected verification allocation. Costs cannot be negative or exceed a
 ticket's ceiling. A single immutable budget prevents silently increasing the experiment's initial
@@ -61,9 +62,14 @@ and request-journal rollover remain separate control operations. Reservations co
 journal capacity. Configuration and settlement use the administrative reserve. A saturated journal
 can require rollover before more controls, but the permanent rollover slot remains available.
 
-No ticket pruning or refill is implemented. This finite retention is not the sustained operational
-profile required for release. Future task/archive integration must retain authenticated terminal
-history and unresolved obligations before freeing active capacity.
+[Settled-work retirement](work-archive.md) frees eligible terminal records only after epoch
+retirement, preserving authenticated history and cumulative charges. Uncertain and reserved
+funding cannot retire. This is not a budget refill or permission to discard unresolved obligations.
+
+[Prepared legacy successors](legacy-migration.md) carry original charges and held reservations
+in a separate immutable `inheritance` record. Current budget settlement and retirement commands
+cannot reduce either inherited amount. The complete referenced old state remains necessary for
+reconciliation; a zero reservation does not erase an already charged unknown outcome.
 
 Repeated delivery of the exact signed request is acknowledged without another reservation or
 charge. A conflicting request or reused retired epoch identity is rejected by the journal.

@@ -431,6 +431,73 @@ def test_repository_patch_independent_observation(infrastructure, source, expect
 
 
 @pytest.mark.integration
+@pytest.mark.qualification
+def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructure, tmp_path):
+    import json
+    from importlib.resources import files
+
+    from checkedflow.distributed.operational_application import Configuration
+    from checkedflow.distributed.operational_cluster import Cluster as OperationalCluster
+    from checkedflow.legacy_inventory import Checkpoint
+    from checkedflow.legacy_successor import prepare
+    from checkedflow.operational_runtime import Runtime
+    from checkedflow.operational_storage import Store
+    from checkedflow.wire import dumps
+
+    _, binary = infrastructure
+    legacy = json.loads(files("checkedflow").joinpath("data/legacy-v1.json").read_text())
+    old = legacy["final_state"]
+    checkpoint = Checkpoint(old["chain"], old["height"], legacy["final_state_hash"])
+    cluster = OperationalCluster(tmp_path / "inherited", binary)
+    # Prepare only unused laboratory genesis files; never rewrite an active chain.
+    cluster.initial = prepare(dumps(old), checkpoint, cluster.initial, mission="m")
+    cluster.configuration = Configuration(cluster.initial, cluster.configuration.validators)
+    encoded = cluster.configuration.encode()
+    for name in ("operational.json", "genesis.json"):
+        (cluster.directory / name).write_bytes(dumps(encoded))
+    for index in range(4):
+        path = cluster.directory / f"node{index}" / "config/genesis.json"
+        value = json.loads(path.read_text())
+        value["app_state"] = encoded
+        path.write_text(json.dumps(value), encoding="utf-8")
+    initial_budget = cluster.initial.budget
+    assert initial_budget.spent > 0 and old["tasks"]["unknown"]["status"] == "uncertain"
+    try:
+        cluster.start()
+        cluster.send("mission.resume", {})
+        ticket = cluster.send(
+            "budget.reserve",
+            {
+                "phase": "verify",
+                "ceiling": 1,
+                "target": "a" * 64,
+            },
+        )["request"]
+        cluster.send("budget.settle", {"ticket": ticket, "outcome": "unknown", "charged": 1})
+        cluster.send("mission.pause", {})
+        cluster.send("journal.rollover", {})
+        cluster.wait_height(cluster.client().state().height)
+        cluster.processes.stop_node(0, crash=True)
+        cluster.start_node(0)
+        cluster.wait_height(cluster.client(1).state().height)
+        for index in range(4):
+            state = cluster.client(index).state()
+            assert state.budget.inheritance == initial_budget.inheritance
+            assert state.budget.spent == initial_budget.spent + 1
+            assert state.budget.reserved == initial_budget.reserved
+            assert state.budget.available == initial_budget.available - 1
+        _, common = cluster.common_hash()
+        assert common
+    finally:
+        cluster.close()
+    for index in range(4):
+        store = Store(cluster.directory / f"node{index}" / "operational.sqlite", cluster.initial)
+        state = store.load()
+        assert store.verify_history(expected_hash=Runtime(state).state_hash) == state
+        assert state.budget.inheritance == initial_budget.inheritance
+
+
+@pytest.mark.integration
 @pytest.mark.sandbox
 @pytest.mark.qualification
 def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_path):

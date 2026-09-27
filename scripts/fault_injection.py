@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "core/work_budget.py",
+        "test_legacy_successor.py",
+        "inherited_spending_is_not_fresh_allowance",
+        "0 if self.inheritance is None else self.inheritance.spent",
+        "0",
+        "test_real_legacy_funding_survives_signed_work_and_persistent_replay",
+    ),
+    (
+        "core/work_budget.py",
+        "test_legacy_successor.py",
+        "inherited_reservations_remain_held",
+        "0 if self.inheritance is None else self.inheritance.reserved",
+        "0",
+        "test_real_legacy_funding_survives_signed_work_and_persistent_replay",
+    ),
+    (
         "legacy_inventory.py",
         "test_legacy_inventory.py",
         "legacy_inventory_requires_trusted_hash",
@@ -713,7 +729,7 @@ OPERATIONAL_MUTATIONS = [
         "core/work_budget.py",
         "test_work_budget.py",
         "budget_spending_retention",
-        "return self.archived_spent + sum(ticket.charged for ticket in self.tickets)",
+        "return inherited + self.archived_spent + sum(ticket.charged for ticket in self.tickets)",
         "return 0",
         "test_rejects_budget_excess_reconfiguration_and_terminal_rewriting",
     ),

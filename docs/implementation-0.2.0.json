@@ -1183,7 +1183,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:governed-work-budget",
-        "component:application-history-backup"
+        "component:application-history-backup",
+        "component:legacy-successor-accounting"
       ]
     },
     {
@@ -1324,15 +1325,18 @@
       "text": "Implement a reviewed 0.1.0 -> 0.2.0 path using authentic old state/history fixtures, including uncertain work and revoked dependencies.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:legacy-checkpoint-inventory"
+        "component:legacy-checkpoint-inventory",
+        "component:legacy-successor-accounting"
       ]
     },
     {
       "id": "R7-0351",
       "source_line": 351,
       "text": "A maintenance-window, governed successor deployment is acceptable for a protocol-breaking migration. It must bind old and new identities/checkpoints, preserve history and outstanding state, stop old dispatch, and prevent old-chain commands from acquiring new authority.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:legacy-successor-accounting"
+      ]
     },
     {
       "id": "R7-0353",
@@ -1340,7 +1344,8 @@
       "text": "Legacy captures retain their original meaning; migrating structure cannot mint verification evidence. Unsupported/missing original artifacts remain unresolved.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:legacy-checkpoint-inventory"
+        "component:legacy-checkpoint-inventory",
+        "component:legacy-successor-accounting"
       ]
     },
     {
@@ -4059,6 +4064,44 @@
         "checkedflow-0.1.0-py3-none-any.whl": "d43d204396a66b9705bfb12ea785b3d1a8a4b38f42f5cb128c5404257aba0ab4",
         "checkedflow-0.1.0.tar.gz": "cbdfe52b0dddef229520f3499a3c1058874dc16696db3ee81f19d3dc69da6c86"
       }
+    },
+    {
+      "id": "legacy-successor-accounting",
+      "status": "SOURCE_TESTED",
+      "requirements": [
+        "R6-0306",
+        "R7-0349",
+        "R7-0351",
+        "R7-0353"
+      ],
+      "implementation": [
+        "src/checkedflow/legacy_successor.py",
+        "src/checkedflow/core/work_budget.py",
+        "src/checkedflow/operational_codec.py",
+        "src/checkedflow/operational_storage.py",
+        "src/checkedflow/data/legacy-successor-vector.json",
+        "src/checkedflow/data/operational-state.schema.json",
+        "src/checkedflow/data/operational-configuration.schema.json"
+      ],
+      "tests": [
+        "tests/test_legacy_successor.py",
+        "tests/test_work_budget.py",
+        "tests/test_operational_storage.py",
+        "tests/test_operational_backup.py",
+        "tests/test_work_archive.py",
+        "scripts/package_check.py",
+        "tests/test_integration.py",
+        "scripts/qualification_gate.py"
+      ],
+      "documentation": [
+        "docs/legacy-migration.md",
+        "docs/work-budget.md"
+      ],
+      "scope": "Paused successor preparation binds full old checkpoint and keeps inherited charges/reservations separate from ordinary tickets. Signed work, rollover, SQLite replay, backup restore, exhausted balance and original-command rejection tested. 102 focused cases passed in35.81sec; budget109statements8branches and constructor19statements fully covered. Installed wheel/sdist vector smoke passed after correcting embedded configuration-schema drift. Initial failed development distribution remains unqualified. Cutover approval, old-dispatch stop, signer custody, retention and inherited-obligation reconciliation remain unfinished; no finalG1-G7 claim. Full local1081passed399.61sec,3Windowsdescriptor skips,24infrastructure deselections at collection; authoritative coverage passed,108mutants pending. New four-node inherited-accounting crash/restart case extends future required infrastructure gate to28; not executed yet. Host Docker configuration unchanged. All182 wheel package files match source,896distribution members scanned without pattern findings.",
+      "installed_development_artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "dda4e50190ac9fa50946a59609dc70697f94fc5091690ae9f2ce345f79d9c9c2",
+        "checkedflow-0.1.0.tar.gz": "97cd6f140728de4cf2470b1e163fbb569c973c77a092890741277b2824bbbae0"
+      }
     }
   ],
   "observations": [
@@ -4283,6 +4326,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36298741054",
       "conclusion": "success",
       "scope": "All required jobs passed, including six OS/Python jobs, both S3 services, Vault and27 installed infrastructure cases. Downloaded27-case report independently accepted. Wheel c67cd148a47adaac9dda7e65ed9d9f0177ace7a45a355d169c4260428166533b; sdist4a14b4775d094272fc2bbfb1b5b55a7d53e840703513f479fec961b667113975. Includes telemetry reporting-recovery extension; predates monitoring templates and legacy inventory. Not final G1-G7."
+    },
+    {
+      "source": "4492976c0d66c03699fd2545437e92027689630f",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36299678351",
+      "conclusion": "success",
+      "scope": "All required jobs passed including pinned promtool template checks, six OS/Python jobs, both S3 services, Vault and27 installed infrastructure cases. Downloaded27case report independently accepted before the gate extension to28. Wheel c170efaab65d7d40afabac0699c53688ee34f515c957048d6d47fdacc30d6a55; sdist4243ba8c8a295cae6578279025871e704d06e689787a5cd7776334bb6b2d8982. Predates both legacy increments; not finalG1-G7."
     }
   ]
 }

@@ -141,6 +141,12 @@ def inspect() -> list[str]:
         Draft202012Validator.check_schema(schema)
         if re.search(r'"\$ref"\s*:\s*"(?!#)', path.read_text()):
             errors.append(f"network schema reference: {path}")
+    state_schema = json.loads((PACKAGE / "data/operational-state.schema.json").read_text())
+    configuration_schema = json.loads(
+        (PACKAGE / "data/operational-configuration.schema.json").read_text()
+    )
+    if configuration_schema["properties"]["state"] != state_schema:
+        errors.append("embedded operational state schema differs from the standalone contract")
     proto = PACKAGE / "distributed/proto"
     manifest = json.loads((proto / "manifest.json").read_text())
     actual_sources = {

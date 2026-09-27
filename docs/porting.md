@@ -103,3 +103,11 @@ current-state gauges do not count a replayed event again.
 The [local operation observation](telemetry.md) schema uses Unix milliseconds and monotonic elapsed
 microseconds, bounded integer values and fixed operation/outcome/reason enums. It is diagnostic data,
 not a replay event. Exported traces must not inherit client authority or enter deterministic state.
+
+For [legacy successor preparation](legacy-migration.md), use the packaged
+`legacy-successor-vector.json` and both standalone/embedded operational state schemas.
+Omit absent `budget.inheritance`; an explicit null is not canonical. Compute spending as
+inherited spending plus archived spending and active charges, and reservations as inherited
+reservations plus active reserved ceilings. The inherited root commits the entire original
+v1 snapshot. Do not turn a charged unknown into a fresh charge or use new block heights to
+re-evaluate old lease deadlines. Preparation is separate from authorized cutover and reconciliation.

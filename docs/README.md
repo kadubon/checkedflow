@@ -82,5 +82,5 @@ Use the [monitoring templates and response runbook](monitoring-runbook.md) for p
 dashboard queries, explicit SLI denominators and recovery targets. Templates and targets are not
 proof of an installed monitoring service or achieved availability.
 
-[Legacy migration inventory](legacy-migration.md) authenticates and retains old state without
-resetting obligations. It does not activate a successor or retire the old validator.
+[Legacy migration preparation](legacy-migration.md) authenticates and retains old state and
+prepares conserved successor accounting. It does not activate a node or retire the old validator.

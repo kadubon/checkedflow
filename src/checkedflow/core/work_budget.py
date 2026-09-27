@@ -20,20 +20,42 @@ class Ticket:
 
 
 @dataclass(frozen=True)
+class Inheritance:
+    """Original v1 charges and held reservations, bound to retained historical state.
+
+    These are not ordinary tickets. Current settlement and retirement commands
+    cannot release them or overwrite their historical meaning.
+    """
+
+    chain: str
+    mission: str
+    height: int
+    state_hash: str
+    budget: int
+    spent: int
+    reserved: int
+
+
+@dataclass(frozen=True)
 class Ledger:
     budget: int = 0
     tickets: tuple[Ticket, ...] = ()
     verification_reserve: int = 0
     archived_spent: int = 0
     archived_verification: int = 0
+    inheritance: Inheritance | None = None
 
     @property
     def reserved(self) -> int:
-        return sum(ticket.ceiling for ticket in self.tickets if ticket.status == "reserved")
+        inherited = 0 if self.inheritance is None else self.inheritance.reserved
+        return inherited + sum(
+            ticket.ceiling for ticket in self.tickets if ticket.status == "reserved"
+        )
 
     @property
     def spent(self) -> int:
-        return self.archived_spent + sum(ticket.charged for ticket in self.tickets)
+        inherited = 0 if self.inheritance is None else self.inheritance.spent
+        return inherited + self.archived_spent + sum(ticket.charged for ticket in self.tickets)
 
     @property
     def available(self) -> int:
@@ -51,9 +73,28 @@ class Ledger:
 
 def validate(ledger: Ledger) -> None:
     integer(ledger.budget)
+    if ledger.inheritance is not None:
+        inherited = ledger.inheritance
+        text(inherited.chain, limit=128)
+        text(inherited.mission)
+        integer(inherited.height)
+        require(
+            len(inherited.state_hash) == 64
+            and all(char in "0123456789abcdef" for char in inherited.state_hash),
+            "BINDING",
+            "inherited state digest required",
+        )
+        integer(inherited.budget, low=1)
+        integer(inherited.spent, high=inherited.budget)
+        integer(inherited.reserved, high=inherited.budget - inherited.spent)
+        require(ledger.budget == inherited.budget, "BUDGET", "inherited allowance changed")
     integer(ledger.archived_spent, high=ledger.budget)
     integer(ledger.archived_verification, high=ledger.archived_spent)
-    integer(ledger.verification_reserve, low=1 if ledger.budget else 0, high=ledger.budget)
+    integer(
+        ledger.verification_reserve,
+        low=1 if ledger.budget and ledger.inheritance is None else 0,
+        high=ledger.budget,
+    )
     require(len(ledger.tickets) <= MAX_TICKETS, "CAPACITY", "budget ticket capacity")
     previous = ""
     for ticket in ledger.tickets:

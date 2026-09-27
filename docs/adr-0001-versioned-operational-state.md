@@ -28,7 +28,9 @@ or qualified by this ADR alone.
 
 The read-only [legacy inventory](legacy-migration.md) now verifies old snapshot integrity
 against an independent checkpoint and retains all fields and outstanding balances. It does
-not translate commands, construct a successor genesis or establish exclusive signer ownership.
+not translate commands or establish exclusive signer ownership. A separate preparation
+constructor now creates paused successor accounting with old charges and reservations retained;
+governed cutover and inherited-obligation reconciliation remain unfinished.
 
 Fixed fixtures must be captured using the published 0.1.0 runtime, including signed commands,
 empty blocks, rejection codes, uncertainty and dependency revocation. New tests compare to these

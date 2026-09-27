@@ -3,14 +3,14 @@
 Status: **IN PROGRESS; NOT RELEASE READY**. Package 0.1.0 remains the published baseline.
 The only release authorized by this effort is 0.2.0 / `v0.2.0`.
 
-## Legacy inventory increment
+## Legacy inventory and successor-accounting increments
 
 The read-only [legacy inventory](legacy-migration.md) retains a complete old snapshot against
 an independently supplied checkpoint. It checks per-mission funded reservations and preserves
 charged unknown tasks, original fences/nonces, revoked dependencies and residual records.
 The authentic published-v1 fixture is inspected at every replayed block without advancing time
 or changing the old interpreter. Fifteen focused source tests passed in 42.52 seconds; the new
-module covered all 46 statements and six branches. Successor activation, inherited v2 accounting,
+module covered all 46 statements and six branches. Successor activation, inherited-obligation reconciliation,
 validator ownership and installed multi-node migration remain unfinished. R7-0349/R7-0353 are
 therefore IN_PROGRESS, not completed. M6 is also corrected to IN PROGRESS to reflect the already
 implemented monitoring components without claiming deployed monitoring qualification.
@@ -34,8 +34,39 @@ and does not complete the original G1–G7 release qualification.
 
 This increment's complete local unit run passed 1066 tests in 403.83 seconds, with three
 Windows descriptor skips and 24 separately selected infrastructure cases. Static and
-authoritative coverage checks passed. The expanded 106-mutation gate was still running at
-this observation; no completion is claimed until its terminal result is recorded.
+authoritative coverage checks passed. The expanded 106-mutation gate subsequently completed
+successfully; every selected mutant was detected.
+
+The next increment prepares a paused v2 genesis carrying inherited charges and reservations
+against the complete old checkpoint. Ordinary settlement cannot release the old reservation,
+and new work cannot reset the original allowance. Actual signed work, journal rollover, SQLite
+replay and application backup restoration preserve accounting. No old task becomes executable,
+and no old command gains new-chain authority. A portable vector defines the prepared bytes,
+balances and hash; default omission preserves earlier v2 state hashes.
+
+The combined focused suite passed 102 cases in 35.81 seconds. The budget module covered all
+109 statements and eight branches; the preparation constructor covered all 19 statements.
+Both corrected development distributions passed isolated installation and vector smoke.
+The first distribution check caught drift between standalone and embedded configuration
+schemas; that failed build remains unqualified. The contracts were synchronized, the corrected
+build passed, and static checks now detect that drift before installation. Scanning the corrected
+distributions inspected 896 members with zero pattern findings. Hashes are in the machine ledger.
+
+This remains a preparation/accounting component. It does not prove cutover approval, stop old
+dispatch, pin old evidence storage, transfer validator ownership or reconcile inherited liabilities.
+The original migration and operational qualification requirements remain IN_PROGRESS.
+
+The successor increment's full local unit suite passed 1081 cases in 399.61 seconds, with
+three Windows descriptor skips and 24 infrastructure deselections in that collected run.
+Static and authoritative coverage gates passed; the expanded 108-mutant phase is running.
+The subsequently added four-node inherited-accounting/restart case makes 28 infrastructure
+cases mandatory for the next artifact's gate. It has not yet executed. The local WSL Docker
+engine is unavailable; no host settings were changed and no skip is treated as a pass.
+
+Monitoring-template CI [36299678351](https://github.com/kadubon/checkedflow/actions/runs/36299678351)
+completed all required jobs, including pinned promtool checks and its 27-case installed
+infrastructure gate. Its downloaded report was independently validated before extending
+the gate to 28 cases. This historical success does not qualify either legacy increment.
 
 ## Baseline inspected on 2026-09-26
 

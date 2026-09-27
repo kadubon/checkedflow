@@ -29,6 +29,7 @@ REQUIRED = [
     "checkedflow/data/commands.json",
     "checkedflow/data/vectors.json",
     "checkedflow/data/legacy-v1.json",
+    "checkedflow/data/legacy-successor-vector.json",
     "checkedflow/data/operational-envelope.schema.json",
     "checkedflow/data/operational-state.schema.json",
     "checkedflow/data/request-archive.schema.json",
@@ -202,6 +203,13 @@ assert loads(inventory.snapshot) == old
 assert "unknown" in inventory.pending_tasks
 assert {"c", "child"} <= set(inventory.withdrawn_capabilities)
 assert inventory.open_residuals
+from checkedflow.legacy_successor import prepare
+successor = json.loads(r.files("checkedflow").joinpath(
+    "data/legacy-successor-vector.json").read_text())
+prepared = prepare(dumps(old), Checkpoint(**successor["checkpoint"]),
+    decode_control(dumps(successor["initial"])), mission=successor["mission"])
+assert loads(state_bytes(prepared)) == successor["successor"]
+assert ControlRuntime(prepared).state_hash == successor["successor_hash"]
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from checkedflow.operational_identity import Credential, authenticate, sign_command
 keys = {(name, 1): Ed25519PrivateKey.generate() for name in ("a", "b", "c", "d")}

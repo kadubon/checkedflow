@@ -13,7 +13,7 @@ from checkedflow.core.values import JSON, Object, array, fields, integer, names,
 from checkedflow.core.work_acceptance import MAX_CANDIDATES, Candidate, Observation
 from checkedflow.core.work_acceptance import validate as validate_candidates
 from checkedflow.core.work_archive import MAX_ARCHIVE_BYTES, Head, WorkArchive
-from checkedflow.core.work_budget import MAX_TICKETS, Ledger, Ticket
+from checkedflow.core.work_budget import MAX_TICKETS, Inheritance, Ledger, Ticket
 from checkedflow.core.work_budget import validate as validate_budget
 from checkedflow.core.work_effects import MAX_EFFECTS, Effect
 from checkedflow.core.work_effects import advance as advance_effects
@@ -28,6 +28,8 @@ MAX_STATE_BYTES = 4194304
 
 def encode(state: State) -> Object:
     result = obj(validate(json.loads(json.dumps(asdict(state)))))
+    if state.budget.inheritance is None:
+        obj(result["budget"]).pop("inheritance")
     # Preserve historical v2 hashes before the first retirement, as well as all v1 bytes.
     if state.history == Head():
         result.pop("history")
@@ -159,7 +161,8 @@ def decode(raw: bytes) -> State:
             " archived_spent archived_verification"
             if {"archived_spent", "archived_verification"}.intersection(budget_value)
             else ""
-        ),
+        )
+        + (" inheritance" if "inheritance" in budget_value else ""),
     )
     tickets = []
     for item in array(budget_value["tickets"], limit=MAX_TICKETS):
@@ -175,12 +178,27 @@ def decode(raw: bytes) -> State:
                 integer(ticket["charged"]),
             )
         )
+    inheritance = None
+    if "inheritance" in budget_value:
+        record = obj(budget_value["inheritance"])
+        fields(record, "chain mission height state_hash budget spent reserved")
+        inheritance = Inheritance(
+            text(record["chain"], limit=128),
+            text(record["mission"]),
+            integer(record["height"]),
+            text(record["state_hash"]),
+            integer(record["budget"], low=1),
+            integer(record["spent"]),
+            integer(record["reserved"]),
+        )
+        require(inheritance.chain != initial.chain, "CHAIN", "successor must use a new chain")
     budget = Ledger(
         integer(budget_value["budget"]),
         tuple(tickets),
         integer(budget_value["verification_reserve"]),
         integer(budget_value.get("archived_spent", 0)),
         integer(budget_value.get("archived_verification", 0)),
+        inheritance,
     )
     validate_budget(budget)
     tasks = []

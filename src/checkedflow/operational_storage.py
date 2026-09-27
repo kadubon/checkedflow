@@ -93,10 +93,18 @@ class Store:
             and initial.journal.epoch == 0
             and initial.mode == "paused"
             and not initial.journal.receipts
-            and initial.budget == Ledger()
+            and (
+                initial.budget == Ledger()
+                or (
+                    initial.budget.inheritance is not None
+                    and not initial.budget.tickets
+                    and initial.budget.archived_spent == initial.budget.archived_verification == 0
+                )
+            )
             and initial.history == Head()
             and not initial.tasks
             and not initial.candidates
+            and not initial.effects
             and all(item.revision == 1 and item.usable_at(0) for item in initial.credentials)
             and all(nonce == 0 for _, nonce in initial.journal.actors),
             "GENESIS",
