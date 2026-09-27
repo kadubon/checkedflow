@@ -107,3 +107,13 @@ passing observations. No candidate was accepted. Its manifest and partial measur
 the qualification artifact. Profile `repository-longevity-2` explicitly funds four checks, executes three,
 and cancels/refunds the unused fourth check. Neither the original full profile nor the revised full
 profile has been measured. This correction does not weaken the admission contract.
+
+[CI run 36311707314](https://github.com/kadubon/checkedflow/actions/runs/36311707314)
+completed both candidates, six verifier tasks and the in-flight drain, but failed its final replay
+assertion: a repeated transaction can be refused by CometBFT's cache before ABCI admission,
+which the SDK correctly preserves as `OUTCOME_UNKNOWN`. The revised assertion requires all four
+live ABCI services to return `RETIRED_REQUEST`, then retains the transport outcome separately and
+checks that business state is unchanged after further committed progress. It does not convert an
+ambiguous RPC reply into a rejection receipt. The workload itself is unchanged; the failed record
+is retained and the corrected test requires a fresh execution. The long job was skipped because
+its mandatory short-path dependency failed.

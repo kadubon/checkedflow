@@ -117,6 +117,35 @@ def observe_during_drain(measurement, base, patch, contract, cases, height):
         return future.result(timeout=15), started
 
 
+def retired_request(cluster, raw):
+    """Distinguish an ambiguous duplicate RPC reply from actual application rejection."""
+    import grpc
+
+    from checkedflow.distributed.proto.generated.tendermint.abci import types_pb2 as pb
+    from checkedflow.distributed.proto.generated.tendermint.abci import types_pb2_grpc as rpc
+
+    before = cluster.client().state()
+    for index in range(4):
+        with grpc.insecure_channel(f"127.0.0.1:{cluster.processes.port(index, 2)}") as channel:
+            response = rpc.ABCIStub(channel).CheckTx(pb.RequestCheckTx(tx=raw), timeout=10)
+        assert response.code == 1 and response.codespace == "RETIRED_REQUEST"
+    # CometBFT can reject identical bytes in its transaction cache before calling ABCI.
+    # Such a transport reply remains unknown to the SDK; do not reclassify it as a receipt.
+    with pytest.raises(Failure) as caught:
+        cluster.client().submit(raw)
+    assert caught.value.code in {"REJECTED", "OUTCOME_UNKNOWN"}
+    cluster.wait_height(before.height + 1)
+    for index in range(4):
+        after = cluster.client(index).state()
+        assert replace(after, height=before.height) == before
+    return {
+        "application_rejections": 4,
+        "codespace": "RETIRED_REQUEST",
+        "rpc_outcome": caught.value.code,
+        "business_state_unchanged": True,
+    }
+
+
 class Measurement:
     def __init__(self, cluster, root, plan):
         self.cluster, self.root, self.plan = cluster, root, plan
@@ -270,6 +299,7 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
     access = Access("load-observer", frozenset({"repository"}), frozenset({"read", "write"}))
     success, failure = False, None
     recovery_ns = drain_ns = in_flight_drain_ns = None
+    old_request_result = None
     control_completed = control_elapsed_ns = verified_elapsed_ns = 0
 
     def deadline(signum, frame):
@@ -463,8 +493,7 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
                 for (body,) in db.execute("SELECT body FROM blocks ORDER BY height")
                 for tx in document(body)["transactions"]
             )
-        with pytest.raises(Failure, match="REJECTED"):
-            cluster.client().submit(bytes.fromhex(first))
+        old_request_result = retired_request(cluster, bytes.fromhex(first))
         success = True
     except BaseException as error:
         failure = type(error).__name__
@@ -507,6 +536,7 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
             "recovery_ns": recovery_ns,
             "empty_drain_ns": drain_ns,
             "in_flight_drain_ns": in_flight_drain_ns,
+            "retired_request": old_request_result,
             "queue_peak": max((row["queued_intents"] for row in measurement.arrivals), default=0),
             "disk_growth_bytes": disk_growth,
             "completed_tasks": completed_tasks,
