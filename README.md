@@ -246,3 +246,7 @@ Publication is manual and sends the tested wheel and sdist without rebuilding. S
 [PyPI](https://pypi.org/project/checkedflow/) for published artifacts and their provenance.
 
 Licensed under [Apache-2.0](LICENSE). [NOTICE](NOTICE) includes upstream protocol attribution.
+
+[Replicated artifact access](docs/replicated-artifacts.md) requires fresh verified reads
+from at least three of four configured backends. Availability observations are not acceptance
+or future-use authorization; replica placement must be qualified independently.

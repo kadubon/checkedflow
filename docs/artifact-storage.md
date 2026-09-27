@@ -3,7 +3,8 @@
 Status: a source-tested local component of the unfinished 0.2 operational profile. This is not
 a network authorization service, an availability quorum, or a retention system. The separate
 [S3 adapter](s3-storage.md) implements the same byte-store interface for an external service.
-It is not connected to consensus work admission yet. The released 0.1 package does not contain it.
+Runtime verification, reuse and effect dispatch consume these verified bytes outside consensus.
+The optional [replication adapter](replicated-artifacts.md) enforces a fresh three-of-four read threshold. The released 0.1 package does not contain it.
 
 An artifact is a bounded sequence of bytes, such as a patch or a verification record. The
 reference identifies those bytes and their intended context. The store keeps the bytes outside

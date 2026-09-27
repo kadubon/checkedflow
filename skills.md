@@ -215,3 +215,7 @@ claim a proxy template or source handshake test proves installed multi-host depl
 
 Approved draft staging is documented in [Git staging](docs/git-staging.md).
 It requires explicit v2 operator policy; partial writes never authorize a retry.
+
+[Replicated artifact access](docs/replicated-artifacts.md) requires fresh verified reads
+from at least three of four configured backends. Availability observations are not acceptance
+or future-use authorization; replica placement must be qualified independently.

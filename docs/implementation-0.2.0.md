@@ -1339,6 +1339,50 @@ writes before lost report recovery and historical reconciliation; its provider r
 fixture. The local suite passed 999 tests in 364.24 seconds, with three Windows descriptor
 skips and 24 separately selected infrastructure cases. Static and authoritative coverage gates
 passed: provider statements 99.60 percent and branches 96.15 percent, dispatcher/supervisor
-100 percent, and all 12 staging statements covered (no measured branch arcs). The 97 selected
-fault mutants and new infrastructure run remain pending for this increment.
+100 percent, and all 12 staging statements covered (no measured branch arcs). All 97 selected fault mutants were killed. The new infrastructure run remains pending for this increment.
 Compensation, retirement, deployment/credential lifecycle and the original G1-G7 remain unfinished.
+
+## Fresh replica availability
+
+The [replication adapter](replicated-artifacts.md) requires fresh verified content from three of
+four configured backends. Publication verifies its input, makes at most one write call per backend,
+then checks actual readable bytes rather than trusting acknowledgements. Existing callers can
+inject this `ArtifactStore` into verification, reuse and supervised dispatch. The portable observation
+is a local report; it does not grant authority, change acceptance or guarantee future availability.
+
+Eighteen source and eighteen installed-wheel cases passed, including corruption, missing copies,
+forged replies, lost acknowledgements, scope denial, interrupts and refusal to reserve an effect when
+two evidence replicas are unavailable. The installed real Windows SeaweedFS 4.47 case also passed
+with four namespaces, one corrupted copy, a second missing copy and actual service interruption.
+Those namespaces share one service; this is API behavior evidence, not separate-host durability.
+
+Wheel `c14e5b64d6b44f7e4784dddca4563833760bc5c3453bb208dfa48227fcbb1f3a` and sdist
+`d07d060bd0bcb9d213f900ceb40ba263bd3298d6218decd405d0a6c22d0859e9` passed isolated package
+smoke. Source/distribution scanning examined 839 members without pattern findings. These are
+development builds; later documentation updates are not represented as a final release artifact.
+The four-node/gVisor supervised-effect case now injects this adapter for artifact reads/publication;
+that new extension still requires its own infrastructure run. Full local coverage and the expanded
+100-mutant gate are running. No G1-G7 gate is promoted by these component checks.
+
+The preceding staging source `2820041be1678b978ba1ba741b0483fb3cc8d95f` passed all 27 installed
+infrastructure cases in [CI36295642776](https://github.com/kadubon/checkedflow/actions/runs/36295642776).
+The downloaded JUnit independently passed the required gate, including corrected removal polling
+and staged-effect reporting/reconciliation. Its wheel is
+`5ac6b3365b230c4a65b40a2273d90fe83293f0d4e102466187483d74146c3e8d`, and sdist is
+`aadca5ee1b33ae6e6662c7965a70bf5f2065cbb7cc74b549bc147436527940a1`.
+Some Windows matrix jobs were still running at this observation; the run was not yet a complete
+success. It predates the new replication adapter. The previous failed run remains failed.
+
+The final replication schema also rejects a trailing newline in replica names. After that schema
+correction, all 18 focused source and installed cases passed again. The corrected wheel
+`5718a9500574efbd6646703a2d027809505518f8cddd6ef902389208a7afa685` and sdist
+`6e72a9bdc7a235be87a4ccde76c2af2d7e8a4a6f22b681e815c8fc778607e931` passed isolated installation
+and a new actual installed Windows S3 run. All 170 package files match source; the final
+source/distribution scan examined 840 members without pattern findings. These supersede the first
+replication build for current-schema checks, without erasing that earlier experiment.
+
+The full local suite passed 1,017 tests in 361.14 seconds, with three Windows descriptor skips and
+24 separately selected infrastructure cases. All authoritative coverage gates passed, including
+all 61 replication statements and all four measured branches. Its Python source was unchanged
+during the run; the subsequent stricter schema assertion was additionally exercised by the focused
+and installed tests above. The expanded 100-mutant fault gate is still running.

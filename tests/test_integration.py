@@ -1228,13 +1228,18 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
     from checkedflow.git_tree import tree_id
     from checkedflow.github_drafts import Drafts, Token
     from checkedflow.github_effects import Intent
+    from checkedflow.replicated_artifacts import Replica, ReplicatedStore
     from checkedflow.repository_reuse import Inputs, contract_digest, tree_bytes
     from checkedflow.wire import digest, document, dumps, validate
     from checkedflow.worker_submission import Coordinator
 
     image, binary = infrastructure
     cluster = OperationalCluster(tmp_path / "supervised-effects", binary)
-    objects = LocalStore(tmp_path / "objects.sqlite")
+    objects = ReplicatedStore(
+        tuple(
+            Replica(f"operator-{i}", LocalStore(tmp_path / f"objects-{i}.sqlite")) for i in range(4)
+        )
+    )
     access = Access("executor", frozenset({"repository"}), frozenset({"read", "write"}))
     base, patch, contract, cases = invoice(image)
     contract = replace(contract, allow_draft_pr=True, deadline_height=100000)

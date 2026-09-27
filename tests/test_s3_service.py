@@ -32,6 +32,7 @@ import checkedflow
 from checkedflow.artifacts import Access
 from checkedflow.core.artifact import Reference
 from checkedflow.core.values import Failure
+from checkedflow.replicated_artifacts import Replica, ReplicatedStore
 from checkedflow.retention import RetentionStore
 from checkedflow.retention_backup import export_catalog, restore_catalog
 from checkedflow.s3_artifacts import Credentials, S3Store
@@ -239,6 +240,30 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
             )
             access = Access("worker", frozenset({"mission"}), frozenset({"read", "write"}))
 
+            # Four real storage namespaces on one service: component behavior, not G6 topology.
+            replicated = ReplicatedStore(
+                tuple(
+                    Replica(
+                        f"operator-{i}",
+                        S3Store(
+                            endpoint, bucket, writer, prefix=f"replica-{i}", ca_file=ca, timeout=2
+                        ),
+                    )
+                    for i in range(4)
+                )
+            )
+            replicated.put(ref, BytesIO(body), access=access)
+            assert len(replicated.inspect(ref, access=access).verified) == 4
+            assert request("PUT", f"/{bucket}/replica-0/mission/{ref.digest}", b"corrupt") == 200
+            assert replicated.get(ref, access=access) == body
+            assert request("DELETE", f"/{bucket}/replica-1/mission/{ref.digest}") == 204
+            with pytest.raises(Failure, match="UNAVAILABLE"):
+                replicated.get(ref, access=access)
+            assert replicated.inspect(ref, access=access).unavailable == (
+                "operator-0",
+                "operator-1",
+            )
+
             def publish_once(_):
                 try:
                     store.put(ref, BytesIO(body), access=access)
@@ -311,6 +336,9 @@ def test_real_s3_tls_conditional_publication_corruption_and_outage(tmp_path):
                 store.get(ref, access=access)
             with pytest.raises(Failure, match="OUTCOME_UNKNOWN"):
                 store.put(ref, BytesIO(body), access=access)
+            assert not replicated.inspect(ref, access=access).verified
+            with pytest.raises(Failure, match="UNAVAILABLE"):
+                replicated.get(ref, access=access)
             # Rotate the service credential in private configuration while the service is stopped.
             rotated = Credentials(writer.access_key, secrets.token_hex(24))
             configuration = json.loads(config.read_text())

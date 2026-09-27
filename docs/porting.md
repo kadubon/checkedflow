@@ -91,3 +91,7 @@ For optional [Git staging](git-staging.md), reproduce the exact synthetic commit
 UTF-8 message including its final LF, single parent and complete Git tree. Independently compare
 the planned SHA-1 with Git and the provider. Preserve the v1 policy default, explicit v2 staging
 permission, at most four writes and the prohibition on resuming an interrupted sequence.
+
+[Replicated artifact access](replicated-artifacts.md) requires fresh verified reads
+from at least three of four configured backends. Availability observations are not acceptance
+or future-use authorization; replica placement must be qualified independently.

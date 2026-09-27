@@ -994,8 +994,10 @@
       "id": "R5-0259",
       "source_line": 259,
       "text": "A correct digest does not establish that an object can be retrieved. Use explicit publication/availability receipts or other documented admission rules to establish the required replicas/availability before allowing operations that need the artifact.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:fresh-artifact-replication"
+      ]
     },
     {
       "id": "R5-0261",
@@ -1003,7 +1005,8 @@
       "text": "Do not fetch artifacts during consensus execution. Runtime use fetches and checks bytes; if data is unavailable, it stops with an explicit unavailable/unknown state. A local outage must not silently mutate the global verdict.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:exact-repository-reuse-preparation"
+        "component:exact-repository-reuse-preparation",
+        "component:fresh-artifact-replication"
       ]
     },
     {
@@ -1013,7 +1016,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:exact-repository-reuse-preparation",
-        "component:verified-s3-artifact-store"
+        "component:verified-s3-artifact-store",
+        "component:fresh-artifact-replication"
       ]
     },
     {
@@ -3902,6 +3906,32 @@
       "evidence": [
         "docs/implementation-0.2.0.md"
       ]
+    },
+    {
+      "id": "fresh-artifact-replication",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/replicated_artifacts.py",
+        "src/checkedflow/data/artifact-availability.schema.json"
+      ],
+      "tests": [
+        "tests/test_replicated_artifacts.py",
+        "tests/test_s3_service.py",
+        "tests/test_integration.py",
+        "scripts/fault_injection.py"
+      ],
+      "documentation": [
+        "docs/replicated-artifacts.md"
+      ],
+      "requirements": [
+        "R5-0259",
+        "R5-0261",
+        "R5-0263"
+      ],
+      "scope": "Four protected configured backends; at least three freshly read, independently byte-verified copies required by get and publication readback. Eighteen source cases and the same eighteen installed-wheel cases passed, including executor suppression below threshold. Installed real Windows S3 qualification passed corruption/removal/outage across four namespaces on one service. This does not prove separate failure domains. No cached observation authority, automatic repair or erasure. Extended four-node and full-source gates pending; no full G1-G7 claim.",
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ]
     }
   ],
   "observations": [
@@ -4090,6 +4120,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36293296304",
       "conclusion": "success",
       "scope": "All jobs passed, including six OS/Python jobs and all27 required installed infrastructure cases. Downloaded JUnit independently validated. Journal initialization fixes qualified as a component. Wheel5d95c4ab5544495a65dfc2f38e95627ab06e66c8fdbf50ad697069d64567c9db; sdist50e71de3896f3642fcdf1ef176fca0ba4b3fa24b6bf69a6f797474e13f390489. Predates historical reconciliation and the extended installed case; does not complete original G1-G7."
+    },
+    {
+      "source": "62996529bd20ad047229e2c7bfdf141a995eab7c",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36294398572",
+      "conclusion": "failure",
+      "scope": "All six OS/Python, storage and signer jobs passed, but27-case qualification was rejected for systemd recovery list/inspect removal race. Historical reconciliation case passed. Corrected bounded polling requires later successful absence and empty journal. Failed report remains failed; no G1-G7 promotion."
     }
   ]
 }

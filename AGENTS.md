@@ -12,6 +12,9 @@ Scheduling retries are not execution retries: preserve pending command bytes, ex
 unknown outcomes, fixed call limits and boot-bound deadlines. Do not delete a journal or mint a
 new task/plan identity to bypass recovery. Before the 0.2.0 release, audit README, every applicable
 Docs page, this file and skills.md against actual installed-artifact behavior and G1-G7 evidence.
+For replicated artifacts, count only fresh byte-verified reads from the protected configured set.
+Do not cache an availability observation as authority, treat labels as independent failure domains,
+or bypass retention to restore a missing copy. See docs/replicated-artifacts.md.
 Keep the publication interlock closed while any mandatory gate remains unqualified.
 Reject an existing submission journal with a missing identity or foreign tables; never initialize
 over partial recovery state. Keep original signed bytes and all related executor journals together.

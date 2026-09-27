@@ -116,3 +116,7 @@ recovery remain incomplete; live-provider qualification is still required for th
 The optional [staging adapter](git-staging.md) computes a deterministic Git head before approval
 and creates the tree, commit, new reference and draft under one durable claim. Its four-write
 ceiling and repeated current-authority checks belong to the executor boundary, not consensus.
+
+[Replicated artifact access](replicated-artifacts.md) requires fresh verified reads
+from at least three of four configured backends. Availability observations are not acceptance
+or future-use authorization; replica placement must be qualified independently.

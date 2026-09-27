@@ -65,3 +65,7 @@ those contracts. Read the limitation beside a research or validation claim befor
 - [Agent TLS](agent-tls.md): mutual TLS, explicit proxy advertisements and credential retirement.
 
 - [Effect reconciliation](effect-reconciliation.md): historical GET-only evidence and unsigned quorum-review proposals.
+
+[Replicated artifact access](replicated-artifacts.md) requires fresh verified reads
+from at least three of four configured backends. Availability observations are not acceptance
+or future-use authorization; replica placement must be qualified independently.

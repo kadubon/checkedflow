@@ -44,6 +44,30 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "replicated_artifacts.py",
+        "test_replicated_artifacts.py",
+        "availability_requires_three_copies",
+        "len(self.verified) >= 3",
+        "len(self.verified) >= 2",
+        "test_publication_requires_fresh_copies_and_survives_one_loss",
+    ),
+    (
+        "replicated_artifacts.py",
+        "test_replicated_artifacts.py",
+        "availability_reverifies_backend_bytes",
+        "verify(ref, body)",
+        "pass",
+        "test_stale_forged_and_nonbinary_replies_are_reverified",
+    ),
+    (
+        "replicated_artifacts.py",
+        "test_replicated_artifacts.py",
+        "publication_requires_readable_replicas",
+        "        self.get(ref, access=access)",
+        "        return None",
+        "test_upload_acknowledgement_alone_is_not_publication",
+    ),
+    (
         "effect_dispatch.py",
         "test_git_staging.py",
         "staging_requires_explicit_operator_policy",
