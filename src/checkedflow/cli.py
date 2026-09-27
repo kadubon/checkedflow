@@ -34,6 +34,9 @@ def main(argv: list[str] | None = None) -> int:
     from checkedflow.operational_backup_cli import configure as backup_arguments
 
     backup_arguments(commands.add_parser("application-backup"))
+    deployment = commands.add_parser("deployment-plan", help="generate review files; never apply")
+    for option in ("inventory", "configuration", "genesis", "destination"):
+        deployment.add_argument("--" + option, required=True)
     for name in ("generator", "example"):
         commands.add_parser(name)
     monitoring = commands.add_parser("monitoring")
@@ -64,6 +67,7 @@ def main(argv: list[str] | None = None) -> int:
             "legacy-history",
             "legacy-retained",
             "legacy-retention-local",
+            "deployment-inventory",
             "effect-command",
             "github-effect-intent",
             "effect-policy",
@@ -144,6 +148,22 @@ def main(argv: list[str] | None = None) -> int:
             from checkedflow.operational_backup_cli import run as backup_command
 
             emit(backup_command(args))
+        elif args.action == "deployment-plan":
+            from checkedflow.distributed.deployment import MAX_INPUT, render, write_new
+
+            inputs = []
+            for filename in (args.inventory, args.configuration, args.genesis):
+                with Path(filename).open("rb") as source:
+                    inputs.append(source.read(MAX_INPUT + 1))
+            planned_files = render(*inputs)
+            emit(
+                {
+                    "status": "REVIEW_REQUIRED",
+                    "hosts_changed": False,
+                    "files": len(planned_files),
+                    "plan_sha256": write_new(Path(args.destination), planned_files),
+                }
+            )
         elif args.action == "schema":
             filename = {
                 "envelope": "envelope.schema.json",
@@ -165,6 +185,7 @@ def main(argv: list[str] | None = None) -> int:
                 "legacy-history": "legacy-history.schema.json",
                 "legacy-retained": "legacy-retained.schema.json",
                 "legacy-retention-local": "legacy-retention-local.schema.json",
+                "deployment-inventory": "deployment-inventory.schema.json",
                 "access-policy": "access-policy.schema.json",
                 "access-roles": "access-roles.json",
                 "access-vectors": "access-vectors.json",

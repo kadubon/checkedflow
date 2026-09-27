@@ -284,3 +284,7 @@ longevity smoke from the full workload; neither alone qualifies G5. See docs/loa
 Load history replay must include an independently observed common-height checkpoint. Reject a
 self-consistent truncated local prefix. Keep duplicate-transaction RPC uncertainty separate from
 actual old-epoch ABCI rejection; never relabel OUTCOME_UNKNOWN as a committed rejection receipt.
+
+`checkedflow deployment-plan` is offline review-file generation, not host authorization or verified
+installation. Never apply it over active validator state or treat declared runtime hashes/private
+addresses as verified custody or confinement. See [deployment planning](docs/deployment-planning.md).

@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:deployment-inventory:v1",
+  "title": "Offline four-node deployment inventory",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "name",
+    "runtime",
+    "nodes"
+  ],
+  "properties": {
+    "version": {
+      "const": "checkedflow/deployment/v1"
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,11}$"
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "python",
+        "cometbft",
+        "cometbft_sha256",
+        "wheel_sha256"
+      ],
+      "properties": {
+        "python": {
+          "$ref": "#/$defs/executable"
+        },
+        "cometbft": {
+          "$ref": "#/$defs/executable"
+        },
+        "cometbft_sha256": {
+          "$ref": "#/$defs/digest"
+        },
+        "wheel_sha256": {
+          "$ref": "#/$defs/digest"
+        }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "organization",
+          "address",
+          "node_id"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9-]{0,31}$"
+          },
+          "organization": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "address": {
+            "type": "string",
+            "minLength": 7,
+            "maxLength": 15,
+            "format": "ipv4"
+          },
+          "node_id": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "executable": {
+      "type": "string",
+      "maxLength": 256,
+      "pattern": "^/(opt|usr)/[A-Za-z0-9_./-]+$"
+    }
+  },
+  "description": "Protected operator input. Runtime additionally requires RFC1918 peers, unique bindings, normalized paths, fresh matching genesis and separate key purposes. A valid inventory does not authorize applying a plan."
+}

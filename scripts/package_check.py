@@ -35,6 +35,7 @@ REQUIRED = [
     "checkedflow/data/legacy-retained.schema.json",
     "checkedflow/data/legacy-retention-local.schema.json",
     "checkedflow/data/load-profile.json",
+    "checkedflow/data/deployment-inventory.schema.json",
     "checkedflow/data/succession-vector.json",
     "checkedflow/data/operational-envelope.schema.json",
     "checkedflow/data/operational-state.schema.json",
@@ -588,6 +589,41 @@ telemetry = Recorder()
 with telemetry.measure("worker.step"):
     pass
 trace(telemetry.drain(), NoOpTracerProvider().get_tracer("installed-smoke"))
+# Offline deployment planning uses installed modules and resources only.
+import base64, hashlib, subprocess
+from checkedflow.core.operational import genesis as fresh_genesis
+fresh = Configuration(fresh_genesis(configuration.initial.chain, configuration.initial.mission,
+    configuration.initial.organizations, configuration.initial.credentials),
+    configuration.validators)
+inventory = {"version": "checkedflow/deployment/v1", "name": "install",
+    "runtime": {"python": "/opt/checkedflow/bin/python", "cometbft": "/opt/checkedflow/cometbft",
+                "cometbft_sha256": "a" * 64, "wheel_sha256": "b" * 64},
+    "nodes": [{"name": f"node{i}", "organization": org, "address": f"10.23.0.{i+1}",
+               "node_id": hashlib.sha256(("installed-p2p-"+org).encode()).hexdigest()[:40]}
+              for i, org in enumerate(fresh.initial.organizations)]}
+validators = []
+for org, public in fresh.validators:
+    raw_key = bytes.fromhex(public)
+    validators.append({"name": org, "power": "10",
+        "address": hashlib.sha256(raw_key).digest()[:20].hex().upper(),
+        "pub_key": {"type": "tendermint/PubKeyEd25519",
+                    "value": base64.b64encode(raw_key).decode()}})
+consensus = {"genesis_time": "2026-01-01T00:00:00Z", "chain_id": fresh.initial.chain,
+    "initial_height": "1", "app_hash": "", "consensus_params": {},
+    "validators": validators, "app_state": fresh.encode()}
+with TemporaryDirectory() as directory:
+    plan_root = Path(directory)
+    args = [sys.executable, "-I", "-m", "checkedflow.cli", "deployment-plan"]
+    for name, value in (("inventory", inventory), ("configuration", fresh.encode()),
+                        ("genesis", consensus)):
+        input_file = plan_root / (name + ".json")
+        input_file.write_bytes(dumps(value))
+        args.extend(("--" + name, str(input_file)))
+    checked = subprocess.run([*args, "--destination", str(plan_root / "plan")],
+                             check=True, capture_output=True)
+    outcome = json.loads(checked.stdout)
+    assert outcome["status"] == "REVIEW_REQUIRED" and outcome["hosts_changed"] is False
+    assert outcome["files"] == 21 and (plan_root / "plan" / "plan.json").is_file()
 print("Installed agent extras smoke passed on", sys.version.split()[0])
 """
 
