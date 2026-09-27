@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "succession.py",
+        "test_succession.py",
+        "succession_requires_both_quorums",
+        "all(len(organizations) >= 3 for organizations in accepted.values())",
+        "any(len(organizations) >= 3 for organizations in accepted.values())",
+        "test_one_quorum_cannot_replace_the_other",
+    ),
+    (
+        "succession.py",
+        "test_succession.py",
+        "succession_binds_expected_plan",
+        'dumps(obj(envelope["plan"])) == dumps(expected)',
+        "True",
+        "test_tampering_and_role_substitution_fail_closed",
+    ),
+    (
         "core/work_budget.py",
         "test_legacy_successor.py",
         "inherited_spending_is_not_fresh_allowance",

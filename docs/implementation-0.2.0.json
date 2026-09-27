@@ -1335,7 +1335,8 @@
       "text": "A maintenance-window, governed successor deployment is acceptable for a protocol-breaking migration. It must bind old and new identities/checkpoints, preserve history and outstanding state, stop old dispatch, and prevent old-chain commands from acquiring new authority.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:legacy-successor-accounting"
+        "component:legacy-successor-accounting",
+        "component:succession-approval"
       ]
     },
     {
@@ -4097,10 +4098,35 @@
         "docs/legacy-migration.md",
         "docs/work-budget.md"
       ],
-      "scope": "Paused successor preparation binds full old checkpoint and keeps inherited charges/reservations separate from ordinary tickets. Signed work, rollover, SQLite replay, backup restore, exhausted balance and original-command rejection tested. 102 focused cases passed in35.81sec; budget109statements8branches and constructor19statements fully covered. Installed wheel/sdist vector smoke passed after correcting embedded configuration-schema drift. Initial failed development distribution remains unqualified. Cutover approval, old-dispatch stop, signer custody, retention and inherited-obligation reconciliation remain unfinished; no finalG1-G7 claim. Full local1081passed399.61sec,3Windowsdescriptor skips,24infrastructure deselections at collection; authoritative coverage passed,108mutants pending. New four-node inherited-accounting crash/restart case extends future required infrastructure gate to28; not executed yet. Host Docker configuration unchanged. All182 wheel package files match source,896distribution members scanned without pattern findings.",
+      "scope": "Paused successor preparation binds full old checkpoint and keeps inherited charges/reservations separate from ordinary tickets. Signed work, rollover, SQLite replay, backup restore, exhausted balance and original-command rejection tested. 102 focused cases passed in35.81sec; budget109statements8branches and constructor19statements fully covered. Installed wheel/sdist vector smoke passed after correcting embedded configuration-schema drift. Initial failed development distribution remains unqualified. Cutover approval, old-dispatch stop, signer custody, retention and inherited-obligation reconciliation remain unfinished; no finalG1-G7 claim. Full local1081passed399.61sec,3Windowsdescriptor skips,24infrastructure deselections at collection; authoritative coverage passed,all108mutants detected. New four-node inherited-accounting crash/restart case extends future required infrastructure gate to28; not executed yet. Host Docker configuration unchanged. All182 wheel package files match source,896distribution members scanned without pattern findings.",
       "installed_development_artifacts": {
         "checkedflow-0.1.0-py3-none-any.whl": "dda4e50190ac9fa50946a59609dc70697f94fc5091690ae9f2ce345f79d9c9c2",
         "checkedflow-0.1.0.tar.gz": "97cd6f140728de4cf2470b1e163fbb569c973c77a092890741277b2824bbbae0"
+      }
+    },
+    {
+      "id": "succession-approval",
+      "status": "SOURCE_TESTED",
+      "requirements": [
+        "R7-0351"
+      ],
+      "implementation": [
+        "src/checkedflow/succession.py",
+        "src/checkedflow/data/succession.schema.json",
+        "src/checkedflow/data/succession-vector.json"
+      ],
+      "tests": [
+        "tests/test_succession.py",
+        "scripts/package_check.py",
+        "scripts/fault_injection.py"
+      ],
+      "documentation": [
+        "docs/succession-approval.md"
+      ],
+      "scope": "Exact independently anchored old checkpoint, prepared successor and validator mapping require separate three-organization old/new approval quorums. Canonical-byte comparison rejects boolean/integer aliases. 17 focused tests passed; all80 statements and4 branches covered. Physical shutdown, exclusive signer custody, conflicting-plan prevention, governed activation, retention and inherited-obligation reconciliation remain unfinished. This component does not complete G4/G6 or authorize publication. Corrected wheel and sdist passed isolated installed SDK/CLI/extras and signed-vector smoke. Final changed source passed static checks, including security/path scan; later documentation is outside those development artifacts. Full exact-source CI remains required.",
+      "installed_development_artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "55c6f1d726c0e98260ccab8354902f2771ba022364b34469aed7f5bf2adcad51",
+        "checkedflow-0.1.0.tar.gz": "ae5f355e831f02b25b8e6ff9d45ac27672211e69a3e467e1561898912f0b2671"
       }
     }
   ],

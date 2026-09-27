@@ -86,6 +86,10 @@ successor deployment. This is not a claim of rolling-upgrade compatibility for t
 
 ### Activation and reconciliation still required
 
+[Succession approvals](succession-approval.md) now bind both administrative quorums to the
+exact old checkpoint, prepared successor and validator mapping. Verification does not establish
+old-node shutdown or exclusive custody; the complete cutover remains unqualified.
+
 Before enabling a successor, the implementation must bind its prepared genesis to old authority
 and the frozen checkpoint, qualify outstanding-balance conservation, retain the
 authenticated history and artifacts, stop old dispatch, and establish exclusive validator

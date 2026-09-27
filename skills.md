@@ -238,3 +238,7 @@ The inspection SDK cannot stop validators, authorize successor dispatch or reset
 The successor preparation SDK creates a paused accounting baseline with locked inherited
 reservations. Its portable vector and state schema do not establish cutover approval, artifact
 retention or validator ownership. Old commands and results do not acquire v2 authority.
+
+[Succession approvals](docs/succession-approval.md) use `checkedflow schema succession` and a
+packaged signed vector. Verify against independent old/new inputs. Both quorums are mandatory;
+approval alone does not authorize startup, resolve liabilities or permit signing conflicting plans.

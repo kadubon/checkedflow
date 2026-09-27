@@ -13,6 +13,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [Supervised effect dispatch](effect-dispatch.md) | How are current operator policy, stored evidence and node freshness checked immediately before a draft request? |
 | [Durable effect supervision](effect-supervision.md) | How does an authorized draft operation survive crashes and lost reporting replies without being executed twice? |
 | [Approved Git staging](git-staging.md) | How are exact commits created under explicit policy, and why are interrupted writes never resumed? |
+| [Succession approval](succession-approval.md) | How do old and new administrators approve the exact prepared successor? |
 | [Protocol](protocol.md) | Which bytes are signed and how are commands replayed? |
 | [Adapters](adapters.md) | How do storage, generators, workers and sandboxes connect? |
 | [Agent communication](interoperability.md) | How do A2A and MCP clients discover, submit and inspect the same work? |

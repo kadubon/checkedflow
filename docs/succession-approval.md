@@ -1,0 +1,62 @@
+# Administrative approval of succession
+
+`checkedflow.succession` binds a proposed move to the exact independently trusted old
+checkpoint, prepared new state and configured validator keys. Verification requires three
+distinct old organizations **and** three distinct new organizations. One side's quorum cannot
+replace the other. These approvals do not establish that old dispatch stopped, that a signer
+has exclusive ownership, or that operators approved no conflicting plan. Those custody and
+activation controls remain unfinished and mandatory before operational release.
+
+## Review, sign, verify
+
+1. Retain the complete old snapshot and history. Obtain `Checkpoint` independently of the
+   supplied snapshot. Prepare the paused successor using [legacy preparation](legacy-migration.md).
+2. Call `proposal(legacy, trusted, successor, validators)`. The validator input is a sorted tuple
+   of four `(organization, public_key)` pairs. Each key must be distinct and separate from old
+   application keys and new command credentials. The function recomputes successor accounting
+   from the authenticated old state; caller-supplied budget modifications are rejected.
+3. Have each administrator explicitly review the old mission, checkpoint, new chain, full
+   prepared state and validator set. `approve(plan, side, organization, identity, signer)` signs
+   through the supplied protected signer. It performs no automatic policy approval. Never expose
+   this signing operation to a candidate or use it to sign competing plans for one old mission.
+4. Assemble `{ "plan": plan, "approvals": [...] }` and call `verify(raw, legacy=...,
+   trusted=..., successor=..., validators=...)` with the independently protected expected inputs.
+   The returned `Approved` record contains the plan digest and the distinct organizations on
+   each side. It is evidence of administrative approval, not a validator startup instruction.
+
+Old signatures are verified against organization keys in the authenticated old state. New
+signatures require administrator credentials in the prepared genesis, usable at height zero.
+Worker keys and identity/organization substitutions are rejected. Every supplied signature must
+pass, including extra signatures beyond the two quorums. Duplicate organization votes on one
+side are rejected. Manifest ordering does not change the approved plan digest.
+
+## Portable contract
+
+`checkedflow schema succession` prints the packaged JSON Schema. The portable
+`succession-vector.json` contains public test identities, original checkpoint, successor,
+validator mapping, six actual signatures and expected plan hash. Neither file supplies an
+operator's production trust anchor or credentials.
+
+The signing domain is the ASCII bytes `CheckedFlow/succession-approval/v1` followed by one zero
+byte. Append RFC 8785 canonical JSON for `{plan, side, organization, identity}`. Sign the result
+with Ed25519. Encode signatures as 128 lowercase hexadecimal characters. Keys and state hashes
+use 64 lowercase hexadecimal characters. `plan.profile` is `checkedflow/succession/v1`.
+
+The plan binds old chain/mission/height/state hash, new chain/mission/state hash and all four
+validator organization/key pairs. The plan hash is SHA-256 of the canonical plan alone. Expected
+plan equality is checked before accepting any signature; a manifest cannot select its own
+trusted checkpoint, new state or validator set. Admission permits at most 16 KiB, eight
+approval entries and an 8 KiB signing message. Existing lexical admission rejects duplicate
+JSON keys and non-interoperable numbers. Unknown fields fail closed.
+
+Stable failures include `BINDING` for an unexpected state/plan, `AUTHORITY` for the wrong
+administrator, `SIGNATURE` for invalid/duplicate votes, `QUORUM` for insufficient organizations,
+`VERSION` for the wrong purpose/profile and `LIMIT` for oversized input. Rejected approval is
+not permission to revise historical charges, retry an external effect or bypass operator review.
+
+## Scope of evidence
+
+Tests use the immutable published-0.1.0 fixture, real Ed25519 signatures and a prepared v2 state.
+They check independent quorums, role substitution, validator/state tampering, duplicate votes,
+invalid extra signatures, bounds and the portable vector. They do not prove physical shutdown,
+exclusive cross-host signer custody, non-equivocation, managed-signing deployment or G4/G6.

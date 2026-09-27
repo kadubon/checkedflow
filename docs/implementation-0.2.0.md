@@ -58,7 +58,7 @@ The original migration and operational qualification requirements remain IN_PROG
 
 The successor increment's full local unit suite passed 1081 cases in 399.61 seconds, with
 three Windows descriptor skips and 24 infrastructure deselections in that collected run.
-Static and authoritative coverage gates passed; the expanded 108-mutant phase is running.
+Static and authoritative coverage gates passed; all 108 selected invariant-breaking mutants were detected.
 The subsequently added four-node inherited-accounting/restart case makes 28 infrastructure
 cases mandatory for the next artifact's gate. It has not yet executed. The local WSL Docker
 engine is unavailable; no host settings were changed and no skip is treated as a pass.
@@ -1579,3 +1579,12 @@ monitoring source because only the fixture/docs changed; its new sdist is
 `d3597edf839c81eaf1d3bbdc6b78a841040bd5bd1560ed964fdccb9722812234`.
 It does not qualify the later telemetry or monitoring-template extensions. The older failed S3
 report remains failed, and original G1-G7 remains unqualified.
+
+## Succession approval component
+
+Separate old and new three-organization quorums now approve an exact independently anchored
+checkpoint, prepared successor and validator set. Canonical-byte comparison rejects numeric
+boolean aliases. Seventeen focused tests passed with complete statement and branch coverage
+of the approval module. See [the approval contract](succession-approval.md) for portable bytes,
+review responsibilities and limits. Physical shutdown, signer custody, conflicting-plan
+prevention and governed activation remain mandatory unfinished work. No release gate is promoted.

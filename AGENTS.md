@@ -82,3 +82,6 @@ Successor activation and signer custody remain separate requirements; see docs/l
 Prepared successor accounting holds inheritance separately from ordinary tickets. Never release
 it through ticket settlement, remove its history root, or manufacture past verification charges.
 Pristine successor preparation is not proof of old-node shutdown or administrator approval.
+Succession approval requires separate old and new three-organization quorums against independently
+protected expected roots and validators. Never treat signatures as physical custody or expose
+approval signing to candidates. See docs/succession-approval.md.

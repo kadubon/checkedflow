@@ -111,3 +111,7 @@ inherited spending plus archived spending and active charges, and reservations a
 reservations plus active reserved ceilings. The inherited root commits the entire original
 v1 snapshot. Do not turn a charged unknown into a fresh charge or use new block heights to
 re-evaluate old lease deadlines. Preparation is separate from authorized cutover and reconciliation.
+
+Succession approvals use a separate signing domain and independently trusted inputs. Reproduce
+[the approval contract](succession-approval.md) and packaged `succession-vector.json`, including
+canonical-byte plan comparison: host-language equality must not equate booleans with integers.

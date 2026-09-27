@@ -30,6 +30,8 @@ REQUIRED = [
     "checkedflow/data/vectors.json",
     "checkedflow/data/legacy-v1.json",
     "checkedflow/data/legacy-successor-vector.json",
+    "checkedflow/data/succession.schema.json",
+    "checkedflow/data/succession-vector.json",
     "checkedflow/data/operational-envelope.schema.json",
     "checkedflow/data/operational-state.schema.json",
     "checkedflow/data/request-archive.schema.json",
@@ -210,6 +212,14 @@ prepared = prepare(dumps(old), Checkpoint(**successor["checkpoint"]),
     decode_control(dumps(successor["initial"])), mission=successor["mission"])
 assert loads(state_bytes(prepared)) == successor["successor"]
 assert ControlRuntime(prepared).state_hash == successor["successor_hash"]
+from checkedflow.succession import verify as verify_succession
+approval_vector = json.loads(r.files("checkedflow").joinpath(
+    "data/succession-vector.json").read_text())
+approval = verify_succession(dumps(approval_vector["manifest"]), legacy=dumps(old),
+    trusted=Checkpoint(**approval_vector["checkpoint"]),
+    successor=decode_control(dumps(approval_vector["successor"])),
+    validators=tuple(tuple(pair) for pair in approval_vector["validators"]))
+assert approval.plan_hash == approval_vector["plan_hash"]
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from checkedflow.operational_identity import Credential, authenticate, sign_command
 keys = {(name, 1): Ed25519PrivateKey.generate() for name in ("a", "b", "c", "d")}
