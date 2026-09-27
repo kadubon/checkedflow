@@ -15,7 +15,7 @@ from checkedflow.core.values import Failure
 from checkedflow.legacy_inventory import Checkpoint
 from checkedflow.legacy_successor import prepare
 from checkedflow.operational_codec import decode
-from checkedflow.succession import approve, proposal, verify
+from checkedflow.succession import approve, authorize_startup, proposal, verify
 from checkedflow.wire import digest, document, dumps
 
 
@@ -68,6 +68,12 @@ def test_both_quorums_bind_actual_published_checkpoint_and_prepared_state():
     assert result.new_organizations == ("a", "b", "c")
     shuffled = envelope | {"approvals": list(reversed(envelope["approvals"]))}
     assert verify(dumps(shuffled), **inputs) == result
+
+
+def test_inherited_startup_cannot_omit_approval():
+    inputs, _, _ = fixture()
+    with pytest.raises(Failure, match="BINDING"):
+        authorize_startup(inputs["successor"], inputs["validators"], None)
 
 
 def test_boolean_height_cannot_alias_signed_integer():

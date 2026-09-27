@@ -1618,3 +1618,10 @@ reopen encountered `STALE` between own-node status and application-state reads. 
 remains failed. The client now permits one further state read against the same observed height;
 persistent lag still fails closed. Twenty-three focused client tests passed, including bounded
 catch-up and unchanged rejection thresholds. New installed qualification must verify the fix.
+
+
+The local journal-era full check passed 1103 unit cases but its later mutation phase failed:
+the newly added startup regression imported generated gRPC modules excluded from mutation
+copies. The startup admission mutant now targets a pure approval regression, retaining the
+same rejection invariant. Twenty focused tests and static checks passed; a complete rerun of
+113 mutants is pending. The failed collection is not counted as detecting that mutation.

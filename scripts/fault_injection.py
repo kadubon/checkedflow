@@ -53,11 +53,11 @@ OPERATIONAL_MUTATIONS = [
     ),
     (
         "succession.py",
-        "test_succession_startup.py",
+        "test_succession.py",
         "inherited_startup_requires_approval",
         "inherited == (succession is not None)",
         "True",
-        "test_startup_requires_exact_approval_before_database_or_socket",
+        "test_inherited_startup_cannot_omit_approval",
     ),
     (
         "succession_journal.py",
