@@ -86,6 +86,9 @@ The [supervised dispatcher](effect-dispatch.md) now connects that hook to a relo
 intent policy, current own-node reservations and complete stored verification evidence. The
 [durable supervisor](effect-supervision.md) connects ordinary reservation, reporting and local
 crash recovery. Staging, compensation and cross-host recovery remain separate requirements.
+The [historical reconciler](effect-reconciliation.md) uses the original policy and source bindings
+to publish GET-only evidence and an unsigned `effect.reconcile` proposal. Current quorum approval
+remains mandatory; a paused dispatcher or revoked executor key cannot authorize another send.
 
 ## Persistence, bounds and remaining integration
 
@@ -107,7 +110,7 @@ death, automatic expiry, catch-up, administrative reconciliation and common hash
 observation is explicitly a signed fixture, not a real GitHub result. Installed qualification must
 execute this named case; a previous report lacking it cannot qualify this increment.
 
-Still required for the complete effect lifecycle: governed staging and remote reconciliation;
+Still required for the complete effect lifecycle: governed staging and live reconciliation qualification;
 production credential custody and cross-host executor recovery; exact-identity compensation
 and retirement; complete crash-window
 and multi-host qualification. Do not enable publication from these component checks alone.

@@ -180,6 +180,9 @@ class Drafts:
 
     def _enabled(self, plan: Plan) -> None:
         require(self.enabled, "DISABLED", "GitHub effect provider disabled")
+        self._scope(plan)
+
+    def _scope(self, plan: Plan) -> None:
         require(
             plan.repository == self.repository and plan.repository_id == self.repository_id,
             "SCOPE",
@@ -438,7 +441,7 @@ class Drafts:
             return Outcome("unknown")
 
     def _patch_binding(self, plan: Plan, base: Tree, patch: bytes, contract: Contract) -> None:
-        self._enabled(plan)
+        self._scope(plan)
         require(contract.allow_draft_pr, "AUTHORITY", "contract excludes draft effects")
         require(
             plan.repository == contract.repository
@@ -472,13 +475,31 @@ class Drafts:
         Contract construction is not consensus authority. The caller must still enforce
         current acceptance, action authorization, fencing and supervised deadlines.
         """
+        self._enabled(plan)
         self._patch_binding(plan, base, patch, contract)
         return self.dispatch(plan, before_send=before_send)
 
     def reconcile_patch(self, plan: Plan, base: Tree, patch: bytes, contract: Contract) -> Outcome:
         """Recheck byte bindings, then perform read-only reconciliation; never resend."""
+        self._enabled(plan)
         self._patch_binding(plan, base, patch, contract)
         return self.reconcile(plan)
+
+    def inspect_patch(self, plan: Plan, base: Tree, patch: bytes, contract: Contract) -> Outcome:
+        """Read exact remote identity without enabling dispatch or changing the local journal.
+
+        This bounded probe is allowed during local disable. It sends only GET requests and
+        needs no retained provider claim. Missing, moved or mismatched objects remain unknown;
+        even a positive observation grants neither a retry nor administrative reconciliation.
+        """
+        self._scope(plan)
+        try:
+            self._patch_binding(plan, base, patch, contract)
+            self._preflight(plan)
+            number = self._existing(plan)
+            return Outcome("confirmed", number) if number else Outcome("unknown")
+        except (Failure, OSError):
+            return Outcome("unknown")
 
     def reconcile(self, plan: Plan) -> Outcome:
         """Read the original operation; even empty provider results never authorize resending."""

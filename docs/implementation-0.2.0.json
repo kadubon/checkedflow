@@ -1700,7 +1700,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:github-draft-provider",
-        "component:durable-effect-supervision"
+        "component:durable-effect-supervision",
+        "component:historical-effect-reconciliation"
       ]
     },
     {
@@ -1711,7 +1712,8 @@
       "evidence": [
         "component:github-draft-provider",
         "component:governed-effect-reservations",
-        "component:durable-effect-supervision"
+        "component:durable-effect-supervision",
+        "component:historical-effect-reconciliation"
       ]
     },
     {
@@ -1722,7 +1724,8 @@
       "evidence": [
         "component:github-draft-provider",
         "component:governed-effect-reservations",
-        "component:durable-effect-supervision"
+        "component:durable-effect-supervision",
+        "component:historical-effect-reconciliation"
       ]
     },
     {
@@ -1780,7 +1783,8 @@
       "evidence": [
         "component:governed-work-budget",
         "component:funded-organizational-acceptance",
-        "component:durable-effect-supervision"
+        "component:durable-effect-supervision",
+        "component:historical-effect-reconciliation"
       ]
     },
     {
@@ -3830,6 +3834,33 @@
         "R10-0465",
         "R10-0475"
       ]
+    },
+    {
+      "id": "historical-effect-reconciliation",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/effect_reconciliation.py",
+        "src/checkedflow/github_drafts.py",
+        "src/checkedflow/data/effect-reconciliation.schema.json"
+      ],
+      "tests": [
+        "tests/test_effect_reconciliation.py",
+        "scripts/fault_injection.py",
+        "tests/test_integration.py"
+      ],
+      "documentation": [
+        "docs/effect-reconciliation.md"
+      ],
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ],
+      "requirements": [
+        "R9-0445",
+        "R9-0447",
+        "R9-0449",
+        "R10-0465"
+      ],
+      "scope": "Bounded historical GET-only provider inspection while dispatch is disabled; exact original reservation/contract/source bindings; scoped observation publication/readback; unsigned three-organization reconciliation proposal. Source tests apply actual signed administrative transitions for pause, expiry, key revocation, candidate withdrawal and unknown remote results. Does not stage, compensate, retire effects, automatically sign/submit, authenticate arbitrary remote nodes or qualify the live multi-host G3/G6 path. Requires the exact retained quorum-approved policy snapshot, including provider identity. The existing installed four-node/gVisor supervisor case is extended through pause and administrative reconciliation; new execution remains pending."
     }
   ],
   "observations": [
@@ -4012,6 +4043,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36292057142",
       "conclusion": "success",
       "scope": "All jobs and all 27 installed infrastructure cases passed. Downloaded JUnit independently checked with the required27 gate. Real four-node CometBFT and gVisor supervisor reporting recovery passed with fixture provider responses, not live GitHub G3. Wheel4fa741ce911cc4a8ea8e0f7a7580ae0dd2556f8193874116381306b02e057229; sdistb9c66684d4a206c6667f2ff6ee158f38b5dcf310e1622848f01ea2c2e018a79d. Predates the journal initialization audit fixes; full G1-G7 remains unqualified."
+    },
+    {
+      "source": "44704306e7ad47556a70e1be162b92d00d653756",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36293296304",
+      "conclusion": "success",
+      "scope": "All jobs passed, including six OS/Python jobs and all27 required installed infrastructure cases. Downloaded JUnit independently validated. Journal initialization fixes qualified as a component. Wheel5d95c4ab5544495a65dfc2f38e95627ab06e66c8fdbf50ad697069d64567c9db; sdist50e71de3896f3642fcdf1ef176fca0ba4b3fa24b6bf69a6f797474e13f390489. Predates historical reconciliation and the extended installed case; does not complete original G1-G7."
     }
   ]
 }

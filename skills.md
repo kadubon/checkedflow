@@ -142,6 +142,10 @@ It preserves uncertain signed submissions and interrupted dispatches; only expli
 command retransmission is allowed, never a repeated provider operation. Keep all three journals.
 Never give the token or journal to candidate code. Do not recreate a journal or use a new operation
 to retry an unknown POST. Read reconciliation cannot treat absence as permission to resend.
+Use [Reconciler.collect](docs/effect-reconciliation.md) to publish a historical GET-only observation
+and an unsigned effect.reconcile proposal, including while dispatch is disabled. The proposal is not
+approval; administrators must review current identity and sign through the normal quorum path.
+Inspect `checkedflow schema effect-reconciliation`. Keep unknowns when branches or PR content differ.
 The operator fixture writes to a real repository: run it only against an explicitly authorized
 disposable target. Its staging/cleanup are not a completed runtime effect or compensation workflow.
 

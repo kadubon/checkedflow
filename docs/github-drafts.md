@@ -171,7 +171,8 @@ provider credentials.
 
 Consensus effect states, funded reservations, current dispatch checks and durable ordinary reporting
 are implemented as development components. Required work still includes exact patch-to-Git staging,
-production credential custody, coordinated cross-host journal recovery, governed remote
-reconciliation and compensation. A provider
+production credential custody, coordinated cross-host journal recovery and compensation.
+[Historical reconciliation](effect-reconciliation.md) now publishes exact GET-only observations
+for quorum review; its full live-provider qualification remains outstanding. A provider
 smoke is not `LIVE_EFFECT_QUALIFIED` for the complete 0.2 operational profile. G3 and final release
 remain blocked until the full path and all required failure windows are qualified.

@@ -108,4 +108,7 @@ The [supervised dispatcher](effect-dispatch.md) bridges a live reservation to pr
 it reloads protected intent policy and verifies scoped artifacts before preflight and at the
 final send check. The [effect supervisor](effect-supervision.md) retains invocation and observation
 records, verifies published evidence, and submits ordinary reports through the nonce coordinator.
-Staging, remote reconciliation and coordinated cross-host recovery remain separate responsibilities.
+The [historical reconciler](effect-reconciliation.md) performs GET-only inspection under the original
+approved policy and publishes unsigned proposals for quorum review. It does not use dispatch
+readiness or renew execution authority. Staging, compensation, retirement and coordinated cross-host
+recovery remain incomplete; live-provider qualification is still required for the complete path.

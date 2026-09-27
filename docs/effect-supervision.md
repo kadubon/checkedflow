@@ -96,4 +96,6 @@ The added installed infrastructure case uses real four-node CometBFT, four indep
 checks, SQLite evidence, current policy and a lost committed report reply. Its provider is a fixed
 protocol fixture, not GitHub. The required infrastructure gate includes that named case; an older
 26-case report cannot qualify it. Complete G3 also needs the authorized live-provider path and
-remaining staging/reconciliation/compensation recovery semantics.
+remaining staging/compensation recovery semantics. Historical inspection and unsigned
+[reconciliation proposals](effect-reconciliation.md) are a separate operator SDK path; they do not
+reuse the supervisor's execution permission or automatically submit an administrative command.

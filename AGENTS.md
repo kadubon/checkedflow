@@ -28,6 +28,8 @@ its provider observation as a committed report or allow candidates to modify the
 Preserve the effect supervisor, coordinator and provider journals together. A recovered invocation
 claim means unknown, never permission to call the dispatcher again. Verify published observation
 bytes before reporting, and use governed reconciliation when the reporting window has closed.
+Use effect_reconciliation.Reconciler for historical GET-only inspection. Its unsigned proposal
+needs current administrative review and quorum signatures; absence never permits another send.
 
 V2 effect reservations retain full modeled cost once a send becomes possible. Never reset a
 reservation, clear unknowns, release attached funding or mint a fresh intent to retry a provider

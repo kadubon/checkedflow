@@ -62,3 +62,5 @@ those contracts. Read the limitation beside a research or validation claim befor
 - [Authorized downloads](artifact-download.md): shared A2A/MCP policy for explicitly published current and archived bytes.
 
 - [Agent TLS](agent-tls.md): mutual TLS, explicit proxy advertisements and credential retirement.
+
+- [Effect reconciliation](effect-reconciliation.md): historical GET-only evidence and unsigned quorum-review proposals.

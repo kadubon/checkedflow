@@ -53,6 +53,7 @@ REQUIRED = [
     "checkedflow/data/task-command.schema.json",
     "checkedflow/data/acceptance-command.schema.json",
     "checkedflow/data/effect-command.schema.json",
+    "checkedflow/data/effect-reconciliation.schema.json",
     "checkedflow/data/github-effect-intent.schema.json",
     "checkedflow/data/effect-flow-vector.json",
     "checkedflow/data/operational-configuration.schema.json",

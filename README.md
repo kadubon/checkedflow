@@ -41,6 +41,7 @@ guides; complete generation orchestration and operational deployment are still u
 | How is application state restored? | [Application history recovery](docs/application-backup.md); validator ownership needs separate recovery |
 | Can it open a pull request automatically? | [Effect supervision](docs/effect-supervision.md) connects approval, current checks, one draft operation and signed reporting; disabled by default, with staging and complete deployment recovery still incomplete |
 | What if an external request loses its reply? | [V2 effect records](docs/work-effects.md) keep the original reservation, full modeled charge and unknown result; governed reconciliation cannot authorize a second send |
+| How can operators investigate an uncertain PR? | [Read-only reconciliation](docs/effect-reconciliation.md) publishes exact observations for three-organization review without enabling dispatch |
 | What if local recovery records are damaged? | [Submission recovery](docs/worker-supervision.md) rejects missing identity records; preserve journals and reconcile original commands instead of starting again |
 | What has actually been tested? | [Implementation ledger](docs/implementation-0.2.0.md), [four-VM observations](docs/vm-laboratory-2026-09-26.md) |
 

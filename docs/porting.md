@@ -79,3 +79,10 @@ number for unknown results. The local invocation-height lower bound is not the e
 time. Persist the invocation claim before entering an adapter; an interrupted claim must not call
 the adapter again. Preserve original signed reports separately from provider receipts, and verify
 stored evidence bytes before reporting. Local SQL phases are not consensus effect classifications.
+
+Historical [reconciliation](effect-reconciliation.md) uses its own
+[observation schema](../src/checkedflow/data/effect-reconciliation.schema.json). Bind the original
+approved policy as well as the plan; a caller-selected provider actor is insufficient. Preserve
+unknown lookup results and prior positive object identity. Publish and verify evidence before
+returning the unsigned administrative proposal. A proposal is not a signed envelope, and historical
+reads do not require or confer dispatch readiness. Current quorum admission remains a separate step.

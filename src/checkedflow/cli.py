@@ -59,6 +59,7 @@ def main(argv: list[str] | None = None) -> int:
             "github-effect-intent",
             "effect-policy",
             "effect-observation",
+            "effect-reconciliation",
         ],
     )
     keys = commands.add_parser("keygen")
@@ -154,6 +155,7 @@ def main(argv: list[str] | None = None) -> int:
                 "github-effect-intent": "github-effect-intent.schema.json",
                 "effect-policy": "effect-policy.schema.json",
                 "effect-observation": "effect-observation.schema.json",
+                "effect-reconciliation": "effect-reconciliation.schema.json",
             }[args.name]
             sys.stdout.buffer.write(files("checkedflow").joinpath("data", filename).read_bytes())
         elif args.action in {"generator", "example"}:

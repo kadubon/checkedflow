@@ -1254,3 +1254,48 @@ coverage gates passed. Submission, worker, schedule and agent journals reached 1
 and branches; sandbox recovery retained 99.39% statements and 95.45% branches. All 91 selected
 fault mutants were killed, including five new journal-integrity mutations. Current-source hosted
 infrastructure qualification remains separate from the successful earlier supervisor run.
+
+## Historical effect reconciliation
+
+`effect_reconciliation.Reconciler.collect` now connects an original reserved effect to GET-only
+GitHub inspection, canonical evidence publication/readback and an unsigned administrative command.
+It binds the exact retained quorum-approved policy, provider actor/repository, original executor
+revision, contract and complete source/patch bytes. It rejects changed effect records during probe
+or publication. It does not sign, submit, stage, dispatch, close or retry an external operation.
+Read-only inspection remains possible with dispatch disabled and during pause, expiry, key revocation
+or candidate withdrawal. A negative lookup remains unknown; an existing positive object number
+cannot change. Normal current quorum approval controls the subsequent consensus classification.
+
+Twenty-three focused source tests passed. The exact installed wheel also passed all 23 outside the
+checkout, including approved-policy changes, alternate provider actors, absent objects, revoked
+keys, withdrawn candidates and publication failures. Positive proposals went through actual signed
+three-organization runtime transitions; executor-only submission was rejected. Provider replies
+are protocol fixtures, not a live GitHub qualification claim.
+
+Wheel `2bf9cde1e420b6cfb61d3f2db8e38bf822068be8524b2b3d276dc44b4fa4960e` and sdist
+`5b97ae16cdaa373a9e7b1567e1c55cf65897131d9541f996c8c043f9481f8f67` passed isolated
+installation. All 166 package files match current source. Publication pattern scanning examined
+820 members without findings. These remain development artifacts; subsequent documentation updates
+are not represented as a final-release build.
+
+The existing required four-node/gVisor supervisor qualification case now continues through mission
+pause, disabled provider, historical inspection and quorum reconciliation. It requires all replicas
+to agree on the evidence, object number and retained charge, with no second provider POST. This
+extension requires a new actual installed-artifact run. Earlier reports cannot qualify the extension.
+Staging, compensation, effect retirement, coordinated deployment and the full original G1-G7 remain
+unfinished. See [operator reconciliation](effect-reconciliation.md) for the exact contract and limits.
+
+The preceding journal-integrity source `44704306e7ad47556a70e1be162b92d00d653756` passed
+all [CI36293296304 jobs](https://github.com/kadubon/checkedflow/actions/runs/36293296304),
+including six Windows/Linux Python jobs and the required 27 installed infrastructure cases.
+The downloaded report independently passed the gate. Hosted wheel
+`5d95c4ab5544495a65dfc2f38e95627ab06e66c8fdbf50ad697069d64567c9db` and sdist
+`50e71de3896f3642fcdf1ef176fca0ba4b3fa24b6bf69a6f797474e13f390489` identify that run.
+This result does not qualify the later reconciliation SDK or its extended infrastructure case.
+
+The final local check for historical reconciliation passed 969 tests in 320.18 seconds, with
+three Windows descriptor skips and 24 separately selected infrastructure cases. All static and
+authoritative coverage gates passed. The new reconciler covered all 61 statements; it has no
+measured branch arcs. All 94 selected fault mutants were killed, including original-policy binding,
+verified publication and preservation of the original provider object. Final infrastructure
+qualification must execute the extended case against this source's own distribution.

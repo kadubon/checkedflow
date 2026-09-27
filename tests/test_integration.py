@@ -1373,7 +1373,7 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
                     "parents": [{"sha": intent.base_commit}],
                 }
             assert suffix == "/pulls"
-            return []
+            return [pull(plan)] if any(method == "POST" for method, _ in calls) else []
 
         provider = Drafts(
             intent.repository,
@@ -1449,6 +1449,25 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
                 and state.effects[0].evidence == report_ref.digest
             )
             assert state.budget.spent == 50 and state.budget.reserved == 0
+        assert len(cluster.common_hash()[1]) == 64
+
+        from checkedflow.effect_reconciliation import Reconciler
+
+        provider.enabled = False
+        cluster.send("mission.pause", {})
+        proposal = Reconciler(coordinator, provider, objects, access, Policy(path)).collect(
+            identity, intent, contract, base_ref, patch_ref
+        )
+        assert objects.get(proposal.evidence, access=access) == proposal.observation
+        command = document(proposal.command)
+        reconciled = cluster.send(command["kind"], command["payload"])
+        cluster.wait_height(int(reconciled["receipt"]["height"]))
+        for index in range(4):
+            state = cluster.client(index).state()
+            assert state.effects[0].status == "reconciled" and state.effects[0].number == 7
+            assert state.effects[0].evidence == proposal.evidence.digest
+            assert state.budget.spent == 50 and state.budget.reserved == 0
+        assert len(sent) == 2 and sum(method == "POST" for method, _ in calls) == 1
         assert len(cluster.common_hash()[1]) == 64
     finally:
         cluster.close()

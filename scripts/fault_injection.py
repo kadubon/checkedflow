@@ -44,6 +44,30 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "effect_reconciliation.py",
+        "test_effect_reconciliation.py",
+        "reconciliation_binds_original_provider_policy",
+        "== effect.policy",
+        '!= ""',
+        "test_original_approved_provider_policy_is_required",
+    ),
+    (
+        "effect_reconciliation.py",
+        "test_effect_reconciliation.py",
+        "reconciliation_requires_published_bytes",
+        "verify(ref, self.store.get(ref, access=self.access))",
+        "pass",
+        "test_publication_ack_without_readback_never_returns_proposal",
+    ),
+    (
+        "effect_reconciliation.py",
+        "test_effect_reconciliation.py",
+        "reconciliation_preserves_original_object",
+        "effect.number in {0, outcome.number}",
+        "True",
+        "test_malformed_or_changed_object_identity_is_rejected",
+    ),
+    (
         "worker_supervisor.py",
         "test_journal_initialization.py",
         "worker_identity_cannot_be_recreated",
