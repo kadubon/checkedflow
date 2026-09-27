@@ -4787,6 +4787,14 @@
     {
       "id": "full-longevity-6e9ba23",
       "scope": "Longevity job108614307342 succeeded:4097controls65candidates195tasks, cleanup passed; overall workflow36316699453 cancelled. Evidence docs/evidence/longevity-full-20260928.json binds reports/source. Full original G5/G6/G7 remain unqualified. Later short run atabfb0b6 failed stale reader check; completion receipt-height barrier added without workload changes."
+    },
+    {
+      "id": "native-apply-installed-distributions",
+      "scope": "Development wheel and sdist each installed outside checkout and passed SDK/CLI/extras smoke, including deployment CLI help/schema discovery. Initial extended smoke had a test-only subprocess import-order error; corrected script passed unchanged artifacts. Runtime bytes match four-VM tested wheel; source distribution predates subsequent documentation/test edits. Static checks passed; publication scan1019files/members0findings. No final0.2.0 gate claim.",
+      "artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "ddc5fb90faf1ec8d5229a2c523a2514e3aa6bfc35c0d0086e15f9fee231c715c",
+        "checkedflow-0.1.0.tar.gz": "81833c78329f9ef45e0ad7e24410fbc21c0dca09588a7293e814f4d57dc831e3"
+      }
     }
   ]
 }

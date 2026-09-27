@@ -594,6 +594,7 @@ with telemetry.measure("worker.step"):
     pass
 trace(telemetry.drain(), NoOpTracerProvider().get_tracer("installed-smoke"))
 # Offline deployment planning uses installed modules and resources only.
+import base64, hashlib, subprocess
 for command in ("deployment-preflight", "deployment-service", "deployment-apply"):
     help_result = subprocess.run(
         [sys.executable, "-I", "-m", "checkedflow.cli", command, "--help"],
@@ -605,7 +606,6 @@ for command in ("deployment-preflight", "deployment-service", "deployment-apply"
         capture_output=True, text=True, check=True,
     )
     assert json.loads(schema_result.stdout)["type"] == "object"
-import base64, hashlib, subprocess
 from checkedflow.core.operational import genesis as fresh_genesis
 fresh = Configuration(fresh_genesis(configuration.initial.chain, configuration.initial.mission,
     configuration.initial.organizations, configuration.initial.credentials),
