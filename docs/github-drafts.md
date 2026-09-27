@@ -18,6 +18,8 @@ The adapter does not stage patch bytes, create or update branches, merge, close 
 or interpret consensus approvals. The caller must be a separate trusted effect executor. Keep
 its credential and private journal away from candidates, ordinary workers, verifiers and gateways.
 Constructing or decoding a plan does not prove authority to send it.
+The [v2 effect state machine](work-effects.md) now supplies governed reservations and a strict
+intent-to-plan resolver. Maintained send-time orchestration and compensation remain incomplete.
 
 ## Exact destination and content checks
 

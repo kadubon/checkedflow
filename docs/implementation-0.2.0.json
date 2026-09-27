@@ -1585,36 +1585,46 @@
       "id": "R9-0420",
       "source_line": 420,
       "text": "Use a versioned state machine such as:",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-effect-reservations"
+      ]
     },
     {
       "id": "R9-0422",
       "source_line": 422,
       "text": "prepared -> authorized -> dispatch_reserved -> dispatched -> observed -> reconciled",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-effect-reservations"
+      ]
     },
     {
       "id": "R9-0424",
       "source_line": 424,
       "text": "with separate denied, expired, unknown, and compensation-required states as appropriate. Specify exact transition names in schemas and tests rather than treating this illustrative list as sufficient.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-effect-reservations"
+      ]
     },
     {
       "id": "R9-0426",
       "source_line": 426,
       "text": "Bind the effect to:",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-effect-reservations"
+      ]
     },
     {
       "id": "R9-0428",
       "source_line": 428,
       "text": "- Operation ID, chain/mission, actor and authority revision.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-effect-reservations"
+      ]
     },
     {
       "id": "R9-0429",
@@ -1623,7 +1633,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:github-draft-provider",
-        "component:github-patch-byte-binding"
+        "component:github-patch-byte-binding",
+        "component:governed-effect-reservations"
       ]
     },
     {
@@ -1640,15 +1651,19 @@
       "id": "R9-0431",
       "source_line": 431,
       "text": "- Relevant policy/checker evidence, expiry, resource limit, and fence.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-effect-reservations"
+      ]
     },
     {
       "id": "R9-0433",
       "source_line": 433,
       "text": "Recheck current eligibility and authorization at dispatch. Protect against changing arguments after approval and against stale state during failover.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:governed-effect-reservations"
+      ]
     },
     {
       "id": "R9-0435",
@@ -1688,7 +1703,8 @@
       "text": "GitHub PR creation is not assumed to expose a universal exactly-once primitive. After an ambiguous reply, reconcile the original operation rather than create a fresh ID or resend blindly. Account for delayed remote visibility and concurrent requests. Preserve `unknown` when absence has not been established reliably.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:github-draft-provider"
+        "component:github-draft-provider",
+        "component:governed-effect-reservations"
       ]
     },
     {
@@ -1697,7 +1713,8 @@
       "text": "A fence in CheckedFlow cannot cancel an already in-flight GitHub request. State the exact guarantees and test the failure windows. If the adapter cannot safely resume an ambiguous operation, require explicit authorized reconciliation.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:github-draft-provider"
+        "component:github-draft-provider",
+        "component:governed-effect-reservations"
       ]
     },
     {
@@ -3675,6 +3692,47 @@
       "requirements": [
         "R9-0429",
         "R9-0430"
+      ]
+    },
+    {
+      "id": "governed-effect-reservations",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/core/work_effects.py",
+        "src/checkedflow/core/operational.py",
+        "src/checkedflow/operational_codec.py",
+        "src/checkedflow/github_effects.py",
+        "src/checkedflow/worker_submission.py",
+        "src/checkedflow/agents/operational_gateway.py",
+        "src/checkedflow/data/effect-command.schema.json",
+        "src/checkedflow/data/github-effect-intent.schema.json",
+        "src/checkedflow/data/effect-flow-vector.json"
+      ],
+      "tests": [
+        "tests/test_work_effects.py",
+        "tests/test_github_effects.py",
+        "tests/test_worker_submission.py",
+        "tests/test_operational_gateway.py",
+        "tests/test_integration.py",
+        "scripts/fault_injection.py",
+        "scripts/package_check.py"
+      ],
+      "documentation": [
+        "docs/work-effects.md",
+        "docs/adr-0004-effect-reservations.md"
+      ],
+      "scope": "V2 immutable effect preparation, separate quorum authorization, purpose-scoped single reservation/fence, full conservative charge, unknown preservation, governed original-object reconciliation and adverse-evidence compensation obligation. Closed snapshots, SQLite replay, bounded intent-to-GitHub-plan resolution, agent inspection and retained original-byte submission. 845 source tests passed (three Windows descriptor skips, 23 infrastructure deselected); full coverage gates passed, both new boundaries at 100 percent statement/branch. A strengthened live-reservation regression passed and all 78 selected mutants were killed. Wheel 34f62716f8c362f9df79498dd0516d59df341addaf75dec4d155d4091b318637 and its sdist passed isolated installation with signed effect replay and embedded-schema equality. Installed four-node 26-case qualification remains pending. No provider send orchestration, compensation actuator, effect retirement, full crash matrix or G1-G7 claim.",
+      "requirements": [
+        "R9-0420",
+        "R9-0422",
+        "R9-0424",
+        "R9-0426",
+        "R9-0428",
+        "R9-0429",
+        "R9-0431",
+        "R9-0433",
+        "R9-0447",
+        "R9-0449"
       ]
     }
   ],

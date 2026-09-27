@@ -1064,3 +1064,55 @@ The completed fixed-source check exited successfully: all 75 selected invariant-
 were killed, including removed base-tree and result-tree binding checks. Final static checks and
 the 765-member source/distribution pattern scan passed with zero findings. This is component
 validation, not an independent penetration test or complete operational release qualification.
+
+### Governed external-effect reservations
+
+The Git byte-binding source `4fa5a8df272153266d9dc10af62ba720291eec83` passed every job in
+[CI 36287363677](https://github.com/kadubon/checkedflow/actions/runs/36287363677). That run predates
+this state-machine increment and cannot qualify its new required infrastructure case.
+
+V2 now retains separate effect preparation, quorum authorization, exact executor reservation,
+provider observation and quorum reconciliation. Dispatch reservation consumes the full modeled
+ceiling. Expiry, lost eligibility and unknown outcomes cannot release the charge or authorize
+another attempt. Reconciliation retains the original provider number; contradictory object IDs
+reject. Candidate withdrawal preserves a compensation obligation, and resume refuses unresolved
+external operations. The bounded records pin their funding/candidate dependencies during archive
+attempts. Effect retirement and compensation execution remain incomplete.
+
+A strict GitHub intent resolver connects the approved digest, accepted result tree/contract,
+executor revision and expiry to the existing byte-bound provider plan. An audit against the actual
+repository-reuse path corrected the initial assumption that a candidate artifact was a patch digest:
+that field is the resulting source-tree digest. Patch bytes are independently bound through the
+contract. The core remains independent of network, storage, time and provider credentials.
+
+Source tests exercise the signed lifecycle, SQLite replay, malformed snapshots, purpose/quorum
+checks, conservative budgets, duplicate intents, expiry, recovery and generated observation
+sequences. Agent mission inspection includes effects, and original-byte nonce recovery accepts
+purpose-scoped executor commands. Dedicated real four-node/gVisor qualification now includes
+reservation expiry during one-node death, catch-up, governed observation, withdrawal and common
+state hashes. It uses a signed provider observation fixture, not a GitHub response. The required
+installed report grows from 25 to 26 named cases; previous reports cannot satisfy it. Full-source,
+mutation, installed-artifact and hosted results for this increment remain pending.
+
+The first full run exposed stale embedded state-schema content in the operational configuration
+schema (844 tests passed, one failed). Updating the embedded contract fixed the failure; a
+source-independent installed smoke now also compares both schemas. The complete rerun passed
+845 tests in 217.20 seconds, with three Windows descriptor skips and 23 separately selected
+infrastructure tests. All authoritative coverage gates passed; the effect core and GitHub intent
+resolver both reached 100% statement/branch coverage. Selected mutation results are recorded
+separately after completion.
+
+Wheel `34f62716f8c362f9df79498dd0516d59df341addaf75dec4d155d4091b318637` and sdist
+`393277a65c40b7ff5e871c36233f5c69212be39b3b2ae4bd66a78ddaa22af650` passed isolated
+installation and replayed the packaged signed effect vector without a source checkout. The
+source/distribution publication pattern scan checked 788 members with no findings. Documentation
+updates after that build do not change these package files. These checks do not qualify hosted
+26-case infrastructure, separate-host deployment, full actuator recovery/compensation, or G1-G7.
+
+Fault injection initially showed that the expiry-only retry test did not distinguish a removed
+first-reservation guard: a secondary state validator still rejected the expired record. The test
+now also tries to repeat a live reservation and verifies that its state hash/deadline cannot change.
+That focused regression passed, and the completed rerun killed all 78 selected mutants, including
+live re-reservation, unresolved resume and quorum-intent binding. No production validation was
+weakened to make the mutation gate pass. Final static checks and package/source equality checks
+also passed. Hosted 26-case and full operational qualification remain separate pending evidence.

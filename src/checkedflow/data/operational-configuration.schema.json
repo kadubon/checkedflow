@@ -600,6 +600,155 @@
               "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
             }
           }
+        },
+        "effects": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "identity",
+              "candidate",
+              "ticket",
+              "executor",
+              "operation",
+              "intent",
+              "policy",
+              "authorized",
+              "fence",
+              "reserved",
+              "until",
+              "number",
+              "revision",
+              "prepared",
+              "expires",
+              "lease_blocks",
+              "status",
+              "authorization",
+              "evidence",
+              "reason"
+            ],
+            "properties": {
+              "identity": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "candidate": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "ticket": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "executor": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "operation": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "intent": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "policy": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "authorized": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "fence": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "reserved": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "until": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "number": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "prepared": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "expires": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "lease_blocks": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10000
+              },
+              "status": {
+                "enum": [
+                  "prepared",
+                  "authorized",
+                  "dispatch_reserved",
+                  "observed",
+                  "unknown",
+                  "denied",
+                  "expired",
+                  "reconciled",
+                  "compensation_required"
+                ]
+              },
+              "authorization": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                  },
+                  {
+                    "const": ""
+                  }
+                ]
+              },
+              "evidence": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                  },
+                  {
+                    "const": ""
+                  }
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 80
+              }
+            }
+          }
         }
       }
     },

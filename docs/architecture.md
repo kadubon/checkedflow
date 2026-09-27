@@ -95,3 +95,12 @@ Its clocks, SQLite storage, callback DNS/TLS and protocol SDKs remain outside th
 core. Protocol handlers share Gateway admission; bindings, journal, push delivery and OAuth
 verification are separate modules. MCP notifications are refetch hints derived from committed
 records, not an extra event authority. See [conformance](conformance.md) for the supported roles.
+
+## External effects in the operational profile
+
+V2 [effect records](work-effects.md) keep intent, administrative authorization, executor reservation
+and provider observation separate. They enter the same atomic state and replay boundary as budgets
+and candidates. A possibly sent operation consumes its full modeled ceiling and cannot be reset
+for retry. The GitHub intent resolver derives exact provider arguments from a validated current
+reservation; provider I/O and local freshness remain outside consensus. The maintained actuator,
+compensation and effect archival are not yet complete. See [ADR 0004](adr-0004-effect-reservations.md).

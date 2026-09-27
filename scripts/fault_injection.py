@@ -44,6 +44,30 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "core/work_effects.py",
+        "test_work_effects.py",
+        "effect_never_resends_unknown",
+        'effect.status == "authorized"',
+        "True",
+        "test_unknown_reservation_cannot_retry_refund_or_resume",
+    ),
+    (
+        "core/operational.py",
+        "test_work_effects.py",
+        "effect_resume_requires_reconciliation",
+        "effect.status in UNRESOLVED",
+        "False",
+        "test_unknown_reservation_cannot_retry_refund_or_resume",
+    ),
+    (
+        "github_effects.py",
+        "test_github_effects.py",
+        "effect_quorum_intent_binding",
+        "effect.intent == intent.digest",
+        "True",
+        "test_exact_reserved_plan_binds_candidate_intent_and_authorization",
+    ),
+    (
         "agents/tls.py",
         "test_agent_tls.py",
         "grpc_client_certificate_required",

@@ -42,6 +42,39 @@ class Node:
         return {"mission": "m", "task": self.task}
 
 
+def test_effect_reservation_lost_reply_preserves_original_command(tmp_path):
+    from test_work_effects import prepared
+
+    node = Node()
+    node.h = prepared()
+    node.h.action("authorize")
+    coordinator = Coordinator(
+        tmp_path,
+        node.read,
+        node.submit,
+        node.h.keys[("effects", 1)],
+        chain=node.h.initial.chain,
+        mission="m",
+        actor="effects",
+        revision=1,
+    )
+    node.behavior = "after"
+    with pytest.raises(Failure, match="OUTCOME_UNKNOWN"):
+        coordinator.send(
+            "0:effect-reserve", "effect.reserve", {"mission": "m", "effect": node.h.effect}
+        )
+    assert coordinator.reconcile() == "confirmed"
+    state = node.read()
+    assert state.effects[0].status == "dispatch_reserved" and len(node.sent) == 1
+    assert (
+        coordinator.send(
+            "0:effect-reserve", "effect.reserve", {"mission": "m", "effect": node.h.effect}
+        )
+        == state
+    )
+    assert len(node.sent) == 1
+
+
 def test_durable_nonce_sequence_and_completed_request_repetition(tmp_path):
     node = Node()
     c = node.coordinator(tmp_path)

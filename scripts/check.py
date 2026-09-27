@@ -61,6 +61,7 @@ def main() -> None:
                 "--cov=checkedflow.retention_backup",
                 "--cov=checkedflow.github_drafts",
                 "--cov=checkedflow.git_tree",
+                "--cov=checkedflow.github_effects",
                 "--cov=checkedflow.dispatch_watchdog",
                 "--cov=checkedflow.worker_submission",
                 "--cov=checkedflow.worker_supervisor",
@@ -101,6 +102,7 @@ def main() -> None:
             "retention_backup.py",
             "github_drafts.py",
             "git_tree.py",
+            "github_effects.py",
             "dispatch_watchdog.py",
             "worker_submission.py",
             "worker_supervisor.py",
@@ -129,6 +131,7 @@ def main() -> None:
             "core/work_archive.py",
             "core/work_tasks.py",
             "core/work_acceptance.py",
+            "core/work_effects.py",
         }
         found = set()
         for name, report in coverage["files"].items():

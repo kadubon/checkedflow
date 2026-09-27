@@ -1,6 +1,7 @@
 # ADR 0001: Preserve v1 and introduce an explicit operational profile
 
-Decision date: 2026-09-26. Status: accepted design; implementation pending.
+Decision date: 2026-09-26. Status: accepted; v2 identity, state, consensus, work and effect
+reservation components are implemented. The governed migration/successor path remains pending.
 
 The 0.1.0 signatures, state hashes, expiry rules, errors and replay must retain their original
 meaning. Package 0.2.0 will continue to expose that interpreter. New artifact references, identity

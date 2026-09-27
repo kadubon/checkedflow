@@ -52,6 +52,9 @@ REQUIRED = [
     "checkedflow/data/budget-command.schema.json",
     "checkedflow/data/task-command.schema.json",
     "checkedflow/data/acceptance-command.schema.json",
+    "checkedflow/data/effect-command.schema.json",
+    "checkedflow/data/github-effect-intent.schema.json",
+    "checkedflow/data/effect-flow-vector.json",
     "checkedflow/data/operational-configuration.schema.json",
     "checkedflow/data/repository-patch.schema.json",
     "checkedflow/data/repository-tree.schema.json",
@@ -74,7 +77,26 @@ print("Installed import origin:", origin.as_posix())
 roles = subprocess.run([sys.executable, "-I", "-m", "checkedflow.cli", "schema", "access-roles"],
                        check=True, capture_output=True, timeout=15)
 assert json.loads(roles.stdout)["roles"]["submit"] == [
-    "task.lease", "task.start", "task.heartbeat", "task.finish"]
+    "task.lease", "task.start", "task.heartbeat", "task.finish", "effect.reserve", "effect.report"]
+from checkedflow.operational_codec import decode as decode_control
+from checkedflow.operational_runtime import Runtime as ControlRuntime
+from checkedflow.wire import dumps as canonical
+effect_vector = json.loads(
+    r.files("checkedflow").joinpath("data/effect-flow-vector.json").read_text(encoding="utf-8")
+)
+effect_runtime = ControlRuntime(decode_control(canonical(effect_vector["initial"])))
+for step in effect_vector["steps"]:
+    effect_runtime.apply(canonical(step["envelope"]), height=step["height"])
+    assert effect_runtime.state_hash == step["state_hash"]
+assert effect_runtime.state.effects[0].status == effect_vector["final_status"]
+assert effect_runtime.state.budget.spent == effect_vector["spent"]
+state_schema = json.loads(
+    r.files("checkedflow").joinpath("data/operational-state.schema.json").read_text()
+)
+config_schema = json.loads(
+    r.files("checkedflow").joinpath("data/operational-configuration.schema.json").read_text()
+)
+assert config_schema["properties"]["state"] == state_schema
 subprocess.run([sys.executable, "-I", "-m", "checkedflow.sandbox_recovery", "--help"],
                check=True, capture_output=True, timeout=15)
 from checkedflow.dispatch_watchdog import Watchdog

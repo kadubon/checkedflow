@@ -9,6 +9,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [Tutorial](tutorial.md) | What can I run locally, and what should its output mean? |
 | [Architecture](architecture.md) | Which component owns each decision and effect? |
 | [State machine](state-machine.md) | Which transitions, bounds and accounting rules are enforced? |
+| [Governed external operations](work-effects.md) | How are provider intent, dispatch authority, uncertainty and reconciliation separated? |
 | [Protocol](protocol.md) | Which bytes are signed and how are commands replayed? |
 | [Adapters](adapters.md) | How do storage, generators, workers and sandboxes connect? |
 | [Agent communication](interoperability.md) | How do A2A and MCP clients discover, submit and inspect the same work? |

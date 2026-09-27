@@ -13,6 +13,11 @@ from checkedflow.core.work_acceptance import validate as validate_candidates
 from checkedflow.core.work_archive import Head, WorkArchive, retire
 from checkedflow.core.work_budget import Ledger
 from checkedflow.core.work_budget import change as change_budget
+from checkedflow.core.work_effects import COMMANDS as EFFECT_COMMANDS
+from checkedflow.core.work_effects import EXECUTOR_COMMANDS, UNRESOLVED, Effect
+from checkedflow.core.work_effects import advance as advance_effects
+from checkedflow.core.work_effects import change as change_effects
+from checkedflow.core.work_effects import validate as validate_effects
 from checkedflow.core.work_tasks import WORKER_COMMANDS, Task
 from checkedflow.core.work_tasks import advance as advance_tasks
 from checkedflow.core.work_tasks import change as change_tasks
@@ -33,6 +38,7 @@ class State:
     tasks: tuple[Task, ...] = ()
     candidates: tuple[Candidate, ...] = ()
     history: Head = Head()
+    effects: tuple[Effect, ...] = ()
 
 
 def genesis(
@@ -87,7 +93,13 @@ def advance(state: State, height: int) -> State:
     integer(height, low=state.height)
     budget, tasks = advance_tasks(state.budget, state.tasks, height, state.credentials)
     validate_tasks(budget, tasks)
-    return replace(state, height=height, budget=budget, tasks=tasks)
+    budget, effects = advance_effects(
+        budget, state.effects, state.candidates, state.credentials, height
+    )
+    validate_effects(
+        budget, effects, state.candidates, tasks, state.credentials, state.mission, height
+    )
+    return replace(state, height=height, budget=budget, tasks=tasks, effects=effects)
 
 
 def transition(
@@ -116,7 +128,7 @@ def transition(
     )
     require(context.height >= state.height, "HEIGHT", "height cannot decrease")
     kind = text(command["kind"])
-    if kind not in WORKER_COMMANDS | VERIFIER_COMMANDS:
+    if kind not in WORKER_COMMANDS | VERIFIER_COMMANDS | EXECUTOR_COMMANDS:
         context.require_administration()
     require(
         kind
@@ -137,12 +149,13 @@ def transition(
             "artifact.revoke",
             *VERIFIER_COMMANDS,
             *WORKER_COMMANDS,
+            *EFFECT_COMMANDS,
         },
         "VERSION",
         "command not supported by the initial v2 control profile",
     )
     payload = obj(command["payload"])
-    if not kind.startswith(("key.", "budget.", "task.", "artifact.", "history.")):
+    if not kind.startswith(("key.", "budget.", "task.", "artifact.", "history.", "effect.")):
         fields(payload, "mission")
     require(payload.get("mission") == state.mission, "SCOPE", "mission mismatch")
     state = advance(state, context.height)
@@ -156,8 +169,10 @@ def transition(
             "budget.reserve",
             "task.admit",
             "artifact.admit",
+            "effect.prepare",
             *WORKER_COMMANDS,
             *VERIFIER_COMMANDS,
+            *EXECUTOR_COMMANDS,
         },
     )
     if kind == "journal.rollover":
@@ -183,6 +198,9 @@ def transition(
         validate_candidates(
             candidates, budget, tasks, state.credentials, state.mission, state.height
         )
+        validate_effects(
+            budget, state.effects, candidates, tasks, state.credentials, state.mission, state.height
+        )
         return replace(
             state,
             history=history,
@@ -207,11 +225,29 @@ def transition(
         validate_candidates(
             candidates, state.budget, state.tasks, state.credentials, state.mission, context.height
         )
-        return replace(state, candidates=candidates, journal=journal), None
+        return advance(replace(state, candidates=candidates, journal=journal), context.height), None
+    if kind.startswith("effect."):
+        budget, effects = change_effects(
+            state.budget,
+            state.effects,
+            kind,
+            payload,
+            context,
+            request=receipt.request,
+            mode=state.mode,
+            mission=state.mission,
+            candidates=state.candidates,
+            tasks=state.tasks,
+            credentials=state.credentials,
+        )
+        return replace(state, budget=budget, effects=effects, journal=journal), None
     if kind.startswith("budget."):
         require(
             kind != "budget.settle"
-            or not any(task.ticket == payload.get("ticket") for task in state.tasks),
+            or (
+                not any(task.ticket == payload.get("ticket") for task in state.tasks)
+                and not any(effect.ticket == payload.get("ticket") for effect in state.effects)
+            ),
             "BUDGET",
             "task-attached funding must settle through task lifecycle",
         )
@@ -220,6 +256,12 @@ def transition(
         )
         return replace(state, budget=budget, journal=journal, height=context.height), None
     if kind.startswith("task."):
+        require(
+            kind != "task.admit"
+            or not any(effect.ticket == payload.get("ticket") for effect in state.effects),
+            "BUDGET",
+            "effect-attached funding cannot run a task",
+        )
         budget, tasks = change_tasks(
             state.budget,
             state.tasks,
@@ -240,6 +282,12 @@ def transition(
         return advance(
             replace(state, credentials=credentials, journal=journal), context.height
         ), None
+    require(
+        kind != "mission.resume"
+        or not any(effect.status in UNRESOLVED for effect in state.effects),
+        "UNRESOLVED",
+        "reconcile uncertain effects before resuming",
+    )
     mode = {"mission.pause": "paused", "mission.drain": "draining", "mission.resume": "running"}[
         kind
     ]

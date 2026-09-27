@@ -126,6 +126,10 @@ Its [plan](src/checkedflow/data/github-draft-plan.schema.json) is intent metadat
 Use `dispatch_patch` / `reconcile_patch` with the complete immutable repository source and exact
 patch contract to verify Git tree bindings. The lower-level methods trust supplied tree metadata.
 Byte binding does not establish current consensus authority; source staging remains separate.
+The [v2 effect commands](docs/work-effects.md) govern intent, reservation and reconciliation.
+Inspect `checkedflow schema effect-command` and `checkedflow schema github-effect-intent`.
+Use current own-node state with `reserved_plan`; its output is snapshot-bound and still requires
+send-time freshness, policy and artifact checks. Never treat unknown absence as retry permission.
 Never give the token or journal to candidate code. Do not recreate a journal or use a new operation
 to retry an unknown POST. Read reconciliation cannot treat absence as permission to resend.
 The operator fixture writes to a real repository: run it only against an explicitly authorized

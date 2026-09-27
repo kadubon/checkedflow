@@ -1036,3 +1036,156 @@ def test_v2_changed_base_requires_fresh_funded_verification(infrastructure, tmp_
         assert height > 0 and len(app_hash) == 64
     finally:
         cluster.close()
+
+
+@pytest.mark.integration
+@pytest.mark.qualification
+def test_v2_effect_reservation_expiry_reconciliation_and_replica_recovery(infrastructure, tmp_path):
+    """Actual four-node authority/accounting; provider observation below is a signed fixture."""
+    import json
+    from dataclasses import asdict, replace
+
+    from checkedflow.distributed.operational_cluster import Cluster as OperationalCluster
+    from checkedflow.domains.repository_patch import apply_patch, digest_bytes
+    from checkedflow.git_tree import tree_id
+    from checkedflow.github_effects import Intent, reserved_plan
+    from checkedflow.operational_runtime import Runtime as OperationalRuntime
+    from checkedflow.operational_storage import Store as OperationalStore
+    from checkedflow.repository_reuse import contract_digest
+    from checkedflow.wire import dumps, validate
+
+    image, binary = infrastructure
+    cluster = OperationalCluster(tmp_path / "effects", binary)
+    base, patch, contract, cases = invoice(image)
+    contract = replace(contract, allow_draft_pr=True, deadline_height=100000)
+    intent = Intent(
+        contract.repository,
+        42,
+        "main",
+        contract.base_commit,
+        "b" * 40,
+        tree_id(apply_patch(base, patch, contract)),
+        contract.result_tree,
+        contract_digest(contract),
+        contract.patch_digest,
+    )
+    try:
+        cluster.start()
+        cluster.send("budget.configure", {"budget": 100, "verification_reserve": 40})
+        cluster.send("mission.resume", {})
+        checks = []
+        for index in range(4):
+            ticket = cluster.send(
+                "budget.reserve", {"phase": "verify", "ceiling": 10, "target": intent.target}
+            )["request"]
+            checks.append(
+                cluster.send(
+                    "task.admit",
+                    {
+                        "ticket": ticket,
+                        "workers": [f"v{index}"],
+                        "lease_blocks": 1000,
+                        "expires": 100000,
+                        "max_attempts": 1,
+                    },
+                )["request"]
+            )
+        candidate = cluster.send(
+            "artifact.admit",
+            {
+                "target": intent.target,
+                "artifact": intent.result,
+                "expires": 100000,
+                "checks": checks,
+            },
+        )["request"]
+        for index, task in enumerate(checks):
+            actor = f"v{index}"
+            cluster.send("task.lease", {"task": task}, actor=actor, node=index)
+            cluster.send("task.start", {"task": task, "fence": 1}, actor=actor, node=index)
+            observation = observe_patch(
+                base, patch, contract, cases, height=cluster.client(index).state().height
+            )
+            assert observation.case_match is True and observation.contract_digest == intent.target
+            evidence = digest_bytes(dumps(validate(json.loads(json.dumps(asdict(observation))))))
+            cluster.send(
+                "task.finish",
+                {"task": task, "fence": 1, "outcome": "reported", "evidence": evidence},
+                actor=actor,
+                node=index,
+            )
+            cluster.send(
+                "artifact.attest",
+                {"candidate": candidate, "task": task, "evidence": evidence, "verdict": "pass"},
+                actor=actor,
+                node=index,
+            )
+        funding = cluster.send(
+            "budget.reserve", {"phase": "execute", "ceiling": 10, "target": intent.digest}
+        )["request"]
+        effect = cluster.send(
+            "effect.prepare",
+            {
+                "candidate": candidate,
+                "ticket": funding,
+                "intent": intent.digest,
+                "policy": "e" * 64,
+                "executor": "e0",
+                "revision": 1,
+                "expires": 100000,
+                "lease_blocks": 20,
+            },
+        )["request"]
+        cluster.send("effect.authorize", {"effect": effect})
+        receipt = cluster.send("effect.reserve", {"effect": effect}, actor="e0")
+        cluster.wait_height(int(receipt["receipt"]["height"]))
+        state = cluster.client().state()
+        selected = reserved_plan(
+            state, effect, intent, contract, executor="e0", revision=1, policy="e" * 64
+        )
+        assert selected.operation == state.effects[0].operation
+        assert state.budget.spent == 50 and state.budget.reserved == 0
+        until = state.effects[0].until
+        cluster.stop_node(0, crash=True)
+        cluster.wait_height(until + 1, nodes=(1, 2, 3))
+        for index in (1, 2, 3):
+            state = cluster.client(index).state()
+            assert state.effects[0].status == "unknown" and state.budget.spent == 50
+            with pytest.raises(Failure):
+                reserved_plan(
+                    state, effect, intent, contract, executor="e0", revision=1, policy="e" * 64
+                )
+        cluster.start_node(0)
+        cluster.wait_height(until + 2)
+        with pytest.raises(Failure, match="REJECTED"):
+            cluster.send("effect.reserve", {"effect": effect}, actor="e0")
+        # This is an explicit governed observation fixture, not a GitHub call or proof of truth.
+        reconciled = cluster.send(
+            "effect.reconcile",
+            {"effect": effect, "outcome": "observed", "number": 7, "evidence": "f" * 64},
+        )
+        cluster.wait_height(int(reconciled["receipt"]["height"]))
+        assert all(cluster.client(i).state().effects[0].status == "reconciled" for i in range(4))
+        withdrawn = cluster.send(
+            "artifact.withdraw", {"candidate": candidate, "task": checks[0]}, actor="v0"
+        )
+        cluster.wait_height(int(withdrawn["receipt"]["height"]))
+        for index in range(4):
+            state = cluster.client(index).state()
+            assert state.effects[0].status == "compensation_required"
+            assert state.effects[0].number == 7 and state.budget.spent == 50
+        cluster.send("mission.pause", {})
+        with pytest.raises(Failure, match="REJECTED"):
+            cluster.send("mission.resume", {})
+        height, app_hash = cluster.common_hash()
+        assert height > 0 and len(app_hash) == 64
+    finally:
+        cluster.close()
+    for index in range(4):
+        store = OperationalStore(
+            cluster.directory / f"node{index}" / "operational.sqlite", cluster.initial
+        )
+        durable = store.load()
+        assert store.verify_history(expected_hash=OperationalRuntime(durable).state_hash) == durable
+        assert durable.effects[0].status == "compensation_required"
+        assert durable.budget.spent == 50

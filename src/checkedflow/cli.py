@@ -55,6 +55,8 @@ def main(argv: list[str] | None = None) -> int:
             "access-roles",
             "access-vectors",
             "artifact-publication",
+            "effect-command",
+            "github-effect-intent",
         ],
     )
     keys = commands.add_parser("keygen")
@@ -146,6 +148,8 @@ def main(argv: list[str] | None = None) -> int:
                 "access-policy": "access-policy.schema.json",
                 "access-roles": "access-roles.json",
                 "access-vectors": "access-vectors.json",
+                "effect-command": "effect-command.schema.json",
+                "github-effect-intent": "github-effect-intent.schema.json",
             }[args.name]
             sys.stdout.buffer.write(files("checkedflow").joinpath("data", filename).read_bytes())
         elif args.action in {"generator", "example"}:

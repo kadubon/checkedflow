@@ -88,3 +88,9 @@ Use [mutual TLS](agent-tls.md) for certificate-authenticated HTTP/gRPC listeners
 possession never replaces Bearer identity, client policy or command signatures. Both CLI HTTP
 servers ignore forwarded headers. Explicit proxy advertisements require HTTPS and TLS configuration;
 proxy deployment and multi-host qualification remain operator-profile requirements.
+
+V2 mission inspection now includes native `effects` records. `effect.reserve` and `effect.report`
+are ordinary submissions by an explicitly scoped effect-executor identity; preparation,
+authorization, denial and reconciliation require enabled administration and current quorum.
+The [command/intent contracts](work-effects.md) are available without a GitHub token. Gateway
+commit acknowledgments still do not mean a provider action occurred or remains accepted.

@@ -53,3 +53,14 @@ contract. A port may retain that generator while replacing the state machine. A 
 language, image or checker requires a newly approved immutable verifier definition and mission.
 Changing a canonical rule or transition meaning requires a new protocol version and new vectors;
 do not silently reinterpret old committed events.
+
+## Operational effect interoperability
+
+The [effect command schema](../src/checkedflow/data/effect-command.schema.json) and
+[signed replay vector](../src/checkedflow/data/effect-flow-vector.json) define the new v2 boundary.
+Replay every step against its expected state hash, including unknown observation, administrative
+reconciliation and adverse-evidence compensation classification. Omit an empty `effects` collection
+exactly as the Python encoder does; adding an empty array would change historical hashes. Preserve
+full modeled charges once reserved and never interpret absent provider observations as retry rights.
+The [GitHub intent schema](../src/checkedflow/data/github-effect-intent.schema.json) binds provider
+arguments through canonical SHA-256 independently of the Git SHA-1 tree compatibility encoding.

@@ -6,12 +6,16 @@
       "task.lease",
       "task.start",
       "task.heartbeat",
-      "task.finish"
+      "task.finish",
+      "effect.reserve",
+      "effect.report"
     ],
     "approve": [
       "task.admit",
       "artifact.admit",
-      "budget.reserve"
+      "budget.reserve",
+      "effect.prepare",
+      "effect.authorize"
     ],
     "verify": [
       "artifact.attest",
@@ -20,7 +24,8 @@
     "revoke": [
       "key.revoke",
       "artifact.revoke",
-      "task.cancel"
+      "task.cancel",
+      "effect.deny"
     ],
     "operate": [
       "mission.pause",
@@ -30,7 +35,8 @@
       "history.archive",
       "key.schedule",
       "budget.configure",
-      "budget.settle"
+      "budget.settle",
+      "effect.reconcile"
     ]
   },
   "callback_role": "inspect",

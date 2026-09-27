@@ -168,6 +168,36 @@ def test_official_mcp_client_uses_same_v2_gateway():
     asyncio.run(run())
 
 
+def test_effect_executor_submission_and_native_mission_projection():
+    from test_work_effects import prepared
+
+    async def run():
+        n = Node()
+        n.h = prepared()
+        n.h.action("authorize")
+        g = n.gateway()
+        state = n.read()
+        command = n.h.template | {
+            "epoch": state.journal.epoch,
+            "id": "0:effect-agent",
+            "actor": "effects",
+            "revision": 1,
+            "nonce": dict(state.journal.actors)["effects"] + 1,
+            "kind": "effect.reserve",
+            "payload": {"mission": "m", "effect": n.h.effect},
+        }
+        raw = sign_command(command, {("effects", 1): n.h.keys[("effects", 1)]}).decode()
+        async with Client(create_server(g)) as client:
+            result = await client.call_tool("checkedflow_submit", {"envelope_json": raw})
+            assert not result.is_error and n.sent == [raw.encode()]
+            assert g.inspect()["effects"][0]["status"] == "dispatch_reserved"
+            assert "effect.reserve" in g.transport_profile()["submit_kinds"]
+            assert "effect.authorize" not in g.transport_profile()["submit_kinds"]
+        assert g.submit(raw)["status"] == "committed" and len(n.sent) == 1
+
+    asyncio.run(run())
+
+
 @pytest.mark.parametrize("error", [OSError("private"), Failure("NOT_READY", "fixture")])
 def test_state_failure_is_bounded(error):
     n = Node()

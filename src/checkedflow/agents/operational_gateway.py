@@ -10,6 +10,7 @@ from checkedflow.core.operational import State, genesis
 from checkedflow.core.request_journal import Archive
 from checkedflow.core.values import Failure, Object, array, fields, obj, require, text
 from checkedflow.core.work_acceptance import VERIFIER_COMMANDS, status
+from checkedflow.core.work_effects import EXECUTOR_COMMANDS
 from checkedflow.core.work_tasks import WORKER_COMMANDS
 from checkedflow.operational_codec import encode
 from checkedflow.operational_identity import command_message
@@ -34,7 +35,9 @@ class Gateway:
     ) -> None:
         self.backend = backend
         self.allowed_commands = (
-            frozenset(COMMAND_ROLES) if administration else WORKER_COMMANDS | VERIFIER_COMMANDS
+            frozenset(COMMAND_ROLES)
+            if administration
+            else WORKER_COMMANDS | VERIFIER_COMMANDS | EXECUTOR_COMMANDS
         )
         self.chain, self.mission = text(chain, limit=128), text(mission, limit=80)
 
@@ -98,6 +101,7 @@ class Gateway:
                 "basis": "modeled budget; not observed metering",
             },
             "nonces": dict(state.journal.actors),
+            "effects": encoded.get("effects", []),
         }
         return {"mission": mission, "tasks": tasks, "capabilities": candidates, "residuals": {}}
 
@@ -203,8 +207,9 @@ class Gateway:
             "identity": "verified issuer, client_id and subject; local process owner for stdio",
         }
         value["native_records"] = (
-            "v2 task, candidate and budget fields; no synthetic residual graph"
+            "v2 task, candidate, effect and budget fields; no synthetic residual graph"
         )
+        value["effect_contract"] = "effect-command.schema.json"
         obj(value["a2a"])["cancellation"] = "unsupported for v2 unknown work; preserve obligations"
         return value
 

@@ -3,11 +3,15 @@
 Status: **IMPLEMENTED, SOURCE-TESTED**. This is an unreleased SDK control
 profile, not the complete operational runtime. A [separate v2 consensus adapter](operational-consensus.md)
 now connects it to CometBFT. The [bounded worker SDK](worker-supervision.md) connects isolated
-execution; unattended services, state sync and uniform v2 gateways remain pending. The bounded
+execution, and [native v2 gateways](operational-agents.md) expose signed control through A2A/MCP.
+Complete unattended services and state sync remain pending. The bounded
 [task ownership extension](work-tasks.md) now accepts isolated-task commands, but does not
 dispatch candidate code or establish artifact acceptance.
 The separate [work acceptance extension](work-acceptance.md) records funded organizational
 observations and scoped acceptance, including quarantine on late adverse information.
+The [effect extension](work-effects.md) separately commits provider intent, administrative
+authorization, conservative dispatch reservation and governed reconciliation. It does not send
+network requests inside consensus or implement compensation automatically.
 The [local control store](operational-storage.md) now persists control state and emitted archive
 batches atomically. [Settled-work retirement](work-archive.md) reclaims bounded active slots;
 credential retirement and the complete dependency/effect graph remain pending.

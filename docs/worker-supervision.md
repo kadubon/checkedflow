@@ -177,3 +177,8 @@ remove an owned expired container after abrupt worker death. The worker command/
 still serve a different purpose: they prevent repeat execution and retain uncertain outcomes.
 An unknown result is not proof of process termination. Read the recovery service's daemon failure,
 service availability and remaining deployment qualification limits before enabling unattended work.
+
+The coordinator also accepts the purpose-scoped `effect.reserve` and `effect.report` commands.
+They retain the same nonce, original-byte and lost-reply rules. The task Supervisor does not thereby
+become an external-effect executor: [effect orchestration](work-effects.md) must separately enforce
+policy, current reservation, provider-journal ownership and send-time freshness.

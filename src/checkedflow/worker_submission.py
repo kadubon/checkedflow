@@ -11,6 +11,7 @@ from checkedflow.core.operational import State, genesis
 from checkedflow.core.request_journal import Receipt
 from checkedflow.core.values import Failure, Object, integer, obj, require, text
 from checkedflow.core.work_acceptance import VERIFIER_COMMANDS
+from checkedflow.core.work_effects import EXECUTOR_COMMANDS
 from checkedflow.core.work_tasks import WORKER_COMMANDS
 from checkedflow.operational_codec import decode_archive
 from checkedflow.operational_identity import Signer, sign_command
@@ -220,9 +221,9 @@ class Coordinator:
     def send(self, request: str, kind: str, payload: Object) -> State:
         """Persist before one send. A second logical request cannot overtake an uncertain one."""
         require(
-            kind in WORKER_COMMANDS | VERIFIER_COMMANDS,
+            kind in WORKER_COMMANDS | VERIFIER_COMMANDS | EXECUTOR_COMMANDS,
             "AUTHORITY",
-            "coordinator accepts only worker and verifier commands",
+            "coordinator accepts only worker, verifier and effect-executor commands",
         )
         text(request, limit=80)
         require(payload.get("mission") == self.mission, "SCOPE", "command mission differs")

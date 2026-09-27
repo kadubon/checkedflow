@@ -36,6 +36,7 @@ class Cluster:
                 (f"w{index}", "executor"),
                 (f"p{index}", "producer"),
                 (f"v{index}", "verifier"),
+                (f"e{index}", "effect_executor"),
             ]:
                 key = Ed25519PrivateKey.generate()
                 self.keys[(identity, 1)] = key

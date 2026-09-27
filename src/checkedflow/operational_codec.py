@@ -15,6 +15,9 @@ from checkedflow.core.work_acceptance import validate as validate_candidates
 from checkedflow.core.work_archive import MAX_ARCHIVE_BYTES, Head, WorkArchive
 from checkedflow.core.work_budget import MAX_TICKETS, Ledger, Ticket
 from checkedflow.core.work_budget import validate as validate_budget
+from checkedflow.core.work_effects import MAX_EFFECTS, Effect
+from checkedflow.core.work_effects import advance as advance_effects
+from checkedflow.core.work_effects import validate as validate_effects
 from checkedflow.core.work_tasks import MAX_TASKS, ROLE, Task
 from checkedflow.core.work_tasks import advance as advance_tasks
 from checkedflow.core.work_tasks import validate as validate_tasks
@@ -28,6 +31,8 @@ def encode(state: State) -> Object:
     # Preserve historical v2 hashes before the first retirement, as well as all v1 bytes.
     if state.history == Head():
         result.pop("history")
+    if not state.effects:
+        result.pop("effects")
     if state.budget.archived_spent == state.budget.archived_verification == 0:
         budget = obj(result["budget"])
         budget.pop("archived_spent")
@@ -71,7 +76,9 @@ def decode(raw: bytes) -> State:
     fields(
         value,
         "chain mission organizations credentials journal height mode profile "
-        "budget tasks candidates" + (" history" if "history" in value else ""),
+        "budget tasks candidates"
+        + (" history" if "history" in value else "")
+        + (" effects" if "effects" in value else ""),
     )
     require(value["profile"] == "checkedflow/control-state/v2", "VERSION", "state profile")
     credentials = []
@@ -276,10 +283,59 @@ def decode(raw: bytes) -> State:
     validate_candidates(
         tuple(candidates), budget, tuple(tasks), tuple(credentials), initial.mission, height
     )
+    effects = []
+    for item in array(value.get("effects", []), limit=MAX_EFFECTS):
+        effect = obj(item)
+        fields(
+            effect,
+            "identity operation candidate ticket intent policy executor revision prepared "
+            "expires lease_blocks status authorization authorized fence reserved "
+            "until number evidence reason",
+        )
+        effects.append(
+            Effect(
+                text(effect["identity"], limit=80),
+                text(effect["operation"]),
+                text(effect["candidate"], limit=80),
+                text(effect["ticket"], limit=80),
+                text(effect["intent"]),
+                text(effect["policy"]),
+                text(effect["executor"], limit=80),
+                integer(effect["revision"], low=1),
+                integer(effect["prepared"]),
+                integer(effect["expires"]),
+                integer(effect["lease_blocks"]),
+                text(effect["status"]),
+                _string(effect["authorization"]),
+                integer(effect["authorized"]),
+                integer(effect["fence"]),
+                integer(effect["reserved"]),
+                integer(effect["until"]),
+                integer(effect["number"]),
+                _string(effect["evidence"]),
+                _string(effect["reason"]),
+            )
+        )
+    validate_effects(
+        budget,
+        tuple(effects),
+        tuple(candidates),
+        tuple(tasks),
+        tuple(credentials),
+        initial.mission,
+        height,
+    )
+    require(
+        advance_effects(budget, tuple(effects), tuple(candidates), tuple(credentials), height)
+        == (budget, tuple(effects)),
+        "STATE",
+        "unapplied effect expiry or authority loss",
+    )
     ordinary_ids = (
         {ticket.identity for ticket in budget.tickets}
         | {task.identity for task in tasks}
         | {candidate.identity for candidate in candidates}
+        | {effect.identity for effect in effects}
     )
     administrators = {
         credential.identity for credential in credentials if credential.role == "administrator"
@@ -313,6 +369,7 @@ def decode(raw: bytes) -> State:
         tasks=tuple(tasks),
         candidates=tuple(candidates),
         history=history,
+        effects=tuple(effects),
     )
     require(encode(state) == value, "STATE", "noncanonical control-state structure")
     return state
