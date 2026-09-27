@@ -47,6 +47,7 @@ REQUIRED = [
     "checkedflow/data/application-recovery.json",
     "checkedflow/data/worker-operations.json",
     "checkedflow/data/sandbox-recovery.service",
+    "checkedflow/data/validator.service",
     "checkedflow/data/retention-backup-vector.json",
     "checkedflow/data/github-draft-plan.schema.json",
     "checkedflow/data/github-draft-vector.json",

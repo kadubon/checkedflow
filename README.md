@@ -270,3 +270,6 @@ proof of an installed monitoring service or achieved availability.
 For migration operators, the [succession approval guide](docs/succession-approval.md) explains
 separate old/new approvals and durable local protection against conflicting approvals. These
 controls do not yet constitute a qualified cross-host cutover procedure.
+
+The [validator maintenance guide](docs/validator-custody.md) covers the packaged Linux service
+template, local duplicate-start protection and the additional controls required for node handoffs.

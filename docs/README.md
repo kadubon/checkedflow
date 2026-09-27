@@ -19,6 +19,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [Agent communication](interoperability.md) | How do A2A and MCP clients discover, submit and inspect the same work? |
 | [Conformance](conformance.md) | Which protocol operations and application constraints are tested? |
 | [Security](security.md) | Which trust boundaries, leakage checks and deployment limits were reviewed? |
+| [Validator custody](validator-custody.md) | How are local duplicate starts, maintenance and key handoffs controlled? |
 | [Operations](operations.md) | How are four nodes provisioned, supervised and recovered? |
 | [Porting](porting.md) | What must an implementation in another language reproduce? |
 | [Research](research.md) | Which of the 37 sources motivated each implemented principle? |

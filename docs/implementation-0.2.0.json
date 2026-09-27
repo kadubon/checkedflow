@@ -1307,7 +1307,8 @@
       "text": "Do not restore validator signing state into two active nodes or roll it backward to enable double signing. Node replacement must include stop/drain and signer-ownership verification. An application snapshot is not a consensus signer backup.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:application-history-backup"
+        "component:application-history-backup",
+        "component:validator-custody-template"
       ]
     },
     {
@@ -1356,7 +1357,9 @@
       "source_line": 355,
       "text": "Within a compatible protocol line, provide a rolling binary-upgrade procedure that retains quorum. For incompatible protocol changes, explicitly reject unsafe mixed versions and use the coordinated procedure. Document the point beyond which rollback is unsafe; use forward recovery instead of silently restoring an older writer.",
       "status": "NOT_STARTED",
-      "evidence": []
+      "evidence": [
+        "component:validator-custody-template"
+      ]
     },
     {
       "id": "R8-0363",
@@ -1464,7 +1467,9 @@
       "source_line": 384,
       "text": "Validator-key rotation must use a supported coordinated validator update or authenticated successor procedure with signing-state protection. Application-key rotation is not evidence that validator rotation works.",
       "status": "NOT_STARTED",
-      "evidence": []
+      "evidence": [
+        "component:validator-custody-template"
+      ]
     },
     {
       "id": "R8-0388",
@@ -4178,6 +4183,31 @@
       "installed_development_artifacts": {
         "checkedflow-0.1.0-py3-none-any.whl": "84e588d0e6de4ea5e4e5dcb5172760634bc6c2dcba540963d34c7df0f09c4b27",
         "checkedflow-0.1.0.tar.gz": "fd6e2d0763852ab431f6dfb775d941a79a11b6054c38df2c72ad2594422496cd"
+      }
+    },
+    {
+      "id": "validator-custody-template",
+      "status": "SOURCE_TESTED",
+      "requirements": [
+        "R7-0343",
+        "R7-0355",
+        "R8-0384"
+      ],
+      "implementation": [
+        "src/checkedflow/data/validator.service"
+      ],
+      "tests": [
+        "tests/test_validator_service.py",
+        "scripts/package_check.py"
+      ],
+      "documentation": [
+        "docs/validator-custody.md",
+        "docs/operations.md"
+      ],
+      "scope": "Operator-reviewed local systemd template uses nonblocking no-fork flock and prevents restart on lock conflict. Two tests passed on WSL Linux1.61sec, including real exec-child exclusion and lock release after exit. Static checks passed. Not installed systemd/CometBFT qualification, cross-host ownership, rollback resistance, key rotation or G6. Maintenance guide specifies stop/drain, source fencing, immutable signing-state custody and forward recovery; procedures require actual deployment tests. Wheel/sdist package inclusion and isolated installed smoke passed. Later documentation is outside these development artifacts.",
+      "installed_development_artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "00f4612d8c7a4cf4946687721c54d4c1df42759705d1e04af06c6be79de093a6",
+        "checkedflow-0.1.0.tar.gz": "10d45b8372944bebab8efc5514b5ab30c9784f7c0ce2f6784c226ec83178e999"
       }
     }
   ],

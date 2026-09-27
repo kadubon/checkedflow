@@ -1625,3 +1625,15 @@ the newly added startup regression imported generated gRPC modules excluded from
 copies. The startup admission mutant now targets a pure approval regression, retaining the
 same rejection invariant. Twenty focused tests and static checks passed; a complete rerun of
 113 mutants is pending. The failed collection is not counted as detecting that mutation.
+
+
+The corrected mutation run completed successfully: all 113 selected mutants were detected.
+Its previous transport-import collection failure remains recorded. This does not qualify later
+changes or the final release artifacts.
+
+A packaged validator systemd template now provides a stable local lock, explicit lock-conflict
+exit and control-group stop policy. Two Linux tests passed, including an actual exec child
+holding the lock and a competitor rejected until the child exits. The maintenance guide defines
+compatible rolling upgrades, incompatible succession and source-fenced node replacement.
+These local observations do not prove installed CometBFT locking, remote custody, anti-rollback
+or G6. Those live procedures remain to be exercised before release.

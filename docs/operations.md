@@ -163,3 +163,7 @@ query. Both reads must use the configured validating node; the second must reach
 height or the operation fails with `STALE`. No cached state, lower height, write retry, or extra
 status poll is substituted. This bounds a live-state call to one status and at most two state
 queries, each using the configured RPC timeout. Persistent lag remains an availability failure.
+
+Use the [validator custody and maintenance guide](validator-custody.md) for the packaged
+local-lock service template, compatible rolling upgrades and reviewed node handoffs. Its
+cross-host procedures still require installed deployment qualification.

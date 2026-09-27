@@ -93,3 +93,6 @@ exclusion does not prove cross-host signer ownership or authorize successor acti
 Inherited ABCI startup must verify succession evidence before creating state or listeners.
 Never derive the trusted checkpoint solely from the submitted manifest; retain independent
 operator provenance. See docs/succession-approval.md#startup-admission.
+
+Preserve validator lock inodes, private keys and latest signing state during maintenance.
+A remote host being unreachable does not prove it stopped signing. See docs/validator-custody.md.
