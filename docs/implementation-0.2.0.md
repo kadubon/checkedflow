@@ -1673,3 +1673,15 @@ watchdog observation aged beyond ten seconds under load. The test fixture now us
 clock and separately verifies expiry prevents execution. Production thresholds and timeout
 behavior are unchanged. All 50 supervisor/scheduler cases passed in 8.98 seconds. The prior
 failed run remains unqualified; current source still needs complete CI.
+
+
+The inherited-reconciliation full local check finished with 1119 unit passes and all 115
+selected mutants detected (four Windows platform skips and 27 separately selected infrastructure
+cases). That result predates the latest retention adapter and final-source qualification.
+
+Legacy retention now connects the independently authenticated old snapshot and operator-reviewed
+history references to an existing persistent replay pin. Fresh verification checks pin identity,
+sequence, owner, exact references and stored bytes; it does not silently recreate a missing pin.
+Nineteen focused retention tests passed; a subsequent duplicate-reference guard passed its three
+focused adapter cases. Complete signed-history coverage, startup/dispatch integration and physical
+replica independence remain separate required work; storage success does not establish them.

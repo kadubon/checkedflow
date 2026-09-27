@@ -384,6 +384,40 @@ class RetentionStore:
             )
             return Pin(self.scope, identity, sequence, access.principal)
 
+    def verify_pin(self, pin: Pin, refs: tuple[Reference, ...], *, access: Access) -> None:
+        """Verify an existing root and fresh bytes without recreating a missing pin."""
+        self._authorize(access, "read")
+        require(
+            pin.scope == self.scope and pin.principal == access.principal,
+            "AUTHORITY",
+            "retention pin owner or scope differs",
+        )
+        require(0 < len(refs) <= 128, "LIMIT", "bounded nonempty pin required")
+        with self._connect() as db:
+            db.execute("BEGIN IMMEDIATE")
+            row = db.execute(
+                "SELECT sequence,principal FROM retention_pins WHERE identity=?", (pin.identity,)
+            ).fetchone()
+            require(
+                row == (pin.sequence, pin.principal), "BINDING", "retention pin missing or changed"
+            )
+            actual = tuple(
+                item[0]
+                for item in db.execute(
+                    "SELECT digest FROM retention_roots WHERE pin=? ORDER BY digest",
+                    (pin.identity,),
+                )
+            )
+            require(
+                actual == tuple(sorted({ref.digest for ref in refs})),
+                "BINDING",
+                "retention root references differ",
+            )
+            for ref in refs:
+                self._authorize(access, "read", ref)
+                self._live(db, ref)
+                verify(ref, self.provider.get(ref, access=access))
+
     def release(self, pin: Pin, *, access: Access) -> None:
         self._authorize(access, "pin")
         require(

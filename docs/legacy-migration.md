@@ -127,3 +127,7 @@ and [the implementation record](implementation-0.2.0.md).
 [Inherited obligation reconciliation](legacy-reconciliation.md) now provides separate governed
 adjustment of prepared legacy records. It does not create new executable tasks or release
 funding through ordinary ticket settlement.
+
+The [legacy retention adapter](legacy-retention.md) pins an authenticated snapshot and reviewed
+history references. Its storage checks are separate from authenticating complete history or
+establishing physical replica independence.

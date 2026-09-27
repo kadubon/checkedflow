@@ -276,3 +276,6 @@ template, local duplicate-start protection and the additional controls required 
 
 [Inherited obligation reconciliation](docs/legacy-reconciliation.md) records governed decisions
 about old unfinished work while preserving costs and prohibiting automatic re-execution.
+
+The [legacy retention adapter](docs/legacy-retention.md) protects reviewed historical objects
+from catalog erasure and verifies existing roots without silently recreating missing protection.

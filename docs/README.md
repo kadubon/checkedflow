@@ -15,6 +15,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [Approved Git staging](git-staging.md) | How are exact commits created under explicit policy, and why are interrupted writes never resumed? |
 | [Succession approval](succession-approval.md) | How do old and new administrators approve the exact prepared successor? |
 | [Legacy reconciliation](legacy-reconciliation.md) | How are inherited unknowns accounted for without repeating work? |
+| [Legacy retention](legacy-retention.md) | How are old snapshot and history bytes protected against erasure? |
 | [Protocol](protocol.md) | Which bytes are signed and how are commands replayed? |
 | [Adapters](adapters.md) | How do storage, generators, workers and sandboxes connect? |
 | [Agent communication](interoperability.md) | How do A2A and MCP clients discover, submit and inspect the same work? |

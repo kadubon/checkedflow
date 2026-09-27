@@ -44,6 +44,14 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "retention.py",
+        "test_legacy_retention.py",
+        "legacy_retention_requires_existing_pin",
+        "row == (pin.sequence, pin.principal)",
+        "True",
+        "test_verification_checks_pin_identity_reference_set_and_fresh_bytes",
+    ),
+    (
         "core/work_budget.py",
         "test_legacy_reconciliation.py",
         "legacy_unknown_cost_is_not_refunded",

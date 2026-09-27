@@ -221,6 +221,27 @@ approval = verify_succession(dumps(approval_vector["manifest"]), legacy=dumps(ol
     successor=decode_control(dumps(approval_vector["successor"])),
     validators=tuple(tuple(pair) for pair in approval_vector["validators"]))
 assert approval.plan_hash == approval_vector["plan_hash"]
+from checkedflow.legacy_retention import preserve as retain_legacy, verify as verify_legacy_pin
+from checkedflow.retention import RetentionStore
+from checkedflow.artifacts import LocalStore
+from checkedflow.artifact_io import Access
+from checkedflow.core.artifact import Reference
+from io import BytesIO
+from hashlib import sha256
+import tempfile
+with tempfile.TemporaryDirectory() as legacy_directory:
+    folder = Path(legacy_directory)
+    policy = Access("migration", frozenset({"mission"}), frozenset({"read", "write", "pin"}))
+    catalog = RetentionStore(folder / "catalog.sqlite", LocalStore(folder / "objects.sqlite"),
+        namespace="installed-migration", scope="mission", trusted_floor=0,
+        retention_blocks=2, grace_blocks=3)
+    history = dumps({"initial": legacy["initial"], "blocks": legacy["blocks"]})
+    anchor = Checkpoint(**successor["checkpoint"])
+    ref = Reference("sha256", sha256(history).hexdigest(), len(history), "application/json",
+        "archive", "mission", anchor.state_hash)
+    catalog.put(ref, BytesIO(history), access=policy)
+    retained = retain_legacy(dumps(old), anchor, (ref,), catalog, access=policy)
+    verify_legacy_pin(retained, anchor, catalog, access=policy)
 from checkedflow.succession_journal import ApprovalJournal
 import tempfile
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey

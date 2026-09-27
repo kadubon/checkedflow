@@ -1329,7 +1329,8 @@
       "evidence": [
         "component:legacy-checkpoint-inventory",
         "component:legacy-successor-accounting",
-        "component:legacy-obligation-reconciliation"
+        "component:legacy-obligation-reconciliation",
+        "component:legacy-retention"
       ]
     },
     {
@@ -1341,7 +1342,8 @@
         "component:legacy-successor-accounting",
         "component:succession-approval",
         "component:succession-approval-custody",
-        "component:succession-startup-admission"
+        "component:succession-startup-admission",
+        "component:legacy-retention"
       ]
     },
     {
@@ -1352,7 +1354,8 @@
       "evidence": [
         "component:legacy-checkpoint-inventory",
         "component:legacy-successor-accounting",
-        "component:legacy-obligation-reconciliation"
+        "component:legacy-obligation-reconciliation",
+        "component:legacy-retention"
       ]
     },
     {
@@ -4241,10 +4244,37 @@
       "documentation": [
         "docs/legacy-reconciliation.md"
       ],
-      "scope": "Bounded authenticated old task inventory and current-quorum reconciliation preserve original funding. Unknowns cannot refund or double-charge, final outcomes immutable, no new executable task.124focusedcases29.01sec passed, budget155statements20branches and preparation20statements fully covered. No crosshostcutover, residualclearance or retention claim; full source/install qualification pending. Both wheel/sdist isolated installed smoke passed with updated preparation and signed approval vectors. Expanded four-node crash/reconciliation case is pending. Full local check including115mutants running; do not treat as passed. Development artifacts predate later docs/test changes.",
+      "scope": "Bounded authenticated old task inventory and current-quorum reconciliation preserve original funding. Unknowns cannot refund or double-charge, final outcomes immutable, no new executable task.124focusedcases29.01sec passed, budget155statements20branches and preparation20statements fully covered. No crosshostcutover, residualclearance or retention claim; full source/install qualification pending. Both wheel/sdist isolated installed smoke passed with updated preparation and signed approval vectors. Expanded four-node crash/reconciliation case is pending. Full local check including115mutants running; do not treat as passed. Development artifacts predate later docs/test changes. Full local check subsequently finished:1119passed417.47sec,4Windowsplatformskips27infrastructuredeselections; all115mutantsdetected. Predates retention/clock-test changes and final installed qualification.",
       "installed_development_artifacts": {
         "checkedflow-0.1.0-py3-none-any.whl": "9214efeae1c1e922f3dfbef33a0f682593dee40cf00daab27fb4e796507493a1",
         "checkedflow-0.1.0.tar.gz": "17addf617ef6b1c491ad31864cf00ea93f07d60dae3f20caff16ba154d2736c1"
+      }
+    },
+    {
+      "id": "legacy-retention",
+      "status": "SOURCE_TESTED",
+      "requirements": [
+        "R7-0349",
+        "R7-0351",
+        "R7-0353"
+      ],
+      "implementation": [
+        "src/checkedflow/legacy_retention.py",
+        "src/checkedflow/retention.py"
+      ],
+      "tests": [
+        "tests/test_legacy_retention.py",
+        "tests/test_retention.py",
+        "scripts/package_check.py",
+        "scripts/fault_injection.py"
+      ],
+      "documentation": [
+        "docs/legacy-retention.md"
+      ],
+      "scope": "Authenticated snapshot and reviewed archive references are read and pinned as a persistent replay root. Verification requires existing identity/sequence/owner/exactset and fresh byte-verified objects; never repins on missingroot.19focusedtests2.80sec passed; adapter34statements4branches100%. Does not establish complete history coverage, independent replicas, startup/dispatch integration or finalG1-G7. Duplicate-history verification guard passed3focusedtests0.87sec; correctedwheel/sdist isolated installed pin/verify smoke passed. Earlierdevelopmentbuildpredatesguard and laterdocsareoutsideartifactscope.116throotidentitymutant added, pendingcurrentfullcheck.",
+      "installed_development_artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "755ea8c0ace2a318c6960294b2d74dd7f68d1067769238070825aa1c632abba6",
+        "checkedflow-0.1.0.tar.gz": "b1e038d91663eaec3151492d37b7c1b628bf0f47cbedabe0ecc8729f188a64ce"
       }
     }
   ],

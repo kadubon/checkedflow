@@ -257,3 +257,6 @@ A remote host being unreachable does not prove it stopped signing. See docs/vali
 Use budget.reconcile_inherited only with current administrative quorum, the original checkpoint
 and retained evidence. Unknown charges are not refundable; old tasks never become executable.
 See docs/legacy-reconciliation.md.
+
+Legacy retention verification must check an existing pin and fresh bytes; never silently recreate
+a missing pin. History coverage needs independent replay authentication. See docs/legacy-retention.md.
