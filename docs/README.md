@@ -88,3 +88,15 @@ proof of an installed monitoring service or achieved availability.
 
 [Legacy migration preparation](legacy-migration.md) authenticates and retains old state and
 prepares conserved successor accounting. It does not activate a node or retire the old validator.
+
+
+## Migration and longevity evidence
+
+- [Succession approval](succession-approval.md): separate old/new quorums and durable approval claims.
+- [Validator custody](validator-custody.md): local exclusion, signing-state preservation and custody limits.
+- [Legacy retention](legacy-retention.md): existing pins, independent roots and fresh startup/dispatch checks.
+- [Legacy reconciliation](legacy-reconciliation.md): preserve unknown costs until governed resolution.
+- [Recorded live migration](evidence/live-legacy-cutover-20260927.json): installed single-host evidence,
+  not four-host operational qualification.
+- [Longevity measurement](load-qualification.md): declared workloads, failed runs, short-path checks
+  and separately gated long-duration execution. Development results do not authorize a release.

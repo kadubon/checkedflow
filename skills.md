@@ -280,3 +280,7 @@ a single-host trial as four-host custody qualification. See docs/legacy-migratio
 
 Keep load-profile.json fixed before measurement. Preserve failed manifests and separate the short
 longevity smoke from the full workload; neither alone qualifies G5. See docs/load-qualification.md.
+
+Load history replay must include an independently observed common-height checkpoint. Reject a
+self-consistent truncated local prefix. Keep duplicate-transaction RPC uncertainty separate from
+actual old-epoch ABCI rejection; never relabel OUTCOME_UNKNOWN as a committed rejection receipt.
