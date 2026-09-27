@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Private operator callback keyring",
+  "type": "object",
+  "required": [
+    "active",
+    "keys"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "active": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]{1,32}(?![\\s\\S])",
+      "maxLength": 32
+    },
+    "keys": {
+      "type": "object",
+      "minProperties": 1,
+      "maxProperties": 4,
+      "propertyNames": {
+        "pattern": "^[A-Za-z0-9]{1,32}(?![\\s\\S])",
+        "maxLength": 32
+      },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-fA-F]{64}$",
+        "minLength": 64,
+        "maxLength": 64
+      }
+    }
+  }
+}

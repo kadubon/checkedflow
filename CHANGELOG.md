@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.0 — experimental operational tooling
+
+- Add a separate v2 repository-patch workflow, independent checks and conditional reuse.
+- Add durable worker/effect supervision, scoped A2A/MCP access, authenticated transport,
+  artifact storage, managed signing, retention and migration preparation.
+- Add reviewed deployment planning, preflight, non-overwriting application and local service control.
+- Preserve v1 wire contracts and legacy replay. No automatic live migration is promised.
+- Include monitoring templates, portable schemas, installed-artifact tests and measured load evidence.
+- This release does not qualify the complete original G1–G7 operational profile. Cross-host key
+  custody, node replacement, coordinated restore/upgrade and complete effect recovery remain
+  unqualified. See [release scope](docs/release-0.2.0.md).
+
 ## 0.1.0
 
 - Initial bounded deterministic runtime for signed work, shared budgets, residuals and conditional reuse.

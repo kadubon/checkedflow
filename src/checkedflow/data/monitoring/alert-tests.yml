@@ -1,0 +1,379 @@
+rule_files:
+- alerts.yml
+evaluation_interval: 30s
+tests:
+- name: ScrapeFailed pending, firing and recovery
+  interval: 1m
+  input_series:
+  - series: up{job="checkedflow",instance="node-1"}
+    values: 0x3 1x4
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowScrapeFailed
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowScrapeFailed
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: critical
+        component: checkedflow
+        instance: node-1
+      exp_annotations:
+        summary: Monitoring cannot read an expected service.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#scrape
+  - eval_time: 5m
+    alertname: CheckedFlowScrapeFailed
+    exp_alerts: []
+- name: TargetSetMissing pending, firing and recovery
+  interval: 1m
+  input_series: []
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowTargetSetMissing
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowTargetSetMissing
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: critical
+        component: checkedflow
+      exp_annotations:
+        summary: No CheckedFlow scrape targets are present.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#scrape
+- name: ObservationMissing pending, firing and recovery
+  interval: 1m
+  input_series:
+  - series: up{job="checkedflow",instance="node-1"}
+    values: 1x8
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowObservationMissing
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowObservationMissing
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: critical
+        component: checkedflow
+        instance: node-1
+      exp_annotations:
+        summary: A responding target omitted its observation contract.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#scrape
+- name: NodeUnreadable pending, firing and recovery
+  interval: 1m
+  input_series:
+  - series: up{job="checkedflow",instance="node-1"}
+    values: 1x8
+  - series: checkedflow_node_readable{job="checkedflow",instance="node-1"}
+    values: 0x3 1x4
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowNodeUnreadable
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowNodeUnreadable
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: critical
+        component: checkedflow
+        instance: node-1
+      exp_annotations: &id001
+        summary: The service cannot read its scoped own-node state.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#node-progress
+  - eval_time: 5m
+    alertname: CheckedFlowNodeUnreadable
+    exp_alerts: []
+- name: NodeNotFresh pending, firing and recovery
+  interval: 1m
+  input_series:
+  - series: checkedflow_dependency_node_fresh_ready{job="checkedflow",instance="node-1"}
+    values: '0x8'
+  - series: checkedflow_mission_running{job="checkedflow",instance="node-1"}
+    values: 1x3 0x4
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowNodeNotFresh
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowNodeNotFresh
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: critical
+        component: checkedflow
+        instance: node-1
+      exp_annotations:
+        summary: A running mission has no fresh progressing node observation.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#node-progress
+  - eval_time: 5m
+    alertname: CheckedFlowNodeNotFresh
+    exp_alerts: []
+- name: HeadroomLow pending, firing and recovery
+  interval: 1m
+  input_series:
+  - series: checkedflow_task_slots_available{job="checkedflow",instance="node-1"}
+    values: 7x3 8x4
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowHeadroomLow
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowHeadroomLow
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: warning
+        component: checkedflow
+        instance: node-1
+      exp_annotations:
+        summary: An ordinary active-state capacity has fewer than eight slots.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#headroom
+  - eval_time: 5m
+    alertname: CheckedFlowHeadroomLow
+    exp_alerts: []
+- name: AdministrativeHeadroomLow pending, firing and recovery
+  interval: 1m
+  input_series:
+  - series: checkedflow_administrative_request_slots_available{job="checkedflow",instance="node-1"}
+    values: 2x3 3x4
+  - series: checkedflow_administrative_request_bytes_available{job="checkedflow",instance="node-1"}
+    values: 4096x8
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowAdministrativeHeadroomLow
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowAdministrativeHeadroomLow
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: critical
+        component: checkedflow
+        instance: node-1
+      exp_annotations:
+        summary: Administrative recovery capacity is low.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#headroom
+  - eval_time: 5m
+    alertname: CheckedFlowAdministrativeHeadroomLow
+    exp_alerts: []
+- name: UnresolvedEffectAge pending, firing and recovery
+  interval: 1m
+  input_series:
+  - series: checkedflow_unresolved_effects_oldest_blocks{job="checkedflow",instance="node-1"}
+    values: 101x3 100x4
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowUnresolvedEffectAge
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowUnresolvedEffectAge
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: warning
+        component: checkedflow
+        instance: node-1
+      exp_annotations:
+        summary: An unresolved effect is older than one hundred committed blocks.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#unresolved-effects
+  - eval_time: 5m
+    alertname: CheckedFlowUnresolvedEffectAge
+    exp_alerts: []
+- name: RequiredBackupUnavailable pending, firing and recovery
+  interval: 1m
+  input_series:
+  - series: checkedflow_dependency_backup_ready{job="checkedflow",instance="node-1"}
+    values: 0x3 1x4
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowRequiredBackupUnavailable
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowRequiredBackupUnavailable
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: critical
+        component: checkedflow
+        instance: node-1
+      exp_annotations:
+        summary: A required backup probe did not pass.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#backup
+  - eval_time: 5m
+    alertname: CheckedFlowRequiredBackupUnavailable
+    exp_alerts: []
+- name: SigningUnavailable pending, firing and recovery
+  interval: 1m
+  input_series:
+  - series: checkedflow_dependency_signer_ready{job="checkedflow",instance="node-1"}
+    values: 0x3 1x4
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowSigningUnavailable
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowSigningUnavailable
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: critical
+        component: checkedflow
+        instance: node-1
+      exp_annotations:
+        summary: A required signing dependency did not pass.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#signing
+  - eval_time: 5m
+    alertname: CheckedFlowSigningUnavailable
+    exp_alerts: []
+- name: ReservedEvidenceUnavailable pending, firing and recovery
+  interval: 1m
+  input_series:
+  - series: checkedflow_budget_reserved_units{job="checkedflow",instance="node-1"}
+    values: 1x3 0x4
+  - series: checkedflow_dependency_storage_ready{job="checkedflow",instance="node-1"}
+    values: '0x8'
+  alert_rule_test:
+  - eval_time: 1m
+    alertname: CheckedFlowReservedEvidenceUnavailable
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowReservedEvidenceUnavailable
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        severity: critical
+        component: checkedflow
+        instance: node-1
+      exp_annotations:
+        summary: Reserved work exists while required storage is unavailable.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#evidence
+  - eval_time: 5m
+    alertname: CheckedFlowReservedEvidenceUnavailable
+    exp_alerts: []
+- name: unavailable observations still alarm on unreadable state
+  interval: 1m
+  input_series:
+  - series: up{job="checkedflow",instance="node-1"}
+    values: 1x8
+  - series: checkedflow_node_readable{job="checkedflow",instance="node-1"}
+    values: '0x8'
+  alert_rule_test:
+  - eval_time: 3m
+    alertname: CheckedFlowHeadroomLow
+    exp_alerts: []
+  - eval_time: 3m
+    alertname: CheckedFlowNodeUnreadable
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        instance: node-1
+        severity: critical
+        component: checkedflow
+      exp_annotations: *id001
+- name: Administrative byte and combined limits 8
+  interval: 1m
+  input_series:
+  - series: checkedflow_administrative_request_slots_available{job="checkedflow",instance="node-1"}
+    values: 8x4
+  - series: checkedflow_administrative_request_bytes_available{job="checkedflow",instance="node-1"}
+    values: 4095x4
+  alert_rule_test:
+  - eval_time: 3m
+    alertname: CheckedFlowAdministrativeHeadroomLow
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        instance: node-1
+        severity: critical
+        component: checkedflow
+      exp_annotations: &id002
+        summary: Administrative recovery capacity is low.
+        runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#headroom
+- name: Administrative byte and combined limits 2
+  interval: 1m
+  input_series:
+  - series: checkedflow_administrative_request_slots_available{job="checkedflow",instance="node-1"}
+    values: 2x4
+  - series: checkedflow_administrative_request_bytes_available{job="checkedflow",instance="node-1"}
+    values: 4095x4
+  alert_rule_test:
+  - eval_time: 3m
+    alertname: CheckedFlowAdministrativeHeadroomLow
+    exp_alerts:
+    - exp_labels:
+        job: checkedflow
+        instance: node-1
+        severity: critical
+        component: checkedflow
+      exp_annotations: *id002
+- name: Healthy boundaries have no firing alerts
+  interval: 1m
+  input_series:
+  - series: up{job="checkedflow",instance="node-1"}
+    values: 1x8
+  - series: checkedflow_node_readable{job="checkedflow",instance="node-1"}
+    values: 1x8
+  - series: checkedflow_dependency_node_fresh_ready{job="checkedflow",instance="node-1"}
+    values: 1x8
+  - series: checkedflow_mission_running{job="checkedflow",instance="node-1"}
+    values: 1x8
+  - series: checkedflow_task_slots_available{job="checkedflow",instance="node-1"}
+    values: 8x8
+  - series: checkedflow_candidate_slots_available{job="checkedflow",instance="node-1"}
+    values: 8x8
+  - series: checkedflow_effect_slots_available{job="checkedflow",instance="node-1"}
+    values: 8x8
+  - series: checkedflow_ordinary_request_slots_available{job="checkedflow",instance="node-1"}
+    values: 8x8
+  - series: checkedflow_administrative_request_slots_available{job="checkedflow",instance="node-1"}
+    values: 3x8
+  - series: checkedflow_administrative_request_bytes_available{job="checkedflow",instance="node-1"}
+    values: 4096x8
+  - series: checkedflow_unresolved_effects_oldest_blocks{job="checkedflow",instance="node-1"}
+    values: 100x8
+  - series: checkedflow_dependency_backup_ready{job="checkedflow",instance="node-1"}
+    values: 1x8
+  - series: checkedflow_dependency_signer_ready{job="checkedflow",instance="node-1"}
+    values: 1x8
+  - series: checkedflow_dependency_storage_ready{job="checkedflow",instance="node-1"}
+    values: 1x8
+  - series: checkedflow_budget_reserved_units{job="checkedflow",instance="node-1"}
+    values: 10x8
+  alert_rule_test:
+  - eval_time: 5m
+    alertname: CheckedFlowScrapeFailed
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: CheckedFlowTargetSetMissing
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: CheckedFlowObservationMissing
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: CheckedFlowNodeUnreadable
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: CheckedFlowNodeNotFresh
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: CheckedFlowHeadroomLow
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: CheckedFlowAdministrativeHeadroomLow
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: CheckedFlowUnresolvedEffectAge
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: CheckedFlowRequiredBackupUnavailable
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: CheckedFlowSigningUnavailable
+    exp_alerts: []
+  - eval_time: 5m
+    alertname: CheckedFlowReservedEvidenceUnavailable
+    exp_alerts: []

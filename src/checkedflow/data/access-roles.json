@@ -1,0 +1,45 @@
+{
+  "profile": "checkedflow/access-roles/v1",
+  "roles": {
+    "inspect": [],
+    "submit": [
+      "task.lease",
+      "task.start",
+      "task.heartbeat",
+      "task.finish",
+      "effect.reserve",
+      "effect.report"
+    ],
+    "approve": [
+      "task.admit",
+      "artifact.admit",
+      "budget.reserve",
+      "effect.prepare",
+      "effect.authorize"
+    ],
+    "verify": [
+      "artifact.attest",
+      "artifact.withdraw"
+    ],
+    "revoke": [
+      "key.revoke",
+      "artifact.revoke",
+      "task.cancel",
+      "effect.deny"
+    ],
+    "operate": [
+      "mission.pause",
+      "mission.drain",
+      "mission.resume",
+      "journal.rollover",
+      "history.archive",
+      "key.schedule",
+      "budget.configure",
+      "budget.settle",
+      "effect.reconcile",
+      "budget.reconcile_inherited"
+    ]
+  },
+  "callback_role": "inspect",
+  "command_protocol": "checkedflow/v2"
+}

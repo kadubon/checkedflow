@@ -6,6 +6,12 @@ MCP server surfaces described below have concrete implementations and executable
 It does not mean every agent's private extensions, every old protocol revision, every media
 type, or every optional client role is implemented. There is no external certification claim.
 
+The matrix below describes the published v1 application mapping. The development
+[v2 gateway](operational-agents.md) shares these transport implementations, but has native task,
+candidate and budget records, no agent-side administrative admission, and no unknown-work
+cancellation transition. Its new protocol mapping and broader operational authorization are not
+covered by historical v1 qualification or by this page's completeness statement.
+
 The reviewed authorities are the [A2A specification](https://a2a-protocol.org/latest/specification/)
 and [MCP specification](https://modelcontextprotocol.io/specification/2026-07-28). SDK versions
 are locked in [uv.lock](../uv.lock). The machine profile is [agents.json](../src/checkedflow/data/agents.json).
@@ -77,3 +83,20 @@ core and common authentication/serialization modules. All vectors and schemas sh
 See [validation status](validation-status.md) for actual runs and [security](security.md) for the
 scope of the security audit. Protocol interoperability never substitutes for signature authority,
 consensus finality or verification under a declared task contract.
+
+
+## Callback configuration confidentiality
+
+Callback create/get/list responses retain public configuration fields but omit notification tokens
+and authentication credentials. Persistent configuration requires a separate operator keyring and
+uses authenticated encryption; missing keys or legacy plaintext rows fail closed. The callback
+scheme field follows A2A 1.0 `AuthenticationInfo.scheme`, with case-insensitive Bearer support.
+See [callback custody](callback-secrets.md) for rotation, crash recovery and compatibility limits.
+These tests establish storage/response behavior, not cross-client authorization or mTLS deployment.
+
+Operational v2 [client access](client-access.md) adds the same role/actor policy to A2A bindings and
+MCP operations, with explicit callback ownership and egress revocation checks. The v2 CLI requires
+a policy file. [Artifact downloads](artifact-download.md) use an explicit publication catalog and
+that same policy. [TLS tests](../tests/test_agent_tls.py) cover actual HTTP/gRPC handshakes,
+certificate retirement and independent Bearer checks; five cases also gate the installed wheel.
+Coordinated recovery and complete proxy/multi-host deployment remain open operational gates.

@@ -1,0 +1,890 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "v2 CometBFT application configuration",
+  "description": "Structural contract only. The runtime requires a fresh state, four equal-power validators, exact organization mapping, distinct validator keys and separation from every command key. This file is trusted operator configuration, not remote discovery.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "state",
+    "validators"
+  ],
+  "properties": {
+    "state": {
+      "$schema": "https://json-schema.org/draft/2020-12/schema",
+      "title": "operational-state",
+      "description": "Structural control-profile contract only. Runtime invariants, original JSON lexical checks, byte ceilings and independent checkpoint trust remain required.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chain",
+        "mission",
+        "organizations",
+        "credentials",
+        "journal",
+        "height",
+        "mode",
+        "profile",
+        "budget",
+        "tasks",
+        "candidates"
+      ],
+      "properties": {
+        "chain": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "mission": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "organizations": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
+        },
+        "credentials": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 1024,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "identity",
+              "revision",
+              "organization",
+              "role",
+              "mission",
+              "public_key",
+              "activated_height",
+              "retired_height",
+              "revoked"
+            ],
+            "properties": {
+              "identity": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "organization": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "role": {
+                "enum": [
+                  "administrator",
+                  "producer",
+                  "executor",
+                  "verifier",
+                  "effect_executor"
+                ]
+              },
+              "mission": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "public_key": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "activated_height": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "retired_height": {
+                "oneOf": [
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "revoked": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "journal": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "actors",
+            "limits",
+            "epoch",
+            "archive_root",
+            "receipts"
+          ],
+          "properties": {
+            "actors": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 64,
+              "items": {
+                "type": "array",
+                "prefixItems": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  }
+                ],
+                "items": false,
+                "minItems": 2,
+                "maxItems": 2
+              }
+            },
+            "limits": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "ordinary_count",
+                "administrative_count",
+                "ordinary_bytes",
+                "administrative_bytes"
+              ],
+              "properties": {
+                "ordinary_count": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 4096
+                },
+                "administrative_count": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 64
+                },
+                "ordinary_bytes": {
+                  "type": "integer",
+                  "minimum": 64,
+                  "maximum": 1048576
+                },
+                "administrative_bytes": {
+                  "type": "integer",
+                  "minimum": 209,
+                  "maximum": 16384
+                }
+              }
+            },
+            "epoch": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "archive_root": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "receipts": {
+              "type": "array",
+              "maxItems": 4160,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "request",
+                  "actor",
+                  "nonce",
+                  "command_digest",
+                  "administrative"
+                ],
+                "properties": {
+                  "request": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "actor": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "nonce": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "command_digest": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "administrative": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "mode": {
+          "enum": [
+            "paused",
+            "running",
+            "draining"
+          ]
+        },
+        "profile": {
+          "const": "checkedflow/control-state/v2"
+        },
+        "budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "budget",
+            "tickets",
+            "verification_reserve"
+          ],
+          "properties": {
+            "budget": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "tickets": {
+              "type": "array",
+              "maxItems": 128,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "identity",
+                  "phase",
+                  "ceiling",
+                  "status",
+                  "charged",
+                  "target"
+                ],
+                "properties": {
+                  "identity": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "phase": {
+                    "enum": [
+                      "generate",
+                      "execute",
+                      "verify",
+                      "repair"
+                    ]
+                  },
+                  "ceiling": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "status": {
+                    "enum": [
+                      "reserved",
+                      "settled",
+                      "unknown",
+                      "released"
+                    ]
+                  },
+                  "charged": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 9007199254740991
+                  },
+                  "target": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                  }
+                }
+              }
+            },
+            "verification_reserve": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "archived_spent": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "archived_verification": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "inheritance": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "chain",
+                "mission",
+                "height",
+                "state_hash",
+                "budget",
+                "spent",
+                "reserved"
+              ],
+              "properties": {
+                "chain": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "mission": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "height": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "state_hash": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                },
+                "budget": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                },
+                "spent": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "reserved": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "obligations": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 128,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "identity",
+                      "task_hash",
+                      "ceiling",
+                      "funded",
+                      "outcome",
+                      "evidence",
+                      "charged"
+                    ],
+                    "properties": {
+                      "identity": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 256
+                      },
+                      "task_hash": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                      },
+                      "ceiling": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 9007199254740991
+                      },
+                      "funded": {
+                        "type": "boolean"
+                      },
+                      "outcome": {
+                        "enum": [
+                          "",
+                          "unknown",
+                          "executed",
+                          "not_executed"
+                        ]
+                      },
+                      "evidence": {
+                        "anyOf": [
+                          {
+                            "const": ""
+                          },
+                          {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                          }
+                        ]
+                      },
+                      "charged": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 9007199254740991
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "dependentRequired": {
+            "archived_spent": [
+              "archived_verification"
+            ],
+            "archived_verification": [
+              "archived_spent"
+            ]
+          }
+        },
+        "tasks": {
+          "type": "array",
+          "maxItems": 128,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "identity",
+              "ticket",
+              "workers",
+              "lease_blocks",
+              "expires",
+              "max_attempts",
+              "status",
+              "owner",
+              "revision",
+              "fence",
+              "until",
+              "started",
+              "evidence",
+              "reason"
+            ],
+            "properties": {
+              "identity": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "ticket": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "workers": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 64,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                }
+              },
+              "lease_blocks": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10000
+              },
+              "expires": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "max_attempts": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8
+              },
+              "status": {
+                "enum": [
+                  "ready",
+                  "leased",
+                  "running",
+                  "finished",
+                  "unknown",
+                  "cancelled"
+                ]
+              },
+              "owner": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "fence": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 8
+              },
+              "until": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "started": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "evidence": {
+                "oneOf": [
+                  {
+                    "const": ""
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                  }
+                ]
+              },
+              "reason": {
+                "enum": [
+                  "",
+                  "lease_expired",
+                  "authority_unavailable",
+                  "cancelled",
+                  "result_reported",
+                  "result_unknown"
+                ]
+              }
+            }
+          }
+        },
+        "candidates": {
+          "type": "array",
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "identity",
+              "target",
+              "artifact",
+              "admitted",
+              "expires",
+              "checks",
+              "observations",
+              "revoked"
+            ],
+            "properties": {
+              "identity": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "target": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "artifact": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "admitted": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "expires": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "checks": {
+                "type": "array",
+                "minItems": 4,
+                "maxItems": 4,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 80
+                }
+              },
+              "observations": {
+                "type": "array",
+                "maxItems": 12,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "task",
+                    "actor",
+                    "revision",
+                    "organization",
+                    "height",
+                    "evidence",
+                    "verdict",
+                    "withdrawn"
+                  ],
+                  "properties": {
+                    "task": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "actor": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "organization": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 80
+                    },
+                    "height": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "evidence": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                    },
+                    "verdict": {
+                      "enum": [
+                        "pass",
+                        "fail",
+                        "unknown"
+                      ]
+                    },
+                    "withdrawn": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                }
+              },
+              "revoked": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "history": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sequence",
+            "root"
+          ],
+          "properties": {
+            "sequence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "root": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            }
+          }
+        },
+        "effects": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 64,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "identity",
+              "candidate",
+              "ticket",
+              "executor",
+              "operation",
+              "intent",
+              "policy",
+              "authorized",
+              "fence",
+              "reserved",
+              "until",
+              "number",
+              "revision",
+              "prepared",
+              "expires",
+              "lease_blocks",
+              "status",
+              "authorization",
+              "evidence",
+              "reason"
+            ],
+            "properties": {
+              "identity": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "candidate": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "ticket": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "executor": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "operation": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "intent": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "policy": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              },
+              "authorized": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "fence": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "reserved": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "until": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "number": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 9007199254740991
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "prepared": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "expires": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 9007199254740991
+              },
+              "lease_blocks": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 10000
+              },
+              "status": {
+                "enum": [
+                  "prepared",
+                  "authorized",
+                  "dispatch_reserved",
+                  "observed",
+                  "unknown",
+                  "denied",
+                  "expired",
+                  "reconciled",
+                  "compensation_required"
+                ]
+              },
+              "authorization": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                  },
+                  {
+                    "const": ""
+                  }
+                ]
+              },
+              "evidence": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+                  },
+                  {
+                    "const": ""
+                  }
+                ]
+              },
+              "reason": {
+                "type": "string",
+                "maxLength": 80
+              }
+            }
+          }
+        }
+      }
+    },
+    "validators": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "organization",
+          "public_key"
+        ],
+        "properties": {
+          "organization": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "public_key": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+          }
+        }
+      }
+    }
+  }
+}

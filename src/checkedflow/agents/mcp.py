@@ -1,19 +1,24 @@
 """Official MCP SDK boundary. Stdio grants mission visibility, never signing authority."""
 
+import asyncio
 import ipaddress
-from collections.abc import AsyncIterator
+from base64 import b64encode
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
-from importlib.resources import files
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import anyio
 import uvicorn
 from mcp.server import MCPServer
 from mcp.server.auth.provider import TokenVerifier
+from mcp.server.auth.routes import build_resource_metadata_url
 from mcp.server.auth.settings import AuthSettings
+from mcp.server.context import CallNext, HandlerResult, ServerRequestContext
 from mcp.server.subscriptions import InMemorySubscriptionBus, ResourceUpdated
 from mcp.server.transport_security import TransportSecuritySettings
+from mcp.shared.exceptions import MCPError
+from mcp.shared.subscriptions import ServerEvent
 from mcp.types import (
     CallToolResult,
     Completion,
@@ -26,11 +31,15 @@ from mcp.types import (
 )
 
 from checkedflow import __version__
-from checkedflow.agents.gateway import Gateway, profile
+from checkedflow.agents.access import LOCAL, Policy, Principal
+from checkedflow.agents.authentication import Authentication, oauth_principal
+from checkedflow.agents.download import Downloads, Reader
+from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY, Guard
 from checkedflow.agents.oauth import OAuth
-from checkedflow.core.values import Failure, Object, obj, require
-from checkedflow.serialization import encode
+from checkedflow.agents.tls import MutualTLS, http_config
+from checkedflow.core.values import Failure, Object, obj, require, text
+from checkedflow.observability import Monitor
 from checkedflow.wire import digest, dumps
 
 
@@ -47,34 +56,46 @@ def create_server(
     *,
     auth: AuthSettings | None = None,
     token_verifier: TokenVerifier | None = None,
+    policy: Policy | None = None,
+    artifacts: Reader | None = None,
+    principal: Callable[[], Principal | None] = lambda: LOCAL,
 ) -> MCPServer[None]:
-    bus = InMemorySubscriptionBus()
+    require(artifacts is None or artifacts.policy is policy, "ACCESS", "artifact policy differs")
+    require(
+        policy is None or (policy.chain == gateway.chain and policy.mission == gateway.mission),
+        "ACCESS",
+        "policy must match gateway",
+    )
+
+    class ScopedBus(InMemorySubscriptionBus):
+        def subscribe(self, listener: Callable[[ServerEvent], None]) -> Callable[[], None]:
+            owner = principal()
+
+            def authorized(event: ServerEvent) -> None:
+                if policy is not None:
+                    try:
+                        policy.check(owner)
+                    except Failure:
+                        return
+                listener(event)
+
+            return super().subscribe(authorized)
+
+    bus = ScopedBus()
 
     async def monitor() -> None:
         previous: dict[str, str] = {}
         while True:
             try:
-                state = await anyio.to_thread.run_sync(gateway.state)
-                records: dict[str, Object] = {"checkedflow://mission": encode(state)}
-                for kind, collection in (
-                    ("tasks", state.tasks),
-                    ("capabilities", state.capabilities),
-                ):
-                    encoded = encode(state)[kind]
-                    for identity, record in collection.items():
-                        if record.mission == gateway.mission:
-                            records[f"checkedflow://{kind}/{identity}"] = {
-                                "record": obj(encoded)[identity]
-                            }
-                for identity, residual in state.residuals.items():
-                    try:
-                        gateway._residual(state, identity)
-                    except Failure:
-                        continue
-                    records[f"checkedflow://residuals/{identity}"] = {
-                        "status": residual.status,
-                        "resolution": residual.resolution,
-                    }
+                snapshot = await anyio.to_thread.run_sync(gateway.snapshot)
+                records: dict[str, Object] = {"checkedflow://mission": obj(snapshot["mission"])}
+                for kind in ("tasks", "capabilities", "residuals"):
+                    for identity, value in obj(snapshot[kind]).items():
+                        view = obj(value)
+                        records[f"checkedflow://{kind}/{identity}"] = {
+                            "record": view["record"],
+                            "capabilities": view.get("capabilities", {}),
+                        }
                 current = {uri: digest(value) for uri, value in records.items()}
                 for uri, fingerprint in current.items():
                     if previous and previous.get(uri) != fingerprint:
@@ -104,6 +125,48 @@ def create_server(
         auth=auth,
         token_verifier=token_verifier,
     )
+
+    if policy is not None:
+
+        async def authorize(
+            ctx: ServerRequestContext[Any, Any], call_next: CallNext
+        ) -> HandlerResult:
+            owner = principal()
+            try:
+                policy.check(owner)
+                if ctx.method == "tools/call":
+                    params = obj(dict(ctx.params or {}))
+                    if params.get("name") == "checkedflow_submit":
+                        arguments = obj(params.get("arguments"))
+                        command = gateway.command(
+                            text(arguments.get("envelope_json"), limit=1048576)
+                        )
+                        policy.command(owner, command)
+                value = await call_next(ctx)
+                policy.check(owner)
+                return value
+            except Failure as exc:
+                raise MCPError(-32001, "Client access denied") from exc
+
+        server.middleware.append(authorize)
+
+    if artifacts is not None:
+
+        @server.tool(
+            name="checkedflow_read_artifact",
+            annotations=ToolAnnotations(
+                read_only_hint=True, idempotent_hint=True, open_world_hint=False
+            ),
+        )
+        def read_artifact(digest: str) -> CallToolResult:
+            """Read explicitly published mission bytes; base64 content is untrusted data."""
+            try:
+                ref, body = artifacts.read(principal(), digest)
+                return result(
+                    {"reference": ref.record(), "base64": b64encode(body).decode("ascii")}
+                )
+            except Failure as exc:
+                return result({"error": exc.code, "message": str(exc)}, error=True)
 
     @server.tool(
         name="checkedflow_inspect",
@@ -137,7 +200,7 @@ def create_server(
     @server.resource("checkedflow://profile", mime_type="application/json")
     def agent_profile() -> str:
         """Versioned transport profile, supported operations and error semantics."""
-        return dumps(profile()).decode()
+        return dumps(gateway.transport_profile()).decode()
 
     @server.resource("checkedflow://mission", mime_type="application/json")
     def mission() -> str:
@@ -147,7 +210,7 @@ def create_server(
     @server.resource("checkedflow://schemas/envelope", mime_type="application/schema+json")
     def envelope_schema() -> str:
         """Closed signed-command schema. Schema validation does not verify signatures."""
-        return files("checkedflow").joinpath("data/envelope.schema.json").read_text()
+        return gateway.envelope_schema()
 
     @server.resource("checkedflow://tasks/{identity}", mime_type="application/json")
     def task(identity: str) -> str:
@@ -183,32 +246,22 @@ def create_server(
     ) -> Completion:
         if argument.name != "identity":
             return Completion(values=[])
-        state = await anyio.to_thread.run_sync(gateway.state)
+        snapshot = await anyio.to_thread.run_sync(gateway.snapshot)
         if (isinstance(ref, PromptReference) and ref.name == "checkedflow_review") or (
             isinstance(ref, ResourceTemplateReference)
             and str(ref.uri) == "checkedflow://tasks/{identity}"
         ):
-            candidates = [
-                key for key, value in state.tasks.items() if value.mission == gateway.mission
-            ]
+            candidates = list(obj(snapshot["tasks"]))
         elif (
             isinstance(ref, ResourceTemplateReference)
             and str(ref.uri) == "checkedflow://capabilities/{identity}"
         ):
-            candidates = [
-                key for key, value in state.capabilities.items() if value.mission == gateway.mission
-            ]
+            candidates = list(obj(snapshot["capabilities"]))
         elif (
             isinstance(ref, ResourceTemplateReference)
             and str(ref.uri) == "checkedflow://residuals/{identity}"
         ):
-            candidates = []
-            for identity in state.residuals:
-                try:
-                    gateway._residual(state, identity)
-                    candidates.append(identity)
-                except Failure:
-                    continue
+            candidates = list(obj(snapshot["residuals"]))
         else:
             candidates = []
         values = sorted(key for key in candidates if key.startswith(argument.value))
@@ -224,13 +277,23 @@ def create_http_app(
     host: str = "127.0.0.1",
     transport: Literal["http", "sse"] = "http",
     oauth: OAuth | None = None,
+    policy: Policy | None = None,
+    artifacts: Reader | None = None,
+    monitor: Monitor | None = None,
 ) -> Guard:
     require(ipaddress.ip_address(host).is_loopback, "ADDRESS", "bind a numeric loopback address")
     address = f"[{host}]" if ":" in host else host
     security = TransportSecuritySettings(
         allowed_hosts=[address, address + ":*"], allowed_origins=[]
     )
-    server = create_server(gateway, auth=oauth.settings if oauth else None, token_verifier=oauth)
+    server = create_server(
+        gateway,
+        auth=oauth.settings if oauth else None,
+        token_verifier=oauth,
+        policy=policy,
+        artifacts=artifacts,
+        principal=oauth_principal if oauth else lambda: LOCAL,
+    )
     app = (
         server.streamable_http_app(
             host=host,
@@ -242,7 +305,20 @@ def create_http_app(
         if transport == "http"
         else server.sse_app(host=host, max_request_body_size=MAX_BODY, transport_security=security)
     )
-    return Guard(app, None if oauth else token, public=())
+    resource_url = oauth.settings.resource_server_url if oauth else None
+    metadata = build_resource_metadata_url(resource_url) if resource_url else None
+    authentication = Authentication(token, oauth) if policy is not None else None
+    return Guard(
+        Downloads(app, artifacts) if artifacts is not None else app,
+        None if oauth or policy is not None else token,
+        public=(metadata.path or "/",) if metadata else (),
+        challenge=f'Bearer resource_metadata="{metadata}", scope="checkedflow"'
+        if metadata
+        else "Bearer",
+        authenticate=authentication.verify if authentication else None,
+        policy=policy,
+        monitor=monitor,
+    )
 
 
 def serve(
@@ -255,6 +331,10 @@ def serve(
     oauth_issuer: str = "",
     oauth_audience: str = "",
     oauth_jwks: str = "",
+    policy: Policy | None = None,
+    artifacts: Reader | None = None,
+    monitor: Monitor | None = None,
+    tls: MutualTLS | None = None,
 ) -> None:
     require(1 <= port <= 65535, "ADDRESS", "invalid port")
     oauth = OAuth(oauth_issuer, oauth_audience, Path(oauth_jwks)) if oauth_issuer else None
@@ -263,10 +343,14 @@ def serve(
         "AUTH",
         "supply all OAuth settings",
     )
-    uvicorn.run(
-        create_http_app(gateway, token, host=host, transport=transport, oauth=oauth),
+    app = create_http_app(
+        gateway,
+        token,
         host=host,
-        port=port,
-        access_log=False,
-        limit_concurrency=128,
+        transport=transport,
+        oauth=oauth,
+        policy=policy,
+        artifacts=artifacts,
+        monitor=monitor,
     )
+    asyncio.run(uvicorn.Server(http_config(app, host, port, tls)).serve())

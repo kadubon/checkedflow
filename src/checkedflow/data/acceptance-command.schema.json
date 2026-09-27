@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CheckedFlow v2 candidate acceptance command body",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "artifact.admit"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "target",
+            "artifact",
+            "expires",
+            "checks"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "target": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            },
+            "artifact": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            },
+            "expires": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "checks": {
+              "type": "array",
+              "minItems": 4,
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "artifact.attest"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "candidate",
+            "task",
+            "evidence",
+            "verdict"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "candidate": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "evidence": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            },
+            "verdict": {
+              "enum": [
+                "pass",
+                "fail",
+                "unknown"
+              ]
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "artifact.withdraw"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "candidate",
+            "task"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "candidate": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "artifact.revoke"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "candidate"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "candidate": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        }
+      }
+    }
+  ]
+}

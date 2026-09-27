@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+rule_files:
+- alerts.yml
+scrape_configs:
+- job_name: checkedflow
+  scheme: https
+  metrics_path: /metrics
+  scrape_timeout: 10s
+  authorization:
+    credentials_file: /etc/checkedflow/monitoring/bearer-token
+  tls_config:
+    ca_file: /etc/checkedflow/monitoring/ca.pem
+    cert_file: /etc/checkedflow/monitoring/client.pem
+    key_file: /etc/checkedflow/monitoring/client-key.pem
+    server_name: checkedflow.example.invalid
+    insecure_skip_verify: false
+  static_configs:
+  - targets:
+    - 127.0.0.1:9443

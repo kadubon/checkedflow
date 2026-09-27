@@ -3,13 +3,17 @@
 import hmac
 import json
 import math
+from collections.abc import Callable
 
 import anyio
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
-from checkedflow.core.values import require
+from checkedflow.agents.access import Policy, Principal
+from checkedflow.agents.authentication import authenticated_headers
+from checkedflow.core.values import Failure, require
+from checkedflow.observability import Monitor
 
 MAX_BODY = 8 * 1048576
 
@@ -48,6 +52,10 @@ class Guard:
         *,
         public: tuple[str, ...] = ("/.well-known/agent-card.json",),
         origins: tuple[str, ...] = (),
+        authenticate: Callable[[str], Principal | None] | None = None,
+        policy: Policy | None = None,
+        challenge: str = "Bearer",
+        monitor: Monitor | None = None,
     ) -> None:
         require(
             token is None or (len(token) >= 32 and all(33 <= ord(c) <= 126 for c in token)),
@@ -56,7 +64,33 @@ class Guard:
         )
         # None is for an app that supplies the SDK's OAuth resource-server middleware.
         self.app, self.expected = app, ("Bearer " + token).encode() if token is not None else None
+        require(
+            policy is None or authenticate is not None, "ACCESS", "policy requires authentication"
+        )
         self.public, self.origins = public, origins
+        self.authenticate, self.policy = authenticate, policy
+        self.challenge = challenge
+        if monitor is not None:
+            require(
+                policy is not None and authenticate is not None,
+                "ACCESS",
+                "monitoring requires authenticated mission policy",
+            )
+            require(
+                policy is not None
+                and (policy.chain, policy.mission)
+                == (monitor.watchdog.chain, monitor.watchdog.mission),
+                "SCOPE",
+                "monitoring scope differs from service policy",
+            )
+            require(
+                not set(public) & {"/healthz", "/readyz", "/metrics"},
+                "ACCESS",
+                "monitoring cannot be public",
+            )
+            from checkedflow.agents.monitoring import Monitoring
+
+            self.app = Monitoring(app, monitor)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":
@@ -75,9 +109,31 @@ class Guard:
             len(credentials) != 1 or not hmac.compare_digest(credentials[0].encode(), self.expected)
         ):
             await JSONResponse(
-                {"error": "unauthorized"}, status_code=401, headers={"WWW-Authenticate": "Bearer"}
+                {"error": "unauthorized"},
+                status_code=401,
+                headers={"WWW-Authenticate": self.challenge},
             )(scope, receive, send)
             return
+        principal = None
+        if self.authenticate is not None:
+            try:
+                principal = await anyio.to_thread.run_sync(
+                    authenticated_headers, credentials, self.authenticate
+                )
+            except Failure:
+                await JSONResponse(
+                    {"error": "unauthorized"},
+                    status_code=401,
+                    headers={"WWW-Authenticate": self.challenge},
+                )(scope, receive, send)
+                return
+            scope["checkedflow.principal"] = principal
+        if self.policy is not None:
+            try:
+                await anyio.to_thread.run_sync(self.policy.check, principal)
+            except Failure:
+                await JSONResponse({"error": "forbidden"}, status_code=403)(scope, receive, send)
+                return
         body = bytearray()
         try:
             with anyio.fail_after(30):
@@ -112,4 +168,34 @@ class Guard:
             sent = True
             return {"type": "http.request", "body": bytes(body), "more_body": False}
 
-        await self.app(scope, replay, send)
+        started = False
+
+        class Revoked(Exception):
+            pass
+
+        async def authorized_send(message: Message) -> None:
+            nonlocal started
+            if self.policy is not None or self.authenticate is not None:
+                try:
+                    if self.authenticate is not None:
+                        await anyio.to_thread.run_sync(
+                            authenticated_headers, credentials, self.authenticate
+                        )
+                    if self.policy is not None:
+                        await anyio.to_thread.run_sync(self.policy.check, principal)
+                except Failure:
+                    if not started:
+                        await JSONResponse({"error": "forbidden"}, status_code=403)(
+                            scope, replay, send
+                        )
+                    else:
+                        await send({"type": "http.response.body", "body": b"", "more_body": False})
+                    raise Revoked() from None
+            if message["type"] == "http.response.start":
+                started = True
+            await send(message)
+
+        try:
+            await self.app(scope, replay, authorized_send)
+        except Revoked:
+            return

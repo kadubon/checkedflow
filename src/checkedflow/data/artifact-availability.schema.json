@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:artifact-availability:v1",
+  "title": "Fresh local observation of four configured artifact replicas",
+  "description": "Verified and unavailable must be sorted, disjoint and together contain exactly the four protected configured replica names. This is not a signature, consensus receipt or future availability guarantee.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile",
+    "reference",
+    "required",
+    "verified",
+    "unavailable"
+  ],
+  "properties": {
+    "profile": {
+      "const": "checkedflow/artifact-availability/v1"
+    },
+    "reference": {
+      "title": "CheckedFlow artifact reference v1",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "algorithm",
+        "digest",
+        "length",
+        "content_type",
+        "kind",
+        "scope",
+        "manifest"
+      ],
+      "properties": {
+        "version": {
+          "const": "checkedflow/artifact/v1"
+        },
+        "algorithm": {
+          "const": "sha256"
+        },
+        "digest": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4194304
+        },
+        "content_type": {
+          "enum": [
+            "application/json",
+            "application/octet-stream",
+            "text/plain"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "source-tree",
+            "patch",
+            "evidence",
+            "archive",
+            "snapshot"
+          ]
+        },
+        "scope": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80,
+          "pattern": "^[a-z0-9_-]+(?![\\s\\S])"
+        },
+        "manifest": {
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64,
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "required": {
+      "const": 3
+    },
+    "verified": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_-]{0,39}(?![\\s\\S])"
+      }
+    },
+    "unavailable": {
+      "type": "array",
+      "maxItems": 4,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z][a-z0-9_-]{0,39}(?![\\s\\S])"
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "verified": {
+          "minItems": 0,
+          "maxItems": 0
+        },
+        "unavailable": {
+          "minItems": 4,
+          "maxItems": 4
+        }
+      }
+    },
+    {
+      "properties": {
+        "verified": {
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "unavailable": {
+          "minItems": 3,
+          "maxItems": 3
+        }
+      }
+    },
+    {
+      "properties": {
+        "verified": {
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "unavailable": {
+          "minItems": 2,
+          "maxItems": 2
+        }
+      }
+    },
+    {
+      "properties": {
+        "verified": {
+          "minItems": 3,
+          "maxItems": 3
+        },
+        "unavailable": {
+          "minItems": 1,
+          "maxItems": 1
+        }
+      }
+    },
+    {
+      "properties": {
+        "verified": {
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "unavailable": {
+          "minItems": 0,
+          "maxItems": 0
+        }
+      }
+    }
+  ]
+}

@@ -53,3 +53,69 @@ contract. A port may retain that generator while replacing the state machine. A 
 language, image or checker requires a newly approved immutable verifier definition and mission.
 Changing a canonical rule or transition meaning requires a new protocol version and new vectors;
 do not silently reinterpret old committed events.
+
+## Operational effect interoperability
+
+The [effect command schema](../src/checkedflow/data/effect-command.schema.json) and
+[signed replay vector](../src/checkedflow/data/effect-flow-vector.json) define the new v2 boundary.
+Replay every step against its expected state hash, including unknown observation, administrative
+reconciliation and adverse-evidence compensation classification. Omit an empty `effects` collection
+exactly as the Python encoder does; adding an empty array would change historical hashes. Preserve
+full modeled charges once reserved and never interpret absent provider observations as retry rights.
+The [GitHub intent schema](../src/checkedflow/data/github-effect-intent.schema.json) binds provider
+arguments through canonical SHA-256 independently of the Git SHA-1 tree compatibility encoding.
+
+The [effect policy schema](../src/checkedflow/data/effect-policy.schema.json) is a separate
+operator-owned input. Its digest covers canonical JSON, with unique sorted intent digests;
+an empty allowlist denies dispatch. Ports must reload it and revalidate scoped evidence and
+own-node freshness after I/O, including at the provider's final send boundary. Preserve durable
+unknown claims when that check fails. See [dispatch ordering](effect-dispatch.md#dispatch-ordering)
+for the adapter algorithm and its non-atomic cross-system limits. These local checks never alter
+deterministic block time or replace signed reservation authority.
+
+Use the [effect observation schema](../src/checkedflow/data/effect-observation.schema.json) for
+attributed provider results. Preserve canonical bytes, original provider plan and zero object
+number for unknown results. The local invocation-height lower bound is not the external creation
+time. Persist the invocation claim before entering an adapter; an interrupted claim must not call
+the adapter again. Preserve original signed reports separately from provider receipts, and verify
+stored evidence bytes before reporting. Local SQL phases are not consensus effect classifications.
+
+Historical [reconciliation](effect-reconciliation.md) uses its own
+[observation schema](../src/checkedflow/data/effect-reconciliation.schema.json). Bind the original
+approved policy as well as the plan; a caller-selected provider actor is insufficient. Preserve
+unknown lookup results and prior positive object identity. Publish and verify evidence before
+returning the unsigned administrative proposal. A proposal is not a signed envelope, and historical
+reads do not require or confer dispatch readiness. Current quorum admission remains a separate step.
+
+For optional [Git staging](git-staging.md), reproduce the exact synthetic commit metadata,
+UTF-8 message including its final LF, single parent and complete Git tree. Independently compare
+the planned SHA-1 with Git and the provider. Preserve the v1 policy default, explicit v2 staging
+permission, at most four writes and the prohibition on resuming an interrupted sequence.
+
+[Replicated artifact access](replicated-artifacts.md) requires fresh verified reads
+from at least three of four configured backends. Availability observations are not acceptance
+or future-use authorization; replica placement must be qualified independently.
+
+[Service observations](observability.md) distinguish process liveness, readable state
+and protected-work readiness. Optional HTTP status routes remain inside mission authentication;
+current-state gauges do not count a replayed event again.
+
+The [local operation observation](telemetry.md) schema uses Unix milliseconds and monotonic elapsed
+microseconds, bounded integer values and fixed operation/outcome/reason enums. It is diagnostic data,
+not a replay event. Exported traces must not inherit client authority or enter deterministic state.
+
+For [legacy successor preparation](legacy-migration.md), use the packaged
+`legacy-successor-vector.json` and both standalone/embedded operational state schemas.
+Omit absent `budget.inheritance`; an explicit null is not canonical. Compute spending as
+inherited spending plus archived spending and active charges, and reservations as inherited
+reservations plus active reserved ceilings. The inherited root commits the entire original
+v1 snapshot. Do not turn a charged unknown into a fresh charge or use new block heights to
+re-evaluate old lease deadlines. Preparation is separate from authorized cutover and reconciliation.
+
+Succession approvals use a separate signing domain and independently trusted inputs. Reproduce
+[the approval contract](succession-approval.md) and packaged `succession-vector.json`, including
+canonical-byte plan comparison: host-language equality must not equate booleans with integers.
+
+The `legacy-history` schema defines bounded ordered chunks with original v1 state and signed
+transaction bytes. Reproduce recorded outcomes and contiguous heights against independent
+start/end checkpoints; retain independently authenticated archive digests for state-neutral records.

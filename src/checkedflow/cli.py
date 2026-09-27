@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import sqlite3
 import sys
 from importlib.resources import files
 from pathlib import Path
@@ -10,7 +11,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from checkedflow import __version__
 from checkedflow.contracts import check
-from checkedflow.core.values import JSON, Failure, Object
+from checkedflow.core.values import JSON, Failure, Object, require
 from checkedflow.identity import public_key, sign
 from checkedflow.recovery import read_blocks, replay_blocks
 from checkedflow.serialization import decode, encode
@@ -30,8 +31,41 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="checkedflow", description=__doc__)
     parser.add_argument("--version", action="version", version=__version__)
     commands = parser.add_subparsers(dest="action", required=True)
+    from checkedflow.operational_backup_cli import configure as backup_arguments
+
+    backup_arguments(commands.add_parser("application-backup"))
+    deployment = commands.add_parser("deployment-plan", help="generate review files; never apply")
+    for option in ("inventory", "configuration", "genesis", "destination"):
+        deployment.add_argument("--" + option, required=True)
+    deployment_verify = commands.add_parser(
+        "deployment-verify", help="verify an approved plan and artifact bytes; never apply"
+    )
+    for option in ("directory", "expected-plan", "wheel", "cometbft"):
+        deployment_verify.add_argument("--" + option, required=True)
+    preflight = commands.add_parser(
+        "deployment-preflight",
+        help="inspect provisioned Linux host files using root isolated Python",
+    )
+    for option in ("directory", "expected-plan", "wheel", "node"):
+        preflight.add_argument("--" + option, required=True)
+    service = commands.add_parser(
+        "deployment-service", help="explicit local approved-node lifecycle"
+    )
+    for option in ("directory", "expected-plan", "node"):
+        service.add_argument("--" + option, required=True)
+    service.add_argument("--wheel", help="approved wheel, required only for start")
+    service.add_argument(
+        "--action", dest="service_action", choices=["status", "start", "stop"], required=True
+    )
+    apply_command = commands.add_parser(
+        "deployment-apply", help="install approved public files on an inactive Linux node"
+    )
+    for option in ("directory", "expected-plan", "wheel", "node"):
+        apply_command.add_argument("--" + option, required=True)
     for name in ("generator", "example"):
         commands.add_parser(name)
+    monitoring = commands.add_parser("monitoring")
+    monitoring.add_argument("name", choices=["alerts", "alert-tests", "scrape", "dashboard"])
     resource = commands.add_parser("schema")
     resource.add_argument(
         "name",
@@ -46,6 +80,29 @@ def main(argv: list[str] | None = None) -> int:
             "agents",
             "agent-request",
             "agent-vectors",
+            "callback-keyring",
+            "access-policy",
+            "access-roles",
+            "access-vectors",
+            "artifact-publication",
+            "artifact-availability",
+            "service-observation",
+            "operation-observation",
+            "succession",
+            "legacy-history",
+            "legacy-retained",
+            "legacy-retention-local",
+            "deployment-inventory",
+            "deployment-verification",
+            "deployment-preflight",
+            "deployment-service",
+            "deployment-apply",
+            "effect-command",
+            "github-effect-intent",
+            "effect-policy",
+            "effect-staging-policy",
+            "effect-observation",
+            "effect-reconciliation",
         ],
     )
     keys = commands.add_parser("keygen")
@@ -77,10 +134,27 @@ def main(argv: list[str] | None = None) -> int:
         agent.add_argument("--rpc", required=True, help="operator-owned loopback full node")
         agent.add_argument("--chain", required=True)
         agent.add_argument("--mission", required=True)
+        agent.add_argument("--protocol", choices=["v1", "v2"], default="v1")
         agent.add_argument("--host", default="127.0.0.1")
         agent.add_argument("--port", type=int, default=8080 if transport == "a2a" else 8082)
         agent.add_argument("--token-env", default="CHECKEDFLOW_AGENT_TOKEN")
+        agent.add_argument(
+            "--access-policy", help="private operator mission/client grants; required for v2"
+        )
+        agent.add_argument("--artifact-catalog", help="protected mission publication catalog")
+        agent.add_argument("--artifact-store", help="private local artifact database")
+        agent.add_argument("--tls-cert-file", help="operator-provisioned server certificate chain")
+        agent.add_argument("--tls-key-file", help="private server TLS key")
+        agent.add_argument("--tls-client-ca", help="CA bundle required for client certificates")
+        agent.add_argument("--oauth-issuer", default="")
+        agent.add_argument("--oauth-audience", default="")
+        agent.add_argument("--oauth-jwks", default="", help="operator-managed public JWKS file")
         if transport == "a2a":
+            agent.add_argument("--advertised-url", default="", help="explicit HTTPS proxy /rpc URL")
+            agent.add_argument(
+                "--grpc-advertised-url", default="", help="explicit HTTPS gRPC proxy URL"
+            )
+            agent.add_argument("--callback-key-file", help="private operator callback keyring JSON")
             agent.add_argument("--journal", required=True, help="private SQLite transport journal")
             agent.add_argument(
                 "--push-host",
@@ -93,16 +167,61 @@ def main(argv: list[str] | None = None) -> int:
             )
         else:
             agent.add_argument("--transport", choices=["stdio", "http", "sse"], default="stdio")
-            agent.add_argument("--oauth-issuer", default="")
-            agent.add_argument("--oauth-audience", default="")
-            agent.add_argument("--oauth-jwks", default="", help="operator-managed public JWKS file")
     demo = commands.add_parser("demo")
     demo.add_argument("--directory", required=True)
     demo.add_argument("--image", required=True, help="local Python OCI image with sha256 digest")
     demo.add_argument("--cometbft", default="cometbft")
     args = parser.parse_args(argv)
     try:
-        if args.action == "schema":
+        if args.action == "application-backup":
+            from checkedflow.operational_backup_cli import run as backup_command
+
+            emit(backup_command(args))
+        elif args.action == "deployment-plan":
+            from checkedflow.distributed.deployment import MAX_INPUT, render, write_new
+
+            inputs = []
+            for filename in (args.inventory, args.configuration, args.genesis):
+                with Path(filename).open("rb") as source:
+                    inputs.append(source.read(MAX_INPUT + 1))
+            planned_files = render(*inputs)
+            emit(
+                {
+                    "status": "REVIEW_REQUIRED",
+                    "hosts_changed": False,
+                    "files": len(planned_files),
+                    "plan_sha256": write_new(Path(args.destination), planned_files),
+                }
+            )
+        elif args.action == "deployment-verify":
+            from checkedflow.distributed.deployment_verification import verify as verify_deployment
+
+            emit(
+                verify_deployment(
+                    Path(args.directory), args.expected_plan, Path(args.wheel), Path(args.cometbft)
+                )
+            )
+        elif args.action == "deployment-preflight":
+            from checkedflow.distributed.deployment_preflight import inspect
+
+            emit(inspect(Path(args.directory), args.expected_plan, Path(args.wheel), args.node))
+        elif args.action == "deployment-service":
+            from checkedflow.distributed.deployment_service import operate
+
+            emit(
+                operate(
+                    Path(args.directory),
+                    args.expected_plan,
+                    Path(args.wheel) if args.wheel else None,
+                    args.node,
+                    args.service_action,
+                )
+            )
+        elif args.action == "deployment-apply":
+            from checkedflow.distributed.deployment_apply import apply
+
+            emit(apply(Path(args.directory), args.expected_plan, Path(args.wheel), args.node))
+        elif args.action == "schema":
             filename = {
                 "envelope": "envelope.schema.json",
                 "state": "state.schema.json",
@@ -114,8 +233,41 @@ def main(argv: list[str] | None = None) -> int:
                 "agents": "agents.json",
                 "agent-request": "agent-request.schema.json",
                 "agent-vectors": "agent-vectors.json",
+                "callback-keyring": "callback-keyring.schema.json",
+                "artifact-publication": "artifact-publication.schema.json",
+                "artifact-availability": "artifact-availability.schema.json",
+                "service-observation": "service-observation.schema.json",
+                "operation-observation": "operation-observation.schema.json",
+                "succession": "succession.schema.json",
+                "legacy-history": "legacy-history.schema.json",
+                "legacy-retained": "legacy-retained.schema.json",
+                "legacy-retention-local": "legacy-retention-local.schema.json",
+                "deployment-inventory": "deployment-inventory.schema.json",
+                "deployment-verification": "deployment-verification.schema.json",
+                "deployment-preflight": "deployment-preflight.schema.json",
+                "deployment-service": "deployment-service.schema.json",
+                "deployment-apply": "deployment-apply.schema.json",
+                "access-policy": "access-policy.schema.json",
+                "access-roles": "access-roles.json",
+                "access-vectors": "access-vectors.json",
+                "effect-command": "effect-command.schema.json",
+                "github-effect-intent": "github-effect-intent.schema.json",
+                "effect-policy": "effect-policy.schema.json",
+                "effect-staging-policy": "effect-staging-policy.schema.json",
+                "effect-observation": "effect-observation.schema.json",
+                "effect-reconciliation": "effect-reconciliation.schema.json",
             }[args.name]
             sys.stdout.buffer.write(files("checkedflow").joinpath("data", filename).read_bytes())
+        elif args.action == "monitoring":
+            filename = {
+                "alerts": "alerts.yml",
+                "alert-tests": "alert-tests.yml",
+                "scrape": "prometheus.yml.example",
+                "dashboard": "dashboard.json",
+            }[args.name]
+            sys.stdout.buffer.write(
+                files("checkedflow").joinpath("data", "monitoring", filename).read_bytes()
+            )
         elif args.action in {"generator", "example"}:
             value: Object = (
                 document(sys.stdin.buffer.read(1048577))
@@ -171,13 +323,90 @@ def main(argv: list[str] | None = None) -> int:
 
                 emit(Worker(client, args.identity, key(args.key), args.chain).once())
         elif args.action in {"a2a", "mcp"}:
-            from checkedflow.agents.gateway import Gateway
+            from checkedflow.agents.access import Policy
+            from checkedflow.agents.gateway import AgentGateway, Gateway
+            from checkedflow.agents.oauth import OAuth
             from checkedflow.distributed.client import Client
 
-            gateway = Gateway(Client(args.rpc), args.chain, args.mission)
+            require(
+                args.protocol != "v2" or bool(args.access_policy),
+                "ACCESS",
+                "v2 requires --access-policy",
+            )
+            require(
+                not args.access_policy or args.protocol == "v2",
+                "ACCESS",
+                "client policy requires v2",
+            )
+            policy = (
+                Policy(Path(args.access_policy), args.chain, args.mission)
+                if args.access_policy
+                else None
+            )
+            require(
+                bool(args.oauth_issuer) == bool(args.oauth_audience) == bool(args.oauth_jwks),
+                "AUTH",
+                "supply all OAuth settings",
+            )
+            oauth = (
+                OAuth(args.oauth_issuer, args.oauth_audience, Path(args.oauth_jwks))
+                if args.oauth_issuer
+                else None
+            )
+            require(
+                bool(args.artifact_catalog) == bool(args.artifact_store),
+                "ACCESS",
+                "supply both artifact catalog and store",
+            )
+            artifacts = None
+            if args.artifact_catalog:
+                from checkedflow.agents.download import Reader
+                from checkedflow.artifacts import LocalStore
+
+                require(policy is not None, "ACCESS", "artifact downloads require client policy")
+                require(
+                    Path(args.artifact_store).is_file(), "UNAVAILABLE", "artifact store missing"
+                )
+                if policy is not None:
+                    artifacts = Reader(
+                        LocalStore(Path(args.artifact_store)), Path(args.artifact_catalog), policy
+                    )
+            from checkedflow.agents.tls import MutualTLS
+
+            require(
+                bool(args.tls_cert_file) == bool(args.tls_key_file) == bool(args.tls_client_ca),
+                "TLS",
+                "supply certificate, key and client CA together",
+            )
+            require(
+                not args.tls_cert_file or args.action != "mcp" or args.transport != "stdio",
+                "TLS",
+                "stdio uses process ownership, not TLS",
+            )
+            tls = (
+                MutualTLS(
+                    Path(args.tls_cert_file), Path(args.tls_key_file), Path(args.tls_client_ca)
+                )
+                if args.tls_cert_file
+                else None
+            )
+            gateway: AgentGateway
+            if args.protocol == "v2":
+                from checkedflow.agents.operational_gateway import Gateway as OperationalGateway
+                from checkedflow.distributed.operational_client import Client as OperationalClient
+
+                gateway = OperationalGateway(
+                    OperationalClient(args.rpc, chain=args.chain),
+                    args.chain,
+                    args.mission,
+                    administration=policy is not None,
+                )
+            else:
+                gateway = Gateway(Client(args.rpc), args.chain, args.mission)
             gateway.state()
             if args.action == "a2a":
                 from checkedflow.agents.a2a import serve as serve_a2a
+                from checkedflow.agents.secrets import Keyring
 
                 serve_a2a(
                     gateway,
@@ -187,12 +416,30 @@ def main(argv: list[str] | None = None) -> int:
                     journal_path=Path(args.journal),
                     push_hosts=tuple(args.push_host),
                     grpc_port=args.grpc_port,
+                    policy=policy,
+                    artifacts=artifacts,
+                    tls=tls,
+                    advertised_url=args.advertised_url,
+                    grpc_advertised_url=args.grpc_advertised_url,
+                    oauth=oauth,
+                    callback_keys=(
+                        Keyring.load(Path(args.callback_key_file))
+                        if args.callback_key_file
+                        else None
+                    ),
                 )
             else:
                 from checkedflow.agents.mcp import create_server
 
                 if args.transport == "stdio":
-                    create_server(gateway).run(transport="stdio")
+                    require(
+                        oauth is None,
+                        "AUTH",
+                        "OAuth is an HTTP transport; stdio uses process ownership",
+                    )
+                    create_server(gateway, policy=policy, artifacts=artifacts).run(
+                        transport="stdio"
+                    )
                 else:
                     from checkedflow.agents.mcp import serve as serve_mcp
 
@@ -205,19 +452,24 @@ def main(argv: list[str] | None = None) -> int:
                         oauth_issuer=args.oauth_issuer,
                         oauth_audience=args.oauth_audience,
                         oauth_jwks=args.oauth_jwks,
+                        policy=policy,
+                        artifacts=artifacts,
+                        tls=tls,
                     )
         elif args.action == "demo":
             from checkedflow.distributed.demo import demonstrate
 
             emit(demonstrate(Path(args.directory), args.image, args.cometbft))
         return 0
-    except (Failure, OSError, ValueError, ImportError) as exc:
+    except (Failure, OSError, ValueError, ImportError, sqlite3.Error) as exc:
         error = (
             exc.code
             if isinstance(exc, Failure)
             else (
                 "DEPENDENCY_UNAVAILABLE"
                 if isinstance(exc, ImportError)
+                else "STORAGE"
+                if isinstance(exc, sqlite3.Error)
                 else "IO"
                 if isinstance(exc, OSError)
                 else "INVALID_INPUT"

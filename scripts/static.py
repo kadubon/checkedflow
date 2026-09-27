@@ -29,8 +29,48 @@ def anchors(content: str) -> set[str]:
     return result
 
 
-def inspect() -> list[str]:
+def implementation_ledger() -> list[str]:
+    """Check traceability, not evidence authenticity or release qualification."""
     errors = []
+    ledger = json.loads((ROOT / "docs/implementation-0.2.0.json").read_text(encoding="utf-8"))
+    specification = (ROOT / "docs/specification-0.2.0.md").read_text(encoding="utf-8")
+    if hashlib.sha256(specification.encode("utf-8")).hexdigest() != ledger["specification_sha256"]:
+        errors.append("implementation ledger specification hash differs")
+    lines = specification.splitlines()
+    requirements = {row["id"]: row for row in ledger["requirements"]}
+    components = {row["id"]: row for row in ledger["components"]}
+    if len(requirements) != len(ledger["requirements"]) or len(components) != len(
+        ledger["components"]
+    ):
+        errors.append("duplicate implementation ledger identity")
+    expected = {identity: set() for identity in requirements}
+    for identity, row in components.items():
+        for requirement in row["requirements"]:
+            if requirement not in expected:
+                errors.append(f"unknown requirement in component: {identity}: {requirement}")
+            else:
+                expected[requirement].add("component:" + identity)
+        for group in ("implementation", "tests", "documentation", "evidence"):
+            for filename in row.get(group, []):
+                path = (ROOT / filename).resolve()
+                if not path.is_relative_to(ROOT) or not path.is_file():
+                    errors.append(f"missing or external component path: {identity}: {filename}")
+    for identity, row in requirements.items():
+        line = row["source_line"]
+        if type(line) is not int or not 1 <= line <= len(lines) or lines[line - 1] != row["text"]:
+            errors.append(f"requirement differs from frozen specification: {identity}")
+        if row["status"] not in ledger["statuses"]:
+            errors.append(f"unknown requirement status: {identity}")
+        linked = {entry for entry in row["evidence"] if entry.startswith("component:")}
+        if linked != expected[identity] or (linked and row["status"] == "NOT_STARTED"):
+            errors.append(f"inconsistent requirement/component links: {identity}")
+    if ledger["not_release_authority"] is not True:
+        errors.append("implementation ledger cannot be release authority")
+    return errors
+
+
+def inspect() -> list[str]:
+    errors = implementation_ledger()
     allowed = {"copy", "dataclasses", "hashlib", "typing", "json", "collections.abc"}
     for path in PACKAGE.rglob("*.py"):
         if "proto" in path.parts:
@@ -63,12 +103,22 @@ def inspect() -> list[str]:
             for name in imports:
                 if not (name.startswith("checkedflow.core.") or name in allowed):
                     errors.append(f"forbidden core dependency: {path}: {name}")
+        if path.name == "artifact_io.py":
+            for name in imports:
+                if not (
+                    name.startswith("checkedflow.core.")
+                    or name in {"dataclasses", "hashlib", "typing"}
+                ):
+                    errors.append(f"provider dependency in artifact interface: {path}: {name}")
         if path.name in {
             "wire.py",
             "contracts.py",
             "identity.py",
             "serialization.py",
             "runtime.py",
+            "operational_identity.py",
+            "operational_runtime.py",
+            "operational_codec.py",
         }:
             for name in imports:
                 if name.startswith(
@@ -91,6 +141,12 @@ def inspect() -> list[str]:
         Draft202012Validator.check_schema(schema)
         if re.search(r'"\$ref"\s*:\s*"(?!#)', path.read_text()):
             errors.append(f"network schema reference: {path}")
+    state_schema = json.loads((PACKAGE / "data/operational-state.schema.json").read_text())
+    configuration_schema = json.loads(
+        (PACKAGE / "data/operational-configuration.schema.json").read_text()
+    )
+    if configuration_schema["properties"]["state"] != state_schema:
+        errors.append("embedded operational state schema differs from the standalone contract")
     proto = PACKAGE / "distributed/proto"
     manifest = json.loads((proto / "manifest.json").read_text())
     actual_sources = {

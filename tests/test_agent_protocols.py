@@ -34,6 +34,7 @@ from checkedflow.agents.journal import Journal
 from checkedflow.agents.mcp import create_http_app, create_server
 from checkedflow.agents.oauth import OAuth
 from checkedflow.agents.push import Push
+from checkedflow.agents.secrets import Keyring
 from checkedflow.core.values import Failure
 from checkedflow.wire import dumps
 
@@ -264,12 +265,16 @@ def test_a2a_subscriptions_blocking_and_signed_cancellation(h):
 
 
 def test_a2a_push_crud_restart_scoping_and_delivery(h, tmp_path):
+    keyring = Keyring.ephemeral()
+
     async def scenario():
         h.task(start=False)
         gateway, context = Backend(h).gateway(), ServerCallContext()
         path = tmp_path / "push.sqlite"
         handler = Handler(
-            gateway, journal=Journal(gateway, path), push=Push(("callbacks.example",))
+            gateway,
+            journal=Journal(gateway, path, keyring=keyring),
+            push=Push(("callbacks.example",)),
         )
         for identity in ["a", "b"]:
             config = await handler.on_create_task_push_notification_config(
@@ -287,7 +292,9 @@ def test_a2a_push_crud_restart_scoping_and_delivery(h, tmp_path):
         )
         handler.journal.close()
         handler = Handler(
-            gateway, journal=Journal(gateway, path), push=Push(("callbacks.example",))
+            gateway,
+            journal=Journal(gateway, path, keyring=keyring),
+            push=Push(("callbacks.example",)),
         )
         tail = await handler.on_list_task_push_notification_configs(
             pb.ListTaskPushNotificationConfigsRequest(
@@ -300,7 +307,7 @@ def test_a2a_push_crud_restart_scoping_and_delivery(h, tmp_path):
             await handler.on_get_task_push_notification_config(
                 pb.GetTaskPushNotificationConfigRequest(task_id="t", id="a"), context
             )
-        ).token == "test-only"
+        ).token == ""
         with pytest.raises(InvalidParamsError):
             await handler.on_get_task_push_notification_config(
                 pb.GetTaskPushNotificationConfigRequest(task_id="t", id="a", tenant="other"),
@@ -316,6 +323,7 @@ def test_a2a_push_crud_restart_scoping_and_delivery(h, tmp_path):
         deliveries = []
 
         async def deliver(config, task):
+            assert config["token"] == "test-only"
             deliveries.append(task)
             return True
 
@@ -389,7 +397,7 @@ def test_push_dns_pinning_tls_identity_headers_and_no_redirect(monkeypatch):
     config = {
         "url": "https://callbacks.example/event",
         "token": "test-only",
-        "authentication": {"schemes": ["Bearer"], "credentials": "callback-only"},
+        "authentication": {"scheme": "Bearer", "credentials": "callback-only"},
     }
     assert not asyncio.run(Push(("callbacks.example",)).deliver(config, {"id": "t"}))
     assert len(calls) == 1 and calls[0].url.host == "93.184.216.34"

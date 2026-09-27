@@ -1,0 +1,257 @@
+{
+  "version": "checkedflow/legacy-successor-vector/v1",
+  "description": "Public test identities only. A prepared state is not cutover authorization.",
+  "legacy_capture": "legacy-v1.json",
+  "checkpoint": {
+    "chain": "checkedflow-test",
+    "height": 1038,
+    "state_hash": "9c12eea3393f018bbac48ad1660b1077c9e8fb6d1b6665eede9ca50cf1817950"
+  },
+  "mission": "m",
+  "initial": {
+    "chain": "operational-test",
+    "mission": "m",
+    "organizations": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "credentials": [
+      {
+        "identity": "a",
+        "revision": 1,
+        "organization": "a",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "eae1c8793b5597c4b3f490e76ac31172c439690f8ee14142bb851a61f9a49f0e",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "b",
+        "revision": 1,
+        "organization": "b",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "627f17d893e5697a4ba2208bc80b0292e7f58d8120eb353c1b55429db9c6b196",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "c",
+        "revision": 1,
+        "organization": "c",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "2205b70216c0f4ca46301ac84029229db6fd68c34b8aac4f0d0966c1b3975f2b",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "d",
+        "revision": 1,
+        "organization": "d",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "37f227ad83d628cce4a606cb349c6d944ab574a8f98035b0cfaaa77e7da361bf",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "worker",
+        "revision": 1,
+        "organization": "a",
+        "role": "executor",
+        "mission": "m",
+        "public_key": "3648e6d8310743d7c9068127edb9b86af83892440713054506837bbcc922758d",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      }
+    ],
+    "journal": {
+      "actors": [
+        [
+          "a",
+          0
+        ],
+        [
+          "b",
+          0
+        ],
+        [
+          "c",
+          0
+        ],
+        [
+          "d",
+          0
+        ],
+        [
+          "worker",
+          0
+        ]
+      ],
+      "limits": {
+        "ordinary_count": 128,
+        "administrative_count": 16,
+        "ordinary_bytes": 24576,
+        "administrative_bytes": 4096
+      },
+      "epoch": 0,
+      "archive_root": "0000000000000000000000000000000000000000000000000000000000000000",
+      "receipts": []
+    },
+    "height": 0,
+    "mode": "paused",
+    "profile": "checkedflow/control-state/v2",
+    "budget": {
+      "budget": 0,
+      "tickets": [],
+      "verification_reserve": 0
+    },
+    "tasks": [],
+    "candidates": []
+  },
+  "successor": {
+    "budget": {
+      "budget": 10000,
+      "inheritance": {
+        "budget": 10000,
+        "chain": "checkedflow-test",
+        "height": 1038,
+        "mission": "m",
+        "obligations": [
+          {
+            "ceiling": 2,
+            "charged": 0,
+            "evidence": "",
+            "funded": false,
+            "identity": "unknown",
+            "outcome": "",
+            "task_hash": "6c2ec3f9242c2582d60be28bdb1013435a7854a3295eec916767f85a89e06701"
+          }
+        ],
+        "reserved": 0,
+        "spent": 12,
+        "state_hash": "9c12eea3393f018bbac48ad1660b1077c9e8fb6d1b6665eede9ca50cf1817950"
+      },
+      "tickets": [],
+      "verification_reserve": 4
+    },
+    "candidates": [],
+    "chain": "operational-test",
+    "credentials": [
+      {
+        "activated_height": 0,
+        "identity": "a",
+        "mission": "",
+        "organization": "a",
+        "public_key": "eae1c8793b5597c4b3f490e76ac31172c439690f8ee14142bb851a61f9a49f0e",
+        "retired_height": null,
+        "revision": 1,
+        "revoked": false,
+        "role": "administrator"
+      },
+      {
+        "activated_height": 0,
+        "identity": "b",
+        "mission": "",
+        "organization": "b",
+        "public_key": "627f17d893e5697a4ba2208bc80b0292e7f58d8120eb353c1b55429db9c6b196",
+        "retired_height": null,
+        "revision": 1,
+        "revoked": false,
+        "role": "administrator"
+      },
+      {
+        "activated_height": 0,
+        "identity": "c",
+        "mission": "",
+        "organization": "c",
+        "public_key": "2205b70216c0f4ca46301ac84029229db6fd68c34b8aac4f0d0966c1b3975f2b",
+        "retired_height": null,
+        "revision": 1,
+        "revoked": false,
+        "role": "administrator"
+      },
+      {
+        "activated_height": 0,
+        "identity": "d",
+        "mission": "",
+        "organization": "d",
+        "public_key": "37f227ad83d628cce4a606cb349c6d944ab574a8f98035b0cfaaa77e7da361bf",
+        "retired_height": null,
+        "revision": 1,
+        "revoked": false,
+        "role": "administrator"
+      },
+      {
+        "activated_height": 0,
+        "identity": "worker",
+        "mission": "m",
+        "organization": "a",
+        "public_key": "3648e6d8310743d7c9068127edb9b86af83892440713054506837bbcc922758d",
+        "retired_height": null,
+        "revision": 1,
+        "revoked": false,
+        "role": "executor"
+      }
+    ],
+    "height": 0,
+    "journal": {
+      "actors": [
+        [
+          "a",
+          0
+        ],
+        [
+          "b",
+          0
+        ],
+        [
+          "c",
+          0
+        ],
+        [
+          "d",
+          0
+        ],
+        [
+          "worker",
+          0
+        ]
+      ],
+      "archive_root": "0000000000000000000000000000000000000000000000000000000000000000",
+      "epoch": 0,
+      "limits": {
+        "administrative_bytes": 4096,
+        "administrative_count": 16,
+        "ordinary_bytes": 24576,
+        "ordinary_count": 128
+      },
+      "receipts": []
+    },
+    "mission": "m",
+    "mode": "paused",
+    "organizations": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "profile": "checkedflow/control-state/v2",
+    "tasks": []
+  },
+  "successor_hash": "d6ca28fbe72100978f383b5c81a59c741432ac998cd5336579893f700700e5ff",
+  "balances": {
+    "spent": 12,
+    "reserved": 0,
+    "available": 9988
+  }
+}

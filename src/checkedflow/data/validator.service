@@ -1,0 +1,30 @@
+# Review paths and provision the protected home before enabling. Never clone active signing state.
+[Unit]
+Description=CheckedFlow CometBFT validator with local custody lock
+After=network-online.target checkedflow-abci.service
+Requires=checkedflow-abci.service
+ConditionPathExists=/var/lib/checkedflow/validator/config/priv_validator_key.json
+ConditionPathExists=/var/lib/checkedflow/validator/data/priv_validator_state.json
+
+[Service]
+Type=simple
+User=checkedflow-validator
+Group=checkedflow-validator
+UMask=0077
+WorkingDirectory=/var/lib/checkedflow/validator
+ExecStart=/usr/bin/flock --exclusive --nonblock --conflict-exit-code 73 --no-fork /var/lib/checkedflow/validator/custody.lock /opt/checkedflow/cometbft start --home /var/lib/checkedflow/validator
+Restart=on-failure
+RestartPreventExitStatus=73
+RestartSec=2
+KillMode=control-group
+KillSignal=SIGTERM
+TimeoutStopSec=60
+SendSIGKILL=no
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/checkedflow/validator
+
+[Install]
+WantedBy=multi-user.target

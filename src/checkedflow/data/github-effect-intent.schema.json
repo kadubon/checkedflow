@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CheckedFlow immutable GitHub effect intent",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "patch",
+    "result",
+    "base_branch",
+    "base_commit",
+    "head_commit",
+    "git_tree",
+    "repository",
+    "repository_id",
+    "target"
+  ],
+  "properties": {
+    "version": {
+      "const": "checkedflow/github-effect-intent/v1"
+    },
+    "patch": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "result": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "base_branch": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,80}$"
+    },
+    "base_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "head_commit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "git_tree": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "repository": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{1,39}/[A-Za-z0-9_-][A-Za-z0-9_.-]{0,99}$"
+    },
+    "repository_id": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "target": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

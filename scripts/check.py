@@ -48,18 +48,142 @@ def main() -> None:
                 "-m",
                 "pytest",
                 "-m",
-                "not integration and not sandbox",
+                "not integration and not sandbox and not signer and not object_store",
                 "--cov=checkedflow.core",
+                "--cov=checkedflow.operational_identity",
+                "--cov=checkedflow.operational_runtime",
+                "--cov=checkedflow.operational_codec",
+                "--cov=checkedflow.operational_storage",
+                "--cov=checkedflow.operational_backup",
+                "--cov=checkedflow.legacy_inventory",
+                "--cov=checkedflow.legacy_successor",
+                "--cov=checkedflow.legacy_retention",
+                "--cov=checkedflow.succession",
+                "--cov=checkedflow.succession_journal",
+                "--cov=checkedflow.artifacts",
+                "--cov=checkedflow.artifact_io",
+                "--cov=checkedflow.replicated_artifacts",
+                "--cov=checkedflow.observability",
+                "--cov=checkedflow.telemetry",
+                "--cov=checkedflow.agents.monitoring",
+                "--cov=checkedflow.retention",
+                "--cov=checkedflow.retention_backup",
+                "--cov=checkedflow.github_drafts",
+                "--cov=checkedflow.git_tree",
+                "--cov=checkedflow.git_staging",
+                "--cov=checkedflow.github_effects",
+                "--cov=checkedflow.effect_dispatch",
+                "--cov=checkedflow.effect_supervisor",
+                "--cov=checkedflow.effect_reconciliation",
+                "--cov=checkedflow.dispatch_watchdog",
+                "--cov=checkedflow.worker_submission",
+                "--cov=checkedflow.worker_supervisor",
+                "--cov=checkedflow.worker_schedule",
+                "--cov=checkedflow.agents.operational_gateway",
+                "--cov=checkedflow.agents.secrets",
+                "--cov=checkedflow.agents.tls",
+                "--cov=checkedflow.agents.download",
+                "--cov=checkedflow.agents.access",
+                "--cov=checkedflow.agents.authentication",
+                "--cov=checkedflow.agents.journal",
+                "--cov=checkedflow.repository_worker",
+                "--cov=checkedflow.sandbox_recovery",
+                "--cov=checkedflow.s3_artifacts",
+                "--cov=checkedflow.vault_signer",
+                "--cov=checkedflow.domains.repository_patch",
+                "--cov=checkedflow.repository_execution",
+                "--cov=checkedflow.repository_reuse",
                 "--cov-branch",
                 "--cov-report=json:reports/coverage.json",
                 "--junitxml=reports/unit.xml",
                 "-q",
             ]
         )
-        totals = json.loads((ROOT / "reports/coverage.json").read_text())["totals"]
-        for key in ("percent_statements_covered", "percent_branches_covered"):
-            if totals[key] < 95:
-                raise SystemExit(f"Core {key} below 95%: {totals[key]}")
+        coverage = json.loads((ROOT / "reports/coverage.json").read_text())
+        core = {
+            key: 0
+            for key in ("covered_lines", "num_statements", "covered_branches", "num_branches")
+        }
+        boundaries = {
+            "operational_identity.py",
+            "operational_runtime.py",
+            "operational_codec.py",
+            "operational_storage.py",
+            "legacy_inventory.py",
+            "legacy_successor.py",
+            "legacy_retention.py",
+            "succession.py",
+            "succession_journal.py",
+            "artifacts.py",
+            "artifact_io.py",
+            "replicated_artifacts.py",
+            "observability.py",
+            "telemetry.py",
+            "agents/monitoring.py",
+            "retention.py",
+            "retention_backup.py",
+            "github_drafts.py",
+            "git_tree.py",
+            "git_staging.py",
+            "github_effects.py",
+            "effect_dispatch.py",
+            "effect_supervisor.py",
+            "effect_reconciliation.py",
+            "dispatch_watchdog.py",
+            "worker_submission.py",
+            "worker_supervisor.py",
+            "worker_schedule.py",
+            "agents/operational_gateway.py",
+            "agents/secrets.py",
+            "agents/tls.py",
+            "agents/download.py",
+            "agents/access.py",
+            "agents/authentication.py",
+            "agents/journal.py",
+            "repository_worker.py",
+            "sandbox_recovery.py",
+            "operational_backup.py",
+            "s3_artifacts.py",
+            "vault_signer.py",
+            "core/artifact.py",
+            "domains/repository_patch.py",
+            "repository_execution.py",
+            "repository_reuse.py",
+            "core/authority.py",
+            "core/key_registry.py",
+            "core/request_journal.py",
+            "core/operational.py",
+            "core/work_budget.py",
+            "core/work_archive.py",
+            "core/work_tasks.py",
+            "core/work_acceptance.py",
+            "core/work_effects.py",
+        }
+        found = set()
+        for name, report in coverage["files"].items():
+            normalized = name.replace("\\", "/")
+            if "/checkedflow/core/" in normalized and normalized.rsplit("/", 1)[-1] in {
+                "__init__.py",
+                "model.py",
+                "machine.py",
+                "values.py",
+            }:
+                for key in core:
+                    core[key] += report["summary"][key]
+            for boundary in boundaries:
+                if normalized.endswith("/" + boundary):
+                    found.add(boundary)
+                    for key in ("percent_statements_covered", "percent_branches_covered"):
+                        if report["summary"][key] < 95:
+                            raise SystemExit(f"Authoritative boundary {name} {key} below 95%")
+        if found != boundaries or not core["num_statements"] or not core["num_branches"]:
+            raise SystemExit("Required authoritative coverage is missing")
+        for covered, total in (
+            ("covered_lines", "num_statements"),
+            ("covered_branches", "num_branches"),
+        ):
+            if 100 * core[covered] < 95 * core[total]:
+                raise SystemExit(f"Legacy core {covered}/{total} below 95%")
         run([sys.executable, "scripts/fault_injection.py"])
 
 

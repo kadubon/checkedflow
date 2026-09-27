@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:effect-observation:v1",
+  "title": "Attributed provider observation, not independent external truth",
+  "description": "Canonical bytes retained by the executor. not_before_height is the local invocation lower bound, not the time of remote creation. Publishing or parsing this record does not prove command commitment.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "profile": {
+      "const": "checkedflow/effect-observation/v1"
+    },
+    "chain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "mission": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "effect": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "executor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "fence": {
+      "const": 1
+    },
+    "reserved": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "not_before_height": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "plan": {
+      "title": "GitHub draft provider plan; metadata is not execution authority",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "operation",
+        "authorization",
+        "patch",
+        "result",
+        "base_branch",
+        "base_commit",
+        "head_commit",
+        "git_tree",
+        "repository",
+        "repository_id"
+      ],
+      "properties": {
+        "version": {
+          "const": "checkedflow/github-draft-plan/v1"
+        },
+        "operation": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "authorization": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "patch": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "result": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "base_branch": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,80}$"
+        },
+        "base_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "head_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "git_tree": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "repository": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,39}/[A-Za-z0-9_-][A-Za-z0-9_.-]{0,99}$"
+        },
+        "repository_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "outcome": {
+      "enum": [
+        "observed",
+        "unknown"
+      ]
+    },
+    "number": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "reason": {
+      "enum": [
+        "provider_confirmed",
+        "provider_unknown",
+        "dispatch_failed",
+        "executor_interrupted",
+        "unowned_reservation"
+      ]
+    }
+  },
+  "required": [
+    "profile",
+    "chain",
+    "mission",
+    "effect",
+    "executor",
+    "revision",
+    "fence",
+    "reserved",
+    "not_before_height",
+    "plan",
+    "outcome",
+    "number",
+    "reason"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "observed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "number": {
+            "minimum": 1
+          },
+          "reason": {
+            "const": "provider_confirmed"
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "number": {
+            "const": 0
+          },
+          "reason": {
+            "enum": [
+              "provider_unknown",
+              "dispatch_failed",
+              "executor_interrupted",
+              "unowned_reservation"
+            ]
+          }
+        }
+      }
+    }
+  ]
+}

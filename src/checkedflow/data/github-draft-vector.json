@@ -1,0 +1,13 @@
+{
+  "version": "checkedflow/github-draft-plan/v1",
+  "repository": "owner/fixture",
+  "repository_id": 42,
+  "operation": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "authorization": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "patch": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+  "result": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+  "base_branch": "main",
+  "base_commit": "1111111111111111111111111111111111111111",
+  "head_commit": "2222222222222222222222222222222222222222",
+  "git_tree": "3333333333333333333333333333333333333333"
+}

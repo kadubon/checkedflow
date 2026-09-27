@@ -1,0 +1,67 @@
+{
+  "version": "checkedflow/qualification-observation/v1",
+  "status": "COMPONENT_MEASURED",
+  "release_authority": false,
+  "source": "6e9ba239f8a5372e14d21d0db6be2c2fb35c868b",
+  "workflow": "https://github.com/kadubon/checkedflow/actions/runs/36316699453",
+  "workflow_conclusion": "cancelled",
+  "job": 108614307342,
+  "job_conclusion": "success",
+  "scope": "Unchanged repository-longevity-2 profile on one hosted Linux runner. Not full operational G5/G6/G7 or final release artifact qualification.",
+  "result": {
+    "cleanup_failure": null,
+    "command_latency_ns": {
+      "50": 388824195,
+      "95": 703201262,
+      "99": 854732606
+    },
+    "common_checkpoint": {
+      "app_hash": "03915624B98B1F6535B28D06B42333B3CF7E2F6299F1C4FB3869F9E1CC256107",
+      "height": 10516
+    },
+    "completed_tasks": 195,
+    "control_completed": 4097,
+    "control_elapsed_ns": 2432624634065,
+    "disk_bytes_per_completed_task": {
+      "denominator": 195,
+      "numerator": 539290813
+    },
+    "disk_growth_bytes": 539290813,
+    "elapsed_ns": 4526789396020,
+    "empty_drain_ns": 1011679189,
+    "failure": null,
+    "in_flight_drain_ns": 4069560888,
+    "not_release_authority": true,
+    "novelty_claim": "none: distinct source comments preserve fixture behavior",
+    "planned_control_intents": 4097,
+    "queue_peak": 690,
+    "recovery_ns": 8254457195,
+    "remaining": [
+      "full operational G5/G6/G7 qualification"
+    ],
+    "resource_sampling": "every32controlintents; everyverifiedcandidate; sampledRSS excludes short-lived sandbox processes",
+    "retired_request": {
+      "application_rejections": 4,
+      "business_state_unchanged": true,
+      "codespace": "RETIRED_REQUEST",
+      "rpc_outcome": "OUTCOME_UNKNOWN"
+    },
+    "status": "COMPONENT_MEASURED",
+    "verified_completions": 65,
+    "verified_elapsed_ns": 1935320185033,
+    "verified_latency_ns": {
+      "50": 12984727774,
+      "95": 15126117951,
+      "99": 21945107990
+    }
+  },
+  "record_sha256": {
+    "accepted.json": "b6af49404588041cfbca352e43d705651069b5be52e9a0fcfebe1935523b0d04",
+    "archive_roots.json": "92b914cea9fffc5d381a24b0a29477831637f9be8371ca13bb7806927edf78f6",
+    "arrivals.json": "b6d70bb6b0182a58c6acdc37d615a98b7694a152165748412ed02edc6c7b522f",
+    "commands.json": "29ec5be8595f609a7fd6cc63f5fccea7374fce3d61d10ecddecfbe9a17c6d43e",
+    "manifest.json": "25d1ca80455f6690a5951899e64914819d54ea4e7783d6c83ef0c6b71b2bedc6",
+    "resources.json": "d6be45b8c734896a228c2910fb1b79ed60282c4072dcd9ba1c66b1f3054590a8",
+    "result.json": "4eccd32d84183bb84d095fb0b364029548fd8bd58be6b4fd12bb13835b12cc9c"
+  }
+}

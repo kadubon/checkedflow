@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:effect-reconciliation:v1",
+  "title": "Historical provider evidence for administrative review; not execution authority",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "profile": {
+      "const": "checkedflow/effect-reconciliation/v1"
+    },
+    "chain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "mission": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "effect": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "plan": {
+      "title": "GitHub draft provider plan; metadata is not execution authority",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "operation",
+        "authorization",
+        "patch",
+        "result",
+        "base_branch",
+        "base_commit",
+        "head_commit",
+        "git_tree",
+        "repository",
+        "repository_id"
+      ],
+      "properties": {
+        "version": {
+          "const": "checkedflow/github-draft-plan/v1"
+        },
+        "operation": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "authorization": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "patch": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "result": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "base_branch": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,80}$"
+        },
+        "base_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "head_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "git_tree": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "repository": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,39}/[A-Za-z0-9_-][A-Za-z0-9_.-]{0,99}$"
+        },
+        "repository_id": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        }
+      }
+    },
+    "outcome": {
+      "enum": [
+        "observed",
+        "unknown"
+      ]
+    },
+    "number": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "intent": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "fence": {
+      "const": 1
+    },
+    "prior_status": {
+      "enum": [
+        "dispatch_reserved",
+        "observed",
+        "unknown",
+        "compensation_required",
+        "reconciled"
+      ]
+    },
+    "prior_evidence": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{64})?$"
+    },
+    "prior_number": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "before_height": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "after_height": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "policy": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "profile",
+    "chain",
+    "mission",
+    "effect",
+    "plan",
+    "outcome",
+    "number",
+    "intent",
+    "fence",
+    "prior_status",
+    "prior_evidence",
+    "prior_number",
+    "before_height",
+    "after_height",
+    "policy"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "unknown"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "number": {
+            "const": 0
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "number": {
+            "minimum": 1
+          }
+        }
+      }
+    }
+  ]
+}

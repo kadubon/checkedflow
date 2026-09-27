@@ -3,6 +3,7 @@
 import secrets
 from collections.abc import AsyncGenerator, Iterator
 from contextlib import contextmanager
+from functools import partial
 from pathlib import Path
 
 import anyio
@@ -21,13 +22,18 @@ from google.protobuf.json_format import MessageToDict, ParseDict
 from starlette.types import ASGIApp
 
 from checkedflow import __version__
-from checkedflow.agents.gateway import Gateway, profile
+from checkedflow.agents.access import Policy, Principal
+from checkedflow.agents.download import Reader
+from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY as MAX_BODY
 from checkedflow.agents.journal import Journal
+from checkedflow.agents.oauth import OAuth
 from checkedflow.agents.push import Push
-from checkedflow.contracts import check
+from checkedflow.agents.secrets import Keyring, public_configuration
+from checkedflow.agents.tls import MutualTLS
 from checkedflow.core.values import Failure, Object, fields, obj, require, text
-from checkedflow.wire import digest, dumps, transaction_document
+from checkedflow.observability import Monitor
+from checkedflow.wire import digest, dumps
 
 TERMINAL = {
     pb.TASK_STATE_COMPLETED,
@@ -55,7 +61,7 @@ def errors() -> Iterator[None]:
         raise InvalidParamsError(message="Invalid input") from exc
 
 
-def card(url: str, grpc_url: str = "") -> pb.AgentCard:
+def card(url: str, grpc_url: str = "", *, mutual_tls: bool = False) -> pb.AgentCard:
     interfaces = [
         {"url": url, "protocolBinding": "JSONRPC", "protocolVersion": "1.0"},
         {
@@ -66,7 +72,7 @@ def card(url: str, grpc_url: str = "") -> pb.AgentCard:
     ]
     if grpc_url:
         interfaces.append({"url": grpc_url, "protocolBinding": "GRPC", "protocolVersion": "1.0"})
-    return ParseDict(
+    result = ParseDict(
         {
             "name": "CheckedFlow",
             "version": __version__,
@@ -103,6 +109,11 @@ def card(url: str, grpc_url: str = "") -> pb.AgentCard:
         pb.AgentCard(),
     )
 
+    if mutual_tls:
+        result.security_schemes["clientCertificate"].mtls_security_scheme.SetInParent()
+        result.security_requirements[0].schemes["clientCertificate"].SetInParent()
+    return result
+
 
 def task_projection(identity: str, value: Object) -> pb.Task:
     record = obj(value["record"])
@@ -111,9 +122,11 @@ def task_projection(identity: str, value: Object) -> pb.Task:
         "leased": pb.TASK_STATE_WORKING,
         "running": pb.TASK_STATE_WORKING,
         "uncertain": pb.TASK_STATE_INPUT_REQUIRED,
+        "unknown": pb.TASK_STATE_INPUT_REQUIRED,
+        "cancelled": pb.TASK_STATE_CANCELED,
         "abandoned": pb.TASK_STATE_CANCELED,
         "finished": pb.TASK_STATE_FAILED
-        if obj(record["result"]).get("outcome") == "fail"
+        if obj(record.get("result", {})).get("outcome") == "fail"
         else pb.TASK_STATE_COMPLETED,
     }
     task = pb.Task(
@@ -128,16 +141,15 @@ def task_projection(identity: str, value: Object) -> pb.Task:
             pb.Task().metadata,
         ),
     )
-    if record.get("result"):
+    receipt = obj(record.get("result", {}))
+    if value.get("profile") == "checkedflow/control-state/v2" and record.get("evidence"):
+        receipt = {"evidence_digest": record["evidence"], "availability": "not_implied"}
+    if receipt:
         task.artifacts.add(
             artifact_id="receipt:" + identity,
             name="Committed work receipt",
             description="Untrusted evidence; completion does not imply acceptance.",
-            parts=[
-                ParseDict(
-                    {"data": {"receiptJson": dumps(obj(record["result"])).decode()}}, pb.Part()
-                )
-            ],
+            parts=[ParseDict({"data": {"receiptJson": dumps(receipt).decode()}}, pb.Part())],
         )
     return task
 
@@ -150,13 +162,42 @@ class Handler(RequestHandler):
         journal: Journal | None = None,
         agent_card: pb.AgentCard | None = None,
         push: Push | None = None,
+        policy: Policy | None = None,
     ) -> None:
         self.gateway = gateway
+        self.policy = policy
+        require(
+            policy is None or (policy.chain == gateway.chain and policy.mission == gateway.mission),
+            "ACCESS",
+            "policy must match gateway",
+        )
         self.journal = journal or Journal(gateway)
         self.agent_card = agent_card or card("http://127.0.0.1:8080/rpc")
         self.push = push or Push()
         # SDKs may read the first stream item in a different task from later items.
         self.streams = anyio.Semaphore(128)
+
+    def authorize(self, context: ServerCallContext | None) -> Principal | None:
+        if self.policy is None:
+            return None
+        owner = context.state.get("checkedflow.principal") if context is not None else None
+        if not isinstance(owner, Principal):
+            raise Failure("ACCESS", "authenticated client required")
+        self.policy.check(owner)
+        return owner
+
+    def access_binding(self, context: ServerCallContext) -> Object:
+        owner = self.authorize(context)
+        if self.policy is None or owner is None:
+            return {}
+        return {"client": owner.identity, "policy": self.policy.check(owner)}
+
+    def owned(self, value: Object, owner: Principal | None) -> bool:
+        if self.policy is None:
+            return True
+        if owner is None or "_principal" not in value:
+            return False
+        return Principal.restore(obj(value["_principal"])).identity == owner.identity
 
     def scope(self, tenant: str) -> None:
         require(
@@ -187,6 +228,7 @@ class Handler(RequestHandler):
 
     async def on_get_task(self, params: pb.GetTaskRequest, context: ServerCallContext) -> pb.Task:
         with errors():
+            self.authorize(context)
             self.scope(params.tenant)
             await self.refresh()
             return self.project(params.id, params.history_length)
@@ -195,6 +237,7 @@ class Handler(RequestHandler):
         self, params: pb.ListTasksRequest, context: ServerCallContext
     ) -> pb.ListTasksResponse:
         with errors():
+            self.authorize(context)
             self.scope(params.tenant)
             require(
                 not params.HasField("page_size") or 1 <= params.page_size <= 100,
@@ -220,6 +263,7 @@ class Handler(RequestHandler):
             ]
             filters = digest(
                 {
+                    "access": self.access_binding(context),
                     "context": params.context_id,
                     "status": params.status,
                     "after": str(after),
@@ -270,7 +314,10 @@ class Handler(RequestHandler):
             else ""
         )
 
-    async def dispatch(self, params: pb.SendMessageRequest) -> pb.Message | pb.Task:
+    async def dispatch(
+        self, params: pb.SendMessageRequest, context: ServerCallContext
+    ) -> pb.Message | pb.Task:
+        self.authorize(context)
         message = params.message
         self.scope(params.tenant)
         require(
@@ -303,7 +350,7 @@ class Handler(RequestHandler):
         tracked = ""
         if operation == "profile":
             fields(data, "operation")
-            value = profile()
+            value = self.gateway.transport_profile()
         elif operation == "inspect":
             fields(data, "operation kind identity")
             require(
@@ -317,16 +364,11 @@ class Handler(RequestHandler):
         elif operation in {"submit", "task"}:
             fields(data, "operation envelopeJson")
             envelope = text(data["envelopeJson"], limit=1048576)
-            parsed = transaction_document(envelope.encode())
-            check(parsed)
-            command = obj(parsed["command"])
+            command = self.gateway.command(envelope)
+            if self.policy is not None:
+                self.policy.command(self.authorize(context), command)
             if operation == "task":
-                require(
-                    text(command["kind"]).startswith("task."),
-                    "SHAPE",
-                    "task operation requires a task command",
-                )
-                tracked = text(obj(command["payload"])["id"])
+                tracked = self.gateway.task_target(command)
             require(
                 not message.task_id or message.task_id == tracked,
                 "BINDING",
@@ -353,7 +395,7 @@ class Handler(RequestHandler):
                     config = pb.TaskPushNotificationConfig()
                     config.CopyFrom(params.configuration.task_push_notification_config)
                     config.task_id = tracked
-                    self.store_config(config)
+                    self.store_config(config, context)
                 return self.project(tracked, params.configuration.history_length)
             except Failure as exc:
                 raise Failure(
@@ -381,21 +423,25 @@ class Handler(RequestHandler):
         self, params: pb.SendMessageRequest, context: ServerCallContext
     ) -> pb.Message | pb.Task:
         with errors():
-            value = await self.dispatch(params)
+            self.authorize(context)
+            value = await self.dispatch(params, context)
             if isinstance(value, pb.Task) and not params.configuration.return_immediately:
                 async with self.streams:
                     while value.status.state not in TERMINAL | INTERRUPTED:
                         await anyio.sleep(0.25)
+                        self.authorize(context)
                         await self.refresh()
                         value = self.project(value.id, params.configuration.history_length)
             return value
 
-    async def updates(self, task: pb.Task) -> AsyncGenerator[Event]:
+    async def updates(self, task: pb.Task, context: ServerCallContext) -> AsyncGenerator[Event]:
         async with self.streams:
+            self.authorize(context)
             yield task
             while task.status.state not in TERMINAL | INTERRUPTED:
                 previous = task.SerializeToString(deterministic=True)
                 await anyio.sleep(0.25)
+                self.authorize(context)
                 await self.refresh()
                 current = self.project(task.id)
                 if current.SerializeToString(deterministic=True) == previous:
@@ -421,11 +467,12 @@ class Handler(RequestHandler):
         self, params: pb.SendMessageRequest, context: ServerCallContext
     ) -> AsyncGenerator[Event]:
         with errors():
-            value = await self.dispatch(params)
+            self.authorize(context)
+            value = await self.dispatch(params, context)
             if isinstance(value, pb.Message):
                 yield value
             else:
-                async for event in self.updates(value):
+                async for event in self.updates(value, context):
                     yield event
 
     async def on_subscribe_to_task(
@@ -437,7 +484,8 @@ class Handler(RequestHandler):
         if task.status.state in TERMINAL:
             raise InvalidParamsError(message="Cannot subscribe to a terminal task; use GetTask")
         with errors():
-            async for event in self.updates(task):
+            self.authorize(context)
+            async for event in self.updates(task, context):
                 yield event
 
     async def on_cancel_task(
@@ -447,6 +495,7 @@ class Handler(RequestHandler):
             pb.GetTaskRequest(id=params.id, tenant=params.tenant), context
         )
         with errors():
+            self.authorize(context)
             data = obj(MessageToDict(params.metadata))
             if task.status.state != pb.TASK_STATE_INPUT_REQUIRED or "envelopeJson" not in data:
                 raise TaskNotCancelableError(
@@ -454,22 +503,18 @@ class Handler(RequestHandler):
                     "signed task.reconcile (retry=false)"
                 )
             envelope = text(data["envelopeJson"], limit=1048576)
-            parsed = transaction_document(envelope.encode())
-            check(parsed)
-            command = obj(parsed["command"])
-            payload = obj(command["payload"])
-            require(
-                command["kind"] == "task.reconcile"
-                and payload.get("id") == params.id
-                and payload.get("retry") is False,
-                "BINDING",
-                "cancellation command mismatch",
-            )
+            command = self.gateway.command(envelope)
+            if self.policy is not None:
+                self.policy.command(self.authorize(context), command)
+            self.gateway.cancellation(command, params.id)
             await anyio.to_thread.run_sync(self.gateway.submit, envelope)
             await self.refresh()
             return self.project(params.id)
 
-    def store_config(self, params: pb.TaskPushNotificationConfig) -> pb.TaskPushNotificationConfig:
+    def store_config(
+        self, params: pb.TaskPushNotificationConfig, context: ServerCallContext | None = None
+    ) -> pb.TaskPushNotificationConfig:
+        owner = self.authorize(context)
         self.scope(params.tenant)
         self.journal.get(params.task_id)
         config = pb.TaskPushNotificationConfig()
@@ -478,33 +523,49 @@ class Handler(RequestHandler):
         require(len(config.id) <= 256, "SHAPE", "configuration ID limit")
         value = obj(MessageToDict(config))
         self.push.validate(value)
-        self.journal.put_config(config.task_id, config.id, value)
-        return config
+        with self.journal.lock:
+            existing = [
+                v for v in self.journal.configurations(config.task_id) if v.get("id") == config.id
+            ]
+            require(
+                not existing or self.owned(existing[0], owner),
+                "NOT_FOUND",
+                "configuration unavailable",
+            )
+            if owner is not None:
+                value["_principal"] = owner.record()
+            self.journal.put_config(config.task_id, config.id, value)
+        return ParseDict(public_configuration(value), pb.TaskPushNotificationConfig())
 
     async def on_create_task_push_notification_config(
         self, params: pb.TaskPushNotificationConfig, context: ServerCallContext
     ) -> pb.TaskPushNotificationConfig:
         with errors():
+            self.authorize(context)
             await self.refresh()
-            return self.store_config(params)
+            return self.store_config(params, context)
 
     async def on_get_task_push_notification_config(
         self, params: pb.GetTaskPushNotificationConfigRequest, context: ServerCallContext
     ) -> pb.TaskPushNotificationConfig:
         with errors():
+            self.authorize(context)
             self.scope(params.tenant)
             await self.refresh()
             self.journal.get(params.task_id)
             matches = [
-                v for v in self.journal.configurations(params.task_id) if v.get("id") == params.id
+                v
+                for v in self.journal.configurations(params.task_id)
+                if v.get("id") == params.id and self.owned(v, self.authorize(context))
             ]
             require(bool(matches), "NOT_FOUND", "push configuration not found")
-            return ParseDict(matches[0], pb.TaskPushNotificationConfig())
+            return ParseDict(public_configuration(matches[0]), pb.TaskPushNotificationConfig())
 
     async def on_list_task_push_notification_configs(
         self, params: pb.ListTaskPushNotificationConfigsRequest, context: ServerCallContext
     ) -> pb.ListTaskPushNotificationConfigsResponse:
         with errors():
+            self.authorize(context)
             self.scope(params.tenant)
             await self.refresh()
             self.journal.get(params.task_id)
@@ -513,17 +574,19 @@ class Handler(RequestHandler):
                 "SHAPE",
                 "pageSize bound",
             )
-            values = self.journal.configurations(params.task_id)
+            values, revision = self.journal.configuration_snapshot(params.task_id)
+            values = [v for v in values if self.owned(v, self.authorize(context))]
             size = params.page_size or 50
             binding: Object = {
+                "access": self.access_binding(context),
                 "task": params.task_id,
-                "revision": digest({"values": list(values)}),
+                "revision": revision,
                 "size": size,
             }
             offset = self.page_offset(params.page_token, binding, len(values))
             return pb.ListTaskPushNotificationConfigsResponse(
                 configs=[
-                    ParseDict(v, pb.TaskPushNotificationConfig())
+                    ParseDict(public_configuration(v), pb.TaskPushNotificationConfig())
                     for v in values[offset : offset + size]
                 ],
                 next_page_token=self.next_page(binding, offset, size, len(values)),
@@ -533,15 +596,24 @@ class Handler(RequestHandler):
         self, params: pb.DeleteTaskPushNotificationConfigRequest, context: ServerCallContext
     ) -> None:
         with errors():
+            self.authorize(context)
             self.scope(params.tenant)
             await self.refresh()
             self.journal.get(params.task_id)
-            self.journal.delete_config(params.task_id, params.id)
+            with self.journal.lock:
+                values = [
+                    v
+                    for v in self.journal.configurations(params.task_id)
+                    if v.get("id") == params.id and self.owned(v, self.authorize(context))
+                ]
+                require(bool(values), "NOT_FOUND", "configuration unavailable")
+                self.journal.delete_config(params.task_id, params.id)
 
     async def on_get_extended_agent_card(
         self, params: pb.GetExtendedAgentCardRequest, context: ServerCallContext
     ) -> pb.AgentCard:
         with errors():
+            self.authorize(context)
             self.scope(params.tenant)
             await anyio.to_thread.run_sync(self.gateway.state)
             extended = pb.AgentCard()
@@ -559,10 +631,18 @@ class Handler(RequestHandler):
                         continue
                     success = False
                     try:
+                        if self.policy is not None:
+                            self.policy.check(Principal.restore(obj(config.get("_principal"))))
                         with anyio.fail_after(10):
-                            success = await self.push.deliver(
-                                config, obj(MessageToDict(self.project(task)))
-                            )
+                            projected = obj(MessageToDict(self.project(task)))
+                            if self.policy is None:
+                                success = await self.push.deliver(config, projected)
+                            else:
+                                policy = self.policy
+                                owner = Principal.restore(obj(config.get("_principal")))
+                                success = await self.push.deliver(
+                                    config, projected, authorize=partial(policy.check, owner)
+                                )
                     except (Failure, OSError, ValueError, TimeoutError, httpx.HTTPError):
                         pass  # Persist bounded failure; never log callback credentials.
                     self.journal.delivery(task, identity, config, fingerprint, success)
@@ -579,11 +659,32 @@ def create_app(
     journal_path: Path | None = None,
     push_hosts: tuple[str, ...] = (),
     grpc_url: str = "",
+    callback_keys: Keyring | None = None,
+    policy: Policy | None = None,
+    oauth: OAuth | None = None,
+    artifacts: Reader | None = None,
+    monitor: Monitor | None = None,
+    grpc_tls: MutualTLS | None = None,
+    grpc_advertised_url: str = "",
+    advertise_mtls: bool = False,
 ) -> ASGIApp:
     from checkedflow.agents.a2a_server import application
 
     return application(
-        gateway, url, token, journal_path=journal_path, push_hosts=push_hosts, grpc_url=grpc_url
+        gateway,
+        url,
+        token,
+        journal_path=journal_path,
+        push_hosts=push_hosts,
+        grpc_url=grpc_url,
+        callback_keys=callback_keys,
+        policy=policy,
+        oauth=oauth,
+        artifacts=artifacts,
+        monitor=monitor,
+        grpc_tls=grpc_tls,
+        grpc_advertised_url=grpc_advertised_url,
+        advertise_mtls=advertise_mtls,
     )
 
 
@@ -596,6 +697,14 @@ def serve(
     journal_path: Path,
     push_hosts: tuple[str, ...] = (),
     grpc_port: int = 0,
+    callback_keys: Keyring | None = None,
+    policy: Policy | None = None,
+    oauth: OAuth | None = None,
+    artifacts: Reader | None = None,
+    monitor: Monitor | None = None,
+    tls: MutualTLS | None = None,
+    advertised_url: str = "",
+    grpc_advertised_url: str = "",
 ) -> None:
     from checkedflow.agents.a2a_server import serve as run
 
@@ -607,4 +716,12 @@ def serve(
         journal_path=journal_path,
         push_hosts=push_hosts,
         grpc_port=grpc_port,
+        callback_keys=callback_keys,
+        policy=policy,
+        oauth=oauth,
+        artifacts=artifacts,
+        monitor=monitor,
+        tls=tls,
+        advertised_url=advertised_url,
+        grpc_advertised_url=grpc_advertised_url,
     )

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:effect-policy:v1",
+  "title": "Protected operator policy for draft effect dispatch",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile", "chain", "mission", "repository", "repository_id", "actor", "executor", "revision", "enabled", "intents"],
+  "properties": {
+    "profile": {"const": "checkedflow/effect-policy/v1"},
+    "chain": {"type": "string", "minLength": 1, "maxLength": 128},
+    "mission": {"type": "string", "minLength": 1, "maxLength": 80},
+    "repository": {"type": "string", "minLength": 1, "maxLength": 256},
+    "repository_id": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "actor": {"type": "string", "minLength": 1, "maxLength": 80},
+    "executor": {"type": "string", "minLength": 1, "maxLength": 80},
+    "revision": {"type": "integer", "minimum": 1, "maximum": 9007199254740991},
+    "enabled": {"type": "boolean"},
+    "intents": {
+      "description": "Sorted unique exact GitHub intent digests. An empty list denies all dispatch.",
+      "type": "array", "maxItems": 64, "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    }
+  }
+}

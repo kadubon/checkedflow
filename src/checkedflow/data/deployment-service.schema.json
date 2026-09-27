@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:deployment-service:v1",
+  "title": "Explicit local service action observation",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "const": "checkedflow/deployment-service/v1"
+    },
+    "action": {
+      "enum": [
+        "status",
+        "start",
+        "stop"
+      ]
+    },
+    "node": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]{0,31}$"
+    },
+    "plan_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "services": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "abci": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "LoadState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "ActiveState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "SubState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "MainPID": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          "required": [
+            "LoadState",
+            "ActiveState",
+            "SubState",
+            "MainPID"
+          ]
+        },
+        "validator": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "LoadState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "ActiveState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "SubState": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "MainPID": {
+              "type": "string",
+              "maxLength": 80
+            }
+          },
+          "required": [
+            "LoadState",
+            "ActiveState",
+            "SubState",
+            "MainPID"
+          ]
+        }
+      },
+      "required": [
+        "abci",
+        "validator"
+      ]
+    },
+    "release_authority": {
+      "const": false
+    },
+    "consensus": {
+      "const": {
+        "status": "NOT_CHECKED",
+        "reason": "service state does not prove quorum or application acceptance"
+      }
+    },
+    "status": {
+      "enum": [
+        "OBSERVED",
+        "START_REQUESTED",
+        "STOPPED"
+      ]
+    },
+    "request_issued": {
+      "type": "boolean"
+    },
+    "signing_state_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "version",
+    "action",
+    "node",
+    "plan_sha256",
+    "services",
+    "release_authority",
+    "consensus",
+    "status",
+    "request_issued"
+  ],
+  "oneOf": [
+    {
+      "properties": {
+        "action": {
+          "const": "status"
+        },
+        "status": {
+          "const": "OBSERVED"
+        },
+        "request_issued": {
+          "const": false
+        }
+      },
+      "not": {
+        "required": [
+          "signing_state_sha256"
+        ]
+      }
+    },
+    {
+      "properties": {
+        "action": {
+          "const": "start"
+        },
+        "status": {
+          "const": "START_REQUESTED"
+        },
+        "request_issued": {
+          "const": true
+        }
+      },
+      "not": {
+        "required": [
+          "signing_state_sha256"
+        ]
+      }
+    },
+    {
+      "properties": {
+        "action": {
+          "const": "stop"
+        },
+        "status": {
+          "const": "STOPPED"
+        },
+        "request_issued": {
+          "const": true
+        }
+      },
+      "required": [
+        "signing_state_sha256"
+      ]
+    }
+  ]
+}

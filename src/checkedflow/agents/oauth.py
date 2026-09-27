@@ -79,6 +79,7 @@ class OAuth:
                 token=token,
                 client_id=claims["client_id"],
                 subject=claims["sub"],
+                claims={"iss": self.issuer},
                 scopes=scope.split(),
                 expires_at=claims["exp"],
                 resource=self.audience,

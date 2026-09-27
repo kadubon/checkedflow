@@ -1,0 +1,124 @@
+{
+  "description": "Public test genesis and signed history. No private signing key. Includes rejected bytes and an epoch rollover. This fixture is not checkpoint authority.",
+  "initial": {
+    "chain": "operational-test",
+    "mission": "m",
+    "organizations": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "credentials": [
+      {
+        "identity": "a",
+        "revision": 1,
+        "organization": "a",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "eae1c8793b5597c4b3f490e76ac31172c439690f8ee14142bb851a61f9a49f0e",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "b",
+        "revision": 1,
+        "organization": "b",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "627f17d893e5697a4ba2208bc80b0292e7f58d8120eb353c1b55429db9c6b196",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "c",
+        "revision": 1,
+        "organization": "c",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "2205b70216c0f4ca46301ac84029229db6fd68c34b8aac4f0d0966c1b3975f2b",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "d",
+        "revision": 1,
+        "organization": "d",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "37f227ad83d628cce4a606cb349c6d944ab574a8f98035b0cfaaa77e7da361bf",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "worker",
+        "revision": 1,
+        "organization": "a",
+        "role": "executor",
+        "mission": "m",
+        "public_key": "3648e6d8310743d7c9068127edb9b86af83892440713054506837bbcc922758d",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      }
+    ],
+    "journal": {
+      "actors": [
+        [
+          "a",
+          0
+        ],
+        [
+          "b",
+          0
+        ],
+        [
+          "c",
+          0
+        ],
+        [
+          "d",
+          0
+        ],
+        [
+          "worker",
+          0
+        ]
+      ],
+      "limits": {
+        "ordinary_count": 128,
+        "administrative_count": 16,
+        "ordinary_bytes": 24576,
+        "administrative_bytes": 4096
+      },
+      "epoch": 0,
+      "archive_root": "0000000000000000000000000000000000000000000000000000000000000000",
+      "receipts": []
+    },
+    "height": 0,
+    "mode": "paused",
+    "profile": "checkedflow/control-state/v2",
+    "budget": {
+      "budget": 0,
+      "tickets": [],
+      "verification_reserve": 0
+    },
+    "tasks": [],
+    "candidates": []
+  },
+  "checkpoint": {
+    "version": "checkedflow/application-backup/v1",
+    "chain": "operational-test",
+    "mission": "m",
+    "genesis_hash": "3c3bc38c55c41bee07e1d882697c96e8595028fd31fc3c266540bd5fc35f040c",
+    "height": 2,
+    "state_hash": "bd58d03c6e3be3cc5932c6b1eab1f782dc65068f84c56c693a87b8979cbcd7ec",
+    "digest": "5a8da27d874f0e3e212ea83996904ccb9ffd5c9be524464a0e00beafa14a8f8d",
+    "length": 2033
+  },
+  "jsonl": "{\"chain\":\"operational-test\",\"genesis_hash\":\"3c3bc38c55c41bee07e1d882697c96e8595028fd31fc3c266540bd5fc35f040c\",\"mission\":\"m\",\"version\":\"checkedflow/application-backup/v1\"}\n{\"height\":1,\"previous_hash\":\"3c3bc38c55c41bee07e1d882697c96e8595028fd31fc3c266540bd5fc35f040c\",\"state_hash\":\"2a3b314764aa530188e0a8f09fdf35a79049fff0a04ab1c7a7ec9171360295bd\",\"transactions\":[{\"code\":\"JSON\",\"raw\":\"626164\"}]}\n{\"height\":2,\"previous_hash\":\"2a3b314764aa530188e0a8f09fdf35a79049fff0a04ab1c7a7ec9171360295bd\",\"state_hash\":\"bd58d03c6e3be3cc5932c6b1eab1f782dc65068f84c56c693a87b8979cbcd7ec\",\"transactions\":[{\"code\":\"OK\",\"raw\":\"7b22636f6d6d616e64223a7b226163746f72223a2261222c226170695f76657273696f6e223a22636865636b6564666c6f772f7632222c22636861696e223a226f7065726174696f6e616c2d74657374222c2265706f6368223a302c226964223a22303a7061757365222c226b696e64223a226a6f75726e616c2e726f6c6c6f766572222c226e6f6e6365223a312c227061796c6f6164223a7b226d697373696f6e223a226d227d2c227265766973696f6e223a317d2c227369676e617475726573223a5b7b227265766973696f6e223a312c227369676e6174757265223a223463623936343030356534383637313730633065643763363066323039373963643639633163663934336638303035313161363535323863333932663633616462366630666331396466323532343236336338323139656265343165663037613262333165393137663932333736363335306564643931653930363965303035222c227369676e6572223a2261227d2c7b227265766973696f6e223a312c227369676e6174757265223a223730346233306461666331656634353833396461393638643730346266643232363063323864623137303663383364616263346163633362363761356637373936356662373265656636383733366561356366343634366239363765363265313139613763323733333830303839613763633838633439613266626465323036222c227369676e6572223a2262227d2c7b227265766973696f6e223a312c227369676e6174757265223a226663343432343032353338376664396661366564313534383764373834313766646164653437643738343832663736333363353362396231333461383730646362306362386261373130363531626166393934323334383863613066623962346636366530633564373534303338336233626236313132353464313038623036222c227369676e6572223a2263227d5d7d\"}]}\n"
+}

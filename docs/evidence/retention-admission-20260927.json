@@ -1,0 +1,18 @@
+{
+  "profile": "checkedflow/component-evidence/v1",
+  "source": "08ee6c68259382bfcdaaed21434470d7fce97774",
+  "run": "https://github.com/kadubon/checkedflow/actions/runs/36307407339",
+  "job": 108586789812,
+  "artifact": 10928127128,
+  "report_sha256": "e9b8b761eb363fdbf65de8aacf96f7e9235015df7662580243f6adbbf477ec03",
+  "cases": 30,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "historical_required_case_gate": "passed",
+  "inherited_case": {
+    "name": "test_v2_inherited_accounting_commits_and_recovers_on_four_nodes",
+    "seconds": 28.332
+  },
+  "scope": "Installed development artifacts in the single-host CI infrastructure. Includes mandatory retained startup and dispatch verification on the published legacy fixture. Does not include the later live-old-chain variant, four separate host migration, final G1-G7 or release authorization. The overall OS/Python workflow was still running when this component report was inspected."
+}

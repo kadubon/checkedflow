@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:succession:v1",
+  "title": "Succession administrative approvals",
+  "description": "Structure only; independent roots, both signature quorums and separate custody checks are required.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "plan",
+    "approvals"
+  ],
+  "properties": {
+    "plan": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "old",
+        "new",
+        "validators"
+      ],
+      "properties": {
+        "profile": {
+          "const": "checkedflow/succession/v1"
+        },
+        "old": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "chain",
+            "mission",
+            "height",
+            "state_hash"
+          ],
+          "properties": {
+            "chain": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "height": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "state_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            }
+          }
+        },
+        "new": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "chain",
+            "mission",
+            "state_hash"
+          ],
+          "properties": {
+            "chain": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "state_hash": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            }
+          }
+        },
+        "validators": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "organization",
+              "public_key"
+            ],
+            "properties": {
+              "organization": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              },
+              "public_key": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+              }
+            }
+          }
+        }
+      }
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "side",
+          "organization",
+          "identity",
+          "signature"
+        ],
+        "properties": {
+          "side": {
+            "enum": [
+              "old",
+              "new"
+            ]
+          },
+          "organization": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "identity": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "signature": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{128}(?![\\s\\S])"
+          }
+        }
+      }
+    }
+  }
+}

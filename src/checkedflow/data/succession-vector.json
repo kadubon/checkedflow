@@ -1,0 +1,231 @@
+{
+  "profile": "checkedflow/succession-vector/v1",
+  "legacy_capture": "legacy-v1.json",
+  "checkpoint": {
+    "chain": "checkedflow-test",
+    "height": 1038,
+    "state_hash": "9c12eea3393f018bbac48ad1660b1077c9e8fb6d1b6665eede9ca50cf1817950"
+  },
+  "successor": {
+    "chain": "operational-test",
+    "mission": "m",
+    "organizations": [
+      "a",
+      "b",
+      "c",
+      "d"
+    ],
+    "credentials": [
+      {
+        "identity": "a",
+        "revision": 1,
+        "organization": "a",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "eae1c8793b5597c4b3f490e76ac31172c439690f8ee14142bb851a61f9a49f0e",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "b",
+        "revision": 1,
+        "organization": "b",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "627f17d893e5697a4ba2208bc80b0292e7f58d8120eb353c1b55429db9c6b196",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "c",
+        "revision": 1,
+        "organization": "c",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "2205b70216c0f4ca46301ac84029229db6fd68c34b8aac4f0d0966c1b3975f2b",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "d",
+        "revision": 1,
+        "organization": "d",
+        "role": "administrator",
+        "mission": "",
+        "public_key": "37f227ad83d628cce4a606cb349c6d944ab574a8f98035b0cfaaa77e7da361bf",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      },
+      {
+        "identity": "worker",
+        "revision": 1,
+        "organization": "a",
+        "role": "executor",
+        "mission": "m",
+        "public_key": "3648e6d8310743d7c9068127edb9b86af83892440713054506837bbcc922758d",
+        "activated_height": 0,
+        "retired_height": null,
+        "revoked": false
+      }
+    ],
+    "journal": {
+      "actors": [
+        [
+          "a",
+          0
+        ],
+        [
+          "b",
+          0
+        ],
+        [
+          "c",
+          0
+        ],
+        [
+          "d",
+          0
+        ],
+        [
+          "worker",
+          0
+        ]
+      ],
+      "limits": {
+        "ordinary_count": 128,
+        "administrative_count": 16,
+        "ordinary_bytes": 24576,
+        "administrative_bytes": 4096
+      },
+      "epoch": 0,
+      "archive_root": "0000000000000000000000000000000000000000000000000000000000000000",
+      "receipts": []
+    },
+    "height": 0,
+    "mode": "paused",
+    "profile": "checkedflow/control-state/v2",
+    "budget": {
+      "budget": 10000,
+      "tickets": [],
+      "verification_reserve": 4,
+      "inheritance": {
+        "chain": "checkedflow-test",
+        "mission": "m",
+        "height": 1038,
+        "state_hash": "9c12eea3393f018bbac48ad1660b1077c9e8fb6d1b6665eede9ca50cf1817950",
+        "budget": 10000,
+        "spent": 12,
+        "reserved": 0,
+        "obligations": [
+          {
+            "identity": "unknown",
+            "task_hash": "6c2ec3f9242c2582d60be28bdb1013435a7854a3295eec916767f85a89e06701",
+            "ceiling": 2,
+            "funded": false,
+            "outcome": "",
+            "evidence": "",
+            "charged": 0
+          }
+        ]
+      }
+    },
+    "tasks": [],
+    "candidates": []
+  },
+  "validators": [
+    [
+      "a",
+      "b696b7d5810d5acc98af283c52c51538ee8fb792a6b82ffc325c3d300b069332"
+    ],
+    [
+      "b",
+      "f42755455b36b1efa1f5d929eeff2c7bca47ee1508811327efe39ebf7ae77f40"
+    ],
+    [
+      "c",
+      "8da1980cdc87cab308df0875799cf6150689b2a01134634bc5d4d8b5f70dd8b0"
+    ],
+    [
+      "d",
+      "8b0d92eb8d9daba75523d760453134d30062df95fd68599fde25fe5b577a2486"
+    ]
+  ],
+  "manifest": {
+    "plan": {
+      "profile": "checkedflow/succession/v1",
+      "old": {
+        "chain": "checkedflow-test",
+        "mission": "m",
+        "height": 1038,
+        "state_hash": "9c12eea3393f018bbac48ad1660b1077c9e8fb6d1b6665eede9ca50cf1817950"
+      },
+      "new": {
+        "chain": "operational-test",
+        "mission": "m",
+        "state_hash": "d6ca28fbe72100978f383b5c81a59c741432ac998cd5336579893f700700e5ff"
+      },
+      "validators": [
+        {
+          "organization": "a",
+          "public_key": "b696b7d5810d5acc98af283c52c51538ee8fb792a6b82ffc325c3d300b069332"
+        },
+        {
+          "organization": "b",
+          "public_key": "f42755455b36b1efa1f5d929eeff2c7bca47ee1508811327efe39ebf7ae77f40"
+        },
+        {
+          "organization": "c",
+          "public_key": "8da1980cdc87cab308df0875799cf6150689b2a01134634bc5d4d8b5f70dd8b0"
+        },
+        {
+          "organization": "d",
+          "public_key": "8b0d92eb8d9daba75523d760453134d30062df95fd68599fde25fe5b577a2486"
+        }
+      ]
+    },
+    "approvals": [
+      {
+        "side": "old",
+        "organization": "org0",
+        "identity": "org0",
+        "signature": "bfe4858ee49e4b90dc88672cedaa3ddffec21e8595934a10264b09bff0ab81f832db2859f24335ad9e3a8b1c25caee57e39906ec38078f4fa3eb303637914a00"
+      },
+      {
+        "side": "old",
+        "organization": "org1",
+        "identity": "org1",
+        "signature": "935d2c4027bcad60c23cdafcbe614b4850486d2f310d3d75e288861bcd4a176afa19135c0c8f1d5c48e7549eeb6d4fe083f2a5e185ed4b37b31f34085b847a0d"
+      },
+      {
+        "side": "old",
+        "organization": "org2",
+        "identity": "org2",
+        "signature": "1f4f9c74ee9289983e5a5bad841a40f84c062b96c2e7c060611f75e86415905329bc175e5db21d00e886544768c75c894ca163d2d758bbe432e34c41c79b3007"
+      },
+      {
+        "side": "new",
+        "organization": "a",
+        "identity": "a",
+        "signature": "9b01af214ca8707a38ef1ec1850f7cb353c6c3a0909144a3e8ec1427017da0f03d4e65facf0a1cc3998b88516e7bad3ba8dd17233bbc6758714a096dd64c080b"
+      },
+      {
+        "side": "new",
+        "organization": "b",
+        "identity": "b",
+        "signature": "6c7131331f8a3917d2101f9bf13cf2fb9599da49c3094263737ea566f8419ceb3726d01131fb8ce90a09c1197df55fdbc814ba333935a01c913bb7e03f7ee70b"
+      },
+      {
+        "side": "new",
+        "organization": "c",
+        "identity": "c",
+        "signature": "f58b2aadbc95824554a483fb47f4430dedcff5802c346b3b0ce31b43ff855a56ce4c538170f1033e2acad5a798b9722bf78cc9999c9c87f2b2b74e41566bd401"
+      }
+    ]
+  },
+  "plan_hash": "97558ff378d5bbe52ec2c77217460d455a64e9c81c90027ec0a709350b167bde",
+  "notice": "Public test identities only; approvals do not prove old dispatch stopped or custody moved."
+}

@@ -1,0 +1,86 @@
+{
+  "version": "checkedflow/retention-vectors/v1",
+  "valid": [
+    {
+      "version": "checkedflow/retention-plan/v1",
+      "namespace": "operator-a",
+      "scope": "mission",
+      "revision": 1,
+      "objects": []
+    },
+    {
+      "version": "checkedflow/retention-plan/v1",
+      "namespace": "operator-a",
+      "scope": "mission",
+      "revision": 9,
+      "objects": [
+        {
+          "version": "checkedflow/artifact/v1",
+          "algorithm": "sha256",
+          "digest": "0000000000000000000000000000000000000000000000000000000000000000",
+          "length": 0,
+          "content_type": "application/octet-stream",
+          "kind": "archive",
+          "scope": "mission",
+          "manifest": "1111111111111111111111111111111111111111111111111111111111111111"
+        }
+      ]
+    }
+  ],
+  "invalid": [
+    {
+      "version": "checkedflow/retention-plan/v1",
+      "namespace": "operator-a",
+      "scope": "mission",
+      "revision": true,
+      "objects": []
+    },
+    {
+      "version": "future",
+      "namespace": "operator-a",
+      "scope": "mission",
+      "revision": 1,
+      "objects": []
+    },
+    {
+      "version": "checkedflow/retention-plan/v1",
+      "namespace": "",
+      "scope": "mission",
+      "revision": 1,
+      "objects": []
+    },
+    {
+      "version": "checkedflow/retention-plan/v1",
+      "namespace": "operator-a",
+      "scope": "mission",
+      "revision": 1,
+      "objects": [],
+      "unrecognized": "x"
+    },
+    {
+      "version": "checkedflow/retention-plan/v1",
+      "namespace": "operator-a",
+      "scope": "mission",
+      "revision": 9007199254740992,
+      "objects": []
+    },
+    {
+      "version": "checkedflow/retention-plan/v1",
+      "namespace": "operator-a",
+      "scope": "mission",
+      "revision": 9,
+      "objects": [
+        {
+          "version": "checkedflow/artifact/v1",
+          "algorithm": "sha256",
+          "digest": "0000000000000000000000000000000000000000000000000000000000000000",
+          "length": true,
+          "content_type": "application/octet-stream",
+          "kind": "archive",
+          "scope": "mission",
+          "manifest": "1111111111111111111111111111111111111111111111111111111111111111"
+        }
+      ]
+    }
+  ]
+}

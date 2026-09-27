@@ -1,0 +1,64 @@
+{
+  "version": "checkedflow/application-recovery-cli/v1",
+  "runtime_protocol": "checkedflow/v2",
+  "network": false,
+  "external_effects": false,
+  "validator_startup": false,
+  "commands": [
+    {
+      "argv": [
+        "checkedflow",
+        "application-backup",
+        "export"
+      ],
+      "required": [
+        "--genesis",
+        "--database",
+        "--expected-hash",
+        "--destination"
+      ],
+      "optional": [
+        "--byte-limit",
+        "--block-limit"
+      ],
+      "writes": [
+        "new private destination/history.jsonl",
+        "new private destination/checkpoint.json"
+      ],
+      "failure": "Partial destination may remain; no checkpoint on incomplete export. Never overwrite.",
+      "trust": "Expected application hash and original genesis must be independently trusted."
+    },
+    {
+      "argv": [
+        "checkedflow",
+        "application-backup",
+        "inspect-checkpoint"
+      ],
+      "required": [
+        "--checkpoint"
+      ],
+      "writes": [],
+      "trust": "Metadata parsing only; authenticated=false and backup_verified=false."
+    },
+    {
+      "argv": [
+        "checkedflow",
+        "application-backup",
+        "restore"
+      ],
+      "required": [
+        "--genesis",
+        "--source",
+        "--checkpoint",
+        "--current-height",
+        "--destination"
+      ],
+      "writes": [
+        "new private destination/pending.sqlite during replay",
+        "new private destination/application.sqlite after validation"
+      ],
+      "failure": "Preserve inactive staging; never overwrite an existing destination.",
+      "trust": "Independent checkpoint and current height floor are required; no consensus signer authority is restored."
+    }
+  ]
+}

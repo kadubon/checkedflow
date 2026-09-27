@@ -18,6 +18,43 @@ Version **0.1.0** is an experimental reference implementation. Its complete demo
 31 finite inputs and actual generated Python. See the [audit against the original plan](docs/audit.md) and
 [executed validation record](docs/validation-status.md) for the current scope.
 
+**0.2.0 is an experimental release, not a qualified production deployment.** See the
+[release scope and limitations](docs/release-0.2.0.md). Its separate v2 path handles bounded
+repository-patch work. For example, a worker runs a proposed invoice calculation fix in gVisor;
+the trusted observer compares declared inputs and expected outputs outside the candidate process.
+V2 funds checks for all four organizations and requires at least three passing observations.
+Unused checks must be explicitly cancelled or reconciled. A committed completion is not acceptance,
+and acceptance of one patch does not authorize opening a pull request or reusing it on another base.
+
+Start with the concepts below for the published reference runtime. For development APIs, use these
+guides; complete generation orchestration and operational deployment are still unfinished.
+
+| Development question | Guide |
+|---|---|
+| How is a patch checked, accepted and reused? | [Patch contract](docs/repository-patch.md), [organizational verification](docs/work-acceptance.md), [reuse](docs/repository-reuse.md) |
+| What happens after a worker crashes? | [Durable worker SDK](docs/worker-supervision.md), [sandbox recovery](docs/sandbox-recovery.md), [freshness watchdog](docs/dispatch-watchdog.md) |
+| How are retries kept finite? | [Persistent scheduling](docs/worker-scheduling.md); fixed call limits, deadlines and local stop survive process restarts |
+| How do agents connect to v2? | [Operational A2A/MCP](docs/operational-agents.md); explicit protocol selection and native signed-command admission |
+| How are client permissions checked? | [Client access](docs/client-access.md); operator-owned mission roles, signed actors and callback ownership |
+| How are remote connections protected? | [Mutual TLS and proxies](docs/agent-tls.md); required client certificates plus independent Bearer and mission checks |
+| How can agents read artifact bytes? | [Authorized downloads](docs/artifact-download.md); explicit mission publication, HTTP bytes and an MCP read tool |
+| Where are callback credentials kept? | [Callback custody](docs/callback-secrets.md); encrypted private journal and separately provisioned keys |
+| How are evidence and bounded records retained? | [S3 storage](docs/s3-storage.md), [replica reads](docs/replicated-artifacts.md), [retention](docs/retention-backup.md), [settled-work retirement](docs/work-archive.md) |
+| How is application state restored? | [Application history recovery](docs/application-backup.md); validator ownership needs separate recovery |
+| Can an old deployment be migrated? | [Legacy preparation](docs/legacy-migration.md) preserves balances; [both administrations approve](docs/succession-approval.md) the exact successor. [Single-host migration evidence](docs/evidence/live-legacy-cutover-20260927.json) does not qualify cross-host custody |
+| Can it open a pull request automatically? | [Effect supervision](docs/effect-supervision.md) connects approval, current checks, one draft operation and signed reporting; disabled by default, with optional [policy-approved staging](docs/git-staging.md); complete deployment recovery remains unfinished |
+| What if an external request loses its reply? | [V2 effect records](docs/work-effects.md) keep the original reservation, full modeled charge and unknown result; governed reconciliation cannot authorize a second send |
+| How can operators investigate an uncertain PR? | [Read-only reconciliation](docs/effect-reconciliation.md) publishes exact observations for three-organization review without enabling dispatch |
+| What if local recovery records are damaged? | [Submission recovery](docs/worker-supervision.md) rejects missing identity records; preserve journals and reconcile original commands instead of starting again |
+| Is a responding service safe to start work? | [Role-aware observations](docs/observability.md) separate liveness, readable state and readiness; authenticated status never grants execution authority |
+| Where can operators inspect local attempts? | [Operation logs and traces](docs/telemetry.md); bounded diagnostic records preserve failures without logging credentials or claiming committed success |
+| How should operators respond to monitoring alerts? | [Packaged templates and runbook](docs/monitoring-runbook.md); explicit thresholds, diagnostic limits and unachieved recovery targets |
+| How are old evidence and unresolved charges preserved? | [Live retention admission](docs/legacy-retention.md) rechecks protected history before startup and dispatch; [reconciliation](docs/legacy-reconciliation.md) retains unknown charges |
+| How do I prepare and operate node services? | [Deployment planning, application and local lifecycle](docs/deployment-planning.md) provide reviewed configuration, non-overwriting installation and explicit start/status/stop commands. Four-VM component checks passed; complete deployment recovery and qualification remain unfinished |
+| How are validators stopped safely? | [Validator custody](docs/validator-custody.md); local exclusion and signing-state preservation, with cross-host custody still unqualified |
+| What are the measured workload limits? | [Longevity measurement](docs/load-qualification.md); fixed profiles, preserved failures and explicit unfinished qualification |
+| What has actually been tested? | [Implementation ledger](docs/implementation-0.2.0.md), [four-VM observations](docs/vm-laboratory-2026-09-26.md) |
+
 ## The concepts in one minute
 
 | Term | Meaning | Example |
@@ -90,8 +127,12 @@ CometBFT and gVisor are separately provisioned external processes.
 Prepare CometBFT **v0.40.0**, Docker configured with `runsc`, and a locally available Python image
 on Linux, following [operation and recovery](docs/operations.md). Use the inspected image digest:
 
+The draft runner also requires the [independent sandbox recovery service](docs/sandbox-recovery.md).
+Start that service in a separate terminal, then use the same private journal directory below:
+
 ```sh
 export CHECKEDFLOW_IMAGE='python@sha256:REPLACE_WITH_YOUR_INSPECTED_DIGEST'
+export CHECKEDFLOW_SANDBOX_RECOVERY="$HOME/.local/state/checkedflow/sandbox"
 uv run checkedflow demo --directory ./lab-run \
   --image "$CHECKEDFLOW_IMAGE" --cometbft /absolute/path/to/cometbft
 ```
@@ -215,3 +256,4 @@ Publication is manual and sends the tested wheel and sdist without rebuilding. S
 [PyPI](https://pypi.org/project/checkedflow/) for published artifacts and their provenance.
 
 Licensed under [Apache-2.0](LICENSE). [NOTICE](NOTICE) includes upstream protocol attribution.
+

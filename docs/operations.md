@@ -50,9 +50,10 @@ and image digest are recorded in [validation status](validation-status.md) and t
 ```
 
 Merge this operator configuration with existing daemon configuration; do not blindly replace an
-existing file. An isolated test daemon can instead use `--add-runtime runsc=/opt/gvisor/runsc`
-with its own socket, data-root, exec-root and PID file. The worker requires access to that daemon
-socket; the generated container never receives it. See
+existing file. The draft runner explicitly uses the local `/var/run/docker.sock` and requires the
+[independent sandbox recovery service](sandbox-recovery.md) with one private journal per daemon.
+Alternate sockets and remote Docker contexts are not supported by this recovery profile.
+The worker requires access to the daemon socket; the generated container never receives it. See
 [gVisor's security boundary](https://gvisor.dev/docs/architecture_guide/security/) for host and
 kernel assumptions. Isolation does not remove the operator from the trusted base.
 
@@ -149,3 +150,20 @@ execution. Provision missing images using the approved digest before rerunning q
 Back up keys separately from data, retain consensus history and test restoration. Do not clone
 a validator signing state into two active nodes. A complete governance-key rotation or membership
 change requires a new protocol/deployment; it is not implemented by v1.
+
+Inherited v2 genesis requires [succession startup admission](succession-approval.md#startup-admission)
+on every ABCI service start. Retain the independently provisioned old checkpoint, full snapshot
+and both administrations' approval manifest with the protected initial configuration. This check
+is separate from old-dispatch shutdown and exclusive validator custody.
+
+
+The v2 own-node client reads synchronized status before querying application state. If the
+application response is below the height just observed, it makes exactly one additional state
+query. Both reads must use the configured validating node; the second must reach the original
+height or the operation fails with `STALE`. No cached state, lower height, write retry, or extra
+status poll is substituted. This bounds a live-state call to one status and at most two state
+queries, each using the configured RPC timeout. Persistent lag remains an availability failure.
+
+Use the [validator custody and maintenance guide](validator-custody.md) for the packaged
+local-lock service template, compatible rolling upgrades and reviewed node handoffs. Its
+cross-host procedures still require installed deployment qualification.

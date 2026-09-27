@@ -1,0 +1,55 @@
+{
+  "version": "checkedflow/git-tree-vectors/v1",
+  "file_mode": "100644",
+  "directory_mode": "40000",
+  "object_format": "sha1",
+  "cases": [
+    {
+      "files": [
+        {
+          "path": "a",
+          "utf8": ""
+        }
+      ],
+      "git_tree": "496d6428b9cf92981dc9495211e6e1120fb6f2ba"
+    },
+    {
+      "files": [
+        {
+          "path": "a.c",
+          "utf8": "hello\r\n"
+        },
+        {
+          "path": "a/b",
+          "utf8": "unicode: é\n"
+        },
+        {
+          "path": "a0",
+          "utf8": "x"
+        }
+      ],
+      "git_tree": "a365f0c120a8c2dcdb77ec9f4b736d9ba233ed31"
+    },
+    {
+      "files": [
+        {
+          "path": "a/b/c",
+          "utf8": "1"
+        },
+        {
+          "path": "a/b0",
+          "utf8": "2"
+        },
+        {
+          "path": "d/e",
+          "utf8": "3"
+        },
+        {
+          "path": "z",
+          "utf8": "4"
+        }
+      ],
+      "git_tree": "83d88a59fcc13e6a6f6b154e0140102f4b94da6c"
+    }
+  ]
+}

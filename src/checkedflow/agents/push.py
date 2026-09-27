@@ -2,6 +2,7 @@
 
 import ipaddress
 import socket
+from collections.abc import Callable
 from urllib.parse import urlsplit
 
 import anyio
@@ -29,8 +30,11 @@ class Push:
             "callback must use an operator-allowlisted HTTPS host on port 443",
         )
         auth = obj(configuration.get("authentication", {}))
+        scheme = auth.get("scheme", "")
         require(
-            auth.get("schemes", []) in ([], ["Bearer"]),
+            set(auth) <= {"scheme", "credentials"}
+            and isinstance(scheme, str)
+            and (not auth or scheme.lower() == "bearer"),
             "PUSH_AUTH",
             "Bearer authentication supported",
         )
@@ -44,7 +48,9 @@ class Push:
             )
         return url
 
-    async def deliver(self, configuration: Object, task: Object) -> bool:
+    async def deliver(
+        self, configuration: Object, task: Object, *, authorize: Callable[[], object] | None = None
+    ) -> bool:
         url = self.validate(configuration)
         host = urlsplit(url).hostname or ""
         records = await anyio.to_thread.run_sync(
@@ -64,6 +70,8 @@ class Push:
         auth = obj(configuration.get("authentication", {}))
         if auth.get("credentials"):
             headers["Authorization"] = "Bearer " + str(auth["credentials"])
+        if authorize is not None:
+            authorize()  # Recheck after DNS resolution, immediately before network dispatch.
         async with (
             httpx.AsyncClient(timeout=5, trust_env=False, follow_redirects=False) as client,
             client.stream(

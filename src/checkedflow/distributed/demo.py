@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from checkedflow.core.machine import accounting
+from checkedflow.core.model import State
 from checkedflow.core.values import JSON, Object, obj, require
 from checkedflow.distributed.cluster import Cluster
 from checkedflow.runner import GVisorRunner
@@ -106,8 +107,7 @@ def run_scenario(cluster: Cluster, image: str) -> Object:
                 }
             )
             previous = [candidate]
-    final = cluster.client().state()
-    cluster.wait_height(final.height + 2)
+    final = _final_state(cluster)
     height, fingerprint = cluster.common_hash()
     reports = [accounting(final, mid) for mid in ("reuse", "scratch")]
     attempts = {
@@ -140,6 +140,15 @@ def run_scenario(cluster: Cluster, image: str) -> Object:
             "reason": "One declared finite task sequence; no population inference.",
         },
     }
+
+
+def _final_state(cluster: Cluster) -> State:
+    """Read after all completed worker writes have crossed the four-node barrier."""
+    barrier = max(cluster.client(index).state().height for index in range(4)) + 2
+    cluster.wait_height(barrier)
+    final = cluster.client().state()
+    require(final.height >= barrier, "DEMO", "accounting snapshot precedes final barrier")
+    return final
 
 
 def demonstrate(directory: Path, image: str, cometbft: str) -> Object:

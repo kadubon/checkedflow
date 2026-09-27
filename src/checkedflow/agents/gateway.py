@@ -3,6 +3,7 @@
 from importlib.resources import files
 from typing import Protocol
 
+from checkedflow.contracts import check
 from checkedflow.core.machine import accounting, transition
 from checkedflow.core.model import State
 from checkedflow.core.values import Failure, Object, obj, require, text
@@ -15,6 +16,24 @@ class Backend(Protocol):
     def state(self) -> State: ...
 
     def submit(self, envelope: Object) -> Object: ...
+
+
+class AgentGateway(Protocol):
+    """Transport-facing views; protocol-specific state and signatures stay behind this boundary."""
+
+    chain: str
+    mission: str
+
+    def state(self) -> object: ...
+    def inspect(self, kind: str = "mission", identity: str = "") -> Object: ...
+    def snapshot(self) -> Object: ...
+    def submit(self, envelope_json: str, *, message_id: str = "") -> Object: ...
+    def journal_binding(self) -> str: ...
+    def command(self, envelope_json: str) -> Object: ...
+    def task_target(self, command: Object) -> str: ...
+    def cancellation(self, command: Object, identity: str) -> None: ...
+    def transport_profile(self) -> Object: ...
+    def envelope_schema(self) -> str: ...
 
 
 def profile() -> Object:
@@ -73,12 +92,22 @@ class Gateway:
 
     def inspect(self, kind: str = "mission", identity: str = "") -> Object:
         state = self.state()
-        encoded = encode(state)
+        return self._inspect(state, kind, identity)
+
+    def _inspect(
+        self,
+        state: State,
+        kind: str,
+        identity: str,
+        encoded: Object | None = None,
+        state_hash: str = "",
+    ) -> Object:
+        encoded = encode(state) if encoded is None else encoded
         result: Object = {
             "chain": state.chain,
             "mission": self.mission,
             "height": state.height,
-            "state_hash": digest(encoded),
+            "state_hash": state_hash or digest(encoded),
         }
         if kind == "mission":
             result["record"] = obj(encoded["missions"])[self.mission]
@@ -110,6 +139,65 @@ class Gateway:
         else:
             raise Failure("SHAPE", "unknown inspection kind")
         return result
+
+    def snapshot(self) -> Object:
+        """One mission-scoped observation for transport history, hints and completions."""
+        state = self.state()
+        encoded = encode(state)
+        state_hash = digest(encoded)
+        tasks: Object = {
+            identity: self._inspect(state, "task", identity, encoded, state_hash)
+            for identity, task in state.tasks.items()
+            if task.mission == self.mission
+        }
+        capabilities: Object = {
+            identity: self._inspect(state, "capability", identity, encoded, state_hash)
+            for identity, cap in state.capabilities.items()
+            if cap.mission == self.mission
+        }
+        residuals: Object = {}
+        for identity in state.residuals:
+            try:
+                residuals[identity] = self._inspect(
+                    state, "residual", identity, encoded, state_hash
+                )
+            except Failure as exc:
+                if exc.code != "NOT_FOUND":
+                    raise
+        return {
+            "mission": self._inspect(state, "mission", "", encoded, state_hash),
+            "tasks": tasks,
+            "capabilities": capabilities,
+            "residuals": residuals,
+        }
+
+    def journal_binding(self) -> str:
+        return digest({"chain": self.chain, "mission": self.mission})
+
+    def command(self, envelope_json: str) -> Object:
+        parsed = transaction_document(envelope_json.encode())
+        check(parsed)
+        return obj(parsed["command"])
+
+    def task_target(self, command: Object) -> str:
+        require(text(command["kind"]).startswith("task."), "SHAPE", "task command required")
+        return text(obj(command["payload"])["id"])
+
+    def cancellation(self, command: Object, identity: str) -> None:
+        payload = obj(command["payload"])
+        require(
+            command["kind"] == "task.reconcile"
+            and payload.get("id") == identity
+            and payload.get("retry") is False,
+            "BINDING",
+            "cancellation command mismatch",
+        )
+
+    def transport_profile(self) -> Object:
+        return profile()
+
+    def envelope_schema(self) -> str:
+        return files("checkedflow").joinpath("data/envelope.schema.json").read_text()
 
     def submit(self, envelope_json: str, *, message_id: str = "") -> Object:
         try:

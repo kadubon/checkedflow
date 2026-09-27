@@ -1,0 +1,519 @@
+{
+  "version": "checkedflow/qualification-observation/v1",
+  "status": "COMPONENT_PASSED",
+  "release_authority": false,
+  "source_basis": "56cb688",
+  "runtime_source_members_sha256": {
+    "checkedflow/cli.py": "8a0d24eeaf1995eb4ca2967eb380aa6c77d31985c1fa061a6b459fbc90c3f6e3",
+    "checkedflow/distributed/deployment_service.py": "72b04f4d00f706d91560445258a81cb942996f3ce37d5cbdc409f352bbe22488",
+    "checkedflow/distributed/deployment_preflight.py": "b115d8282163eb14e48b4d29d36f95bbd607307bdd112bb1a13719fa69566173"
+  },
+  "scope": "Installed maintained deployment-service and deployment-preflight CLI commands on four approved Linux VM kernels sharing one physical host and one operator. Root provisioning/SSH orchestration remains private; not complete G6.",
+  "wheel_sha256": "764e1e7ae887754fdba2a9732d8343f317a6c45d8d83aaef437cea9e984c654f",
+  "cometbft_sha256": "23752877fe1d856009551beca2a326296b5cf846d6bc64fd72ae35d251811d1b",
+  "cases": [
+    {
+      "name": "start",
+      "data": {
+        "node": 0,
+        "observation": {
+          "action": "start",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node0",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "status": "START_REQUESTED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "start",
+      "data": {
+        "node": 1,
+        "observation": {
+          "action": "start",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node1",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "status": "START_REQUESTED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "start",
+      "data": {
+        "node": 2,
+        "observation": {
+          "action": "start",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node2",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "status": "START_REQUESTED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "start",
+      "data": {
+        "node": 3,
+        "observation": {
+          "action": "start",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node3",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "status": "START_REQUESTED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "status",
+      "data": {
+        "node": 0,
+        "observation": {
+          "action": "status",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node0",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": false,
+          "services": {
+            "abci": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1614",
+              "SubState": "running"
+            },
+            "validator": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1615",
+              "SubState": "running"
+            }
+          },
+          "status": "OBSERVED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "status",
+      "data": {
+        "node": 1,
+        "observation": {
+          "action": "status",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node1",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": false,
+          "services": {
+            "abci": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1466",
+              "SubState": "running"
+            },
+            "validator": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1467",
+              "SubState": "running"
+            }
+          },
+          "status": "OBSERVED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "status",
+      "data": {
+        "node": 2,
+        "observation": {
+          "action": "status",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node2",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": false,
+          "services": {
+            "abci": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1487",
+              "SubState": "running"
+            },
+            "validator": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1488",
+              "SubState": "running"
+            }
+          },
+          "status": "OBSERVED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "status",
+      "data": {
+        "node": 3,
+        "observation": {
+          "action": "status",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node3",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": false,
+          "services": {
+            "abci": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1483",
+              "SubState": "running"
+            },
+            "validator": {
+              "ActiveState": "active",
+              "LoadState": "loaded",
+              "MainPID": "1484",
+              "SubState": "running"
+            }
+          },
+          "status": "OBSERVED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "stop",
+      "data": {
+        "node": 0,
+        "observation": {
+          "action": "stop",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node0",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "signing_state_sha256": "ea4650fa677e6ab8b850b47c3341b5a8e6834c53f4638a445bf79638dae76419",
+          "status": "STOPPED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "three_node_progress",
+      "data": {
+        "before": 6,
+        "after": 9
+      }
+    },
+    {
+      "name": "start",
+      "data": {
+        "node": 0,
+        "observation": {
+          "action": "start",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node0",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "status": "START_REQUESTED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "four_node_recovery",
+      "data": {
+        "block_height": 10,
+        "app_hash": "DAB41A5857B6A4399E333C73742DA0178F8FB8749BA3A02961C3FBE9F79E03DF"
+      }
+    },
+    {
+      "name": "stop",
+      "data": {
+        "node": 0,
+        "observation": {
+          "action": "stop",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node0",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "signing_state_sha256": "0a426da2b89802ac8342bf441643e305f680d9d707c53de28caf7b09988abeff",
+          "status": "STOPPED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "stop",
+      "data": {
+        "node": 1,
+        "observation": {
+          "action": "stop",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node1",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "signing_state_sha256": "bafab6d680c25498696f62fd00c74027e94ba9bff4a3ca6278884024e89b38de",
+          "status": "STOPPED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "stop",
+      "data": {
+        "node": 2,
+        "observation": {
+          "action": "stop",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node2",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "signing_state_sha256": "5bee650d4cb5482ba3118872c01b358e365903531dba0b8c59f835501941a57f",
+          "status": "STOPPED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    },
+    {
+      "name": "stop",
+      "data": {
+        "node": 3,
+        "observation": {
+          "action": "stop",
+          "consensus": {
+            "reason": "service state does not prove quorum or application acceptance",
+            "status": "NOT_CHECKED"
+          },
+          "node": "node3",
+          "plan_sha256": "fb710f50240ffd53da05302b59d502b6398ce7ff4cc20cf1bb2215ad762b580d",
+          "release_authority": false,
+          "request_issued": true,
+          "services": {
+            "abci": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            },
+            "validator": {
+              "ActiveState": "inactive",
+              "LoadState": "loaded",
+              "MainPID": "0",
+              "SubState": "dead"
+            }
+          },
+          "signing_state_sha256": "e1f44db21a8b735b33223da58328b6a8e889925c57c1c4abd79b6f24848c9097",
+          "status": "STOPPED",
+          "version": "checkedflow/deployment-service/v1"
+        }
+      }
+    }
+  ],
+  "installed_members_compared_per_node": [
+    200,
+    200,
+    200,
+    200
+  ],
+  "deployed_files_compared_per_node": [
+    5,
+    5,
+    5,
+    5
+  ],
+  "services_stopped": true,
+  "signing_state_preserved": true,
+  "vm_shutdown": "GRACEFUL_DISKS_PRESERVED",
+  "earlier_failure": "CLI --action originally shadowed subcommand selection and emitted no result; failed experiment retained, parser destination fixed and three CLI dispatch regression cases added.",
+  "remaining": [
+    "managed installation and complete work-service orchestration",
+    "adversarial confinement and cross-host custody/upgrade qualification",
+    "full G1-G7 on final release artifacts"
+  ],
+  "private_result_sha256": "4801ab88756d2f398d1b88d97acf4a6d4505b61fba031d5a8beb2e7c630c3cd4"
+}

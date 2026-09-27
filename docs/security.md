@@ -53,11 +53,29 @@ virtual environments, downloaded tools, raw reports and local caches are exclude
 
 ## Deployment limits
 
-One gateway admits one mission's full visibility. It has no per-record or per-client ACL within
-that mission. Use distinct credentials/processes for separate visibility boundaries. Reverse
-proxies/TLS, external OAuth issuers and real webhook receivers require deployment qualification.
+The 0.2.0 journal audit found startup paths that recreated missing ownership records or tables in
+partially damaged databases. Such initialization could reset a queue or attach retained records to
+a new local identity. Submission, worker execution, scheduling, sandbox recovery and agent journals
+now require their complete table profile and existing identity. Initial schema and identity creation
+commit atomically; partial initialization rolls back. Regression tests cover missing identities,
+missing tables, foreign profiles, lost command replies and interruption during first initialization.
+
+This is a structural recovery check. It does not authenticate every database byte, recover deleted
+evidence, detect replacement of the entire directory or prevent rollback to a valid older backup.
+Keep journals protected and preserve damaged copies for explicit recovery. Never remove a journal
+to bypass a startup error. See [worker recovery](worker-supervision.md),
+[sandbox ownership](sandbox-recovery.md) and [callback custody](callback-secrets.md).
+
+One gateway admits one mission's visibility. V1 retains single-operator access; the v2 CLI requires
+[client policy](client-access.md) for mission roles, signed-actor bindings and callback ownership.
+Inspection grants still expose the shared mission, without per-record secrecy. Use separate deployments
+for confidential compartments. Optional [mutual TLS](agent-tls.md) requires client certificates for
+HTTP/gRPC and disables proxy-header authority. Its certificates never confer mission roles. Proxy
+installation, external OAuth issuers and real webhook receivers require deployment qualification.
 Protect the journal directory and sidecars with OS permissions, especially Windows ACLs; push
-credentials are stored there. An HTTP token permits inspection and callback configuration but
+configurations are encrypted there with an independently supplied operator keyring. API responses
+omit callback tokens and authentication credentials. See [key custody and rotation](callback-secrets.md);
+this does not encrypt task history or replace file permissions. An HTTP token permits inspection and callback configuration but
 never grants transaction-signing authority.
 
 Runtime and transport bounds constrain resource use, but they are not general denial-of-service

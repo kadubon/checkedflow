@@ -1,0 +1,24 @@
+{
+  "profile": "checkedflow/component-evidence/v1",
+  "source": "b20d95810faa31230341e44c4dee681aa97f4b61",
+  "run": "https://github.com/kadubon/checkedflow/actions/runs/36308412721",
+  "job": 108590350342,
+  "artifact": 10927464566,
+  "report_sha256": "62931ba65c0b5f839ffbcb77c239b6e1add145b0227e2976d02778cda0590e04",
+  "cases": 31,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "required_case_gate": "passed",
+  "inherited_cases": [
+    {
+      "name": "test_v2_inherited_accounting_commits_and_recovers_on_four_nodes[published]",
+      "seconds": 20.053
+    },
+    {
+      "name": "test_v2_inherited_accounting_commits_and_recovers_on_four_nodes[live]",
+      "seconds": 97.549
+    }
+  ],
+  "scope": "Installed development artifacts, single-host CI. Published capture and live old four-node generation/reuse, expired unknown, capability/worker revocation, process shutdown, four-history replay, successor approval, four new nodes, crash/restart and retention-loss dispatch inhibition. Not four separate Linux environments, physical signer transfer, an in-flight external effect cancellation, full lifecycle/upgrade qualification or final G1-G7. Overall OS/Python workflow was still running at observation."
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:repository-cases:v1",
+  "description": "Structural inventory contract. Strict raw JSON, portable paths, unique case names, aggregate byte and nesting bounds are additionally enforced by the runtime. This inventory grants no authority.",
+  "$defs": {
+    "value": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        },
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/value"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/value"
+          }
+        }
+      ]
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "path",
+    "function",
+    "cases"
+  ],
+  "properties": {
+    "version": {
+      "const": "repository-cases/v1"
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240
+    },
+    "function": {
+      "type": "string",
+      "maxLength": 80,
+      "pattern": "^[A-Za-z][A-Za-z0-9_]*(?![\\s\\S])"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case",
+          "input",
+          "output"
+        ],
+        "properties": {
+          "case": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "input": {
+            "$ref": "#/$defs/value"
+          },
+          "output": {
+            "$ref": "#/$defs/value"
+          }
+        }
+      }
+    }
+  }
+}

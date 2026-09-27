@@ -1,0 +1,265 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "v2 bounded isolated-task command kind and payload",
+  "description": "Structural contract only. Signed authority, purpose, mission, funding, fencing, mode and deadline checks are required at transition time. Completion does not establish acceptance.",
+  "oneOf": [
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "task.admit"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "ticket",
+            "workers",
+            "lease_blocks",
+            "expires",
+            "max_attempts"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "ticket": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "workers": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 64,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80
+              }
+            },
+            "lease_blocks": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10000
+            },
+            "expires": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "max_attempts": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 8
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "task.cancel"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "task"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "task.lease"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "task"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "task.start"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "task",
+            "fence"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "fence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "task.heartbeat"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "task",
+            "fence"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "fence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "task.finish"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "task",
+            "fence",
+            "outcome",
+            "evidence"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "fence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "outcome": {
+              "enum": [
+                "reported",
+                "unknown"
+              ]
+            },
+            "evidence": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

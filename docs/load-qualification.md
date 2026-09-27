@@ -1,0 +1,140 @@
+# Bounded longevity measurement
+
+Status: **short path passed at `d6e7b1d`; full workload and later replay-anchor qualification pending**.
+See the [recorded short-path evidence](evidence/longevity-short-20260927.json). This is not a G5 result. The packaged
+[profile](../src/checkedflow/data/load-profile.json) fixes the workload before execution. A successful
+short smoke test is not evidence that the full profile meets its limits. Do not shorten or otherwise
+modify the full profile after observing a failure; preserve that run and declare a different profile
+for any subsequent experiment.
+
+## Fixed workload and scope
+
+- Submit 4,097 distinct signed control requests at 500 ms phase-relative intervals. These are
+  control admissions, not completed tasks or verified-work throughput. One consumer preserves
+  every scheduled intent; delays create a measured backlog rather than dropped requests.
+- Process 65 byte-distinct invoice patches at 30-second intervals in the next phase. A comment
+  distinguishes each source tree; their intended behavior is identical. No novelty or capability
+  increase is claimed. Three organizational verifier identities execute each patch through actual
+  gVisor and attest to independently observed fixture outputs before acceptance is counted. Four
+  organizational checks are funded at admission; the unused fourth check is cancelled and refunded.
+- Preserve ordinary/governance journal headroom through explicit pause/rollover/resume. Revoke
+  and retire each completed candidate and its settled funding; retain every history root and verify
+  the actual four SQLite journals and archive objects after shutdown. Each replay must contain the
+  independently observed common-height CometBFT application hash; a self-consistent truncated
+  local journal cannot substitute for that checkpoint.
+- Crash and restart one node with its existing signing state. Confirm renewed committed progress,
+  compare common-height hashes and reject an old-epoch command after repeated rollover.
+- During the designated candidate, witness an owned sandbox running, commit drain, reject new
+  funding and settle the existing task before resuming. Also measure an empty drain after completion.
+  These checks do not establish physical replica independence or complete G5/G6/G7 qualification.
+
+The active workload has a 5,400-second deadline and cleanup/replay a further 600 seconds. The
+profile bounds sampled controller/node RSS and test-directory bytes to 2 GiB each, application
+state to 4 MiB and active receipts to 144. These are measured component limits, not hardware
+recommendations. Record CPU count, guest memory, kernel, image digest, CometBFT digest, profile
+digest and exact wheel identity before work begins. Use an approved disposable Linux host with
+an independently enforced lifetime beyond cleanup; a killed interpreter cannot guarantee its own
+cleanup. Do not share the lab's ports or run tests concurrently with pytest-xdist.
+
+## Running the full profile
+
+Provision the pinned runtimes described in [operations](operations.md), install the exact candidate
+wheel plus its distributed dependencies and pinned test dependencies in a fresh environment, and
+retain the wheel for byte comparison. Do not use an editable source installation. The runner
+compares every packaged installed member with that wheel before creating the laboratory.
+
+Set these protected operator inputs; paths below are examples, not production defaults:
+
+```sh
+export CHECKEDFLOW_REQUIRE_INFRA=1
+export CHECKEDFLOW_IMAGE='python@sha256:<approved-image-digest>'
+export CHECKEDFLOW_COMETBFT='/opt/checkedflow/cometbft'
+export CHECKEDFLOW_LOAD_WHEEL='/protected/dist/checkedflow-0.2.0-py3-none-any.whl'
+export CHECKEDFLOW_LOAD_REPORT='/protected/reports/load-run-001'
+/opt/checkedflow-test/bin/python -m pytest tests/test_longevity.py -m longevity -q
+```
+
+Use the candidate wheel's actual filename; current development artifacts still carry 0.1.0
+metadata and must never replace public 0.1.0. The report directory must not exist. Missing Linux,
+gVisor or CometBFT fails with `CHECKEDFLOW_REQUIRE_INFRA=1`; a skipped run does not qualify.
+Keep the test harness at the same reviewed source revision as the artifact. The original manifest
+is retained even if a later stage fails. Preserve failed and incomplete runs.
+
+## Bounded disposable CI execution
+
+The existing workflow has an explicit `longevity` boolean input, disabled by default. A manual
+run with `longevity=true` and `publish=false` first builds the distributions and passes the ordinary
+infrastructure qualification. The longevity job installs that same wheel on a fresh Linux runner,
+provisions the pinned runtimes and runs the immutable profile. Its external job timeout is 110
+minutes, including provisioning, the 90-minute workload, 10-minute cleanup and artifact upload.
+Reports upload even on failure. An absent or incomplete report is not a passing result. This
+single-host run does not replace four-environment operational qualification or open publication.
+
+## Reading the records
+
+`manifest.json` contains the pre-run identity and machine envelope. `result.json` distinguishes
+failure from `COMPONENT_MEASURED` and always states `not_release_authority: true`.
+`commands.json`, `arrivals.json`, `accepted.json`, `resources.json` and `archive_roots.json` retain
+the observations behind the summary. A missing result is incomplete, never a pass.
+
+Latency quantiles use nearest-rank p50/p95/p99 in nanoseconds. Missing samples produce null,
+not zero. `control_completed / control_elapsed_ns` and
+`verified_completions / verified_elapsed_ns` are separate rate numerators/denominators; multiply
+by one billion for per-second rates. Recovery time includes the declared interruption/progress
+barriers. Disk growth covers the whole test directory, including consensus history and control
+work; dividing it by verified completions is an amortized experiment cost, not a marginal task size.
+
+`completed_tasks` counts successfully committed task-finish requests, including work whose candidate
+was not subsequently accepted. `disk_bytes_per_completed_task` keeps an exact numerator and
+denominator and is null when no task completed; it includes shared consensus/storage costs.
+
+Resource snapshots occur every 32 control intents and after each accepted candidate. RSS covers
+the controller and live owned node processes, excluding short-lived sandbox processes; it is a
+sampled observation rather than a proven peak. The full operational memory,
+replica-loss and longevity envelope still needs its separate evidence. Do not cite these records
+as a release gate before that scope is completed and audited.
+
+## Short CI path
+
+The required infrastructure suite includes `test_installed_longevity_path_smoke`, with a separately
+named profile, 17 control intents and two candidates. It exercises rollover, actual patch checking,
+retirement, replay and report creation without pretending to cross the long-profile thresholds.
+The full `longevity` marker is opt-in and is excluded from ordinary unit/infrastructure runs.
+
+## Preserved failed short run
+
+[CI run 36310773279](https://github.com/kadubon/checkedflow/actions/runs/36310773279)
+passed 31 infrastructure cases and failed the new short workload at artifact admission. The original
+runner funded only three checks; the protocol requires four funded organizational checks and three
+passing observations. No candidate was accepted. Its manifest and partial measurements remain in
+the qualification artifact. Profile `repository-longevity-2` explicitly funds four checks, executes three,
+and cancels/refunds the unused fourth check. The revised full profile was subsequently measured
+as recorded below. This correction does not weaken the admission contract.
+
+[CI run 36311707314](https://github.com/kadubon/checkedflow/actions/runs/36311707314)
+completed both candidates, six verifier tasks and the in-flight drain, but failed its final replay
+assertion: a repeated transaction can be refused by CometBFT's cache before ABCI admission,
+which the SDK correctly preserves as `OUTCOME_UNKNOWN`. The revised assertion requires all four
+live ABCI services to return `RETIRED_REQUEST`, then retains the transport outcome separately and
+checks that business state is unchanged after further committed progress. It does not convert an
+ambiguous RPC reply into a rejection receipt. The workload itself is unchanged; the failed record
+is retained and the corrected test requires a fresh execution. The long job was skipped because
+its mandatory short-path dependency failed.
+
+## Completed full-profile measurement
+
+The [full-profile record](evidence/longevity-full-20260928.json) binds the successful longevity job
+108614307342 to source `6e9ba23` and hashes its detailed reports. It completed 4,097 control requests,
+65 verified candidates and 195 verifier tasks in approximately 75.45 minutes. Cleanup succeeded;
+all four nodes agreed at the recorded checkpoint. Command p95 was approximately 703 ms and verified
+candidate p95 approximately 15.13 seconds on that runner. These are observations, not service targets.
+
+The overall workflow was cancelled despite that job's success; do not report the entire workflow
+as passing. This run used one hosted Linux runner and development artifacts. It does not complete
+four-environment operational qualification or qualify the final 0.2.0 distributions. The previous
+[failed full run](evidence/longevity-full-failure-20260927.json) remains preserved.
+
+A later short-path CI run at `abfb0b6` observed an old `running` task state on node zero after another
+node committed completion. The harness now waits for the completion receipt's height on the reader
+before checking the in-flight drain result, just as it already does for attestations. The workload,
+acceptance rules and resource limits are unchanged. This correction requires its own CI rerun.

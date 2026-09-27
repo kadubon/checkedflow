@@ -13,6 +13,8 @@ from pathlib import Path
 def main() -> None:
     root = Path(__file__).resolve().parents[1]
     project = tomllib.loads((root / "pyproject.toml").read_text())["project"]
+    if project["version"] != "0.2.0":
+        raise SystemExit("only the owner-authorized experimental 0.2.0 release is permitted")
     if os.environ.get("GITHUB_REPOSITORY") != "kadubon/checkedflow":
         raise SystemExit("publisher repository mismatch")
     if os.environ.get("GITHUB_REF") != "refs/tags/v" + project["version"]:

@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Application history checkpoint; independent authority and freshness required",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "chain",
+    "mission",
+    "genesis_hash",
+    "height",
+    "state_hash",
+    "digest",
+    "length"
+  ],
+  "properties": {
+    "version": {
+      "const": "checkedflow/application-backup/v1"
+    },
+    "chain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "mission": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "height": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1000000
+    },
+    "length": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1073741824
+    },
+    "genesis_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "state_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

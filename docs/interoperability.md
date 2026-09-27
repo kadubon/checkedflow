@@ -5,6 +5,12 @@ resources and prompts to an agent application. Both adapters call the same `Gate
 for one chain and one mission, through an operator-owned validating node. They hold no signing
 keys, execute no received code and cannot change the authority rules.
 
+The default application contract remains `checkedflow/v1`. Development deployments may select
+`--protocol v2` with `--access-policy PRIVATE_POLICY` on either CLI server; read [operational agent transports](operational-agents.md)
+for native v2 records, command restrictions and outstanding security qualification. The connected
+server's profile/schema resources identify its selected contract. `checkedflow schema agents`
+continues to export the published v1 profile.
+
 The wire versions are [A2A 1.0](https://a2a-protocol.org/latest/specification/) and
 [MCP 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28). The uv lock selects
 official A2A SDK 1.1.5 and MCP SDK 2.2.0. See the [conformance matrix](conformance.md) for operations,
@@ -34,8 +40,9 @@ Bootstrap the four organizations, workers, verifier and mission as described in
 your own node and that its chain and mission match the gateway arguments. A remote RPC service
 selected by an arbitrary client is not a trusted backend. Gateways do not bootstrap a mission.
 
-Use separate gateway processes and credentials for separate missions. All callers admitted to
-one gateway can inspect that mission, including source and evidence. A client still needs the
+Use separate gateway processes and credentials for separate missions. V2 requires
+[client policy](client-access.md); clients granted inspection can see the shared mission, including
+source and evidence. V1 retains its published single-operator boundary. A client still needs the
 appropriate registered signatures to mutate it. The public Agent Card contains interface
 descriptions; it does not contain mission records or callback credentials.
 
@@ -47,7 +54,8 @@ in a URL or in a tracked configuration file. Then start:
 
 ```sh
 checkedflow a2a --rpc http://127.0.0.1:26657 --chain my-chain --mission array-mission \
-  --journal ./private/agent.sqlite --grpc-port 8081 --push-host callbacks.example.org
+  --journal ./private/agent.sqlite --callback-key-file ./private/callback-keys.json \
+  --grpc-port 8081 --push-host callbacks.example.org
 ```
 
 | Endpoint | Purpose |
@@ -151,7 +159,7 @@ transport token. Inspect and reconcile external effects before preparing that en
 Create/get/list/delete notification configurations through the four standard operations, or
 attach a configuration when sending `operation=task`. Configurations survive restart. Delivery
 posts the current task to the callback as `{"task": ...}`. A configured token becomes
-`X-A2A-Notification-Token`; an optional `authentication.schemes=["Bearer"]` credential is sent
+`X-A2A-Notification-Token`; an optional `authentication.scheme="Bearer"` (case insensitive) credential is sent
 only to that callback. Use a dedicated callback credential.
 
 Callbacks require `--push-host` operator approval, HTTPS port 443, public-only DNS answers, a
@@ -164,8 +172,9 @@ accepts but before local acknowledgment; receivers must deduplicate task/status 
 notification delivery, never execution retry.
 
 Keep the journal and SQLite sidecars in a private directory. Protect it with OS ACLs on Windows;
-POSIX mode bits alone do not establish Windows access control. It contains callback credentials
-and cursor authentication material. Run one process per journal. `GetExtendedAgentCard` requires
+POSIX mode bits alone do not establish Windows access control. It contains sealed callback configurations and cursor authentication material.
+Keep the encryption keyring separately protected; callback tokens and credentials are omitted
+from API responses. See [callback custody and recovery](callback-secrets.md). Run one process per journal. `GetExtendedAgentCard` requires
 authentication and includes the configured mission description.
 
 ## MCP service
@@ -208,8 +217,9 @@ checkedflow mcp --rpc http://127.0.0.1:26657 --chain my-chain --mission array-mi
   --oauth-audience https://gateway.example.org/mcp --oauth-jwks ./private/public-jwks.json
 ```
 
-The TLS proxy must preserve the external resource identity and bearer header. CLI binding remains
-loopback. The SDK exposes OAuth Protected Resource Metadata and requires scope `checkedflow`.
+The TLS proxy must preserve the external resource identity and bearer header. See
+[mutual TLS and explicit advertisements](agent-tls.md) for direct certificate authentication and
+the proxy boundary. CLI binding remains loopback; forwarded headers cannot confer identity. The SDK exposes OAuth Protected Resource Metadata and requires scope `checkedflow`.
 Tokens require `iss`, `aud`, integer `exp`, `sub` and `client_id`; signatures use an installed
 public key with unique `kid` and `alg` RS256, ES256 or EdDSA. The exact issuer and audience must
 match configuration. Keys are reread to permit operator-controlled rotation; token-supplied

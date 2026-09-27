@@ -1,3 +1,9 @@
+<!-- Current release scope overrides historical full-profile release instructions below. -->
+The owner authorized early experimental 0.2.0 publication on 2026-09-28 with minimal validation.
+Follow [release scope](docs/release-0.2.0.md). Keep runtime safeguards and existing required CI
+checks; never relabel deferred G1–G7 operational qualification as passed. Historical full-profile
+publication interlocks below do not prohibit this explicitly authorized narrower release.
+
 # CheckedFlow agent operating guide
 
 Use this repository to inspect signed work, develop adapters, run bounded formation experiments
@@ -25,7 +31,7 @@ the historical validation record is not evidence that a new change passed.
 | [validation-status.md](docs/validation-status.md) | Observed checks and remaining qualification limits |
 
 Run `checkedflow --help` for process commands. Read-only commands are `--version`, `schema`,
-`example`, `validate`, `state` and `replay`; `generator` emits source but does not execute it.
+`example`, `monitoring`, `validate`, `state` and `replay`; `generator` emits source but does not execute it.
 `keygen` and `sign` write local files. `abci` persists committed node state. `worker` performs
 one authorized attempt through its own node and gVisor. `demo` creates laboratory keys, nodes,
 stores and containers in a new directory. It makes no GitHub or PyPI changes.
@@ -78,3 +84,236 @@ Preserve the distinction between replaying metadata and rerunning effects. Empty
 belong in replay. Finished generation receipts may resume proposal from their stored source;
 started attempts without committed results require reconciliation. Inspect current state before
 retrying after an ambiguous RPC response. Run only one process per signing identity.
+
+
+## Development repository-patch boundary
+
+The `repository_execution.observe_patch` SDK function returns an unsigned local observation.
+It requires an already-authorized contract and a fresh trusted-node height; it does not reserve
+budgets, acquire leases, sign evidence, register artifacts or grant reuse/effect authority.
+Expected cases remain outside gVisor, and null `case_match` preserves unknown outcomes.
+Never promote a matching observation to committed acceptance. Follow the
+[domain guide](docs/repository-patch.md) and [inventory schema](src/checkedflow/data/repository-cases.schema.json).
+Run candidate files only in the required gVisor path, including bundled seeded-bug fixtures.
+
+## Development artifact storage boundary
+
+The optional `s3` adapter requires explicit trusted endpoint, TLS and credentials. Derive `Access`
+from authenticated current policy; never trust client-supplied scope authority. Never provide
+storage credentials to candidate code. A verified read is a point-in-time availability observation,
+not a signature, quorum, retention promise or execution permit. Preserve `OUTCOME_UNKNOWN` after
+an unconfirmed write and reconcile by read; do not automatically retry publication.
+See [S3 storage](docs/s3-storage.md) for real-service qualification and remaining limitations.
+
+Use the [retention controller](docs/retention.md) for protected service namespaces. Register every
+pending/dependency/effect/snapshot/replay root before use, and verify actual bytes separately.
+Pins do not expire on crash. Release only the same owner's current pin after reconciliation.
+Treat a plan as a dry run, not authority; changed revisions must reject. Never give ordinary
+workers raw provider erasure permission. Reopening requires an independently retained trusted
+catalog revision floor; reading that floor from an old backup does not establish recovery trust.
+The [plan schema](src/checkedflow/data/retention-plan.schema.json) and
+[vectors](src/checkedflow/data/retention-vectors.json) are packaged for non-Python consumers.
+
+For [retention backup and restoration](docs/retention-backup.md), obtain the checkpoint and current
+revision floor from independently protected operator records. Decoding the packaged
+[checkpoint schema](src/checkedflow/data/retention-checkpoint.schema.json) is not authentication.
+
+For [application history backups](docs/application-backup.md), independently establish the genesis,
+checkpoint and current height floor. Restore only into a new operator-owned directory; preserve
+failed staging for inspection. The [application checkpoint schema](src/checkedflow/data/application-checkpoint.schema.json)
+and [portable vector](src/checkedflow/data/application-backup-vector.json) are packaged contracts.
+Application restoration does not restore consensus signing state or authorize starting a validator.
+Restore into a new directory; never rename an interrupted pending database into service. Stop the
+old controller before activating its replacement. Catalog restoration performs no provider I/O
+and is not consensus state sync or evidence that referenced bytes are available.
+
+The [GitHub draft provider](docs/github-drafts.md) is a privileged component, disabled by default.
+Its [plan](src/checkedflow/data/github-draft-plan.schema.json) is intent metadata, not authorization.
+Use `dispatch_patch` / `reconcile_patch` with the complete immutable repository source and exact
+patch contract to verify Git tree bindings. The lower-level methods trust supplied tree metadata.
+Byte binding does not establish current consensus authority; source staging requires the separately approved v2 policy.
+The [v2 effect commands](docs/work-effects.md) govern intent, reservation and reconciliation.
+Inspect `checkedflow schema effect-command` and `checkedflow schema github-effect-intent`.
+Use current own-node state with `reserved_plan`; its output is snapshot-bound and still requires
+send-time freshness, policy and artifact checks. Never treat unknown absence as retry permission.
+Use the provider's `before_send` callback to repeat those checks after remote preflight; an entry
+check alone is insufficient. A rejected callback retains the unknown claim and forbids retries.
+Prefer `effect_dispatch.Dispatcher` for an existing reservation: it reloads protected exact-intent
+policy, validates current stored evidence and own-node state before provider I/O and before POST.
+Inspect `checkedflow schema effect-policy`; its canonical digest must match the committed effect.
+The returned provider observation still needs an original signed report or governed reconciliation.
+`effect_supervisor.Supervisor` connects an authorized effect to reservation, one invocation,
+verified observation publication and signed reporting. Inspect `checkedflow schema effect-observation`.
+It preserves uncertain signed submissions and interrupted dispatches; only explicit original-byte
+command retransmission is allowed, never a repeated provider operation. Keep all three journals.
+Never give the token or journal to candidate code. Do not recreate a journal or use a new operation
+to retry an unknown POST. Read reconciliation cannot treat absence as permission to resend.
+Use [Reconciler.collect](docs/effect-reconciliation.md) to publish a historical GET-only observation
+and an unsigned effect.reconcile proposal, including while dispatch is disabled. The proposal is not
+approval; administrators must review current identity and sign through the normal quorum path.
+Inspect `checkedflow schema effect-reconciliation`. Keep unknowns when branches or PR content differ.
+The operator fixture writes to a real repository: run it only against an explicitly authorized
+disposable target. Its staging uses the adapter; operator cleanup does not qualify runtime compensation.
+
+For [dispatch freshness](docs/dispatch-watchdog.md), use `Client.live_state` with `Watchdog` on an
+approved own node. `poll()` only observes; `current()` also requires recent height progress.
+Neither grants execution authority. A `STOPPED` instance cannot resume, and unknown in-flight
+effects still require reconciliation. Never restart a watchdog merely to hide a rollback conflict.
+
+For [settled-work retirement](docs/work-archive.md), pause and retire the request epoch before
+selecting known terminal records. Use the [command schema](src/checkedflow/data/work-archive-command.schema.json).
+Never archive unknown liabilities to free capacity or interpret archived objects as currently
+reusable. Retrieve batches only against independently trusted commitments; archival is not erasure.
+
+For [worker supervision](docs/worker-supervision.md), route every command for one signing identity
+through the same durable coordinator. See the [SDK catalogue](src/checkedflow/data/worker-operations.json).
+Preserve pending bytes after transport uncertainty. Never restart already-started code because a
+completion reply was lost. Use the concrete gVisor repository executor; candidate-defined callbacks
+are not trusted supervisor adapters. No unattended worker service is supplied by this SDK increment.
+An existing submission database with a missing identity row or foreign tables must fail startup.
+Preserve the damaged journal for recovery; deleting it does not establish absence of prior sends.
+Worker attempts, schedules, sandbox ownership and agent journals also reject partial structure.
+Never recreate missing tables or identity settings as an automatic recovery operation.
+The execution journal stops new attempts at 128 records. During a committed pause, use
+`Supervisor.retire` for known finished records only, before consensus `history.archive`; the verified
+publisher must retain exact evidence before local buffers are removed. Never discard unknowns or
+reset a journal to recover capacity. Retirement does not refund work or authorize execution again.
+
+Before candidate execution, start the [independent sandbox recovery service](docs/sandbox-recovery.md)
+and set `CHECKEDFLOW_SANDBOX_RECOVERY` to its private host journal. Use one journal per local Docker
+daemon. Never reset unresolved creation intents to free capacity or use a stale service heartbeat
+as proof that an orphan has stopped. The packaged service template requires operator review.
+
+For [finite worker scheduling](docs/worker-scheduling.md), pin the task list and call/time limits
+before starting. Use one persistent plan directory and the real monotonic-clock boot identity.
+Never reset a plan, command or execution journal to recover uncertainty. `Schedule.stop()` is a
+local persistent inhibit, not consensus revocation. A `complete` schedule is not artifact acceptance.
+Before release, reconcile README, Docs, AGENTS.md, this guide and the machine-readable operation
+catalogue with actual installed-artifact behavior. Component CI cannot substitute for G1-G7 evidence.
+
+For [v2 agent transports](docs/operational-agents.md), select `--protocol v2` explicitly and inspect
+the selected profile/schema. Keep original signed bytes and distinguish current candidate acceptance
+from task completion. Missing receipts remain unknown; no automatic transport retry, signing,
+unknown-work cancellation is provided. Administrative submission additionally requires the explicit
+v2 client policy and current quorum signatures. Native v2 data is not a translated v1 state.
+
+For [callback secret custody](docs/callback-secrets.md), supply a separate private keyring for persistent
+A2A notifications. Export its structural schema with `checkedflow schema callback-keyring`; the active
+key must also exist in the key map. Preserve delivery counters during explicit `Journal.rewrap`, stop
+other writers first, and retain backup decryption keys. Never silently accept old plaintext rows.
+API configuration responses redact secrets; internal delivery still uses the original credentials.
+
+For [client authorization](docs/client-access.md), provision `--access-policy` before starting a v2
+server. Use `checkedflow schema access-policy`, `access-roles` and `access-vectors` as the portable
+contracts. Bind OAuth issuer/client/subject and signed actor IDs explicitly; request metadata cannot
+assert roles. Removing a JWT verification key does not revoke an existing callback delegation: withdraw
+its policy grant or delete its owned configuration. Keep unresolved delivery records during migration.
+
+Artifact downloads require a protected mission publication catalog as well as current client policy.
+See [authorized downloads](docs/artifact-download.md) and `checkedflow schema artifact-publication`.
+Never turn a client-supplied digest/reference or an unverified state pointer into publication authority.
+Keep catalogs outside candidate workspaces. Archive downloads do not establish trusted replay roots.
+
+For [agent TLS](docs/agent-tls.md), provision certificate/key/client-CA files independently of signing
+and callback keys. Never infer roles from certificates or forwarded headers. Keep loopback defaults,
+require all TLS settings together, and drain/restart all listeners to retire a CA snapshot. Do not
+claim a proxy template or source handshake test proves installed multi-host deployment qualification.
+
+Approved draft staging is documented in [Git staging](docs/git-staging.md).
+It requires explicit v2 operator policy; partial writes never authorize a retry.
+
+[Replicated artifact access](docs/replicated-artifacts.md) requires fresh verified reads
+from at least three of four configured backends. Availability observations are not acceptance
+or future-use authorization; replica placement must be qualified independently.
+
+[Service observations](docs/observability.md) distinguish process liveness, readable state
+and protected-work readiness. Optional HTTP status routes remain inside mission authentication;
+current-state gauges do not count a replayed event again.
+
+Local worker/effect/service invocations can opt into [bounded operation logs and optional traces](docs/telemetry.md).
+These observations are lossy diagnostics, not committed events, task acceptance or execution authority.
+No outbound exporter is enabled by default.
+
+Use the [monitoring templates and response runbook](docs/monitoring-runbook.md) for packaged alert rules,
+dashboard queries, explicit SLI denominators and recovery targets. Templates and targets are not
+proof of an installed monitoring service or achieved availability.
+
+For [legacy migration inventory](docs/legacy-migration.md), provision checkpoint trust independently.
+Keep the full snapshot and signed history; zero reservation does not mean no uncertain work.
+The inspection SDK cannot stop validators, authorize successor dispatch or reset old balances.
+The successor preparation SDK creates a paused accounting baseline with locked inherited
+reservations. Its portable vector and state schema do not establish cutover approval, artifact
+retention or validator ownership. Old commands and results do not acquire v2 authority.
+
+[Succession approvals](docs/succession-approval.md) use `checkedflow schema succession` and a
+packaged signed vector. Verify against independent old/new inputs. Both quorums are mandatory;
+approval alone does not authorize startup, resolve liabilities or permit signing conflicting plans.
+
+Persist succession approval claims before signing and move the journal with signer custody.
+Never delete or roll back a conflicting claim; see docs/succession-approval.md. Local SQLite
+exclusion does not prove cross-host signer ownership or authorize successor activation.
+
+Inherited ABCI startup must verify succession evidence before creating state or listeners.
+Never derive the trusted checkpoint solely from the submitted manifest; retain independent
+operator provenance. See docs/succession-approval.md#startup-admission.
+
+Preserve validator lock inodes, private keys and latest signing state during maintenance.
+A remote host being unreachable does not prove it stopped signing. See docs/validator-custody.md.
+
+Use budget.reconcile_inherited only with current administrative quorum, the original checkpoint
+and retained evidence. Unknown charges are not refundable; old tasks never become executable.
+See docs/legacy-reconciliation.md.
+
+Legacy retention verification must check an existing pin and fresh bytes; never silently recreate
+a missing pin. History coverage needs independent replay authentication. See docs/legacy-retention.md.
+
+Retained history replay requires independent genesis and final checkpoints and operator-authenticated
+archive digests. Endpoint state equality alone does not authenticate state-neutral rejected records.
+Use the legacy-history schema; see docs/legacy-retention.md.
+
+Persist legacy handles with the legacy-retained schema; decoding does not authenticate storage.
+Always verify the existing pin and independently protected roots before use. See docs/legacy-retention.md.
+
+Inherited ABCI startup requires --legacy-retention with protected original catalog policy and an
+independent positive revision floor. Never initialize a missing inventory or repin during recovery.
+
+Inherited worker/effect watchdogs require a protected DispatchGuard. Retention I/O must not
+extend freshness or block emergency stop; never reuse a returned state as a future dispatch permit.
+
+For live legacy cutover evidence, retain worker/capability revocation, confirmed old-process stop,
+four-store replay and the independently observed checkpoint. Do not treat a published fixture or
+a single-host trial as four-host custody qualification. See docs/legacy-migration.md.
+
+Keep load-profile.json fixed before measurement. Preserve failed manifests and separate the short
+longevity smoke from the full workload; neither alone qualifies G5. See docs/load-qualification.md.
+
+Load history replay must include an independently observed common-height checkpoint. Reject a
+self-consistent truncated local prefix. Keep duplicate-transaction RPC uncertainty separate from
+actual old-epoch ABCI rejection; never relabel OUTCOME_UNKNOWN as a committed rejection receipt.
+
+`checkedflow deployment-plan` is offline review-file generation, not host authorization or verified
+installation. Never apply it over active validator state or treat declared runtime hashes/private
+addresses as verified custody or confinement. See [deployment planning](docs/deployment-planning.md).
+
+`deployment-verify` requires an independently protected expected plan digest. Its unsigned result
+verifies current bundle/artifact bytes only; do not reuse it as host preflight or startup authority.
+Revalidate at application time, and preserve native runtime/confinement/custody checks.
+
+For native node setup, preserve the generated gRPC passthrough target and provision executable
+access for separate service accounts. See the deployment guide's scoped four-VM evidence;
+complete lifecycle and confinement qualification remain required before release.
+
+`deployment-preflight` inspects an already provisioned Linux host through the reviewed isolated
+Python interpreter. See `checkedflow schema deployment-preflight` for its observation contract.
+It checks installed files and loaded units, never changes host state, and never authorizes startup.
+Keep native display versions, pinned module identity and independently reviewed provenance separate.
+
+`deployment-service --action start|status|stop` operates already provisioned local node units.
+Use the `deployment-service` schema to distinguish accepted requests, observed state and confirmed
+stops. It does not establish consensus readiness, drain work or authorize moving signing material.
+
+`deployment-apply` installs only approved public files on an explicitly provisioned, stopped Linux
+node. Existing differing files are conflicts, not upgrade targets. Preserve partial files and unknown
+reload outcomes. Apply/start/stop share the persistent deployment lock; never delete it to retry.
+Selected-node configuration must match before any service action. See
+[deployment planning](docs/deployment-planning.md) and `checkedflow schema deployment-apply`.

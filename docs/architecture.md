@@ -95,3 +95,43 @@ Its clocks, SQLite storage, callback DNS/TLS and protocol SDKs remain outside th
 core. Protocol handlers share Gateway admission; bindings, journal, push delivery and OAuth
 verification are separate modules. MCP notifications are refetch hints derived from committed
 records, not an extra event authority. See [conformance](conformance.md) for the supported roles.
+
+## External effects in the operational profile
+
+V2 [effect records](work-effects.md) keep intent, administrative authorization, executor reservation
+and provider observation separate. They enter the same atomic state and replay boundary as budgets
+and candidates. A possibly sent operation consumes its full modeled ceiling and cannot be reset
+for retry. The GitHub intent resolver derives exact provider arguments from a validated current
+reservation; provider I/O and local freshness remain outside consensus. The maintained actuator,
+compensation and effect archival are not yet complete. See [ADR 0004](adr-0004-effect-reservations.md).
+The [supervised dispatcher](effect-dispatch.md) bridges a live reservation to provider dispatch:
+it reloads protected intent policy and verifies scoped artifacts before preflight and at the
+final send check. The [effect supervisor](effect-supervision.md) retains invocation and observation
+records, verifies published evidence, and submits ordinary reports through the nonce coordinator.
+The [historical reconciler](effect-reconciliation.md) performs GET-only inspection under the original
+approved policy and publishes unsigned proposals for quorum review. It does not use dispatch
+readiness or renew execution authority. Staging, compensation, retirement and coordinated cross-host
+recovery remain incomplete; live-provider qualification is still required for the complete path.
+
+The optional [staging adapter](git-staging.md) computes a deterministic Git head before approval
+and creates the tree, commit, new reference and draft under one durable claim. Its four-write
+ceiling and repeated current-authority checks belong to the executor boundary, not consensus.
+
+[Replicated artifact access](replicated-artifacts.md) requires fresh verified reads
+from at least three of four configured backends. Availability observations are not acceptance
+or future-use authorization; replica placement must be qualified independently.
+
+[Service observations](observability.md) distinguish process liveness, readable state
+and protected-work readiness. Optional HTTP status routes remain inside mission authentication;
+current-state gauges do not count a replayed event again.
+
+Local worker/effect/service invocations can opt into [bounded operation logs and optional traces](telemetry.md).
+These observations are lossy diagnostics, not committed events, task acceptance or execution authority.
+No outbound exporter is enabled by default.
+
+[Legacy preparation](legacy-migration.md) verifies an independent old checkpoint before
+constructing a paused successor. Its budget holds original spending and reservations separately
+from new tickets; the complete old snapshot remains the source for fences, dependencies and
+residuals. The core performs only integer accounting and retained-root validation. Node shutdown,
+cutover approvals, artifact retention and validator signer transfer remain external obligations
+and are not established by a self-consistent prepared state.

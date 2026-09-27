@@ -1,17 +1,20 @@
 """gVisor-only OCI execution. No fallback to an unisolated subprocess."""
 
+import os
 import platform
 import shutil
 import subprocess  # nosec B404
 import tempfile
 import threading
 import time
-import uuid
 from dataclasses import dataclass
 from pathlib import Path
 from typing import BinaryIO, cast
 
 from checkedflow.core.values import JSON, Failure, Object, array, obj, require
+from checkedflow.domains.repository_patch import Tree
+from checkedflow.sandbox_recovery import LABEL, LOCAL_DOCKER, Docker, Recovery, boot_id
+from checkedflow.tree_workspace import materialize
 from checkedflow.wire import document, dumps, loads
 
 
@@ -62,6 +65,9 @@ def command(
         "--name",
         name,
         "--runtime=runsc",
+        "--restart=no",
+        "--no-healthcheck",
+        "--log-driver=none",
         "--pull=never",
         "--network=none",
         "--read-only",
@@ -102,7 +108,7 @@ class GVisorRunner:
         require(platform.system() == "Linux", "SANDBOX_UNAVAILABLE", "Linux execution required")
         try:
             result = subprocess.run(  # nosec B603
-                [self.docker, "info", "--format", "{{json .Runtimes}}"],
+                [self.docker, LOCAL_DOCKER, "info", "--format", "{{json .Runtimes}}"],
                 capture_output=True,
                 timeout=10,
                 check=False,
@@ -139,77 +145,105 @@ class GVisorRunner:
                 target = work / filename
                 target.write_text(content, encoding="utf-8")
                 target.chmod(0o444)
-            name = "checkedflow-" + uuid.uuid4().hex
-            args = command(self.image, work, name, argv, self.limits, self.docker)
-            process = subprocess.Popen(  # nosec B603
-                args,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                start_new_session=True,
+            return self._execute(argv, work, input_bytes)
+
+    def run_tree(self, argv: tuple[str, ...], tree: Tree, stdin: JSON) -> Result:
+        """Execute bounded repository bytes under the same closed isolation profile.
+
+        Callers must separately authenticate the contract and compare external evidence.
+        A successful process exit is not verification or authorization.
+        """
+        input_bytes = dumps(stdin) + b"\n"
+        self.check()
+        with tempfile.TemporaryDirectory(prefix="checkedflow-tree-") as temporary:
+            work = materialize(Path(temporary), tree)
+            return self._execute(argv, work, input_bytes)
+
+    def _execute(self, argv: tuple[str, ...], work: Path, input_bytes: bytes) -> Result:
+        directory = os.environ.get("CHECKEDFLOW_SANDBOX_RECOVERY")
+        require(bool(directory), "SANDBOX_UNAVAILABLE", "independent recovery journal required")
+        recovery = Recovery(Path(cast(str, directory)), Docker(self.docker), boot_id())
+        args = command(self.image, work, "pending", argv, self.limits, self.docker)
+        deadline = time.monotonic() + self.limits.seconds
+        name, token = recovery.reserve(self.limits.seconds)
+        args[args.index("--name") + 1] = name
+        args[1] = "create"
+        args[2:2] = ["--label", f"{LABEL}={token}"]
+        args.insert(1, LOCAL_DOCKER)
+        try:
+            created = subprocess.run(  # nosec B603
+                args, capture_output=True, timeout=15, check=False
             )
-            stdout, stderr = bytearray(), bytearray()
-            overflow = threading.Event()
+            require(created.returncode == 0, "CLEANUP_UNKNOWN", "container creation unconfirmed")
+            container = created.stdout.decode("ascii").strip()
+            recovery.bind(name, container)
+        except (OSError, subprocess.TimeoutExpired, UnicodeError):
+            raise Failure("CLEANUP_UNKNOWN", "container creation outcome unknown") from None
+        require(time.monotonic() < deadline, "EXPIRED", "container launch deadline exceeded")
+        process = subprocess.Popen(  # nosec B603
+            [self.docker, LOCAL_DOCKER, "start", "--attach", "--interactive", container],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            start_new_session=True,
+        )
+        stdout, stderr = bytearray(), bytearray()
+        overflow = threading.Event()
 
-            def drain(stream: BinaryIO, output: bytearray) -> None:
-                # A separate thread per pipe prevents a child from blocking on stderr.
-                while True:
-                    chunk = stream.read(4096)
-                    if not chunk:
-                        break
-                    remaining = self.limits.output_bytes - len(output)
-                    output.extend(chunk[: max(remaining, 0)])
-                    if len(chunk) > remaining:
-                        overflow.set()
+        def drain(stream: BinaryIO, output: bytearray) -> None:
+            # A separate thread per pipe prevents a child from blocking on stderr.
+            while True:
+                chunk = stream.read(4096)
+                if not chunk:
+                    break
+                remaining = self.limits.output_bytes - len(output)
+                output.extend(chunk[: max(remaining, 0)])
+                if len(chunk) > remaining:
+                    overflow.set()
 
-            threads = [
-                threading.Thread(target=drain, args=(process.stdout, stdout), daemon=True),
-                threading.Thread(target=drain, args=(process.stderr, stderr), daemon=True),
-            ]
+        threads = [
+            threading.Thread(target=drain, args=(process.stdout, stdout), daemon=True),
+            threading.Thread(target=drain, args=(process.stderr, stderr), daemon=True),
+        ]
 
-            def feed() -> None:
-                stream = cast(BinaryIO, process.stdin)
-                try:
-                    stream.write(input_bytes)
-                    stream.close()
-                except (BrokenPipeError, OSError):
-                    pass
-
-            threads.append(threading.Thread(target=feed, daemon=True))
-            for thread in threads:
-                thread.start()
-            reason = "completed"
+        def feed() -> None:
+            stream = cast(BinaryIO, process.stdin)
             try:
-                deadline = time.monotonic() + self.limits.seconds
-                while process.poll() is None:
-                    if overflow.is_set() or time.monotonic() >= deadline:
-                        reason = "output_limit" if overflow.is_set() else "timeout"
-                        break
-                    time.sleep(0.02)
-            finally:
-                try:
-                    cleanup = subprocess.run(  # nosec B603
-                        [self.docker, "rm", "--force", name],
-                        capture_output=True,
-                        timeout=15,
-                        check=False,
-                    )
-                    cleanup_known = cleanup.returncode == 0
-                except (OSError, subprocess.TimeoutExpired):
-                    cleanup_known = False
-                if process.poll() is None:
-                    process.kill()
-                process.wait(timeout=5)
-                for thread in threads:
-                    thread.join(timeout=5)
-                if not cleanup_known:
-                    reason = "cleanup_unknown"
-            if overflow.is_set() and reason == "completed":
-                reason = "output_limit"
-            if process.returncode != 0 and reason == "completed":
-                reason = f"exit_nonzero:{process.returncode}"
-            status = "reported" if reason == "completed" and process.returncode == 0 else "unknown"
-            return Result(status, process.returncode, bytes(stdout), bytes(stderr), reason)
+                stream.write(input_bytes)
+                stream.close()
+            except (BrokenPipeError, OSError):
+                pass
+
+        threads.append(threading.Thread(target=feed, daemon=True))
+        for thread in threads:
+            thread.start()
+        reason = "completed"
+        try:
+            while process.poll() is None:
+                if overflow.is_set() or time.monotonic() >= deadline:
+                    reason = "output_limit" if overflow.is_set() else "timeout"
+                    break
+                time.sleep(0.02)
+            if reason == "completed" and time.monotonic() >= deadline:
+                reason = "timeout"
+        finally:
+            try:
+                cleanup_known = recovery.cleanup(name)
+            except (OSError, Failure, subprocess.TimeoutExpired):
+                cleanup_known = False
+            if process.poll() is None:
+                process.kill()
+            process.wait(timeout=5)
+            for thread in threads:
+                thread.join(timeout=5)
+            if not cleanup_known:
+                reason = "cleanup_unknown"
+        if overflow.is_set() and reason == "completed":
+            reason = "output_limit"
+        if process.returncode != 0 and reason == "completed":
+            reason = f"exit_nonzero:{process.returncode}"
+        status = "reported" if reason == "completed" and process.returncode == 0 else "unknown"
+        return Result(status, process.returncode, bytes(stdout), bytes(stderr), reason)
 
     def python(self, source: str, inputs: list[JSON]) -> list[JSON]:
         # Expected outputs are compared outside the sandbox. Candidate code cannot edit the checker.

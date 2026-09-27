@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CheckedFlow v2 application key commands",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "api_version",
+    "chain",
+    "epoch",
+    "id",
+    "actor",
+    "revision",
+    "nonce",
+    "kind",
+    "payload"
+  ],
+  "properties": {
+    "api_version": {
+      "const": "checkedflow/v2"
+    },
+    "chain": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128
+    },
+    "epoch": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "actor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "nonce": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+    },
+    "kind": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "payload": {
+      "type": "object"
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "kind": {
+          "const": "key.schedule"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "identity",
+            "revision",
+            "public_key",
+            "activation_height",
+            "proof"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "identity": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "public_key": {
+              "type": "string",
+              "minLength": 64,
+              "maxLength": 64,
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "activation_height": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "proof": {
+              "type": "string",
+              "minLength": 128,
+              "maxLength": 128,
+              "pattern": "^[0-9a-f]{128}$"
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "kind": {
+          "const": "key.revoke"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "identity",
+            "revision",
+            "reason"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "identity": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "reason": {
+              "enum": [
+                "compromise",
+                "lost"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "description": "Empty catalog; fixture checkpoint is not production trust.",
+  "checkpoint": {
+    "version": "checkedflow/retention-backup/v1",
+    "namespace": "operator",
+    "scope": "mission",
+    "revision": 1,
+    "height": 0,
+    "digest": "2125eb6f780f26c67a56e5c677a845a2fb3945a4a954a621027b5de2a8edb35e",
+    "length": 230,
+    "records": 1
+  },
+  "jsonl": "{\"byte_limit\":268435456,\"bytes\":0,\"grace_blocks\":3,\"height\":0,\"namespace\":\"operator\",\"object_limit\":4096,\"objects\":0,\"retention_blocks\":2,\"revision\":1,\"scope\":\"mission\",\"type\":\"header\",\"version\":\"checkedflow/retention-backup/v1\"}\n"
+}

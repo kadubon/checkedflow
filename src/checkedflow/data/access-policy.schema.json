@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Operator client grants",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile",
+    "grants"
+  ],
+  "properties": {
+    "profile": {
+      "const": "checkedflow/access-policy/v1"
+    },
+    "grants": {
+      "type": "array",
+      "maxItems": 128,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "issuer",
+          "client",
+          "subject",
+          "chain",
+          "mission",
+          "roles",
+          "actors"
+        ],
+        "properties": {
+          "issuer": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2048
+          },
+          "client": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "subject": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "chain": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128
+          },
+          "mission": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "roles": {
+            "type": "array",
+            "maxItems": 6,
+            "uniqueItems": true,
+            "items": {
+              "enum": [
+                "inspect",
+                "submit",
+                "approve",
+                "verify",
+                "revoke",
+                "operate"
+              ]
+            }
+          },
+          "actors": {
+            "type": "array",
+            "maxItems": 128,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            }
+          }
+        }
+      }
+    }
+  }
+}

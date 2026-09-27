@@ -1,0 +1,218 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:service-observation:v1",
+  "title": "Role-aware local service observation; never execution authority",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile",
+    "role",
+    "live",
+    "readable",
+    "ready",
+    "checks",
+    "gauges"
+  ],
+  "properties": {
+    "profile": {
+      "const": "checkedflow/service-observation/v1"
+    },
+    "role": {
+      "enum": [
+        "gateway",
+        "worker",
+        "verifier",
+        "effect_executor",
+        "validator"
+      ]
+    },
+    "live": {
+      "const": true
+    },
+    "readable": {
+      "type": "boolean"
+    },
+    "ready": {
+      "type": "boolean"
+    },
+    "checks": {
+      "type": "object"
+    },
+    "gauges": {
+      "type": "object",
+      "maxProperties": 64,
+      "propertyNames": {
+        "pattern": "^[a-z][a-z0-9_]{0,79}(?![\\s\\S])"
+      },
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 9007199254740991
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "properties": {
+        "role": {
+          "const": "gateway"
+        },
+        "checks": {
+          "required": [
+            "configuration",
+            "node_fresh",
+            "storage"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "configuration": {
+              "type": "boolean"
+            },
+            "node_fresh": {
+              "type": "boolean"
+            },
+            "storage": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "role": {
+          "const": "worker"
+        },
+        "checks": {
+          "required": [
+            "configuration",
+            "node_fresh",
+            "sandbox",
+            "signer",
+            "storage"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "configuration": {
+              "type": "boolean"
+            },
+            "node_fresh": {
+              "type": "boolean"
+            },
+            "sandbox": {
+              "type": "boolean"
+            },
+            "signer": {
+              "type": "boolean"
+            },
+            "storage": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "role": {
+          "const": "verifier"
+        },
+        "checks": {
+          "required": [
+            "configuration",
+            "node_fresh",
+            "sandbox",
+            "signer",
+            "storage"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "configuration": {
+              "type": "boolean"
+            },
+            "node_fresh": {
+              "type": "boolean"
+            },
+            "sandbox": {
+              "type": "boolean"
+            },
+            "signer": {
+              "type": "boolean"
+            },
+            "storage": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "role": {
+          "const": "effect_executor"
+        },
+        "checks": {
+          "required": [
+            "configuration",
+            "node_fresh",
+            "provider",
+            "signer",
+            "storage"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "configuration": {
+              "type": "boolean"
+            },
+            "node_fresh": {
+              "type": "boolean"
+            },
+            "provider": {
+              "type": "boolean"
+            },
+            "signer": {
+              "type": "boolean"
+            },
+            "storage": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    {
+      "properties": {
+        "role": {
+          "const": "validator"
+        },
+        "checks": {
+          "required": [
+            "backup",
+            "configuration",
+            "node_fresh",
+            "signer",
+            "storage"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "backup": {
+              "type": "boolean"
+            },
+            "configuration": {
+              "type": "boolean"
+            },
+            "node_fresh": {
+              "type": "boolean"
+            },
+            "signer": {
+              "type": "boolean"
+            },
+            "storage": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
