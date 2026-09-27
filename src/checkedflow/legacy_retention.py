@@ -15,11 +15,30 @@ from checkedflow.artifact_io import Access
 from checkedflow.artifacts import LocalStore
 from checkedflow.core.artifact import Reference, reference
 from checkedflow.core.values import Object, array, fields, integer, obj, require, text
+from checkedflow.core.work_budget import Inheritance
 from checkedflow.legacy_inventory import Checkpoint, inspect_snapshot
 from checkedflow.recovery import replay_blocks
 from checkedflow.retention import Pin, RetentionStore
 from checkedflow.serialization import decode
 from checkedflow.wire import document, dumps
+
+
+@dataclass(frozen=True)
+class DispatchGuard:
+    """Protected operator inputs for a fresh retention read immediately before dispatch."""
+
+    path: Path
+    legacy: bytes
+    trusted: Checkpoint
+
+    def check(self, inherited: Inheritance) -> None:
+        require(
+            (inherited.chain, inherited.height, inherited.state_hash)
+            == (self.trusted.chain, self.trusted.height, self.trusted.state_hash),
+            "BINDING",
+            "dispatch legacy checkpoint differs",
+        )
+        verify_file(self.path, self.legacy, self.trusted)
 
 
 def verify_file(path: Path, legacy: bytes, trusted: Checkpoint) -> None:

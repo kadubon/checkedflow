@@ -1714,3 +1714,14 @@ tests passed in 64.98 seconds with all 103 statements and eight branches covered
 isolated wheel/sdist installation checks passed; the new retention-bypass mutation was detected.
 The inherited four-node fixture now provisions one catalog per node, but execution on this
 revision is pending. Dispatch-time revalidation and original G1-G7 remain incomplete.
+
+
+Inherited worker/effect watchdogs now require protected retained evidence immediately before
+supervised dispatch. Verification occurs outside the lock, followed by renewed freshness,
+observation identity and emergency-stop checks. Errors invalidate readiness without repinning.
+Seventy-nine tests passed with all 98 watchdog statements and 16 branches covered. A test-only
+helper import was subsequently simplified for isolated mutation runs; six focused cases and both
+new fault mutants passed. Static and isolated distribution checks passed; the publication scan
+found no issues in 947 files/members. The installed component build predates that final test-only
+import edit. The four-node fixture covers live retained observations and pin-release inhibition;
+its execution on this revision, full migration and final G1-G7 remain outstanding.

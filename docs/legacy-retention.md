@@ -47,7 +47,7 @@ cross-host cutover or G1-G7 qualification.
 The caller must provision both trusted checkpoints and the retention policy independently.
 This adapter does not derive missing history, fetch arbitrary references from candidates, bind a
 new approval plan to unreviewed artifacts, or automatically release historical obligations after
-an accounting adjustment. Startup admission now verifies the protected local catalog. Dispatch-time revalidation and deployed
+an accounting adjustment. Startup admission now verifies the protected local catalog. The worker/effect watchdog also revalidates retention on each dispatch check; deployed
 multi-host retention tests remain required before operational release.
 
 
@@ -92,8 +92,8 @@ pin identity, not storage paths, credentials, independent checkpoints or permiss
 Decoding succeeds even if storage has subsequently been removed or its pin released. Always
 call `verify` against the independently configured catalog, current access policy, trusted genesis
 and final checkpoint before using it. Verification never recreates missing pins. Updating the
-handle alone cannot authorize a new archive set. Startup admission consumes this handle through a protected operator configuration. Dispatch-time
-revalidation and deployed retention qualification remain separate requirements.
+handle alone cannot authorize a new archive set. Startup admission consumes this handle through a protected operator configuration. The dispatch watchdog revalidates it before supervised work; deployed retention qualification
+remains a separate requirement.
 
 
 ## Startup admission

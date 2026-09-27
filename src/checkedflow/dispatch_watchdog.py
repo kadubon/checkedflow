@@ -10,6 +10,7 @@ from time import monotonic_ns
 
 from checkedflow.core.operational import State
 from checkedflow.core.values import Failure, integer, require, text
+from checkedflow.legacy_retention import DispatchGuard
 
 
 class Watchdog:
@@ -29,11 +30,13 @@ class Watchdog:
         max_read_age_ns: int,
         max_stall_ns: int,
         clock: Callable[[], int] = monotonic_ns,
+        retention: DispatchGuard | None = None,
     ) -> None:
         self.chain, self.mission = text(chain, limit=128), text(mission, limit=80)
         self.max_age = integer(max_read_age_ns, low=1, high=3_600_000_000_000)
         self.max_stall = integer(max_stall_ns, low=1, high=3_600_000_000_000)
         self._read, self._clock = read, clock
+        self._retention = retention
         self._lock = Lock()
         self._stopped = False
         self._polling = False
@@ -128,11 +131,33 @@ class Watchdog:
     def current(self) -> State:
         """Return a locally fresh observation, not a reusable dispatch permit."""
         with self._lock:
-            require(not self._stopped, "STOPPED", "dispatch watchdog stopped")
-            self._expire(self._now())
-            if self._polling or self._state is None or self._progress is None:
-                raise Failure(
-                    "NOT_READY",
-                    "recent running observations and committed-height progress required",
-                )
-            return self._state
+            state = self._current()
+        try:
+            inherited = state.budget.inheritance
+            require(
+                (inherited is not None) == (self._retention is not None),
+                "BINDING",
+                "dispatch retention required exactly for inherited state",
+            )
+            if inherited is not None and self._retention is not None:
+                self._retention.check(inherited)
+        except Exception:
+            with self._lock:
+                self._invalidate()
+            raise
+        with self._lock:
+            require(
+                self._current() is state, "STALE", "state changed during retention verification"
+            )
+            return state
+
+    def _current(self) -> State:
+        """Caller holds the lock; repeated after potentially slow retention I/O."""
+        require(not self._stopped, "STOPPED", "dispatch watchdog stopped")
+        self._expire(self._now())
+        if self._polling or self._state is None or self._progress is None:
+            raise Failure(
+                "NOT_READY",
+                "recent running observations and committed-height progress required",
+            )
+        return self._state

@@ -282,4 +282,5 @@ from catalog erasure and verifies existing roots without silently recreating mis
 
 Inherited node startup now requires the protected local retention configuration and replays its
 retained history before opening the ABCI listener. See [startup admission](docs/legacy-retention.md#startup-admission).
-Continuous dispatch-time revalidation and final multi-host qualification remain unfinished.
+Worker/effect supervisors also revalidate retention through their watchdog before dispatch.
+Final multi-host qualification remains unfinished.

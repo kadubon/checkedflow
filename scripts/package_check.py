@@ -224,7 +224,7 @@ approval = verify_succession(dumps(approval_vector["manifest"]), legacy=dumps(ol
     successor=decode_control(dumps(approval_vector["successor"])),
     validators=tuple(tuple(pair) for pair in approval_vector["validators"]))
 assert approval.plan_hash == approval_vector["plan_hash"]
-from checkedflow.legacy_retention import decode_retained, verify_file
+from checkedflow.legacy_retention import DispatchGuard, decode_retained, verify_file
 from checkedflow.legacy_retention import preserve as retain_legacy, verify as verify_legacy_pin
 from checkedflow.wire import digest
 from checkedflow.retention import RetentionStore
@@ -263,6 +263,7 @@ with tempfile.TemporaryDirectory() as legacy_directory:
     configuration_path = folder / "retention.json"
     configuration_path.write_bytes(dumps(configuration))
     verify_file(configuration_path, dumps(old), anchor)
+    DispatchGuard(configuration_path, dumps(old), anchor).check(prepared.budget.inheritance)
 from checkedflow.succession_journal import ApprovalJournal
 import tempfile
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey

@@ -113,3 +113,6 @@ Always verify the existing pin and independently protected roots before use. See
 
 Inherited ABCI startup requires --legacy-retention with protected original catalog policy and an
 independent positive revision floor. Never initialize a missing inventory or repin during recovery.
+
+Inherited worker/effect watchdogs require a protected DispatchGuard. Retention I/O must not
+extend freshness or block emergency stop; never reuse a returned state as a future dispatch permit.

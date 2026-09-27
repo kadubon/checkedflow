@@ -4541,6 +4541,14 @@
         "checkedflow-0.1.0-py3-none-any.whl": "6ea818486b94f68ed08b97b899326df01861bd74a03481d8a1312b3a268f6c7e",
         "checkedflow-0.1.0.tar.gz": "1fa2e20f145deb1c550075510a6b2c0fb3ccbdadb56458d554cc0fd2ecb923ea"
       }
+    },
+    {
+      "id": "inherited-dispatch-retention-guard",
+      "scope": "Worker/effect Watchdog.current requires a protected concrete DispatchGuard exactly for inherited state. Reopens existing evidence on each check, binds inherited root, invalidates readiness on error, and rechecks freshness/state/stop after I/O outside the lock.79tests passed50.17s; watchdog98statements16branches100percent. Initial new fixture mistakenly used paused genesis (5failed74passed); corrected to running state without weakening production checks. Initial targeted mutation collection failed because a test helper imported excluded generated protobuf; removed that test-only dependency,6focused tests passed12.07s and both new mutants detected. Static, isolated wheel/sdist checks exit0;947member publication scan0findings. Artifact build predates final test-helper import refactor; no production code changed afterward. Four-node fixture now tests live observation and inhibition after pin release; execution pending. Original G1-G7 and full migration remain unqualified.",
+      "artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "8f8e070d7d25e9b534ac695cdb81fc818a5cd18112c3f2b7ce2c12d3054d6653",
+        "checkedflow-0.1.0.tar.gz": "b5a9bb5c410d50fa355c0f5f075c9e7a4f8c02cc290a743a27eb53ac43a4b8fa"
+      }
     }
   ]
 }

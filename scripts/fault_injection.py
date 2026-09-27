@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "dispatch_watchdog.py",
+        "test_dispatch_retention.py",
+        "inherited_dispatch_requires_current_retention",
+        "self._retention.check(inherited)",
+        "pass",
+        "test_inherited_dispatch_refuses_missing_and_released_evidence",
+    ),
+    (
+        "dispatch_watchdog.py",
+        "test_dispatch_retention.py",
+        "retention_does_not_extend_observation",
+        "self._current() is state",
+        "True",
+        "test_guard_completion_cannot_extend_or_replace_observation",
+    ),
+    (
         "legacy_retention.py",
         "test_legacy_retention.py",
         "startup_reopens_and_verifies_existing_retention",

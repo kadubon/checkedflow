@@ -468,9 +468,10 @@ def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructu
     )
     from test_legacy_retention import local_configuration
 
-    cluster.retention_paths = tuple(
-        local_configuration(cluster.directory / f"node{index}")[0] for index in range(4)
+    retention_rows = tuple(
+        local_configuration(cluster.directory / f"node{index}") for index in range(4)
     )
+    cluster.retention_paths = tuple(row[0] for row in retention_rows)
     for path, value in zip(
         cluster.succession_paths,
         (
@@ -536,6 +537,28 @@ def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructu
             assert state.budget.available == initial_budget.available - 1
         _, common = cluster.common_hash()
         assert common
+        from test_retention import ACCESS
+
+        from checkedflow.core.values import Failure
+        from checkedflow.dispatch_watchdog import Watchdog
+        from checkedflow.legacy_retention import DispatchGuard
+
+        cluster.send("mission.resume", {})
+        retention_path, _, raw, trusted, catalog, retained = retention_rows[0]
+        watchdog = Watchdog(
+            cluster.client().live_state,
+            chain=cluster.initial.chain,
+            mission=cluster.initial.mission,
+            max_read_age_ns=10000000000,
+            max_stall_ns=10000000000,
+            retention=DispatchGuard(retention_path, raw, trusted),
+        )
+        cluster.wait_height(watchdog.poll().height + 1)
+        watchdog.poll()
+        assert watchdog.current().budget.inheritance == resolved_inheritance
+        catalog.release(retained.pin, access=ACCESS)
+        with pytest.raises(Failure, match="BINDING"):
+            watchdog.current()
     finally:
         cluster.close()
     for index in range(4):

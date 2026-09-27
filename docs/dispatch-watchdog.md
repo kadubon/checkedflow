@@ -74,7 +74,8 @@ durable reconciliation, not automatic resubmission.
 
 No background thread, poll scheduler, provider call, clock-driven consensus transition, automatic
 resume, process kill or metric exporter is installed. `poll()` performs the supplied read; `current()`
-and `stop()` perform no network or filesystem I/O. The existing HTTP timeout bounds individual I/O,
+performs local retention I/O for inherited state; `stop()` performs no I/O and does not wait for
+retention reads. The existing HTTP timeout bounds individual I/O,
 not a total process deadline. An outer supervised process must enforce its total resource envelope.
 
 ## Recovery and validation
@@ -91,3 +92,21 @@ The installed-package smoke checks default inhibition outside the checkout. The 
 CometBFT/gVisor case adds warmup, two-node quorum-loss inhibition despite successful queries, and
 post-recovery progress. The actual run result belongs in the implementation ledger; registering a
 test is not evidence that it passed. Four-host and full supervised-effect qualification remain open.
+
+
+## Inherited missions
+
+Pass `retention=DispatchGuard(path, legacy_bytes, trusted_checkpoint)` to `Watchdog` for an
+inherited mission. These are protected operator inputs described in [legacy retention](legacy-retention.md).
+`current()` checks the observed inherited root against the guard, then reopens and verifies the
+retained snapshot, history and existing pin on every call. A missing guard or failed read inhibits
+dispatch and invalidates readiness; two new progressing observations are required before trying
+again. A guard on a non-inherited mission is rejected as a configuration mismatch.
+
+Verification runs outside the watchdog lock. Before returning, the watchdog rechecks stop,
+read/progress deadlines and that the observation has not changed. Slow verification cannot renew
+freshness or extend a lease. Size and provision retained history within the configured observation
+window; expensive replay can intentionally inhibit work. An outer service must still bound total
+process resources. This check does not cancel already dispatched work, stop the old deployment,
+or provide cross-host storage independence. Direct low-level runners require equivalent admission;
+only the worker/effect supervisor paths using this watchdog receive this enforcement.
