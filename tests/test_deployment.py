@@ -91,6 +91,20 @@ def test_deterministic_plan_binds_nodes_without_keys_or_public_management(tmp_pa
         assert config["abci"] == "grpc"
         assert config["proxy_app"] == "tcp://127.0.0.1:26658"
         assert config["rpc"]["laddr"] == "tcp://127.0.0.1:26657"
+        # RPC base64 expansion must fit even when the application byte ceiling is reached.
+        from checkedflow.wire import MAX_TRANSACTION_BYTES
+
+        request = dumps(
+            {
+                "jsonrpc": "2.0",
+                "id": 1,
+                "method": "broadcast_tx_commit",
+                "params": {"tx": base64.b64encode(b"x" * MAX_TRANSACTION_BYTES).decode()},
+            },
+            string_limit=2 * MAX_TRANSACTION_BYTES,
+        )
+        assert len(request) <= config["rpc"]["max_body_bytes"]
+        assert config["mempool"]["max_tx_bytes"] == MAX_TRANSACTION_BYTES
         assert not config["rpc"]["unsafe"] and not config["p2p"]["pex"]
         peers = config["p2p"]["persistent_peers"].split(",")
         assert len(peers) == 3 and all(node["node_id"] not in peer for peer in peers)

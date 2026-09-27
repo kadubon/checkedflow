@@ -201,6 +201,7 @@ node_key_file = "config/node_key.json"
 [rpc]
 laddr = "tcp://127.0.0.1:26657"
 unsafe = false
+max_body_bytes = 2097152
 grpc_laddr = ""
 pprof_laddr = ""
 [p2p]
@@ -212,6 +213,8 @@ pex = false
 addr_book_strict = false
 max_num_outbound_peers = 0
 allow_duplicate_ip = false
+[mempool]
+max_tx_bytes = 1048576
 [instrumentation]
 prometheus = false
 '''
