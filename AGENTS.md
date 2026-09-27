@@ -13,6 +13,10 @@ unknown outcomes, fixed call limits and boot-bound deadlines. Do not delete a jo
 new task/plan identity to bypass recovery. Before the 0.2.0 release, audit README, every applicable
 Docs page, this file and skills.md against actual installed-artifact behavior and G1-G7 evidence.
 Keep the publication interlock closed while any mandatory gate remains unqualified.
+Reject an existing submission journal with a missing identity or foreign tables; never initialize
+over partial recovery state. Keep original signed bytes and all related executor journals together.
+Apply the same rule to worker attempts, schedules, sandbox ownership and agent callback journals.
+Commit initial schemas and identity records atomically; missing tables are not fresh inventories.
 
 Draft effect integration must use complete-source/patch Git tree binding, not just a caller's tree
 ID. See docs/github-drafts.md. Keep SHA-256 application identities distinct from Git SHA-1 IDs;

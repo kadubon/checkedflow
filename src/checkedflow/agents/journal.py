@@ -44,26 +44,46 @@ class Journal:
     def _initialize(self, path: Path | None) -> None:
         if path is not None:
             path.chmod(0o600)
-        self.db.executescript("""
-            PRAGMA journal_mode=WAL;
-            PRAGMA synchronous=FULL;
-            CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);
-            CREATE TABLE IF NOT EXISTS observations (
-                id TEXT PRIMARY KEY, fingerprint TEXT NOT NULL, stamp INTEGER NOT NULL,
-                value BLOB NOT NULL, history BLOB NOT NULL);
-            CREATE TABLE IF NOT EXISTS notifications (
-                task TEXT NOT NULL, id TEXT NOT NULL, value BLOB NOT NULL,
-                delivered TEXT NOT NULL DEFAULT '', attempts INTEGER NOT NULL DEFAULT 0,
-                PRIMARY KEY(task,id));
-        """)
+        self.db.execute("PRAGMA journal_mode=WAL")
+        self.db.execute("PRAGMA synchronous=FULL")
         binding = self.gateway.journal_binding()
         with self.db:
-            self.db.execute("INSERT OR IGNORE INTO settings VALUES ('binding', ?)", (binding,))
+            self.db.execute("BEGIN IMMEDIATE")
+            tables = {
+                row[0]
+                for row in self.db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            }
             require(
-                self.setting("binding") == binding, "SCOPE", "journal belongs to another mission"
+                not tables or tables == {"settings", "observations", "notifications"},
+                "VERSION",
+                "agent journal profile",
             )
             self.db.execute(
-                "INSERT OR IGNORE INTO settings VALUES ('cursor_key', ?)", (secrets.token_hex(32),)
+                "CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)"
+            )
+            self.db.execute(
+                "CREATE TABLE IF NOT EXISTS observations ("
+                "id TEXT PRIMARY KEY, fingerprint TEXT NOT NULL, stamp INTEGER NOT NULL, "
+                "value BLOB NOT NULL, history BLOB NOT NULL)"
+            )
+            self.db.execute(
+                "CREATE TABLE IF NOT EXISTS notifications ("
+                "task TEXT NOT NULL, id TEXT NOT NULL, value BLOB NOT NULL, "
+                "delivered TEXT NOT NULL DEFAULT '', attempts INTEGER NOT NULL DEFAULT 0, "
+                "PRIMARY KEY(task,id))"
+            )
+            if not tables:
+                self.db.execute("INSERT INTO settings VALUES ('binding', ?)", (binding,))
+                self.db.execute(
+                    "INSERT INTO settings VALUES ('cursor_key', ?)", (secrets.token_hex(32),)
+                )
+            require(
+                bool(self.setting("binding")) and bool(self.setting("cursor_key")),
+                "STORAGE",
+                "missing agent identity; recovery required",
+            )
+            require(
+                self.setting("binding") == binding, "SCOPE", "journal belongs to another mission"
             )
 
     def setting(self, key: str) -> str:

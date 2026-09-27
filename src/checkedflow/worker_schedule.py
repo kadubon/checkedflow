@@ -83,6 +83,13 @@ class Schedule:
             }
         )
         with self._db() as db, db:
+            db.execute("BEGIN IMMEDIATE")
+            tables = {
+                row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            }
+            require(
+                not tables or tables == {"schedule", "queue"}, "VERSION", "schedule journal profile"
+            )
             db.execute(
                 "CREATE TABLE IF NOT EXISTS schedule (id INTEGER PRIMARY KEY CHECK(id=1), "
                 "binding BLOB NOT NULL, deadline INTEGER NOT NULL, observed INTEGER NOT NULL, "
@@ -94,9 +101,9 @@ class Schedule:
                 "attempts INTEGER NOT NULL, due INTEGER NOT NULL, status TEXT NOT NULL, "
                 "reason TEXT NOT NULL)"
             )
-            db.execute("BEGIN IMMEDIATE")
             row = db.execute("SELECT binding FROM schedule WHERE id=1").fetchone()
             if row is None:
+                require(not tables, "STORAGE", "missing schedule identity; recovery required")
                 now = self._now()
                 db.execute(
                     "INSERT INTO schedule VALUES (1, ?, ?, ?, 0, 0)",

@@ -35,7 +35,16 @@ from the configured validating node's initial identity roots, organizations and 
 monotonic observed height/nonce floors plus the same-height state hash. It retains one outstanding
 command and the most recently resolved command, rather than an unbounded in-memory request list.
 
-`send(request, kind, payload)` accepts only worker/verifier commands. It authenticates and evaluates
+Initialization is atomic. An existing journal without its identity row, or with unrelated tables,
+is rejected instead of being adopted as a new nonce stream. Preserve that database for recovery;
+do not remove it to make startup succeed. This detects partial structural damage, not replacement
+of the entire directory or a malicious rollback to a previously valid database. Protect the directory
+and reconcile restored journals with the validating node before returning the signing identity to service.
+The execution journal applies the same rule to its identity and attempts tables: a missing table
+is damage, not permission to create an empty execution history. Initial schema and identity creation
+commit together; an interrupted first initialization can be retried without inheriting partial tables.
+
+`send(request, kind, payload)` accepts only worker, verifier and effect-executor commands. It authenticates and evaluates
 the proposed bytes against the current own-node state before writing the intent. Successful node
 submission alone is insufficient: a matching committed request receipt must be observed. Missing,
 rejected, malformed or lost replies leave uncertainty and block a different logical request.

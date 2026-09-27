@@ -44,6 +44,46 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "worker_supervisor.py",
+        "test_journal_initialization.py",
+        "worker_identity_cannot_be_recreated",
+        'require(not tables, "STORAGE", "missing worker identity; recovery required")',
+        'require(True, "STORAGE", "missing worker identity; recovery required")',
+        "test_partial_journal_never_reinitializes",
+    ),
+    (
+        "worker_schedule.py",
+        "test_journal_initialization.py",
+        "missing_schedule_queue_cannot_be_recreated",
+        'not tables or tables == {"schedule", "queue"}',
+        "True",
+        "test_partial_journal_never_reinitializes",
+    ),
+    (
+        "sandbox_recovery.py",
+        "test_journal_initialization.py",
+        "sandbox_owner_cannot_be_recreated",
+        'require(not tables, "STORAGE", "missing sandbox owner; recovery required")',
+        'require(True, "STORAGE", "missing sandbox owner; recovery required")',
+        "test_partial_journal_never_reinitializes",
+    ),
+    (
+        "agents/journal.py",
+        "test_journal_initialization.py",
+        "agent_instance_cannot_be_recreated",
+        "if not tables:",
+        'if not self.setting("binding"):',
+        "test_partial_journal_never_reinitializes",
+    ),
+    (
+        "worker_submission.py",
+        "test_worker_submission.py",
+        "missing_submission_identity_never_resets_unknowns",
+        'require(not tables, "STORAGE", "missing coordinator identity; recovery required")',
+        'require(True, "STORAGE", "missing coordinator identity; recovery required")',
+        "test_missing_coordinator_identity_never_reinitializes_unknown_work",
+    ),
+    (
         "effect_supervisor.py",
         "test_effect_supervisor.py",
         "effect_invocation_never_repeats_after_crash",

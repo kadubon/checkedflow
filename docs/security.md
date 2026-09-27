@@ -53,6 +53,19 @@ virtual environments, downloaded tools, raw reports and local caches are exclude
 
 ## Deployment limits
 
+The 0.2.0 journal audit found startup paths that recreated missing ownership records or tables in
+partially damaged databases. Such initialization could reset a queue or attach retained records to
+a new local identity. Submission, worker execution, scheduling, sandbox recovery and agent journals
+now require their complete table profile and existing identity. Initial schema and identity creation
+commit atomically; partial initialization rolls back. Regression tests cover missing identities,
+missing tables, foreign profiles, lost command replies and interruption during first initialization.
+
+This is a structural recovery check. It does not authenticate every database byte, recover deleted
+evidence, detect replacement of the entire directory or prevent rollback to a valid older backup.
+Keep journals protected and preserve damaged copies for explicit recovery. Never remove a journal
+to bypass a startup error. See [worker recovery](worker-supervision.md),
+[sandbox ownership](sandbox-recovery.md) and [callback custody](callback-secrets.md).
+
 One gateway admits one mission's visibility. V1 retains single-operator access; the v2 CLI requires
 [client policy](client-access.md) for mission roles, signed-actor bindings and callback ownership.
 Inspection grants still expose the shared mission, without per-record secrecy. Use separate deployments

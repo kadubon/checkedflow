@@ -124,6 +124,14 @@ class Recovery:
         self.path = directory / "sandbox.sqlite"
         identity = engine.identity()
         with self._db() as db:
+            tables = {
+                row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            }
+            require(
+                not tables or tables == {"owner", "containers"},
+                "VERSION",
+                "sandbox journal profile",
+            )
             db.execute(
                 "CREATE TABLE IF NOT EXISTS owner (id INTEGER PRIMARY KEY, engine TEXT, "
                 "boot TEXT, heartbeat INTEGER)"
@@ -134,6 +142,7 @@ class Recovery:
             )
             row = db.execute("SELECT engine FROM owner WHERE id=1").fetchone()
             if row is None:
+                require(not tables, "STORAGE", "missing sandbox owner; recovery required")
                 db.execute("INSERT INTO owner VALUES (1, ?, '', 0)", (identity,))
             else:
                 require(row[0] == identity, "BINDING", "Docker daemon changed")

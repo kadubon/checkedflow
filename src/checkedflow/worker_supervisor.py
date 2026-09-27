@@ -52,6 +52,15 @@ class Supervisor:
         self._execute, self._publish = execute, publish
         directory.mkdir(mode=0o700, parents=True, exist_ok=True)
         with closing(sqlite3.connect(directory / "worker.sqlite")) as db, db:
+            db.execute("BEGIN IMMEDIATE")
+            tables = {
+                row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            }
+            require(
+                not tables or tables == {"identity", "attempts"},
+                "VERSION",
+                "worker journal profile",
+            )
             db.execute(
                 "CREATE TABLE IF NOT EXISTS identity (id INTEGER PRIMARY KEY CHECK(id=1), "
                 "binding BLOB NOT NULL)"
@@ -67,6 +76,7 @@ class Supervisor:
             )
             row = db.execute("SELECT binding FROM identity WHERE id=1").fetchone()
             if row is None:
+                require(not tables, "STORAGE", "missing worker identity; recovery required")
                 db.execute("INSERT INTO identity VALUES (1, ?)", (binding,))
             else:
                 require(row[0] == binding, "SCOPE", "worker journal belongs to another identity")

@@ -1218,3 +1218,39 @@ bytes. The required gate now contains 27 cases. It has not run locally on Window
 26-case report cannot qualify it. The provider response in this case is an explicit fixture;
 live GitHub staging, governed remote reconciliation, compensation, coordinated cross-host recovery,
 retirement and the complete original G1–G7 profile remain unfinished.
+
+## Installed supervisor qualification and journal initialization audit
+
+Source `14e9f343b2f13dd016e99d9fb8f5231ff55cb0e3` passed every job in
+[CI36292057142](https://github.com/kadubon/checkedflow/actions/runs/36292057142).
+Its downloaded installed-artifact report independently passed the required 27-case gate with no
+skips, errors or failures. This includes real four-node/gVisor supervised effect reporting and
+lost-reply recovery; the GitHub response remains a protocol fixture, not live G3 evidence.
+Hosted wheel `4fa741ce911cc4a8ea8e0f7a7580ae0dd2556f8193874116381306b02e057229`
+and sdist `b9c66684d4a206c6667f2ff6ee158f38b5dcf310e1622848f01ea2c2e018a79d`
+identify that tested source. They predate the following audit fixes.
+
+The audit found initialization paths that recreated missing identity records or tables around
+existing journals. Submission, worker execution, scheduling, sandbox recovery and agent callback
+journals now reject partial or foreign structure. Initial table and identity creation commit
+atomically. A missing queue must not become an empty schedule; a missing sandbox inventory must
+not become proof that no containers remain; a missing gateway identity must not rebind observations.
+These structural checks do not detect replacement of the entire directory or rollback to a valid
+older database. Protected ownership and coordinated restore remain mandatory.
+
+Fourteen new reproductions failed before the cross-journal fixes. After correction, all passed;
+three additional cases check interruption during first initialization. The submission suite adds
+five cases for missing ownership after uncertain replies, foreign profiles and atomic initialization.
+The installed current wheel passed all 46 submission/initialization cases outside the checkout.
+Wheel `0c5c777bafb63378b4f90eb3854a8e190adb270252d890d00e4512e7dc19ec72`
+and sdist `26cc002b6e68cbc53b1906a1dc3b1a0d9f64eb16d5bce4fa08b27a2327239dc6`
+passed isolated package smoke tests; all 164 package files match current source. Publication pattern
+scanning checked 810 members without findings. These are development artifacts, not a final release
+candidate; subsequent documentation updates and full G1-G7 remain separate obligations.
+
+The final local check for these fixes passed 946 tests in 289.53 seconds, with three Windows
+descriptor skips and 24 infrastructure cases selected separately. All static and authoritative
+coverage gates passed. Submission, worker, schedule and agent journals reached 100% statements
+and branches; sandbox recovery retained 99.39% statements and 95.45% branches. All 91 selected
+fault mutants were killed, including five new journal-integrity mutations. Current-source hosted
+infrastructure qualification remains separate from the successful earlier supervisor run.

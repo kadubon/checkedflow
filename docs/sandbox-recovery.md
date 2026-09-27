@@ -22,6 +22,10 @@ uv run python -m checkedflow.sandbox_recovery "$CHECKEDFLOW_SANDBOX_RECOVERY"
 Set the same variable in the worker's terminal. Keep the service running until all work and cleanup
 have settled. There is no host-execution fallback. A missing journal setting, stale recovery heartbeat,
 unavailable daemon, changed daemon identity or full recovery journal prevents new container launch.
+An existing database must retain both its owner and container tables and its original owner row.
+Missing ownership or table structure prevents startup; initialization never adopts orphaned records
+under a new daemon identity or fabricates an empty container inventory. Preserve the database for
+operator recovery. This structural check cannot detect replacement of an entire valid database.
 `GVisorRunner.check()` probes the isolation runtime only; actual launch also enforces recovery readiness.
 `python -m checkedflow.sandbox_recovery DIRECTORY --once` performs one recovery pass; it does not
 advertise a continuing service. All commands are available from an installed wheel without a checkout.

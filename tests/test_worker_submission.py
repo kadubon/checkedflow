@@ -97,6 +97,61 @@ def test_durable_nonce_sequence_and_completed_request_repetition(tmp_path):
     assert [document(raw)["command"]["nonce"] for raw in node.sent] == [1, 2, 3, 4]
 
 
+@pytest.mark.parametrize("behavior", ["before", "after"])
+def test_missing_coordinator_identity_never_reinitializes_unknown_work(tmp_path, behavior):
+    from contextlib import closing
+
+    node = Node()
+    node.behavior = behavior
+    coordinator = node.coordinator(tmp_path)
+    with pytest.raises(Failure, match="OUTCOME_UNKNOWN"):
+        coordinator.send("0:lease", "task.lease", node.lease())
+    assert coordinator.pending() is not None
+    with closing(sqlite3.connect(tmp_path / "submission.sqlite")) as db, db:
+        db.execute("DELETE FROM coordinator")
+    with pytest.raises(Failure, match="STORAGE"):
+        node.coordinator(tmp_path)
+    with closing(sqlite3.connect(tmp_path / "submission.sqlite")) as db:
+        assert db.execute("SELECT COUNT(*) FROM coordinator").fetchone()[0] == 0
+    assert len(node.sent) == 1
+
+
+@pytest.mark.parametrize("existing", [False, True])
+def test_foreign_submission_journal_is_not_adopted(tmp_path, existing):
+    from contextlib import closing
+
+    node = Node()
+    if existing:
+        node.coordinator(tmp_path)
+    with closing(sqlite3.connect(tmp_path / "submission.sqlite")) as db, db:
+        db.execute("CREATE TABLE foreign_profile (id INTEGER)")
+    with pytest.raises(Failure, match="VERSION"):
+        node.coordinator(tmp_path)
+    with closing(sqlite3.connect(tmp_path / "submission.sqlite")) as db:
+        tables = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    assert tables == ({"foreign_profile", "coordinator"} if existing else {"foreign_profile"})
+    assert not node.sent
+
+
+def test_interrupted_first_initialization_rolls_back_schema(tmp_path, monkeypatch):
+    from contextlib import closing
+
+    import checkedflow.worker_submission as submission
+
+    node = Node()
+
+    def crash(_):
+        raise SystemExit("fixture initialization interrupted")
+
+    with monkeypatch.context() as patch:
+        patch.setattr(submission, "dumps", crash)
+        with pytest.raises(SystemExit):
+            node.coordinator(tmp_path)
+    with closing(sqlite3.connect(tmp_path / "submission.sqlite")) as db:
+        assert db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall() == []
+    assert node.coordinator(tmp_path).pending() is None and not node.sent
+
+
 @pytest.mark.parametrize("retirement", ["epoch", "credential"])
 def test_cached_confirmation_requires_current_admission(tmp_path, retirement):
     node = Node()

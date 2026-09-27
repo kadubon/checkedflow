@@ -160,6 +160,10 @@ through the same durable coordinator. See the [SDK catalogue](src/checkedflow/da
 Preserve pending bytes after transport uncertainty. Never restart already-started code because a
 completion reply was lost. Use the concrete gVisor repository executor; candidate-defined callbacks
 are not trusted supervisor adapters. No unattended worker service is supplied by this SDK increment.
+An existing submission database with a missing identity row or foreign tables must fail startup.
+Preserve the damaged journal for recovery; deleting it does not establish absence of prior sends.
+Worker attempts, schedules, sandbox ownership and agent journals also reject partial structure.
+Never recreate missing tables or identity settings as an automatic recovery operation.
 The execution journal stops new attempts at 128 records. During a committed pause, use
 `Supervisor.retire` for known finished records only, before consensus `history.archive`; the verified
 publisher must retain exact evidence before local buffers are removed. Never discard unknowns or

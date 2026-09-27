@@ -33,6 +33,11 @@ without a keyring fails with `SECRET_KEY`. Reopening a journal that contains cal
 all stored rows before service startup; a missing/wrong key or modified ciphertext prevents startup.
 An in-memory journal uses an ephemeral in-memory key and has no restart durability claim.
 
+The settings, observation and notification tables form one journal profile. Startup rejects a
+missing table, an unrelated table, or missing mission binding or instance key. It never regenerates
+identity around retained records. Initial schema and settings commit together. Keep a damaged
+journal and its separate keys for explicit recovery; do not delete it to bypass startup checks.
+
 ## Rotation and recovery
 
 The keyring's active ID affects new writes. Retain previous decrypting keys until every applicable

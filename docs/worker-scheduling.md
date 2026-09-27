@@ -6,6 +6,11 @@ tasks, reserve funds, approve artifacts or grant execution authority. The superv
 committed ownership and its durable execution record. Scheduling again cannot authorize uncertain
 code to execute again.
 
+Startup requires the original schedule identity and queue tables. A missing table or identity is
+rejected rather than resetting deadlines, limits or pending work. Initial table and identity creation
+are one transaction, so an interrupted first initialization leaves no half-created plan. Retain
+damaged journals for recovery; these checks do not detect replacement by a valid older database.
+
 ## Fixed limits and identity
 
 `Policy` fixes at most 128 unique task IDs, 32 calls per task, 4,096 calls in total and a duration

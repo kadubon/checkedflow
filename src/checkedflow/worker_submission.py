@@ -46,6 +46,13 @@ class Coordinator:
         self.directory = directory
         directory.mkdir(mode=0o700, parents=True, exist_ok=True)
         with self._exclusive() as db:
+            tables = {
+                row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            }
+            require(
+                not tables or tables == {"coordinator"}, "VERSION", "submission journal profile"
+            )
+            db.execute("BEGIN IMMEDIATE")
             db.execute(
                 "CREATE TABLE IF NOT EXISTS coordinator (id INTEGER PRIMARY KEY CHECK(id=1), "
                 "binding BLOB NOT NULL, height INTEGER NOT NULL, nonce INTEGER NOT NULL, "
@@ -79,6 +86,7 @@ class Coordinator:
             )
             row = db.execute("SELECT binding FROM coordinator WHERE id=1").fetchone()
             if row is None:
+                require(not tables, "STORAGE", "missing coordinator identity; recovery required")
                 db.execute(
                     "INSERT INTO coordinator VALUES (1, ?, 0, 0, NULL, NULL, 0, '', '', '')",
                     (binding,),

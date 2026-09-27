@@ -3526,7 +3526,8 @@
         "tests/test_integration.py",
         "scripts/fault_injection.py",
         "tests/test_worker_retirement.py",
-        "tests/test_worker_schedule.py"
+        "tests/test_worker_schedule.py",
+        "tests/test_journal_initialization.py"
       ],
       "documentation": [
         "docs/worker-supervision.md",
@@ -3546,7 +3547,7 @@
         "R10-0473",
         "R10-0475"
       ],
-      "scope": "Concurrency-one persistent worker SDK, original-byte nonce coordinator, bounded explicit retransmission, conservative interruption recovery, gVisor-only repository adapter and verified evidence publication. Adds an immutable finite persistent execution schedule with admission deadline, per-task/total call limits, outside-consensus backoff/jitter and emergency stop. Does not provide the complete generation loop, cross-host identity leader election, coordinated journal recovery, effect authority, full G6 or complete release qualification. Local execution buffers have a 128-record admission ceiling and paused, verified-evidence retirement before consensus history archival; unknowns remain pinned."
+      "scope": "Concurrency-one persistent worker SDK, original-byte nonce coordinator, bounded explicit retransmission, conservative interruption recovery, gVisor-only repository adapter and verified evidence publication. Adds an immutable finite persistent execution schedule with admission deadline, per-task/total call limits, outside-consensus backoff/jitter and emergency stop. Does not provide the complete generation loop, cross-host identity leader election, coordinated journal recovery, effect authority, full G6 or complete release qualification. Local execution buffers have a 128-record admission ceiling and paused, verified-evidence retirement before consensus history archival; unknowns remain pinned. Existing journals reject missing identity or tables and foreign profiles; initial schema and identity commit atomically. Structural checks are not protection against whole-database rollback."
     },
     {
       "id": "independent-sandbox-recovery",
@@ -3561,7 +3562,8 @@
         "tests/test_runner_lifecycle.py",
         "tests/test_integration.py",
         "scripts/fault_injection.py",
-        "tests/test_recovery_service.py"
+        "tests/test_recovery_service.py",
+        "tests/test_journal_initialization.py"
       ],
       "documentation": [
         "docs/sandbox-recovery.md",
@@ -3575,7 +3577,7 @@
         "R10-0459",
         "R10-0463"
       ],
-      "scope": "Private bounded OCI recovery journal, create-before-start ownership binding, independent expiry recovery, local daemon/boot continuity and fail-closed admission. Does not qualify service-manager restart, workspace collection, journal disaster recovery, four-host lifecycle or full release gates."
+      "scope": "Private bounded OCI recovery journal, create-before-start ownership binding, independent expiry recovery, local daemon/boot continuity and fail-closed admission. Does not qualify service-manager restart, workspace collection, journal disaster recovery, four-host lifecycle or full release gates. Existing journals reject missing identity or tables and foreign profiles; initial schema and identity commit atomically. Structural checks are not protection against whole-database rollback."
     },
     {
       "id": "v2-agent-projections",
@@ -3618,7 +3620,8 @@
       "tests": [
         "tests/test_callback_secrets.py",
         "tests/test_agent_protocols.py",
-        "tests/test_integration.py"
+        "tests/test_integration.py",
+        "tests/test_journal_initialization.py"
       ],
       "documentation": [
         "docs/callback-secrets.md"
@@ -3629,7 +3632,7 @@
       "requirements": [
         "R8-0406"
       ],
-      "scope": "Bounded operator keyring, authenticated encrypted callback rows, redacted API responses, atomic explicit rotation preserving delivery counters, legacy plaintext denial and correct A2A scheme field. Whole-journal rollback protection, coordinated backup recovery, per-client ownership and equivalent endpoint authorization remain incomplete."
+      "scope": "Bounded operator keyring, authenticated encrypted callback rows, redacted API responses, atomic explicit rotation preserving delivery counters, legacy plaintext denial and correct A2A scheme field. Whole-journal rollback protection, coordinated backup recovery, per-client ownership and equivalent endpoint authorization remain incomplete. Existing journals reject missing identity or tables and foreign profiles; initial schema and identity commit atomically. Structural checks are not protection against whole-database rollback."
     },
     {
       "id": "mission-client-access",
@@ -4003,6 +4006,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36290596648",
       "conclusion": "success",
       "scope": "All jobs and all 26 required installed infrastructure cases passed; downloaded report independently checked with that source's historical gate. Includes corrected recovered-node readiness fixture. Hosted wheel0689c48c939e013e52cd7a8be1b2adc28fba6b993bc0e21176a38401103e089c; sdistcdfbf3d67edd819c5b1815b49cf95f65cf7f90dd1ad2c050bb975e3ac9c17d2e. Predates durable supervisor/new27case gate. Prior failed report remains failed; not final G1-G7 qualification."
+    },
+    {
+      "source": "14e9f343b2f13dd016e99d9fb8f5231ff55cb0e3",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36292057142",
+      "conclusion": "success",
+      "scope": "All jobs and all 27 installed infrastructure cases passed. Downloaded JUnit independently checked with the required27 gate. Real four-node CometBFT and gVisor supervisor reporting recovery passed with fixture provider responses, not live GitHub G3. Wheel4fa741ce911cc4a8ea8e0f7a7580ae0dd2556f8193874116381306b02e057229; sdistb9c66684d4a206c6667f2ff6ee158f38b5dcf310e1622848f01ea2c2e018a79d. Predates the journal initialization audit fixes; full G1-G7 remains unqualified."
     }
   ]
 }
