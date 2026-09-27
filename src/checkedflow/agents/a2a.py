@@ -32,6 +32,7 @@ from checkedflow.agents.push import Push
 from checkedflow.agents.secrets import Keyring, public_configuration
 from checkedflow.agents.tls import MutualTLS
 from checkedflow.core.values import Failure, Object, fields, obj, require, text
+from checkedflow.observability import Monitor
 from checkedflow.wire import digest, dumps
 
 TERMINAL = {
@@ -662,6 +663,7 @@ def create_app(
     policy: Policy | None = None,
     oauth: OAuth | None = None,
     artifacts: Reader | None = None,
+    monitor: Monitor | None = None,
     grpc_tls: MutualTLS | None = None,
     grpc_advertised_url: str = "",
     advertise_mtls: bool = False,
@@ -679,6 +681,7 @@ def create_app(
         policy=policy,
         oauth=oauth,
         artifacts=artifacts,
+        monitor=monitor,
         grpc_tls=grpc_tls,
         grpc_advertised_url=grpc_advertised_url,
         advertise_mtls=advertise_mtls,
@@ -698,6 +701,7 @@ def serve(
     policy: Policy | None = None,
     oauth: OAuth | None = None,
     artifacts: Reader | None = None,
+    monitor: Monitor | None = None,
     tls: MutualTLS | None = None,
     advertised_url: str = "",
     grpc_advertised_url: str = "",
@@ -716,6 +720,7 @@ def serve(
         policy=policy,
         oauth=oauth,
         artifacts=artifacts,
+        monitor=monitor,
         tls=tls,
         advertised_url=advertised_url,
         grpc_advertised_url=grpc_advertised_url,

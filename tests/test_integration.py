@@ -1483,9 +1483,35 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
         assert len(cluster.common_hash()[1]) == 64
 
         from checkedflow.effect_reconciliation import Reconciler
+        from checkedflow.identity import public_key
+        from checkedflow.observability import Monitor
 
+        def storage_ready():
+            return objects.get(base_ref, access=access) == tree_bytes(base)
+
+        monitor = Monitor(
+            watchdog,
+            "effect_executor",
+            {
+                "configuration": lambda: bool(
+                    Policy(path).authorize(client.live_state(), intent, provider, "e0", 1)
+                ),
+                "storage": storage_ready,
+                "signer": lambda: any(
+                    credential.identity == "e0"
+                    and credential.revision == 1
+                    and credential.public_key == public_key(cluster.keys[("e0", 1)])
+                    for credential in client.live_state().credentials
+                ),
+                "provider": lambda: provider.enabled is True,
+            },
+        )
+        assert monitor.observe().ready
         provider.enabled = False
         cluster.send("mission.pause", {})
+        paused = monitor.observe()
+        assert paused.readable and not paused.ready
+        assert "checkedflow_protected_work_ready 0\n" in paused.prometheus()
         proposal = Reconciler(coordinator, provider, objects, access, Policy(path)).collect(
             identity, intent, contract, base_ref, patch_ref
         )

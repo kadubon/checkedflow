@@ -43,6 +43,7 @@ guides; complete generation orchestration and operational deployment are still u
 | What if an external request loses its reply? | [V2 effect records](docs/work-effects.md) keep the original reservation, full modeled charge and unknown result; governed reconciliation cannot authorize a second send |
 | How can operators investigate an uncertain PR? | [Read-only reconciliation](docs/effect-reconciliation.md) publishes exact observations for three-organization review without enabling dispatch |
 | What if local recovery records are damaged? | [Submission recovery](docs/worker-supervision.md) rejects missing identity records; preserve journals and reconcile original commands instead of starting again |
+| Is a responding service safe to start work? | [Role-aware observations](docs/observability.md) separate liveness, readable state and readiness; authenticated status never grants execution authority |
 | What has actually been tested? | [Implementation ledger](docs/implementation-0.2.0.md), [four-VM observations](docs/vm-laboratory-2026-09-26.md) |
 
 ## The concepts in one minute
@@ -250,3 +251,7 @@ Licensed under [Apache-2.0](LICENSE). [NOTICE](NOTICE) includes upstream protoco
 [Replicated artifact access](docs/replicated-artifacts.md) requires fresh verified reads
 from at least three of four configured backends. Availability observations are not acceptance
 or future-use authorization; replica placement must be qualified independently.
+
+[Service observations](docs/observability.md) distinguish process liveness, readable state
+and protected-work readiness. Optional HTTP status routes remain inside mission authentication;
+current-state gauges do not count a replayed event again.

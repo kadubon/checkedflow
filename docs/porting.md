@@ -95,3 +95,7 @@ permission, at most four writes and the prohibition on resuming an interrupted s
 [Replicated artifact access](replicated-artifacts.md) requires fresh verified reads
 from at least three of four configured backends. Availability observations are not acceptance
 or future-use authorization; replica placement must be qualified independently.
+
+[Service observations](observability.md) distinguish process liveness, readable state
+and protected-work readiness. Optional HTTP status routes remain inside mission authentication;
+current-state gauges do not count a replayed event again.

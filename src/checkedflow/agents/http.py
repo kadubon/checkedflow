@@ -13,6 +13,7 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 from checkedflow.agents.access import Policy, Principal
 from checkedflow.agents.authentication import authenticated_headers
 from checkedflow.core.values import Failure, require
+from checkedflow.observability import Monitor
 
 MAX_BODY = 8 * 1048576
 
@@ -54,6 +55,7 @@ class Guard:
         authenticate: Callable[[str], Principal | None] | None = None,
         policy: Policy | None = None,
         challenge: str = "Bearer",
+        monitor: Monitor | None = None,
     ) -> None:
         require(
             token is None or (len(token) >= 32 and all(33 <= ord(c) <= 126 for c in token)),
@@ -68,6 +70,27 @@ class Guard:
         self.public, self.origins = public, origins
         self.authenticate, self.policy = authenticate, policy
         self.challenge = challenge
+        if monitor is not None:
+            require(
+                policy is not None and authenticate is not None,
+                "ACCESS",
+                "monitoring requires authenticated mission policy",
+            )
+            require(
+                policy is not None
+                and (policy.chain, policy.mission)
+                == (monitor.watchdog.chain, monitor.watchdog.mission),
+                "SCOPE",
+                "monitoring scope differs from service policy",
+            )
+            require(
+                not set(public) & {"/healthz", "/readyz", "/metrics"},
+                "ACCESS",
+                "monitoring cannot be public",
+            )
+            from checkedflow.agents.monitoring import Monitoring
+
+            self.app = Monitoring(app, monitor)
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] != "http":

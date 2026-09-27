@@ -56,6 +56,7 @@ REQUIRED = [
     "checkedflow/data/effect-reconciliation.schema.json",
     "checkedflow/data/effect-staging-policy.schema.json",
     "checkedflow/data/artifact-availability.schema.json",
+    "checkedflow/data/service-observation.schema.json",
     "checkedflow/data/github-effect-intent.schema.json",
     "checkedflow/data/effect-flow-vector.json",
     "checkedflow/data/operational-configuration.schema.json",

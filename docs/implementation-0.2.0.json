@@ -1871,15 +1871,19 @@
       "id": "R11-0481",
       "source_line": 481,
       "text": "Add structured logs, optional OpenTelemetry spans, Prometheus-compatible metrics, and role-aware `/healthz` and `/readyz` or equivalent endpoints.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:role-aware-observability"
+      ]
     },
     {
       "id": "R11-0483",
       "source_line": 483,
       "text": "Distinguish process liveness from readiness to accept/dispatch protected work. Readiness should reflect required configuration, own-node freshness, storage, signer availability, sandbox readiness for executing roles, and maintenance state without leaking secrets.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:role-aware-observability"
+      ]
     },
     {
       "id": "R11-0485",
@@ -1892,22 +1896,28 @@
       "id": "R11-0487",
       "source_line": 487,
       "text": "- Committed height, lag/freshness, rejected commands by bounded reason.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:role-aware-observability"
+      ]
     },
     {
       "id": "R11-0488",
       "source_line": 488,
       "text": "- Queue depth, active leases, expired leases, uncertain tasks.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:role-aware-observability"
+      ]
     },
     {
       "id": "R11-0489",
       "source_line": 489,
       "text": "- Verification backlog and time-to-checked completion.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:role-aware-observability"
+      ]
     },
     {
       "id": "R11-0490",
@@ -1927,15 +1937,19 @@
       "id": "R11-0492",
       "source_line": 492,
       "text": "- Spent/reserved/available modeled budget; separate observed metering if present.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:role-aware-observability"
+      ]
     },
     {
       "id": "R11-0493",
       "source_line": 493,
       "text": "- Effect dispatch/unknown/reconciliation counts.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:role-aware-observability"
+      ]
     },
     {
       "id": "R11-0494",
@@ -1948,8 +1962,10 @@
       "id": "R11-0496",
       "source_line": 496,
       "text": "Do not use task IDs, content digests, customer text, tokens, or arbitrary URLs as unbounded metric labels. Put high-cardinality identifiers in protected logs/traces. Prevent replay or monitor restart from double-counting authoritative service events.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:role-aware-observability"
+      ]
     },
     {
       "id": "R11-0498",
@@ -3932,6 +3948,35 @@
       "evidence": [
         "docs/implementation-0.2.0.md"
       ]
+    },
+    {
+      "id": "role-aware-observability",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/observability.py",
+        "src/checkedflow/agents/monitoring.py",
+        "src/checkedflow/agents/http.py",
+        "src/checkedflow/data/service-observation.schema.json"
+      ],
+      "tests": [
+        "tests/test_observability.py",
+        "tests/test_integration.py",
+        "scripts/fault_injection.py"
+      ],
+      "documentation": [
+        "docs/observability.md"
+      ],
+      "requirements": [
+        "R11-0481",
+        "R11-0483",
+        "R11-0487",
+        "R11-0488",
+        "R11-0489",
+        "R11-0492",
+        "R11-0493",
+        "R11-0496"
+      ],
+      "scope": "Role-specific liveness/readability/readiness with own-node watchdog, strict read-only dependency probes and post-probe freshness. Opt-in A2A/MCP HTTP status routes use existing authentication, scope and response-time revocation. Fixed-name current-state gauges avoid replay increments and arbitrary labels. Nineteen focused source and installed-wheel cases passed, plus the full 1,036-test local suite and authoritative coverage gates. Both new modules have full statement and measured branch coverage. Wheel/sdist isolated smoke passed; 853 source/distribution members had no scan findings. The extended real infrastructure case still needs its own run. Complete deployment probe provisioning, CLI configuration, event logs/traces, latency/storage instrumentation, dashboards/alerts and SLO/load qualification remain unfinished. No full R11/G1-G7 claim."
     }
   ],
   "observations": [
@@ -4126,6 +4171,18 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36294398572",
       "conclusion": "failure",
       "scope": "All six OS/Python, storage and signer jobs passed, but27-case qualification was rejected for systemd recovery list/inspect removal race. Historical reconciliation case passed. Corrected bounded polling requires later successful absence and empty journal. Failed report remains failed; no G1-G7 promotion."
+    },
+    {
+      "source": "2820041be1678b978ba1ba741b0483fb3cc8d95f",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36295642776",
+      "conclusion": "success",
+      "scope": "All required jobs passed, including six OS/Python jobs, both S3 services, Vault and all 27 installed infrastructure cases. Downloaded report independently accepted. Predates replication; no final G1-G7 claim."
+    },
+    {
+      "source": "c34f21ed19c47c159028826418d04d648cd81793",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36296518498",
+      "conclusion": "success",
+      "scope": "All required jobs passed, including six OS/Python jobs, both S3 services, Vault and all 27 installed infrastructure cases. Downloaded report independently accepted. Wheel9f9f1dd4c69cb24179d112127b4faa7f90a8891012ce9ba7c419f4251f55967f; sdist86905ab27b2afafcecd61a4fe3ac8c98eebd587450f5a49a8b888586c8137a92. Qualifies the replica-backed component case, not the later monitoring extension or final G1-G7."
     }
   ]
 }

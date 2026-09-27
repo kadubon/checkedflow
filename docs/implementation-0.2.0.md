@@ -1385,4 +1385,40 @@ The full local suite passed 1,017 tests in 361.14 seconds, with three Windows de
 24 separately selected infrastructure cases. All authoritative coverage gates passed, including
 all 61 replication statements and all four measured branches. Its Python source was unchanged
 during the run; the subsequent stricter schema assertion was additionally exercised by the focused
-and installed tests above. The expanded 100-mutant fault gate is still running.
+and installed tests above. The expanded fault gate completed successfully: all 100 selected mutants were killed.
+
+
+## Authenticated role-aware observations
+
+The [observability adapter](observability.md) distinguishes a responding process, a readable
+own-node snapshot and readiness for protected work. Every role requires explicit dependency
+probes, and freshness is rechecked after those probes. Optional A2A/MCP status routes remain
+inside authentication and current mission policy, including revocation during a request.
+Current-state metrics use fixed names and gauges; failed reads omit unavailable quantities.
+They do not invent lag, residual age, latency or physical storage measurements.
+
+The full local suite passed 1,036 tests in 372.49 seconds, with three Windows descriptor skips
+and 24 separately selected infrastructure cases. Static and authoritative coverage checks passed.
+The observation module covered all 70 statements and ten measured branches; its HTTP adapter
+covered all 22 statements and eight branches. The expanded 102-mutant gate is running.
+Nineteen tests also passed from the installed wheel outside the source checkout. Initial isolated
+test collection lacked copied test helpers; after including those helpers the actual tests passed.
+Wheel and sdist isolated package smoke passed. All 173 package files match current source, and
+853 scanned source/distribution members had no pattern findings.
+
+Development wheel `35106b118c0236eb4e109c0c0b5be7d90bb0abc5afa7a9cfda3eb840ec534c9f`
+and sdist `e02e116102b30179a4487fcc1a4c1753173c0a39670ff754cd0fa11ffd51e949`
+contain this implementation. Subsequent ledger changes are not represented as a release artifact.
+The existing four-node/gVisor effect case now checks configured storage/key/policy observations
+and loss of readiness after provider disable and mission pause. This extension needs its own
+installed infrastructure run. Full logging, tracing, instrumented latencies, operational dashboards,
+deployment probe provisioning and original G1-G7 remain unfinished.
+
+The preceding replication source `c34f21ed19c47c159028826418d04d648cd81793` completed all required
+jobs in [CI36296518498](https://github.com/kadubon/checkedflow/actions/runs/36296518498), including
+all six OS/Python combinations, Vault, both S3 services and all 27 installed infrastructure cases.
+The downloaded report independently passed the required gate. Its wheel is
+`9f9f1dd4c69cb24179d112127b4faa7f90a8891012ce9ba7c419f4251f55967f`, and sdist is
+`86905ab27b2afafcecd61a4fe3ac8c98eebd587450f5a49a8b888586c8137a92`.
+The earlier staging CI36295642776 also finished all required jobs successfully after the earlier
+partial observation above. Neither run qualifies the later monitoring extension or full G1-G7.

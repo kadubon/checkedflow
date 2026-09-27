@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "observability.py",
+        "test_observability.py",
+        "readiness_requires_role_dependencies",
+        "self.readable and all(passed for _, passed in self.checks)",
+        "self.readable",
+        "test_role_dependencies_are_complete_strict_and_rechecked",
+    ),
+    (
+        "observability.py",
+        "test_observability.py",
+        "readiness_rechecks_freshness_after_probes",
+        "            self.watchdog.current()",
+        "            pass",
+        "test_slow_dependency_probe_cannot_extend_node_freshness",
+    ),
+    (
         "replicated_artifacts.py",
         "test_replicated_artifacts.py",
         "availability_requires_three_copies",

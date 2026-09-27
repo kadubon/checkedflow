@@ -39,6 +39,7 @@ from checkedflow.agents.http import MAX_BODY, Guard
 from checkedflow.agents.oauth import OAuth
 from checkedflow.agents.tls import MutualTLS, http_config
 from checkedflow.core.values import Failure, Object, obj, require, text
+from checkedflow.observability import Monitor
 from checkedflow.wire import digest, dumps
 
 
@@ -278,6 +279,7 @@ def create_http_app(
     oauth: OAuth | None = None,
     policy: Policy | None = None,
     artifacts: Reader | None = None,
+    monitor: Monitor | None = None,
 ) -> Guard:
     require(ipaddress.ip_address(host).is_loopback, "ADDRESS", "bind a numeric loopback address")
     address = f"[{host}]" if ":" in host else host
@@ -315,6 +317,7 @@ def create_http_app(
         else "Bearer",
         authenticate=authentication.verify if authentication else None,
         policy=policy,
+        monitor=monitor,
     )
 
 
@@ -330,6 +333,7 @@ def serve(
     oauth_jwks: str = "",
     policy: Policy | None = None,
     artifacts: Reader | None = None,
+    monitor: Monitor | None = None,
     tls: MutualTLS | None = None,
 ) -> None:
     require(1 <= port <= 65535, "ADDRESS", "invalid port")
@@ -347,5 +351,6 @@ def serve(
         oauth=oauth,
         policy=policy,
         artifacts=artifacts,
+        monitor=monitor,
     )
     asyncio.run(uvicorn.Server(http_config(app, host, port, tls)).serve())

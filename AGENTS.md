@@ -16,6 +16,9 @@ For replicated artifacts, count only fresh byte-verified reads from the protecte
 Do not cache an availability observation as authority, treat labels as independent failure domains,
 or bypass retention to restore a missing copy. See docs/replicated-artifacts.md.
 Keep the publication interlock closed while any mandatory gate remains unqualified.
+Monitoring observations never authorize work. Keep /healthz, /readyz and /metrics inside the same
+authenticated mission guard, preserve response-time revocation, and omit unavailable measurements
+instead of substituting zero. Probe configuration belongs to the operator, never the candidate.
 Reject an existing submission journal with a missing identity or foreign tables; never initialize
 over partial recovery state. Keep original signed bytes and all related executor journals together.
 Apply the same rule to worker attempts, schedules, sandbox ownership and agent callback journals.
