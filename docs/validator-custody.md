@@ -76,3 +76,15 @@ The cutover point is the first new-chain commitment or externally dispatched act
 point, restarting old dispatch can duplicate work or spend a stale allowance. Recover forward
 and reconcile obligations under current authority instead. Complete the four-host migration,
 key rotation/replacement and failure-window tests before claiming this procedure qualifies G6.
+
+
+## Required service qualification
+
+`test_systemd_comet_custody_stop_and_conflict` uses a unique transient unit on the disposable
+qualification host. It applies the packaged service properties, substitutes fixture-owned
+paths and identities, and adds explicit private-temporary-directory bindings. It must show
+actual CometBFT progress, rejection of another lock claimant, zero unexpected restarts, an
+inactive service with no main process after stop, released lock and retained key/signing state.
+The ABCI service remains the laboratory process; this does not qualify a production dependency
+unit. The test is now mandatory but has not yet executed. A skip or missing sudo/systemd cannot
+qualify the release. Four-host custody and maintenance still require their separate evidence.
