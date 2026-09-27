@@ -155,3 +155,11 @@ Inherited v2 genesis requires [succession startup admission](succession-approval
 on every ABCI service start. Retain the independently provisioned old checkpoint, full snapshot
 and both administrations' approval manifest with the protected initial configuration. This check
 is separate from old-dispatch shutdown and exclusive validator custody.
+
+
+The v2 own-node client reads synchronized status before querying application state. If the
+application response is below the height just observed, it makes exactly one additional state
+query. Both reads must use the configured validating node; the second must reach the original
+height or the operation fails with `STALE`. No cached state, lower height, write retry, or extra
+status poll is substituted. This bounds a live-state call to one status and at most two state
+queries, each using the configured RPC timeout. Persistent lag remains an availability failure.

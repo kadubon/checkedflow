@@ -44,6 +44,14 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "distributed/operational_client.py",
+        "test_operational_client.py",
+        "catchup_does_not_lower_observed_height",
+        "state.height >= height",
+        "True",
+        "test_live_state_catchup_is_bounded_and_keeps_observed_floor",
+    ),
+    (
         "succession.py",
         "test_succession_startup.py",
         "inherited_startup_requires_approval",

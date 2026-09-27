@@ -1611,3 +1611,10 @@ that module. Static checks and installed wheel/sdist startup-admission smoke pas
 916 distribution members found no patterns. The existing four-node inherited-accounting case
 now supplies approval inputs; the revised case has not yet run. Physical shutdown, custody and
 inherited-obligation reconciliation remain mandatory; startup approval does not complete them.
+
+
+CI36301658785 failed its qualification job: 27 infrastructure cases passed and the A2A journal
+reopen encountered `STALE` between own-node status and application-state reads. That result
+remains failed. The client now permits one further state read against the same observed height;
+persistent lag still fails closed. Twenty-three focused client tests passed, including bounded
+catch-up and unchanged rejection thresholds. New installed qualification must verify the fix.

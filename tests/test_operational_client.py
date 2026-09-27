@@ -54,10 +54,39 @@ def test_live_state_requires_synchronized_chain_and_nonregressing_query(
     if code:
         with pytest.raises(Failure, match=code):
             client.live_state()
-        assert calls == (["status", "state"] if code == "STALE" else ["status"])
+        assert calls == (["status", "state", "state"] if code == "STALE" else ["status"])
     else:
         assert client.live_state().height == state_height
         assert calls == ["status", "state"]
+
+
+@pytest.mark.parametrize("heights,accepted", [((3, 4), True), ((3, 5), True), ((3, 3), False)])
+def test_live_state_catchup_is_bounded_and_keeps_observed_floor(monkeypatch, heights, accepted):
+    runtime, _, _ = runtime_and_command()
+    client = Client("http://127.0.0.1:12345", chain=runtime.state.chain)
+    calls = []
+    replies = iter(heights)
+
+    def rpc(method, params):
+        calls.append(method)
+        assert method == "status"
+        return {
+            "node_info": {"network": runtime.state.chain},
+            "sync_info": {"catching_up": False, "latest_block_height": "4"},
+        }
+
+    def state():
+        calls.append("state")
+        return replace(runtime.state, height=next(replies))
+
+    monkeypatch.setattr(client, "rpc", rpc)
+    monkeypatch.setattr(client, "state", state)
+    if accepted:
+        assert client.live_state().height == heights[1]
+    else:
+        with pytest.raises(Failure, match="STALE"):
+            client.live_state()
+    assert calls == ["status", "state", "state"]
 
 
 def transport(monkeypatch, handler):

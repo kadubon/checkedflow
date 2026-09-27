@@ -90,6 +90,10 @@ class Client:
         height = integer(int(spelling), low=1)
         require(str(height) == spelling, "RPC", "status height spelling")
         state = self.state()
+        if state.height < height:
+            # Status and ABCI queries are separate observations around block commit.
+            # One bounded read can catch up; never lower the observed height or retry writes.
+            state = self.state()
         require(state.height >= height, "STALE", "state precedes observed own-node height")
         return state
 

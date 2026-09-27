@@ -4409,6 +4409,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36299678351",
       "conclusion": "success",
       "scope": "All required jobs passed including pinned promtool template checks, six OS/Python jobs, both S3 services, Vault and27 installed infrastructure cases. Downloaded27case report independently accepted before the gate extension to28. Wheel c170efaab65d7d40afabac0699c53688ee34f515c957048d6d47fdacc30d6a55; sdist4243ba8c8a295cae6578279025871e704d06e689787a5cd7776334bb6b2d8982. Predates both legacy increments; not finalG1-G7."
+    },
+    {
+      "source": "ae548593e05f75105a439e23dbfa3d15b19f981c",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36301658785",
+      "conclusion": "failure",
+      "scope": "Qualification job108572476078 failed with STALE while reopening the A2A journal through live_state;27cases passed,1failed. Overall workflow still had a running Windows3.13 job at observation. This run cannot qualify release. A bounded second application-state read now addresses status/query commit interleaving without lowering the observed floor or retrying writes. Revised installed qualification remains required."
     }
   ]
 }
