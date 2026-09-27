@@ -146,6 +146,24 @@ def retired_request(cluster, raw):
     }
 
 
+def verify_stored_history(store, checkpoint):
+    """Require the independent observed checkpoint within the replayed signed history."""
+    state = store.load()
+    anchored = []
+
+    def check_anchor(raw):
+        block = document(raw)
+        if block["height"] == checkpoint[0]:
+            assert block["state_hash"].upper() == checkpoint[1].upper()
+            anchored.append(True)
+
+    assert (
+        store.verify_history(expected_hash=Runtime(state).state_hash, consume=check_anchor) == state
+    )
+    assert anchored == [True], "committed checkpoint missing from stored history"
+    return state
+
+
 class Measurement:
     def __init__(self, cluster, root, plan):
         self.cluster, self.root, self.plan = cluster, root, plan
@@ -511,22 +529,7 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
                     store = Store(
                         cluster.directory / f"node{index}" / "operational.sqlite", cluster.initial
                     )
-                    state = store.load()
-                    anchored = []
-
-                    def check_anchor(raw, seen=anchored):
-                        block = document(raw)
-                        if block["height"] == checkpoint[0]:
-                            assert block["state_hash"].upper() == checkpoint[1].upper()
-                            seen.append(True)
-
-                    assert (
-                        store.verify_history(
-                            expected_hash=Runtime(state).state_hash, consume=check_anchor
-                        )
-                        == state
-                    )
-                    assert anchored == [True], "committed checkpoint missing from stored history"
+                    verify_stored_history(store, checkpoint)
                     for sequence, root in enumerate(measurement.archive_roots, 1):
                         store.work_archive(sequence, expected_root=root)
         except BaseException as error:

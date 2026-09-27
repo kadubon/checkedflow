@@ -61,3 +61,22 @@ def test_journal_maintenance_preserves_admission_mode(tmp_path, mode):
         assert sent[2:-1] == ["mission.drain"]
     else:
         assert sent[2:-1] == []
+
+
+def test_replayed_history_must_contain_independent_checkpoint(tmp_path):
+    from test_work_tasks import Harness
+
+    from checkedflow.operational_storage import Store
+
+    harness = Harness()
+    _, raw = harness.send("budget.configure", {"budget": 100, "verification_reserve": 20})
+    store = Store(tmp_path / "history.sqlite", harness.initial)
+    store.commit_block(1, (raw,), previous_hash=load.Runtime(harness.initial).state_hash)
+    state = store.load()
+    expected = load.Runtime(state).state_hash
+    assert load.verify_stored_history(store, (1, expected.upper())) == state
+    with pytest.raises(AssertionError):
+        load.verify_stored_history(store, (1, "0" * 64))
+    # A valid local prefix is not proof of retaining a later committed checkpoint.
+    with pytest.raises(AssertionError, match="checkpoint missing"):
+        load.verify_stored_history(store, (2, expected))
