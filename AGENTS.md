@@ -135,3 +135,7 @@ addresses as verified custody or confinement. See [deployment planning](docs/dep
 `deployment-verify` requires an independently protected expected plan digest. Its unsigned result
 verifies current bundle/artifact bytes only; do not reuse it as host preflight or startup authority.
 Revalidate at application time, and preserve native runtime/confinement/custody checks.
+
+Generated CometBFT gRPC targets require the passthrough resolver; socket tcp targets are not
+interchangeable. Test service-account executable access explicitly. Four-VM component evidence
+does not establish the maintained deployment lifecycle or adversarial kernel confinement.

@@ -49,7 +49,7 @@ guides; complete generation orchestration and operational deployment are still u
 | Where can operators inspect local attempts? | [Operation logs and traces](docs/telemetry.md); bounded diagnostic records preserve failures without logging credentials or claiming committed success |
 | How should operators respond to monitoring alerts? | [Packaged templates and runbook](docs/monitoring-runbook.md); explicit thresholds, diagnostic limits and unachieved recovery targets |
 | How are old evidence and unresolved charges preserved? | [Live retention admission](docs/legacy-retention.md) rechecks protected history before startup and dispatch; [reconciliation](docs/legacy-reconciliation.md) retains unknown charges |
-| How do I prepare node configuration? | [Offline deployment planning](docs/deployment-planning.md); reviewed inputs, generated service files, artifact-byte checks and explicit remaining live preflight |
+| How do I prepare node configuration? | [Deployment planning](docs/deployment-planning.md) produces review files and checks artifact bytes. A four-VM service experiment passed; complete deployment automation and qualification remain unfinished |
 | How are validators stopped safely? | [Validator custody](docs/validator-custody.md); local exclusion and signing-state preservation, with cross-host custody still unqualified |
 | What are the measured workload limits? | [Longevity measurement](docs/load-qualification.md); fixed profiles, preserved failures and explicit unfinished qualification |
 | What has actually been tested? | [Implementation ledger](docs/implementation-0.2.0.md), [four-VM observations](docs/vm-laboratory-2026-09-26.md) |

@@ -292,3 +292,7 @@ addresses as verified custody or confinement. See [deployment planning](docs/dep
 `deployment-verify` requires an independently protected expected plan digest. Its unsigned result
 verifies current bundle/artifact bytes only; do not reuse it as host preflight or startup authority.
 Revalidate at application time, and preserve native runtime/confinement/custody checks.
+
+For native node setup, preserve the generated gRPC passthrough target and provision executable
+access for separate service accounts. See the deployment guide's scoped four-VM evidence;
+complete lifecycle and confinement qualification remain required before release.

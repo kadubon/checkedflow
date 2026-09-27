@@ -4682,6 +4682,17 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36312581905",
       "conclusion": "failure",
       "scope": "Full frozen profile2:4097 control requests,7 accepted candidates,24 completed tasks; failed on pending acceptance. Cleanup succeeded. Evidence:docs/evidence/longevity-full-failure-20260927.json. A verifier-to-reader commit barrier is added locally; unchanged-profile rerun remains required."
+    },
+    {
+      "source": "ece2c87742b8d03d7db1b35c149643158ef3afe0",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36315751307",
+      "conclusion": "qualification_job_success",
+      "scope": "32 installed infrastructure cases passed with no failure/error/skip; report-recovery fixture now reaches its intended injected failure. Overall matrix was still running at observation. Predates renderer size/gRPC fixes and longevity commit barrier."
+    },
+    {
+      "source": "033aab4",
+      "conclusion": "component_passed",
+      "scope": "Generated units/configuration reached consensus across4 approved VM kernels, compared196 installed package members per guest and5 deployed files per guest; services/VMs stopped and signing state preserved. Evidence:docs/evidence/deployment-native-20260927.json. Private orchestration and shared physical host/operator; not maintained lifecycle, adversarial BPF confinement or completeG6."
     }
   ]
 }

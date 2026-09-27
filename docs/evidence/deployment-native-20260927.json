@@ -1,0 +1,54 @@
+{
+  "version": "checkedflow/qualification-observation/v1",
+  "status": "COMPONENT_PASSED",
+  "release_authority": false,
+  "source_basis": "033aab4",
+  "scope": "Exact generated application and CometBFT systemd units on four approved Ubuntu Linux VM kernels, sharing one physical host and one operator. Private orchestration, not a maintained deployment lifecycle or complete G6.",
+  "wheel_sha256": "28188a29f3074bd748a326861e5f21091989c8091286d520e90018c1d391f9c5",
+  "cometbft_sha256": "23752877fe1d856009551beca2a326296b5cf846d6bc64fd72ae35d251811d1b",
+  "independent_boot_ids_observed": 4,
+  "nodes": 4,
+  "installed_package_members_per_node": [
+    196,
+    196,
+    196,
+    196
+  ],
+  "deployed_files_compared_per_node": [
+    5,
+    5,
+    5,
+    5
+  ],
+  "consensus": {
+    "minimum_height": 3,
+    "common_app_hash": "CE0C127E4E999283809544B05F8F2ABF843BBACB598D641C30A31797CEB92A7D",
+    "unit_files_unmodified": true
+  },
+  "services_stopped": true,
+  "signing_state_preserved": true,
+  "vm_shutdown": "GRACEFUL_DISKS_PRESERVED",
+  "earlier_attempts": [
+    {
+      "result": "FAILED",
+      "cause": "Fresh native genesis requires explicit initial_height=1 in the reviewed plan."
+    },
+    {
+      "result": "FAILED",
+      "cause": "Experiment binary was copied with private-only execution permissions; provisioned executable mode explicitly."
+    },
+    {
+      "result": "FAILED",
+      "cause": "Generated grpc proxy_app used tcp:// and waited for echo; corrected to passthrough:///."
+    }
+  ],
+  "not_tested": [
+    "BPF policy enforcement by adversarial network probes",
+    "candidate isolation",
+    "credential lifecycle and signer relocation",
+    "rolling compatible upgrade",
+    "maintained apply/status/drain/backup/restore lifecycle",
+    "full G1-G7 against final release artifacts"
+  ],
+  "private_result_sha256": "2d1ec432e1a94f3616ae913242852c07fda0e4618729dac02fa77705004dd9d4"
+}

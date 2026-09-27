@@ -129,6 +129,13 @@ approval or as an executable authorization for an agent to change hosts.
 Source tests cover deterministic output, cross-input genesis binding, purpose-separated public
 identities, no generated signer material, duplicate/private-peer validation, injection/traversal
 rejection, byte limits and refusal to overwrite a plan. TOML syntax is parsed by the standard library.
-Installed-artifact checks cover the offline CLI. Native runtime, kernel enforcement and four-host
-service application tests remain required. No measured
-hardware minimum or deployment-time promise is asserted.
+Installed-artifact checks cover the offline CLI. A [four-VM native experiment](evidence/deployment-native-20260927.json)
+also applied the exact generated service/configuration bytes, reached a common committed block's
+application hash, compared all 196 package members on every host, and stopped the services and VMs
+while preserving signing state. Earlier failed attempts remain recorded. In particular, runtime
+executables must be accessible to the non-root service accounts; copying private file modes is not
+installation. The successful run used the corrected gRPC resolver target above.
+
+This experiment used private orchestration on one physical host and one operator. A maintained
+deployment lifecycle, adversarial kernel enforcement checks and complete G6 remain unfinished.
+No measured hardware minimum or deployment-time promise is asserted.
