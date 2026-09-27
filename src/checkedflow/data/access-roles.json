@@ -36,7 +36,8 @@
       "key.schedule",
       "budget.configure",
       "budget.settle",
-      "effect.reconcile"
+      "effect.reconcile",
+      "budget.reconcile_inherited"
     ]
   },
   "callback_role": "inspect",

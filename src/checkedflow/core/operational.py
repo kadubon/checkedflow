@@ -143,6 +143,7 @@ def transition(
             "budget.configure",
             "budget.reserve",
             "budget.settle",
+            "budget.reconcile_inherited",
             "task.admit",
             "task.cancel",
             "artifact.admit",

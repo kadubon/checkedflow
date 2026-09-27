@@ -3,12 +3,12 @@
 from dataclasses import replace
 
 from checkedflow.core.operational import State, genesis
-from checkedflow.core.values import require
-from checkedflow.core.work_budget import Inheritance, Ledger
+from checkedflow.core.values import obj, require
+from checkedflow.core.work_budget import Inheritance, Ledger, LegacyObligation
 from checkedflow.legacy_inventory import Checkpoint, inspect_snapshot
 from checkedflow.operational_codec import decode, state_bytes
 from checkedflow.serialization import decode as decode_legacy
-from checkedflow.wire import document
+from checkedflow.wire import digest, document
 
 
 def prepare(raw: bytes, trusted: Checkpoint, initial: State, *, mission: str) -> State:
@@ -32,6 +32,7 @@ def prepare(raw: bytes, trusted: Checkpoint, initial: State, *, mission: str) ->
     )
     require(initial == fresh, "STATE", "successor must be a pristine paused genesis")
     source = old.missions[mission]
+    task_values = obj(document(inventory.snapshot)["tasks"])
     available = source.budget - source.spent - source.reserved
     budget = Ledger(
         source.budget,
@@ -44,6 +45,11 @@ def prepare(raw: bytes, trusted: Checkpoint, initial: State, *, mission: str) ->
             source.budget,
             source.spent,
             source.reserved,
+            tuple(
+                LegacyObligation(identity, digest(task_values[identity]), task.cost, task.funded)
+                for identity, task in sorted(old.tasks.items())
+                if task.mission == mission and (task.funded or task.status == "uncertain")
+            ),
         ),
     )
     # Exercise the actual startup codec and semantic invariants before returning.

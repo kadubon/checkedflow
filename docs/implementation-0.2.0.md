@@ -1655,3 +1655,14 @@ rerun passed, preserving the failure record. All test units were absent and all 
 helper were gracefully stopped. [Sanitized component evidence](evidence/validator-custody-20260927.json)
 binds wheel and original reports; exact remote test-source digest was not captured. These independent guest kernels share one host;
 each test used a local cluster, not cross-host successor cutover. G1-G7 remains unqualified.
+
+
+Inherited obligations now have a bounded, source-hash-bound inventory and current-administration
+reconciliation. Unknown outcomes never create executable new tasks, refund prior costs or charge
+old spending twice. Original checkpoint and funding fields remain historical; signed history
+retains each adjustment. Final outcomes cannot be rewritten, and a reconciled state cannot be
+reset as fresh genesis. The focused 124-case suite passed; budget and preparation modules have
+full statement/branch coverage. Updated portable vectors and isolated wheel/sdist smoke passed.
+The expanded four-node crash/reconciliation case and full current-source gates remain pending.
+See [the accounting contract](legacy-reconciliation.md); physical cutover, retained-artifact
+availability and old residual/dependency reconciliation are still separate unfinished work.

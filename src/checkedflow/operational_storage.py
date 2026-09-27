@@ -97,6 +97,7 @@ class Store:
                 initial.budget == Ledger()
                 or (
                     initial.budget.inheritance is not None
+                    and not any(item.outcome for item in initial.budget.inheritance.obligations)
                     and not initial.budget.tickets
                     and initial.budget.archived_spent == initial.budget.archived_verification == 0
                 )

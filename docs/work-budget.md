@@ -89,3 +89,7 @@ still authenticate and resolve the immutable target contract before executing.
 It must reserve adequate independent verification capacity for each task, not merely rely on the
 mission-wide allocation. Automatic settlement, restart reconciliation, task residuals, artifact
 acceptance, administrative emergency actions and history retention remain required release work.
+
+[Inherited obligation reconciliation](legacy-reconciliation.md) now provides separate governed
+adjustment of prepared legacy records. It does not create new executable tasks or release
+funding through ordinary ticket settlement.

@@ -504,13 +504,28 @@ def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructu
         cluster.send("budget.settle", {"ticket": ticket, "outcome": "unknown", "charged": 1})
         cluster.send("mission.pause", {})
         cluster.send("journal.rollover", {})
+        inherited_unknown = next(
+            item for item in initial_budget.inheritance.obligations if not item.funded
+        )
+        reconciliation = {
+            "checkpoint": checkpoint.state_hash,
+            "task": inherited_unknown.identity,
+            "outcome": "unknown",
+            "evidence": "a" * 64,
+        }
+        cluster.send("budget.reconcile_inherited", reconciliation)
         cluster.wait_height(cluster.client().state().height)
         cluster.processes.stop_node(0, crash=True)
         cluster.start_node(0)
         cluster.wait_height(cluster.client(1).state().height)
+        cluster.send("budget.reconcile_inherited", reconciliation | {"outcome": "executed"}, node=1)
+        cluster.wait_height(cluster.client(1).state().height)
+        resolved_inheritance = cluster.client(1).state().budget.inheritance
+        assert resolved_inheritance.state_hash == checkpoint.state_hash
+        assert any(item.outcome == "executed" for item in resolved_inheritance.obligations)
         for index in range(4):
             state = cluster.client(index).state()
-            assert state.budget.inheritance == initial_budget.inheritance
+            assert state.budget.inheritance == resolved_inheritance
             assert state.budget.spent == initial_budget.spent + 1
             assert state.budget.reserved == initial_budget.reserved
             assert state.budget.available == initial_budget.available - 1
@@ -522,7 +537,7 @@ def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructu
         store = Store(cluster.directory / f"node{index}" / "operational.sqlite", cluster.initial)
         state = store.load()
         assert store.verify_history(expected_hash=Runtime(state).state_hash) == state
-        assert state.budget.inheritance == initial_budget.inheritance
+        assert state.budget.inheritance == resolved_inheritance
 
 
 @pytest.mark.integration

@@ -126,6 +126,17 @@
         "chain": "checkedflow-test",
         "height": 1038,
         "mission": "m",
+        "obligations": [
+          {
+            "ceiling": 2,
+            "charged": 0,
+            "evidence": "",
+            "funded": false,
+            "identity": "unknown",
+            "outcome": "",
+            "task_hash": "6c2ec3f9242c2582d60be28bdb1013435a7854a3295eec916767f85a89e06701"
+          }
+        ],
         "reserved": 0,
         "spent": 12,
         "state_hash": "9c12eea3393f018bbac48ad1660b1077c9e8fb6d1b6665eede9ca50cf1817950"
@@ -237,7 +248,7 @@
     "profile": "checkedflow/control-state/v2",
     "tasks": []
   },
-  "successor_hash": "7d293f82a2b772c9685ab9405141ba56ac8f98474eed9782b117611edabee396",
+  "successor_hash": "d6ca28fbe72100978f383b5c81a59c741432ac998cd5336579893f700700e5ff",
   "balances": {
     "spent": 12,
     "reserved": 0,

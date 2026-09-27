@@ -13,7 +13,7 @@ from checkedflow.core.values import JSON, Object, array, fields, integer, names,
 from checkedflow.core.work_acceptance import MAX_CANDIDATES, Candidate, Observation
 from checkedflow.core.work_acceptance import validate as validate_candidates
 from checkedflow.core.work_archive import MAX_ARCHIVE_BYTES, Head, WorkArchive
-from checkedflow.core.work_budget import MAX_TICKETS, Inheritance, Ledger, Ticket
+from checkedflow.core.work_budget import MAX_TICKETS, Inheritance, Ledger, LegacyObligation, Ticket
 from checkedflow.core.work_budget import validate as validate_budget
 from checkedflow.core.work_effects import MAX_EFFECTS, Effect
 from checkedflow.core.work_effects import advance as advance_effects
@@ -30,6 +30,8 @@ def encode(state: State) -> Object:
     result = obj(validate(json.loads(json.dumps(asdict(state)))))
     if state.budget.inheritance is None:
         obj(result["budget"]).pop("inheritance")
+    elif not state.budget.inheritance.obligations:
+        obj(obj(result["budget"])["inheritance"]).pop("obligations")
     # Preserve historical v2 hashes before the first retirement, as well as all v1 bytes.
     if state.history == Head():
         result.pop("history")
@@ -181,7 +183,33 @@ def decode(raw: bytes) -> State:
     inheritance = None
     if "inheritance" in budget_value:
         record = obj(budget_value["inheritance"])
-        fields(record, "chain mission height state_hash budget spent reserved")
+        fields(
+            record,
+            "chain mission height state_hash budget spent reserved"
+            + (" obligations" if "obligations" in record else ""),
+        )
+        obligations = []
+        for liability_value in array(record.get("obligations", []), limit=MAX_TICKETS):
+            liability_row = obj(liability_value)
+            fields(liability_row, "identity task_hash ceiling funded outcome evidence charged")
+            require(type(liability_row["funded"]) is bool, "STATE", "legacy funding flag")
+            require(
+                isinstance(liability_row["outcome"], str)
+                and isinstance(liability_row["evidence"], str),
+                "SHAPE",
+                "legacy reconciliation strings",
+            )
+            obligations.append(
+                LegacyObligation(
+                    text(liability_row["identity"]),
+                    text(liability_row["task_hash"]),
+                    integer(liability_row["ceiling"], low=1),
+                    cast(bool, liability_row["funded"]),
+                    text(liability_row["outcome"]) if liability_row["outcome"] else "",
+                    text(liability_row["evidence"]) if liability_row["evidence"] else "",
+                    integer(liability_row["charged"]),
+                )
+            )
         inheritance = Inheritance(
             text(record["chain"], limit=128),
             text(record["mission"]),
@@ -190,6 +218,7 @@ def decode(raw: bytes) -> State:
             integer(record["budget"], low=1),
             integer(record["spent"]),
             integer(record["reserved"]),
+            tuple(obligations),
         )
         require(inheritance.chain != initial.chain, "CHAIN", "successor must use a new chain")
     budget = Ledger(

@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "core/work_budget.py",
+        "test_legacy_reconciliation.py",
+        "legacy_unknown_cost_is_not_refunded",
+        "charged = obligation.charged",
+        "charged = 0",
+        "test_unknown_reconciliation_never_refunds_or_double_charges",
+    ),
+    (
+        "core/work_budget.py",
+        "test_legacy_reconciliation.py",
+        "legacy_reconciliation_cost_is_counted",
+        "inherited += sum(item.charged for item in self.inheritance.obligations)",
+        "inherited += 0 * sum(item.charged for item in self.inheritance.obligations)",
+        "test_unknown_reconciliation_never_refunds_or_double_charges",
+    ),
+    (
         "distributed/operational_client.py",
         "test_operational_client.py",
         "catchup_does_not_lower_observed_height",

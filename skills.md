@@ -253,3 +253,7 @@ operator provenance. See docs/succession-approval.md#startup-admission.
 
 Preserve validator lock inodes, private keys and latest signing state during maintenance.
 A remote host being unreachable does not prove it stopped signing. See docs/validator-custody.md.
+
+Use budget.reconcile_inherited only with current administrative quorum, the original checkpoint
+and retained evidence. Unknown charges are not refundable; old tasks never become executable.
+See docs/legacy-reconciliation.md.

@@ -273,3 +273,6 @@ controls do not yet constitute a qualified cross-host cutover procedure.
 
 The [validator maintenance guide](docs/validator-custody.md) covers the packaged Linux service
 template, local duplicate-start protection and the additional controls required for node handoffs.
+
+[Inherited obligation reconciliation](docs/legacy-reconciliation.md) records governed decisions
+about old unfinished work while preserving costs and prohibiting automatic re-execution.

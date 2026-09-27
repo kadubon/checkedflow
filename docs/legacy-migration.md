@@ -123,3 +123,7 @@ old-validator retirement, independent organizations or the complete G4/G6 migrat
 
 See [the original capture](legacy-capture-0.1.md), [the protocol decision](adr-0001-versioned-operational-state.md)
 and [the implementation record](implementation-0.2.0.md).
+
+[Inherited obligation reconciliation](legacy-reconciliation.md) now provides separate governed
+adjustment of prepared legacy records. It does not create new executable tasks or release
+funding through ordinary ticket settlement.

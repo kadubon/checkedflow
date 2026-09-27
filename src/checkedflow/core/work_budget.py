@@ -20,6 +20,19 @@ class Ticket:
 
 
 @dataclass(frozen=True)
+class LegacyObligation:
+    """One retained old task; resolving it never creates executable new work."""
+
+    identity: str
+    task_hash: str
+    ceiling: int
+    funded: bool
+    outcome: str = ""
+    evidence: str = ""
+    charged: int = 0
+
+
+@dataclass(frozen=True)
 class Inheritance:
     """Original v1 charges and held reservations, bound to retained historical state.
 
@@ -34,6 +47,7 @@ class Inheritance:
     budget: int
     spent: int
     reserved: int
+    obligations: tuple[LegacyObligation, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -48,6 +62,12 @@ class Ledger:
     @property
     def reserved(self) -> int:
         inherited = 0 if self.inheritance is None else self.inheritance.reserved
+        if self.inheritance is not None:
+            inherited -= sum(
+                item.ceiling
+                for item in self.inheritance.obligations
+                if item.funded and item.outcome
+            )
         return inherited + sum(
             ticket.ceiling for ticket in self.tickets if ticket.status == "reserved"
         )
@@ -55,6 +75,8 @@ class Ledger:
     @property
     def spent(self) -> int:
         inherited = 0 if self.inheritance is None else self.inheritance.spent
+        if self.inheritance is not None:
+            inherited += sum(item.charged for item in self.inheritance.obligations)
         return inherited + self.archived_spent + sum(ticket.charged for ticket in self.tickets)
 
     @property
@@ -88,6 +110,53 @@ def validate(ledger: Ledger) -> None:
         integer(inherited.spent, high=inherited.budget)
         integer(inherited.reserved, high=inherited.budget - inherited.spent)
         require(ledger.budget == inherited.budget, "BUDGET", "inherited allowance changed")
+        require(len(inherited.obligations) <= MAX_TICKETS, "CAPACITY", "legacy obligation capacity")
+        previous = ""
+        for item in inherited.obligations:
+            text(item.identity)
+            require(previous < item.identity, "STATE", "legacy obligations unique and sorted")
+            previous = item.identity
+            require(
+                len(item.task_hash) == 64 and all(c in "0123456789abcdef" for c in item.task_hash),
+                "BINDING",
+                "legacy task hash",
+            )
+            integer(item.ceiling, low=1)
+            require(type(item.funded) is bool, "STATE", "legacy funding flag")
+            require(
+                item.outcome in {"", "unknown", "executed", "not_executed"},
+                "STATE",
+                "legacy outcome",
+            )
+            require(
+                (not item.outcome and not item.evidence and item.charged == 0)
+                or (
+                    bool(item.outcome)
+                    and len(item.evidence) == 64
+                    and all(c in "0123456789abcdef" for c in item.evidence)
+                ),
+                "EVIDENCE",
+                "legacy reconciliation evidence",
+            )
+            integer(item.charged, high=item.ceiling)
+            require(
+                item.charged in {0, item.ceiling}
+                and (item.funded or item.charged == 0)
+                and (
+                    not item.funded
+                    or item.outcome not in {"unknown", "executed"}
+                    or item.charged == item.ceiling
+                ),
+                "BUDGET",
+                "legacy reconciliation charge",
+            )
+        if inherited.obligations:
+            require(
+                sum(item.ceiling for item in inherited.obligations if item.funded)
+                == inherited.reserved,
+                "BUDGET",
+                "legacy obligations differ from held reservations",
+            )
     integer(ledger.archived_spent, high=ledger.budget)
     integer(ledger.archived_verification, high=ledger.archived_spent)
     integer(
@@ -136,6 +205,42 @@ def change(ledger: Ledger, kind: str, payload: Object, *, request: str, running:
         result = Ledger(
             budget,
             verification_reserve=integer(payload["verification_reserve"], low=1, high=budget),
+        )
+    elif kind == "budget.reconcile_inherited":
+        fields(payload, "mission checkpoint task outcome evidence")
+        require(ledger.inheritance is not None, "BINDING", "legacy inheritance required")
+        inherited = cast(Inheritance, ledger.inheritance)
+        require(
+            payload["checkpoint"] == inherited.state_hash, "BINDING", "legacy checkpoint differs"
+        )
+        identity = text(payload["task"])
+        obligation = next(
+            (item for item in inherited.obligations if item.identity == identity), None
+        )
+        require(obligation is not None, "NOT_FOUND", "legacy obligation missing")
+        obligation = cast(LegacyObligation, obligation)
+        outcome = text(payload["outcome"])
+        require(outcome in {"unknown", "executed", "not_executed"}, "STATE", "legacy outcome")
+        require(
+            obligation.outcome == "" or (obligation.outcome == "unknown" and outcome != "unknown"),
+            "STATE",
+            "legacy obligation already reconciled",
+        )
+        charged = obligation.charged
+        if obligation.funded and outcome != "not_executed":
+            charged = obligation.ceiling
+        resolved = replace(
+            obligation, outcome=outcome, evidence=text(payload["evidence"]), charged=charged
+        )
+        result = replace(
+            ledger,
+            inheritance=replace(
+                inherited,
+                obligations=tuple(
+                    resolved if item.identity == identity else item
+                    for item in inherited.obligations
+                ),
+            ),
         )
     elif kind == "budget.reserve":
         fields(payload, "mission phase ceiling target")

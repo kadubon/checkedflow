@@ -135,6 +135,57 @@
           }
         }
       }
+    },
+    {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "payload"
+      ],
+      "properties": {
+        "kind": {
+          "const": "budget.reconcile_inherited"
+        },
+        "payload": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "mission",
+            "checkpoint",
+            "task",
+            "outcome",
+            "evidence"
+          ],
+          "properties": {
+            "mission": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80
+            },
+            "checkpoint": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            },
+            "task": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 256
+            },
+            "outcome": {
+              "enum": [
+                "unknown",
+                "executed",
+                "not_executed"
+              ]
+            },
+            "evidence": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}(?![\\s\\S])"
+            }
+          }
+        }
+      }
     }
   ]
 }
