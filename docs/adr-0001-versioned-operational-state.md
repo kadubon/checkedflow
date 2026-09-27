@@ -26,6 +26,10 @@ old artifacts stay unresolved. Compatible binary updates retain quorum; incompat
 cannot participate in the same active deployment. The operational migration path is not implemented
 or qualified by this ADR alone.
 
+The read-only [legacy inventory](legacy-migration.md) now verifies old snapshot integrity
+against an independent checkpoint and retains all fields and outstanding balances. It does
+not translate commands, construct a successor genesis or establish exclusive signer ownership.
+
 Fixed fixtures must be captured using the published 0.1.0 runtime, including signed commands,
 empty blocks, rejection codes, uncertainty and dependency revocation. New tests compare to these
 original hashes; updating expected hashes to hide semantic changes is prohibited.

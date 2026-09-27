@@ -11,6 +11,10 @@ consensus WAL, validator signing state, artifact/provider bytes, A2A callback jo
 effects or secret custody. It does not start services or establish caught-up readiness. Those
 coordinated recovery procedures remain prerequisites for the operational release.
 
+For a v1 deployment, [legacy inventory](legacy-migration.md) provides a separate read-only
+checkpoint inspection. It is not accepted as a v2 application backup and cannot activate a
+successor. Keep the old signed history and unresolved obligations during migration planning.
+
 ## Trust inputs and format
 
 `Checkpoint` binds chain, mission, genesis application hash, final application height and hash,

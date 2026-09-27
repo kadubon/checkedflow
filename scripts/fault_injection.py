@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "legacy_inventory.py",
+        "test_legacy_inventory.py",
+        "legacy_inventory_requires_trusted_hash",
+        "digest(value) == trusted.state_hash",
+        "True",
+        "test_checkpoint_is_independent_of_snapshot",
+    ),
+    (
+        "legacy_inventory.py",
+        "test_legacy_inventory.py",
+        "legacy_inventory_preserves_charged_unknowns",
+        '{"ready", "leased", "running", "uncertain"}',
+        '{"ready", "leased", "running"}',
+        "test_authentic_history_preserves_all_fields_and_charged_unknowns",
+    ),
+    (
         "telemetry.py",
         "test_telemetry.py",
         "telemetry_queue_remains_bounded",

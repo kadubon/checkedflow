@@ -231,3 +231,7 @@ No outbound exporter is enabled by default.
 Use the [monitoring templates and response runbook](docs/monitoring-runbook.md) for packaged alert rules,
 dashboard queries, explicit SLI denominators and recovery targets. Templates and targets are not
 proof of an installed monitoring service or achieved availability.
+
+For [legacy migration inventory](docs/legacy-migration.md), provision checkpoint trust independently.
+Keep the full snapshot and signed history; zero reservation does not mean no uncertain work.
+The inspection SDK cannot stop validators, authorize successor dispatch or reset old balances.

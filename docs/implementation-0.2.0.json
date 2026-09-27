@@ -1322,8 +1322,10 @@
       "id": "R7-0349",
       "source_line": 349,
       "text": "Implement a reviewed 0.1.0 -> 0.2.0 path using authentic old state/history fixtures, including uncertain work and revoked dependencies.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:legacy-checkpoint-inventory"
+      ]
     },
     {
       "id": "R7-0351",
@@ -1336,8 +1338,10 @@
       "id": "R7-0353",
       "source_line": 353,
       "text": "Legacy captures retain their original meaning; migrating structure cannot mint verification evidence. Unsupported/missing original artifacts remain unresolved.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:legacy-checkpoint-inventory"
+      ]
     },
     {
       "id": "R7-0355",
@@ -4032,6 +4036,29 @@
         "R11-0502"
       ],
       "scope": "Eleven actual promtool3.15.0 rules, explicit pending/firing/recovery and healthy thresholds, authenticated scrape syntax and eight parsed Classic Grafana queries. Packaged template CLI does not provision probes, credentials or collectors. Runbook defines measurement denominators, time bases, response actions and unachieved lab targets. Live dashboard rendering, inventory drift, physical storage, exact expiry/unbacked reservation diagnosis and final deployment/G1-G7 remain incomplete."
+    },
+    {
+      "id": "legacy-checkpoint-inventory",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/legacy_inventory.py"
+      ],
+      "tests": [
+        "tests/test_legacy_inventory.py",
+        "tests/test_legacy_capture.py"
+      ],
+      "documentation": [
+        "docs/legacy-migration.md"
+      ],
+      "requirements": [
+        "R7-0349",
+        "R7-0353"
+      ],
+      "scope": "Read-only independently anchored legacy snapshot inventory. Full canonical state retained, mission reservations checked against funded tasks, charged uncertain work retained independently. 15 source tests passed in 42.52 seconds; new module 46 statements and 6 branches covered completely. Not successor activation, inherited v2 accounting, validator custody or installed migration qualification. Isolated wheel/sdist smoke retained the original snapshot, charged unknown, open residuals and withdrawn dependencies. Distribution scan: 888 members, zero pattern findings. Docs updated after these development artifacts; not release artifacts.",
+      "installed_development_artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "d43d204396a66b9705bfb12ea785b3d1a8a4b38f42f5cb128c5404257aba0ab4",
+        "checkedflow-0.1.0.tar.gz": "cbdfe52b0dddef229520f3499a3c1058874dc16696db3ee81f19d3dc69da6c86"
+      }
     }
   ],
   "observations": [
@@ -4250,6 +4277,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36298085129",
       "conclusion": "success",
       "scope": "All required jobs passed, including six OS/Python jobs, both corrected S3 services, Vault and27 installed infrastructure cases. Downloaded report independently accepted. Wheel f7a5a5455241f3b3081ff8d70589047fea73a7646149e73ca072475c1417c924; sdist d3597edf839c81eaf1d3bbdc6b78a841040bd5bd1560ed964fdccb9722812234. Predates telemetry/templates; not final G1-G7. Earlier S3 failure remains failed."
+    },
+    {
+      "source": "371b69f35fef51615dee6087cef3978c62a4c799",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36298741054",
+      "conclusion": "success",
+      "scope": "All required jobs passed, including six OS/Python jobs, both S3 services, Vault and27 installed infrastructure cases. Downloaded27-case report independently accepted. Wheel c67cd148a47adaac9dda7e65ed9d9f0177ace7a45a355d169c4260428166533b; sdist4a14b4775d094272fc2bbfb1b5b55a7d53e840703513f479fec961b667113975. Includes telemetry reporting-recovery extension; predates monitoring templates and legacy inventory. Not final G1-G7."
     }
   ]
 }

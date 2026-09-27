@@ -75,3 +75,7 @@ Do not log raw exceptions, candidate text, tokens or arbitrary trace parents. Se
 Monitoring rule changes require actual pinned promtool evaluation, including pending/firing/recovery
 and healthy-boundary cases. Missing metrics are not zero. Preserve explicit limits on quorum,
 credential and evidence diagnoses; examples and recovery targets are not achieved SLOs.
+
+Legacy inventory requires an independently trusted checkpoint and retains the complete old state.
+Do not treat summaries as migration authority or charge already charged unknown attempts twice.
+Successor activation and signer custody remain separate requirements; see docs/legacy-migration.md.

@@ -3,6 +3,40 @@
 Status: **IN PROGRESS; NOT RELEASE READY**. Package 0.1.0 remains the published baseline.
 The only release authorized by this effort is 0.2.0 / `v0.2.0`.
 
+## Legacy inventory increment
+
+The read-only [legacy inventory](legacy-migration.md) retains a complete old snapshot against
+an independently supplied checkpoint. It checks per-mission funded reservations and preserves
+charged unknown tasks, original fences/nonces, revoked dependencies and residual records.
+The authentic published-v1 fixture is inspected at every replayed block without advancing time
+or changing the old interpreter. Fifteen focused source tests passed in 42.52 seconds; the new
+module covered all 46 statements and six branches. Successor activation, inherited v2 accounting,
+validator ownership and installed multi-node migration remain unfinished. R7-0349/R7-0353 are
+therefore IN_PROGRESS, not completed. M6 is also corrected to IN PROGRESS to reflect the already
+implemented monitoring components without claiming deployed monitoring qualification.
+
+The preceding monitoring-template source's complete local check finished successfully: 1055
+tests passed (three Windows descriptor skips and 24 infrastructure deselections), followed by
+104 detected invariant-breaking mutations. These observations qualify that source increment;
+new migration changes require their own checks. No result here authorizes publication.
+
+Both development distribution formats were installed outside the checkout and passed the
+packaged migration-inventory smoke alongside existing SDK/CLI/extras checks. All 180 wheel
+package files match source. Distribution privacy scanning inspected 888 members with zero
+pattern findings. Artifact hashes are recorded in the machine ledger; later documentation
+updates are not part of those development artifacts.
+
+Telemetry CI [36298741054](https://github.com/kadubon/checkedflow/actions/runs/36298741054)
+completed all required jobs, including six OS/Python combinations, both S3 services, Vault
+and 27 installed infrastructure cases. The downloaded infrastructure report independently
+passed the required-case gate. This evidence predates monitoring templates and legacy inventory
+and does not complete the original G1–G7 release qualification.
+
+This increment's complete local unit run passed 1066 tests in 403.83 seconds, with three
+Windows descriptor skips and 24 separately selected infrastructure cases. Static and
+authoritative coverage checks passed. The expanded 106-mutation gate was still running at
+this observation; no completion is claimed until its terminal result is recorded.
+
 ## Baseline inspected on 2026-09-26
 
 - Local and remote main: `a58869e2488bed9550b006d261601240357b2b99`.
@@ -54,7 +88,7 @@ add reciprocal links without converting partial implementation into completed re
 | M3 | Repository patches and independent bounded verification | M1–M2 | IN PROGRESS |
 | M4 | Role separation, scoped access, managed signer, rotation | M1–M2 | IN PROGRESS |
 | M5 | Worker supervision, effect journal, recovery | M2–M4 | IN PROGRESS |
-| M6 | Metrics, readiness, deployments, runbooks | M2–M5 | NOT_STARTED |
+| M6 | Metrics, readiness, deployments, runbooks | M2–M5 | IN PROGRESS |
 | M7 | Installed, infrastructure, fault, load, multi-host qualification | M3–M6 | IN PROGRESS |
 | M8 | Documentation, exact-artifact publication gates, release | M7 | IN PROGRESS |
 

@@ -193,6 +193,15 @@ legacy = json.loads(r.files("checkedflow").joinpath("data/legacy-v1.json").read_
 assert replay_blocks(decode(legacy["initial"]), legacy["blocks"]).state_hash == (
     "9c12eea3393f018bbac48ad1660b1077c9e8fb6d1b6665eede9ca50cf1817950"
 )
+from checkedflow.legacy_inventory import Checkpoint, inspect_snapshot
+old = legacy["final_state"]
+inventory = inspect_snapshot(dumps(old), Checkpoint(
+    old["chain"], old["height"], legacy["final_state_hash"]
+))
+assert loads(inventory.snapshot) == old
+assert "unknown" in inventory.pending_tasks
+assert {"c", "child"} <= set(inventory.withdrawn_capabilities)
+assert inventory.open_residuals
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from checkedflow.operational_identity import Credential, authenticate, sign_command
 keys = {(name, 1): Ed25519PrivateKey.generate() for name in ("a", "b", "c", "d")}
