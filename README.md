@@ -44,6 +44,7 @@ guides; complete generation orchestration and operational deployment are still u
 | How can operators investigate an uncertain PR? | [Read-only reconciliation](docs/effect-reconciliation.md) publishes exact observations for three-organization review without enabling dispatch |
 | What if local recovery records are damaged? | [Submission recovery](docs/worker-supervision.md) rejects missing identity records; preserve journals and reconcile original commands instead of starting again |
 | Is a responding service safe to start work? | [Role-aware observations](docs/observability.md) separate liveness, readable state and readiness; authenticated status never grants execution authority |
+| Where can operators inspect local attempts? | [Operation logs and traces](docs/telemetry.md); bounded diagnostic records preserve failures without logging credentials or claiming committed success |
 | What has actually been tested? | [Implementation ledger](docs/implementation-0.2.0.md), [four-VM observations](docs/vm-laboratory-2026-09-26.md) |
 
 ## The concepts in one minute
@@ -255,3 +256,7 @@ or future-use authorization; replica placement must be qualified independently.
 [Service observations](docs/observability.md) distinguish process liveness, readable state
 and protected-work readiness. Optional HTTP status routes remain inside mission authentication;
 current-state gauges do not count a replayed event again.
+
+Local worker/effect/service invocations can opt into [bounded operation logs and optional traces](docs/telemetry.md).
+These observations are lossy diagnostics, not committed events, task acceptance or execution authority.
+No outbound exporter is enabled by default.

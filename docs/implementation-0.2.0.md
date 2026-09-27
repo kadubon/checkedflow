@@ -1438,3 +1438,38 @@ local run did not reproduce the CI failure; startup convergence is a fixture pre
 corrected, not a conclusively isolated provider diagnosis. The revised fixture passed against the
 installed observation wheel and the pinned Windows and Linux services. New CI must
 qualify the correction on both hosted environments; prior failures remain failures.
+
+
+## Bounded local operation observations
+
+The [telemetry adapter](telemetry.md) adds opt-in observations to worker/effect supervisor steps
+and service monitoring. Its finite queue performs no export I/O inside those operations. Fixed
+JSON records omit exception text, credentials and identifiers, preserve original returns/errors,
+and distinguish local invocation outcomes from committed events and checked acceptance.
+Explicit OpenTelemetry export creates independent root spans through a supplied tracer; no global
+provider, ambient parent or outbound collector is configured automatically.
+
+Nineteen focused source tests and nineteen installed-wheel tests passed. Tests include actual
+OpenTelemetry SDK in-memory export, bounded concurrent buffering, clock failure, exception identity,
+schema rejection and repeated supervisor calls without repeated execution. The new module covered
+all 74 statements and ten measured branches in the focused run. The preceding combined supervisor,
+monitor and telemetry regression selection passed 94 cases before the final schema case was added.
+The full local suite passed 1,055 tests in 370.52 seconds, with three Windows descriptor skips
+and 24 separately selected infrastructure cases. All authoritative coverage gates passed. The
+expanded 104-mutant gate is running.
+
+Development wheel `d6286b7bcae7f23c7bf9735379073103d0f477d821d10ba66fac37016ce224d0`
+and sdist `388f66aeb30a57cb5fa8b96ee376d387cf53cee34403ffa66770ad90e62a96bd`
+passed isolated package smoke, including the optional telemetry API. All 175 package members match
+source. The source/distribution scan examined 863 members without pattern findings. Later ledger
+updates are not represented as a final release artifact. Exporter process supervision, collector
+configuration, complete instrumentation and original G1-G7 remain unfinished.
+
+The earlier monitoring CI36297746913 passed all 27 installed infrastructure cases, including the
+role-aware storage/key/policy observation followed by loss of readiness after pause and disable.
+Its downloaded report independently passed the required gate. That run still failed both S3 jobs;
+this partial positive result does not qualify its distribution. Its wheel is
+`f7a5a5455241f3b3081ff8d70589047fea73a7646149e73ca072475c1417c924` and sdist is
+`a70f68ea9db0f4e6c05d908eadaf5bef868024727f70fe4ca6b1d5fcb6a35804`.
+The newer storage-readiness source73bcab0 requires CI36298085129; neither run covers the subsequent
+local-operation telemetry extension.

@@ -2,7 +2,7 @@
 
 import sqlite3
 from collections.abc import Callable, Iterator
-from contextlib import closing, contextmanager
+from contextlib import closing, contextmanager, nullcontext
 from dataclasses import dataclass
 from hashlib import sha256
 from pathlib import Path
@@ -12,6 +12,7 @@ from checkedflow.core.operational import State
 from checkedflow.core.values import Failure, Object, names, require
 from checkedflow.core.work_tasks import ROLE, Task, funding
 from checkedflow.dispatch_watchdog import Watchdog
+from checkedflow.telemetry import Recorder
 from checkedflow.wire import digest, document, dumps
 from checkedflow.worker_submission import Coordinator
 
@@ -42,12 +43,15 @@ class Supervisor:
         watchdog: Watchdog,
         execute: Callable[[State, Task], Outcome],
         publish: Callable[[State, Task, bytes], str],
+        *,
+        recorder: Recorder | None = None,
     ) -> None:
         require(
             watchdog.chain == coordinator.chain and watchdog.mission == coordinator.mission,
             "SCOPE",
             "supervisor watchdog differs from worker scope",
         )
+        self.recorder = recorder
         self.directory, self.coordinator, self.watchdog = directory, coordinator, watchdog
         self._execute, self._publish = execute, publish
         directory.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -160,7 +164,8 @@ class Supervisor:
 
     def step(self, identity: str) -> str:
         """One bounded attempt or reconciliation. Caller controls finite scheduling/backoff."""
-        with self._exclusive():
+        observed = self.recorder.measure("worker.step") if self.recorder else nullcontext()
+        with observed, self._exclusive():
             return self._step(identity)
 
     def _room(self, identity: str) -> None:

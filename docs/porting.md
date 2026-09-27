@@ -99,3 +99,7 @@ or future-use authorization; replica placement must be qualified independently.
 [Service observations](observability.md) distinguish process liveness, readable state
 and protected-work readiness. Optional HTTP status routes remain inside mission authentication;
 current-state gauges do not count a replayed event again.
+
+The [local operation observation](telemetry.md) schema uses Unix milliseconds and monotonic elapsed
+microseconds, bounded integer values and fixed operation/outcome/reason enums. It is diagnostic data,
+not a replay event. Exported traces must not inherit client authority or enter deterministic state.

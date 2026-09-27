@@ -1449,14 +1449,21 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
             staging=True,
         )
         inputs = Inputs(base_ref, patch_ref, inventory_ref, tuple(refs))
-        supervisor = Supervisor(tmp_path / "executor", coordinator, dispatcher)
+        from checkedflow.telemetry import Recorder
+
+        recorder = Recorder()
+        supervisor = Supervisor(tmp_path / "executor", coordinator, dispatcher, recorder=recorder)
         with pytest.raises(Failure, match="OUTCOME_UNKNOWN"):
             supervisor.step(identity, intent, contract, inputs)
         original = coordinator.pending()
         assert original is not None and document(original)["command"]["kind"] == "effect.report"
-        supervisor = Supervisor(tmp_path / "executor", coordinator, dispatcher)
+        supervisor = Supervisor(tmp_path / "executor", coordinator, dispatcher, recorder=recorder)
         assert supervisor.step(identity, intent, contract, inputs) == "observed"
         assert len(sent) == 2 and sent.count(original) == 1
+        observations = recorder.drain()
+        assert [row.outcome for row in observations] == ["failed", "returned"]
+        assert observations[0].reason == "OUTCOME_UNKNOWN"
+        assert all(row.operation == "effect.step" for row in observations)
         assert sum(method == "POST" for method, _ in calls) == 4
         raw = supervisor.observation(identity)
         assert raw is not None

@@ -7,7 +7,7 @@ cross-host journal failover, governed remote reconciliation or compensation.
 
 import sqlite3
 from collections.abc import Iterator
-from contextlib import closing, contextmanager
+from contextlib import closing, contextmanager, nullcontext
 from io import BytesIO
 from pathlib import Path
 from typing import cast
@@ -22,6 +22,7 @@ from checkedflow.effect_dispatch import Dispatcher
 from checkedflow.github_drafts import Outcome
 from checkedflow.github_effects import Intent
 from checkedflow.repository_reuse import Inputs, contract_digest, prepare
+from checkedflow.telemetry import Recorder
 from checkedflow.wire import document, dumps
 from checkedflow.worker_submission import Coordinator
 
@@ -41,7 +42,14 @@ class Supervisor:
     together under exclusive ownership; never recreate them to retry an uncertain effect.
     """
 
-    def __init__(self, directory: Path, coordinator: Coordinator, dispatcher: Dispatcher) -> None:
+    def __init__(
+        self,
+        directory: Path,
+        coordinator: Coordinator,
+        dispatcher: Dispatcher,
+        *,
+        recorder: Recorder | None = None,
+    ) -> None:
         require(
             coordinator.chain == dispatcher.watchdog.chain
             and coordinator.mission == dispatcher.watchdog.mission
@@ -50,6 +58,7 @@ class Supervisor:
             "SCOPE",
             "effect supervisor identities differ",
         )
+        self.recorder = recorder
         self.directory, self.coordinator, self.dispatcher = directory, coordinator, dispatcher
         directory.mkdir(mode=0o700, parents=True, exist_ok=True)
         provider = dispatcher.provider
@@ -200,7 +209,8 @@ class Supervisor:
 
     def step(self, identity: str, intent: Intent, contract: Contract, inputs: Inputs) -> str:
         """Reserve once, dispatch at most once, then retain evidence and report original bytes."""
-        with self._exclusive():
+        observed = self.recorder.measure("effect.step") if self.recorder else nullcontext()
+        with observed, self._exclusive():
             return self._step(identity, intent, contract, inputs)
 
     def _step(self, identity: str, intent: Intent, contract: Contract, inputs: Inputs) -> str:

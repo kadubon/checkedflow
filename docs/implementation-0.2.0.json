@@ -1873,7 +1873,8 @@
       "text": "Add structured logs, optional OpenTelemetry spans, Prometheus-compatible metrics, and role-aware `/healthz` and `/readyz` or equivalent endpoints.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:role-aware-observability"
+        "component:role-aware-observability",
+        "component:bounded-operation-observations"
       ]
     },
     {
@@ -1964,15 +1965,18 @@
       "text": "Do not use task IDs, content digests, customer text, tokens, or arbitrary URLs as unbounded metric labels. Put high-cardinality identifiers in protected logs/traces. Prevent replay or monitor restart from double-counting authoritative service events.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:role-aware-observability"
+        "component:role-aware-observability",
+        "component:bounded-operation-observations"
       ]
     },
     {
       "id": "R11-0498",
       "source_line": 498,
       "text": "Tracing context is untrusted correlation metadata, not authorization. Exporters must be optional, bounded, and unable to affect consensus. Default to no outbound telemetry until the operator configures it.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:bounded-operation-observations"
+      ]
     },
     {
       "id": "R11-0500",
@@ -3977,6 +3981,30 @@
         "R11-0496"
       ],
       "scope": "Role-specific liveness/readability/readiness with own-node watchdog, strict read-only dependency probes and post-probe freshness. Opt-in A2A/MCP HTTP status routes use existing authentication, scope and response-time revocation. Fixed-name current-state gauges avoid replay increments and arbitrary labels. Nineteen focused source and installed-wheel cases passed, plus the full 1,036-test local suite and authoritative coverage gates. Both new modules have full statement and measured branch coverage. Wheel/sdist isolated smoke passed; 853 source/distribution members had no scan findings. The extended real infrastructure case still needs its own run. Complete deployment probe provisioning, CLI configuration, event logs/traces, latency/storage instrumentation, dashboards/alerts and SLO/load qualification remain unfinished. No full R11/G1-G7 claim."
+    },
+    {
+      "id": "bounded-operation-observations",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/telemetry.py",
+        "src/checkedflow/worker_supervisor.py",
+        "src/checkedflow/effect_supervisor.py",
+        "src/checkedflow/data/operation-observation.schema.json"
+      ],
+      "tests": [
+        "tests/test_telemetry.py",
+        "tests/test_integration.py",
+        "scripts/fault_injection.py"
+      ],
+      "documentation": [
+        "docs/telemetry.md"
+      ],
+      "requirements": [
+        "R11-0481",
+        "R11-0496",
+        "R11-0498"
+      ],
+      "scope": "Finite opt-in local invocation queue, original exception/return preservation, fixed secret-free JSON records and explicit root OpenTelemetry spans. Nineteen source and installed-wheel cases passed, including real SDK in-memory export. Full local1055 tests and coverage gates passed;104-mutant gate running. Wheel/sdist isolated smoke passed,175 package files identical to source,863 scanned members without pattern findings. Local observations are not authoritative event counts. Complete exporter supervision, deadlines, collector provisioning, complete instrumentation and R11/G1-G7 remain unfinished."
     }
   ],
   "observations": [

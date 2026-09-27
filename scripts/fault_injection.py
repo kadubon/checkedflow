@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "telemetry.py",
+        "test_telemetry.py",
+        "telemetry_queue_remains_bounded",
+        "Queue(integer(capacity, low=1, high=MAX_BATCH))",
+        "Queue(0)",
+        "test_queue_is_bounded_across_threads_and_drains_with_a_limit",
+    ),
+    (
+        "telemetry.py",
+        "test_telemetry.py",
+        "telemetry_does_not_inherit_ambient_context",
+        "context=Context()",
+        "context=None",
+        "test_actual_otel_spans_are_explicit_roots_without_ambient_identity_or_exception",
+    ),
+    (
         "observability.py",
         "test_observability.py",
         "readiness_requires_role_dependencies",

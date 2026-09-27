@@ -1,7 +1,7 @@
 # Service liveness, readiness and current-state metrics
 
 Status: development SDK and authenticated A2A/MCP HTTP integration. This is not the complete
-operational monitoring or SLO qualification. Logging, tracing, latency/storage measurements,
+operational monitoring or SLO qualification. Complete log/trace deployment, latency/storage measurements,
 deployment probe provisioning and long-duration dashboard/alert qualification remain unfinished.
 
 ## Three different questions
@@ -112,3 +112,7 @@ Tests cover role requirements, strict probe results, cold/stalled/paused states,
 probes, unavailable reads, replay-stable gauges, exception privacy and both actual ASGI protocol
 factories. Revocation during a probe blocks response egress. These tests do not establish live
 managed-signer/sandbox probe correctness, multi-host availability or achieved SLOs.
+
+Local worker/effect/service invocations can opt into [bounded operation logs and optional traces](telemetry.md).
+These observations are lossy diagnostics, not committed events, task acceptance or execution authority.
+No outbound exporter is enabled by default.

@@ -57,6 +57,7 @@ REQUIRED = [
     "checkedflow/data/effect-staging-policy.schema.json",
     "checkedflow/data/artifact-availability.schema.json",
     "checkedflow/data/service-observation.schema.json",
+    "checkedflow/data/operation-observation.schema.json",
     "checkedflow/data/github-effect-intent.schema.json",
     "checkedflow/data/effect-flow-vector.json",
     "checkedflow/data/operational-configuration.schema.json",
@@ -463,6 +464,12 @@ with TemporaryDirectory(prefix="checkedflow-published-bytes-") as directory:
         assert error.code == "ACCESS"
     else:
         raise AssertionError("withdrawn publication access must fail")
+from checkedflow.telemetry import Recorder, trace
+from opentelemetry.trace import NoOpTracerProvider
+telemetry = Recorder()
+with telemetry.measure("worker.step"):
+    pass
+trace(telemetry.drain(), NoOpTracerProvider().get_tracer("installed-smoke"))
 print("Installed agent extras smoke passed on", sys.version.split()[0])
 """
 
@@ -514,7 +521,7 @@ def main() -> None:
                     "install",
                     "--python",
                     str(executable),
-                    str(artifact) + "[agents,distributed,effects]",
+                    str(artifact) + "[agents,distributed,effects,telemetry]",
                 ],
                 directory,
             )

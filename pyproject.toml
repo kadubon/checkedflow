@@ -19,6 +19,7 @@ Repository = "https://github.com/kadubon/checkedflow"
 Documentation = "https://github.com/kadubon/checkedflow/tree/main/docs"
 
 [project.optional-dependencies]
+telemetry = ["opentelemetry-api>=1.45,<2"]
 effects = ["httpx>=0.28,<1"]
 distributed = ["grpcio>=1.84,<2", "protobuf>=7.36.2,<8", "httpx>=0.28,<1"]
 agents = [
@@ -36,7 +37,7 @@ s3 = [
 checkedflow = "checkedflow.cli:main"
 
 [dependency-groups]
-dev = ["ruff>=0.12", "mypy>=1.17", "bandit>=1.8", "pytest>=8.4", "pytest-cov>=6", "hypothesis>=6.135", "types-jsonschema>=4.25", "twine>=6", "grpcio-tools>=1.74", "types-protobuf>=6", "coverage>=7.10", "pyyaml>=6"]
+dev = ["opentelemetry-sdk>=1.45,<2", "ruff>=0.12", "mypy>=1.17", "bandit>=1.8", "pytest>=8.4", "pytest-cov>=6", "hypothesis>=6.135", "types-jsonschema>=4.25", "twine>=6", "grpcio-tools>=1.74", "types-protobuf>=6", "coverage>=7.10", "pyyaml>=6"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/checkedflow"]

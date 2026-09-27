@@ -5,6 +5,7 @@ counters. Repeated scraping or replay therefore cannot count a committed operati
 """
 
 from collections.abc import Callable, Mapping
+from contextlib import nullcontext
 from dataclasses import dataclass
 
 from checkedflow.core.operational import State
@@ -14,6 +15,7 @@ from checkedflow.core.work_acceptance import status as candidate_status
 from checkedflow.core.work_effects import MAX_EFFECTS, STATUSES, UNRESOLVED
 from checkedflow.core.work_tasks import MAX_TASKS, funding
 from checkedflow.dispatch_watchdog import Watchdog
+from checkedflow.telemetry import Recorder
 
 REQUIRED = {
     "gateway": frozenset({"configuration", "storage"}),
@@ -121,17 +123,28 @@ class Monitor:
     """
 
     def __init__(
-        self, watchdog: Watchdog, role: str, probes: Mapping[str, Callable[[], bool]]
+        self,
+        watchdog: Watchdog,
+        role: str,
+        probes: Mapping[str, Callable[[], bool]],
+        *,
+        recorder: Recorder | None = None,
     ) -> None:
         require(role in REQUIRED, "SHAPE", "known operational service role required")
         require(set(probes) == REQUIRED[role], "CONFIGURATION", "complete role probes required")
         require(
             all(callable(probe) for probe in probes.values()), "CONFIGURATION", "probe callable"
         )
+        self.recorder = recorder
         self.watchdog, self.role = watchdog, role
         self.probes = tuple(sorted(probes.items()))
 
     def observe(self) -> Observation:
+        observed = self.recorder.measure("service.observe") if self.recorder else nullcontext()
+        with observed:
+            return self._observe()
+
+    def _observe(self) -> Observation:
         try:
             state = self.watchdog.poll()
             values = tuple(sorted(gauges(state).items()))

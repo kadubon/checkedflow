@@ -67,3 +67,7 @@ For [agent TLS](docs/agent-tls.md), provision certificate/key/client-CA files in
 and callback keys. Never infer roles from certificates or forwarded headers. Keep loopback defaults,
 require all TLS settings together, and drain/restart all listeners to retire a CA snapshot. Do not
 claim a proxy template or source handshake test proves installed multi-host deployment qualification.
+
+Telemetry must not change original operation returns or exceptions. Keep exporters outside consensus and
+protected work. Never turn local step observations into committed event counts or recoverable authority.
+Do not log raw exceptions, candidate text, tokens or arbitrary trace parents. See docs/telemetry.md.

@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:checkedflow:operation-observation:v1",
+  "title": "Local invocation observation; never committed evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile",
+    "operation",
+    "started_ms",
+    "duration_us",
+    "outcome",
+    "reason"
+  ],
+  "properties": {
+    "profile": {
+      "const": "checkedflow/operation-observation/v1"
+    },
+    "operation": {
+      "enum": [
+        "worker.step",
+        "effect.step",
+        "service.observe"
+      ]
+    },
+    "started_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "duration_us": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+    },
+    "outcome": {
+      "enum": [
+        "returned",
+        "failed",
+        "interrupted"
+      ]
+    },
+    "reason": {
+      "enum": [
+        "NONE",
+        "OTHER",
+        "ACCESS",
+        "AUTHORITY",
+        "BUSY",
+        "CAPACITY",
+        "CLEANUP_UNKNOWN",
+        "INTEGRITY",
+        "NOT_READY",
+        "OUTCOME_UNKNOWN",
+        "POLICY",
+        "STALE",
+        "STOPPED",
+        "UNAVAILABLE"
+      ]
+    }
+  },
+  "if": {
+    "properties": {
+      "outcome": {
+        "const": "returned"
+      }
+    }
+  },
+  "then": {
+    "properties": {
+      "reason": {
+        "const": "NONE"
+      }
+    }
+  },
+  "else": {
+    "properties": {
+      "reason": {
+        "not": {
+          "const": "NONE"
+        }
+      }
+    }
+  }
+}

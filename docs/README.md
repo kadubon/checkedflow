@@ -73,3 +73,7 @@ or future-use authorization; replica placement must be qualified independently.
 [Service observations](observability.md) distinguish process liveness, readable state
 and protected-work readiness. Optional HTTP status routes remain inside mission authentication;
 current-state gauges do not count a replayed event again.
+
+Local worker/effect/service invocations can opt into [bounded operation logs and optional traces](telemetry.md).
+These observations are lossy diagnostics, not committed events, task acceptance or execution authority.
+No outbound exporter is enabled by default.
