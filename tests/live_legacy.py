@@ -41,7 +41,7 @@ def capture(directory, binary, image):
         )
         cluster.send("capability.revoke", {"id": root, "reason": "migration regression"})
         for index in range(4):
-            cluster.send("worker.revoke", {"id": f"w{index}"})
+            cluster.send("worker.revoke", {"id": f"w{index}", "reason": "migration shutdown"})
         with pytest.raises(Failure, match="REJECTED"):
             cluster.send("task.lease", {"id": "unknown"}, actor="w0")
         cluster.wait_height(cluster.client().state().height + 1)
