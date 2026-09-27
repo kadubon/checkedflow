@@ -26,6 +26,7 @@ class Cluster:
         self.processes = Processes(directory, cometbft, base_port=base_port)
         self.directory = self.processes.directory
         self.succession_paths: tuple[Path, Path, Path] | None = None
+        self.retention_paths: tuple[Path, ...] = ()
         self.keys: dict[tuple[str, int], Ed25519PrivateKey] = {}
         credentials = []
         validators = []
@@ -96,6 +97,11 @@ class Cluster:
                         str(self.succession_paths[2]),
                     ]
                     if self.succession_paths is not None
+                    else []
+                ),
+                *(
+                    ["--legacy-retention", str(self.retention_paths[index])]
+                    if self.retention_paths
                     else []
                 ),
             ],

@@ -47,8 +47,8 @@ cross-host cutover or G1-G7 qualification.
 The caller must provision both trusted checkpoints and the retention policy independently.
 This adapter does not derive missing history, fetch arbitrary references from candidates, bind a
 new approval plan to unreviewed artifacts, or automatically release historical obligations after
-an accounting adjustment. Startup/dispatch integration and deployed multi-host retention tests
-remain required before operational release.
+an accounting adjustment. Startup admission now verifies the protected local catalog. Dispatch-time revalidation and deployed
+multi-host retention tests remain required before operational release.
 
 
 ## Signed-history chunk contract
@@ -92,5 +92,37 @@ pin identity, not storage paths, credentials, independent checkpoints or permiss
 Decoding succeeds even if storage has subsequently been removed or its pin released. Always
 call `verify` against the independently configured catalog, current access policy, trusted genesis
 and final checkpoint before using it. Verification never recreates missing pins. Updating the
-handle alone cannot authorize a new archive set. Mandatory startup/dispatch wiring remains
-unfinished; this persistence contract is a prerequisite, not that deployment integration.
+handle alone cannot authorize a new archive set. Startup admission consumes this handle through a protected operator configuration. Dispatch-time
+revalidation and deployed retention qualification remain separate requirements.
+
+
+## Startup admission
+
+Inherited v2 ABCI deployments require `--legacy-retention operator/retention.json` together with
+all three succession files. Fresh genesis refuses succession/retention arguments. Every restart
+verifies existing storage before creating the application database or opening a listener.
+`checkedflow schema legacy-retention-local` describes the protected configuration:
+
+| Field | Meaning |
+| --- | --- |
+| `version` | Exactly `checkedflow/legacy-retention-local/v1` |
+| `catalog`, `objects` | Distinct existing SQLite files, relative to the configuration file or absolute |
+| `namespace`, `scope`, `principal` | Original protected catalog and pin owner identities |
+| `floor` | Independently retained positive catalog revision watermark |
+| `initial` | Independently authenticated genesis checkpoint: chain, height zero, state_hash |
+| `retained` | The reviewed recovery handle from `Retained.record()` |
+| `policy` | Original retention_blocks, grace_blocks, object_limit and byte_limit |
+
+Provision this file outside candidate-controlled workspaces, alongside authenticated root and
+archive-digest records. Protect updates with the same operator review as the succession inputs.
+Its maximum size is 256 KiB. The current startup backend uses `LocalStore` and `RetentionStore`;
+provider bytes and catalog must use the configured capacity limits. The approved legacy snapshot
+file must contain the exact canonical bytes retained in the catalog.
+
+Missing or incomplete stores, a zero floor or catalog revision below the independently supplied
+floor, mismatched owner/policy, released pins, missing bytes,
+invalid replay or a different approved snapshot prevent startup. The verifier receives read-only
+artifact permissions and does not repin or initialize missing inventories. Independently retain
+current recovery watermarks: a caller-supplied old watermark cannot detect all rollback. These
+checks do not establish physical replica independence, continuous availability after startup,
+old-worker shutdown, validator transfer or complete cross-host migration.

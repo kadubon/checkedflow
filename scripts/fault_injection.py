@@ -46,6 +46,14 @@ OPERATIONAL_MUTATIONS = [
     (
         "legacy_retention.py",
         "test_legacy_retention.py",
+        "startup_reopens_and_verifies_existing_retention",
+        "verify(retained, trusted, store, access=access, initial=genesis)",
+        "pass",
+        "test_protected_local_configuration_reopens_and_never_repins",
+    ),
+    (
+        "legacy_retention.py",
+        "test_legacy_retention.py",
         "legacy_history_must_reach_final_root",
         "current == final",
         "True",

@@ -4533,6 +4533,14 @@
         "checkedflow-0.1.0-py3-none-any.whl": "9b40d4eadf457d26d36ed088a673433573aad1a1df520ec488be58b0e157f3e5",
         "checkedflow-0.1.0.tar.gz": "a10c332f5143b4131e50975c1a83ca1c9e41b8a27850e9367835d15ae76e4bbf"
       }
+    },
+    {
+      "id": "mandatory-local-retention-startup",
+      "scope": "Inherited ABCI serve/CLI now require protected local retention configuration before application database/listener creation. Read-only catalog-shape preflight rejects missing and empty inventories; exact approved snapshot, existing pin, independent roots and full legacy replay required on every restart.18focused tests passed64.98s,103statements8branches100percent; static checks exit0; targeted new118th fault mutant detected. Isolated wheel/sdist check exit0 for corrected final component artifacts. Four-node inherited-accounting fixture now provisions independent local catalogs; execution on this revision remains pending. Dispatch-time revalidation and originalG1-G7 remain incomplete.",
+      "artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "6ea818486b94f68ed08b97b899326df01861bd74a03481d8a1312b3a268f6c7e",
+        "checkedflow-0.1.0.tar.gz": "1fa2e20f145deb1c550075510a6b2c0fb3ccbdadb56458d554cc0fd2ecb923ea"
+      }
     }
   ]
 }

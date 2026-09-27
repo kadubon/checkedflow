@@ -91,7 +91,7 @@ establish local durable exclusion, not cross-host fencing or a qualified migrati
 
 ## Startup admission
 
-The v2 ABCI service refuses inherited genesis unless all three operator-provisioned files are
+The v2 ABCI service refuses inherited genesis unless all four operator-provisioned files are
 provided. Use the existing configuration, database and loopback address arguments together with:
 
 ```sh
@@ -100,7 +100,8 @@ python -m checkedflow.distributed.operational_application \
   --address 127.0.0.1:26658 \
   --succession-manifest operator/approval.json \
   --legacy-snapshot operator/legacy.json \
-  --legacy-checkpoint operator/checkpoint.json
+  --legacy-checkpoint operator/checkpoint.json \
+  --legacy-retention operator/retention.json
 ```
 
 The checkpoint file is exactly `{ "chain": "old-chain", "height": 123,
@@ -115,9 +116,13 @@ application database or listening socket. A fresh, non-inherited genesis rejects
 inputs instead of silently ignoring them. Keep these files and the initial configuration in
 protected recovery storage. They are not candidate-controlled inputs and contain no private keys.
 
-Python embedders call `serve(..., succession=Succession(manifest, legacy, trusted_checkpoint))`.
+Python embedders call `serve(..., succession=Succession(manifest, legacy, trusted_checkpoint), retention=path)`.
 The lower-level `Application` class is a consensus adapter, not a deployment admission service;
 embedders that construct it directly must enforce equivalent startup admission. Neither path
 stops the old deployment or demonstrates exclusive physical ownership of validator keys. Complete
 those maintenance-window controls before enabling dispatch. The four-node laboratory case is configured to exercise
 approved startup/restart but remains a single-operator test, not G6 qualification.
+
+The protected [local retention configuration](legacy-retention.md#startup-admission) is checked on
+every startup before database creation or socket binding. It authenticates the retained canonical
+snapshot bytes and ordered history against independent roots; startup never repairs missing pins.

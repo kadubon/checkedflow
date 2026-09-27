@@ -14,6 +14,7 @@ from checkedflow.core.values import Failure, Object, array, fields, integer, obj
 from checkedflow.distributed.proto.generated.tendermint.abci import types_pb2 as pb
 from checkedflow.distributed.proto.generated.tendermint.abci import types_pb2_grpc as rpc
 from checkedflow.legacy_inventory import Checkpoint
+from checkedflow.legacy_retention import verify_file as verify_retention
 from checkedflow.operational_codec import decode, encode, state_bytes
 from checkedflow.operational_runtime import Runtime
 from checkedflow.operational_storage import MAX_BLOCK_BYTES, MAX_TRANSACTIONS, Store, _inputs
@@ -299,9 +300,17 @@ def serve(
     address: str,
     *,
     succession: Succession | None = None,
+    retention: Path | None = None,
 ) -> None:
     # Authenticate migration before creating a database or listening socket, on every restart.
     authorize_startup(configuration.initial, configuration.validators, succession)
+    require(
+        (succession is not None) == (retention is not None),
+        "BINDING",
+        "legacy retention required exactly",
+    )
+    if succession is not None and retention is not None:
+        verify_retention(retention, succession.legacy, succession.trusted)
     host, separator, port = address.partition(":")
     require(
         host == "127.0.0.1"
@@ -345,8 +354,14 @@ def main() -> None:
     parser.add_argument("--succession-manifest", type=Path)
     parser.add_argument("--legacy-snapshot", type=Path)
     parser.add_argument("--legacy-checkpoint", type=Path)
+    parser.add_argument("--legacy-retention", type=Path)
     args = parser.parse_args()
-    paths = (args.succession_manifest, args.legacy_snapshot, args.legacy_checkpoint)
+    paths = (
+        args.succession_manifest,
+        args.legacy_snapshot,
+        args.legacy_checkpoint,
+        args.legacy_retention,
+    )
     require(all(paths) or not any(paths), "BINDING", "all succession input paths required")
     succession = None
     if all(paths):
@@ -364,6 +379,7 @@ def main() -> None:
         Configuration.decode(args.configuration.read_bytes()),
         args.address,
         succession=succession,
+        retention=args.legacy_retention,
     )
 
 

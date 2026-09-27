@@ -110,3 +110,6 @@ Use the legacy-history schema; see docs/legacy-retention.md.
 
 Persist legacy handles with the legacy-retained schema; decoding does not authenticate storage.
 Always verify the existing pin and independently protected roots before use. See docs/legacy-retention.md.
+
+Inherited ABCI startup requires --legacy-retention with protected original catalog policy and an
+independent positive revision floor. Never initialize a missing inventory or repin during recovery.

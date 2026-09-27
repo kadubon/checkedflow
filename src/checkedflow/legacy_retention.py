@@ -4,11 +4,15 @@ Storage availability is a current observation, not consensus or future availabil
 The operator must independently provision both genesis and final checkpoints.
 """
 
+import sqlite3
+from contextlib import closing
 from dataclasses import dataclass
 from hashlib import sha256
 from io import BytesIO
+from pathlib import Path
 
 from checkedflow.artifact_io import Access
+from checkedflow.artifacts import LocalStore
 from checkedflow.core.artifact import Reference, reference
 from checkedflow.core.values import Object, array, fields, integer, obj, require, text
 from checkedflow.legacy_inventory import Checkpoint, inspect_snapshot
@@ -16,6 +20,69 @@ from checkedflow.recovery import replay_blocks
 from checkedflow.retention import Pin, RetentionStore
 from checkedflow.serialization import decode
 from checkedflow.wire import document, dumps
+
+
+def verify_file(path: Path, legacy: bytes, trusted: Checkpoint) -> None:
+    """Reopen protected local recovery configuration without creating missing inventories."""
+    with path.open("rb") as stream:
+        raw = stream.read(262145)
+    require(len(raw) <= 262144, "LIMIT", "legacy retention configuration byte ceiling")
+    config = document(raw)
+    fields(
+        config, "version catalog objects namespace scope principal floor initial retained policy"
+    )
+    require(
+        config["version"] == "checkedflow/legacy-retention-local/v1", "VERSION", "local retention"
+    )
+    catalog_path = path.parent / text(config["catalog"], limit=4096)
+    objects_path = path.parent / text(config["objects"], limit=4096)
+    require(
+        catalog_path.is_file()
+        and objects_path.is_file()
+        and catalog_path.resolve() != objects_path.resolve(),
+        "RESTORE",
+        "distinct existing legacy inventories required",
+    )
+    for inventory, expected in (
+        (objects_path, {"artifact_identity", "artifact_objects"}),
+        (
+            catalog_path,
+            {"retention_identity", "retention_objects", "retention_pins", "retention_roots"},
+        ),
+    ):
+        with closing(sqlite3.connect(inventory.resolve().as_uri() + "?mode=ro", uri=True)) as db:
+            tables = {
+                row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")
+            }
+        require(tables == expected, "RESTORE", "complete existing legacy inventory required")
+    scope = text(config["scope"], limit=80)
+    access = Access(text(config["principal"], limit=80), frozenset({scope}), frozenset({"read"}))
+    floor = integer(config["floor"], low=1)
+    initial = obj(config["initial"])
+    fields(initial, "chain height state_hash")
+    genesis = Checkpoint(
+        text(initial["chain"]), integer(initial["height"]), text(initial["state_hash"])
+    )
+    retained = decode_retained(dumps(obj(config["retained"])))
+    policy = obj(config["policy"])
+    fields(policy, "retention_blocks grace_blocks object_limit byte_limit")
+    object_limit = integer(policy["object_limit"], low=1, high=1000000)
+    byte_limit = integer(policy["byte_limit"], low=1, high=1099511627776)
+    require(
+        retained.snapshot.digest == sha256(legacy).hexdigest(), "BINDING", "approved snapshot bytes"
+    )
+    store = RetentionStore(
+        catalog_path,
+        LocalStore(objects_path, scope_objects=object_limit, scope_bytes=byte_limit),
+        namespace=text(config["namespace"], limit=128),
+        scope=scope,
+        trusted_floor=floor,
+        retention_blocks=integer(policy["retention_blocks"], low=1, high=1000000),
+        grace_blocks=integer(policy["grace_blocks"], low=1, high=1000000),
+        object_limit=object_limit,
+        byte_limit=byte_limit,
+    )
+    verify(retained, trusted, store, access=access, initial=genesis)
 
 
 @dataclass(frozen=True)

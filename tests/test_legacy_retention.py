@@ -1,6 +1,6 @@
 """Actual catalog roots protect old snapshot/history; no inference of history coverage."""
 
-from dataclasses import replace
+from dataclasses import asdict, replace
 from hashlib import sha256
 from importlib.resources import files
 from io import BytesIO
@@ -12,7 +12,13 @@ from test_retention import ACCESS, catalog
 from checkedflow.core.artifact import Reference
 from checkedflow.core.values import Failure
 from checkedflow.legacy_inventory import Checkpoint
-from checkedflow.legacy_retention import authenticate_history, decode_retained, preserve, verify
+from checkedflow.legacy_retention import (
+    authenticate_history,
+    decode_retained,
+    preserve,
+    verify,
+    verify_file,
+)
 from checkedflow.wire import digest, document, dumps
 
 
@@ -37,6 +43,75 @@ def fixture(tmp_path):
     )
     store.put(ref, BytesIO(archive), access=ACCESS)
     return raw, trusted, store, ref
+
+
+def local_configuration(tmp_path):
+    raw, trusted, store, ref = fixture(tmp_path)
+    retained = preserve(raw, trusted, (ref,), store, access=ACCESS, initial=initial_checkpoint())
+    config = {
+        "version": "checkedflow/legacy-retention-local/v1",
+        "catalog": "retention.sqlite",
+        "objects": "bytes.sqlite",
+        "namespace": store.namespace,
+        "scope": store.scope,
+        "principal": ACCESS.principal,
+        "floor": store.revision(access=ACCESS),
+        "initial": asdict(initial_checkpoint()),
+        "retained": retained.record(),
+        "policy": {
+            "retention_blocks": 2,
+            "grace_blocks": 3,
+            "object_limit": 4096,
+            "byte_limit": 268435456,
+        },
+    }
+    path = tmp_path / "retention.json"
+    path.write_bytes(dumps(config))
+    return path, config, raw, trusted, store, retained
+
+
+def test_protected_local_configuration_reopens_and_never_repins(tmp_path):
+    from jsonschema import Draft202012Validator
+
+    path, config, raw, trusted, store, retained = local_configuration(tmp_path)
+    schema = document(
+        files("checkedflow").joinpath("data/legacy-retention-local.schema.json").read_bytes()
+    )
+    Draft202012Validator(schema).validate(config)
+    verify_file(path, raw, trusted)
+    for changed in (
+        {**config, "version": "unknown"},
+        {**config, "floor": 0},
+        {**config, "catalog": "missing.sqlite"},
+        {**config, "objects": "missing.sqlite"},
+        {**config, "objects": config["catalog"]},
+        {**config, "principal": "other"},
+        {**config, "initial": {**config["initial"], "state_hash": "0" * 64}},
+    ):
+        path.write_bytes(dumps(changed))
+        with pytest.raises(Failure):
+            verify_file(path, raw, trusted)
+    assert not (tmp_path / "missing.sqlite").exists()
+    path.write_bytes(b" " * 262145)
+    with pytest.raises(Failure, match="LIMIT"):
+        verify_file(path, raw, trusted)
+    path.write_bytes(dumps(config))
+    with pytest.raises(Failure, match="BINDING"):
+        verify_file(path, raw + b" ", trusted)
+    store.release(retained.pin, access=ACCESS)
+    with pytest.raises(Failure, match="BINDING"):
+        verify_file(path, raw, trusted)
+
+
+@pytest.mark.parametrize("field", ["catalog", "objects"])
+def test_empty_existing_inventory_never_initializes_during_startup(tmp_path, field):
+    path, config, raw, trusted, _, _ = local_configuration(tmp_path)
+    empty = tmp_path / "empty.sqlite"
+    empty.touch()
+    path.write_bytes(dumps({**config, field: empty.name}))
+    with pytest.raises(Failure, match="RESTORE"):
+        verify_file(path, raw, trusted)
+    assert empty.read_bytes() == b""
 
 
 def test_portable_recovery_handle_requires_live_verification(tmp_path):

@@ -1704,3 +1704,13 @@ wheel/sdist installation checks passed. A publication scan found no issues in 94
 The preceding full local suite completed with 1,123 passes, four Windows platform skips and all
 117 fault mutants detected; its unit collection predates the latest history/handle additions.
 These observations do not qualify final release or complete mandatory startup/dispatch wiring.
+
+
+Inherited ABCI startup now requires protected local retention configuration. Before creating the
+application database or listener it reopens existing inventories, verifies the exact approved
+snapshot and pin, and replays retained history between independent checkpoints. Read-only schema
+preflight rejects empty or incomplete inventories instead of initializing them. Eighteen focused
+tests passed in 64.98 seconds with all 103 statements and eight branches covered. Static and
+isolated wheel/sdist installation checks passed; the new retention-bypass mutation was detected.
+The inherited four-node fixture now provisions one catalog per node, but execution on this
+revision is pending. Dispatch-time revalidation and original G1-G7 remain incomplete.

@@ -466,6 +466,11 @@ def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructu
     cluster.succession_paths = tuple(
         cluster.directory / name for name in ("approval.json", "legacy.json", "checkpoint.json")
     )
+    from test_legacy_retention import local_configuration
+
+    cluster.retention_paths = tuple(
+        local_configuration(cluster.directory / f"node{index}")[0] for index in range(4)
+    )
     for path, value in zip(
         cluster.succession_paths,
         (

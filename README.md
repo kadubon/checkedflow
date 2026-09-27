@@ -279,3 +279,7 @@ about old unfinished work while preserving costs and prohibiting automatic re-ex
 
 The [legacy retention adapter](docs/legacy-retention.md) protects reviewed historical objects
 from catalog erasure and verifies existing roots without silently recreating missing protection.
+
+Inherited node startup now requires the protected local retention configuration and replays its
+retained history before opening the ABCI listener. See [startup admission](docs/legacy-retention.md#startup-admission).
+Continuous dispatch-time revalidation and final multi-host qualification remain unfinished.

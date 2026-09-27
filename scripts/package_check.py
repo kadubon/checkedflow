@@ -33,6 +33,7 @@ REQUIRED = [
     "checkedflow/data/succession.schema.json",
     "checkedflow/data/legacy-history.schema.json",
     "checkedflow/data/legacy-retained.schema.json",
+    "checkedflow/data/legacy-retention-local.schema.json",
     "checkedflow/data/succession-vector.json",
     "checkedflow/data/operational-envelope.schema.json",
     "checkedflow/data/operational-state.schema.json",
@@ -223,7 +224,7 @@ approval = verify_succession(dumps(approval_vector["manifest"]), legacy=dumps(ol
     successor=decode_control(dumps(approval_vector["successor"])),
     validators=tuple(tuple(pair) for pair in approval_vector["validators"]))
 assert approval.plan_hash == approval_vector["plan_hash"]
-from checkedflow.legacy_retention import decode_retained
+from checkedflow.legacy_retention import decode_retained, verify_file
 from checkedflow.legacy_retention import preserve as retain_legacy, verify as verify_legacy_pin
 from checkedflow.wire import digest
 from checkedflow.retention import RetentionStore
@@ -249,6 +250,19 @@ with tempfile.TemporaryDirectory() as legacy_directory:
     recovered = decode_retained(dumps(retained.record()))
     assert recovered == retained
     verify_legacy_pin(recovered, anchor, catalog, access=policy, initial=start)
+    configuration = {
+        "version": "checkedflow/legacy-retention-local/v1",
+        "catalog": "catalog.sqlite", "objects": "objects.sqlite",
+        "namespace": "installed-migration", "scope": "mission", "principal": "migration",
+        "floor": catalog.revision(access=policy),
+        "initial": {"chain": start.chain, "height": start.height, "state_hash": start.state_hash},
+        "retained": recovered.record(),
+        "policy": {"retention_blocks": 2, "grace_blocks": 3,
+                   "object_limit": 4096, "byte_limit": 268435456},
+    }
+    configuration_path = folder / "retention.json"
+    configuration_path.write_bytes(dumps(configuration))
+    verify_file(configuration_path, dumps(old), anchor)
 from checkedflow.succession_journal import ApprovalJournal
 import tempfile
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
