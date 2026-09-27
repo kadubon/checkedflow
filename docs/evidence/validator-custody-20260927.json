@@ -1,0 +1,44 @@
+{
+  "profile": "checkedflow/component-evidence/v1",
+  "component": "validator-custody",
+  "wheel_sha256": "00f4612d8c7a4cf4946687721c54d4c1df42759705d1e04af06c6be79de093a6",
+  "environments": [
+    {
+      "environment": 1,
+      "passed": 4,
+      "skipped": 0,
+      "junit_sha256": "7936057a058797654d6015c703e7240df0466c7aabfd5e449854877fe3d83a20",
+      "installed_members_compared": 187,
+      "systemd": "systemd 255 (255.4-1ubuntu8.17)"
+    },
+    {
+      "environment": 2,
+      "passed": 4,
+      "skipped": 0,
+      "junit_sha256": "46a9033c6286950832ba9d8fe614ba1d57d55f87657e93659556d6a01abd17f6",
+      "installed_members_compared": 187,
+      "systemd": "systemd 255 (255.4-1ubuntu8.17)"
+    },
+    {
+      "environment": 3,
+      "passed": 4,
+      "skipped": 0,
+      "junit_sha256": "b405fb19cb4b08668de4463b9d20623b567b7aaf0086cdf7e3eb8fc6e8ae27f9",
+      "installed_members_compared": 187,
+      "systemd": "systemd 255 (255.4-1ubuntu8.17)"
+    },
+    {
+      "environment": 4,
+      "passed": 4,
+      "skipped": 0,
+      "junit_sha256": "302c3bc378da09797c3c0be3c5803b200f5b981d5601d06f5fcc4f7d205828b6",
+      "installed_members_compared": 187,
+      "systemd": "systemd 255 (255.4-1ubuntu8.17)"
+    }
+  ],
+  "distinct_boots": 4,
+  "shutdown": "graceful; disks preserved",
+  "scope": "Four disposable Linux guests on one operator host. Each runs its own local four-validator test and systemd custody test against installed development wheel. No cross-host consensus cutover, signer transfer, independent administrative ownership, final artifact G1-G7 or release qualification claim. Initial node1 service-cleanup failure preserved privately; corrected test rerun passed.",
+  "private_material_included": false,
+  "test_source_basis": "tests/test_validator_service.py from 1ad4060 with the successful-stop cleanup correction (started = False). Transferred before final whitespace formatting; exact remote test-source digest was not captured. Not final-source release evidence."
+}

@@ -1646,3 +1646,12 @@ signing state with matching common-height application hashes. The first local at
 for missing distributed extras; the corrected explicit-extra run passed. This remains one
 host with four processes, not installed systemd or four-host G6 qualification. The installed
 infrastructure gate now requires 29 cases. R7-0355 and R8-0384 correctly remain IN_PROGRESS.
+
+
+The installed custody wheel completed four cases on each of four disposable Linux guests:
+16 passes and no skips, with all 187 installed package files per guest matching the wheel.
+The initial first-node run failed during duplicate service cleanup; the corrected fixture and
+rerun passed, preserving the failure record. All test units were absent and all guests/network
+helper were gracefully stopped. [Sanitized component evidence](evidence/validator-custody-20260927.json)
+binds wheel and original reports; exact remote test-source digest was not captured. These independent guest kernels share one host;
+each test used a local cluster, not cross-host successor cutover. G1-G7 remains unqualified.

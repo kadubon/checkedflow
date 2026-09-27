@@ -192,6 +192,7 @@ def test_systemd_comet_custody_stop_and_conflict(tmp_path):
         assert subprocess.run(command, capture_output=True, timeout=10).returncode == 73
         assert show("NRestarts") == "0"
         call("sudo", "-n", "systemctl", "stop", name)
+        started = False
         assert show("ActiveState") == "inactive" and show("MainPID") == "0"
         # A successful service stop must relinquish the lock, without replacing its inode.
         assert subprocess.run(command[:7] + ["/usr/bin/true"], timeout=10).returncode == 0

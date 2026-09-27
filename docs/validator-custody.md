@@ -86,5 +86,15 @@ paths and identities, and adds explicit private-temporary-directory bindings. It
 actual CometBFT progress, rejection of another lock claimant, zero unexpected restarts, an
 inactive service with no main process after stop, released lock and retained key/signing state.
 The ABCI service remains the laboratory process; this does not qualify a production dependency
-unit. The test is now mandatory but has not yet executed. A skip or missing sudo/systemd cannot
-qualify the release. Four-host custody and maintenance still require their separate evidence.
+unit. The installed development wheel passed these tests on four disposable Linux guests; see
+[component evidence](evidence/validator-custody-20260927.json). A skip or missing sudo/systemd
+cannot qualify the release. Four-host custody and maintenance still require their separate evidence.
+
+
+Each guest passed all four custody cases (16 passes, no skips in total), and all 187 installed
+package members per guest matched the tested wheel. The guests had distinct running kernels
+as witnessed by their boot identities, but shared one physical operator host. Test units were
+absent after completion; all guests and their private network helper were gracefully stopped,
+retaining disks and signing state. The first node's initial run failed on duplicate cleanup of
+an already stopped transient unit; that failed report remains preserved. The corrected rerun
+passed. These are component results, not the cross-host cutover or final G1-G7 release gate.
