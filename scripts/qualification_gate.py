@@ -7,7 +7,7 @@ from pathlib import Path
 REQUIRED = {
     "test_systemd_comet_custody_stop_and_conflict": 1,
     "test_actual_comet_validator_lock_and_signing_state_restart": 1,
-    "test_v2_inherited_accounting_commits_and_recovers_on_four_nodes": 1,
+    "test_v2_inherited_accounting_commits_and_recovers_on_four_nodes": 2,
     "test_v2_supervised_effect_report_recovery_with_verified_artifacts": 1,
     "test_v2_effect_reservation_expiry_reconciliation_and_replica_recovery": 1,
     "test_http_mtls_does_not_replace_bearer_or_client_policy": 2,

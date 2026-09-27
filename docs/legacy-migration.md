@@ -2,9 +2,9 @@
 
 The development SDK can inspect a complete v1 snapshot against a separately trusted
 checkpoint and prepare a paused v2 genesis with conserved funding. These are migration
-components, **not a qualified successor deployment or permission to resume work**. The
-maintenance-window cutover, inherited-obligation reconciliation, validator custody and
-mixed-version recovery remain unfinished.
+components, **not a qualified successor deployment or permission to resume work**. Governed inherited-obligation reconciliation and retention admission are implemented components.
+The complete maintenance-window cutover, cross-host validator custody and mixed-version
+recovery remain unqualified.
 
 ## Why preserve more than the available budget?
 
@@ -117,7 +117,8 @@ restoration and the portable state vector. No physical node cutover is claimed b
 The required infrastructure suite now includes
 `test_v2_inherited_accounting_commits_and_recovers_on_four_nodes`: a prepared baseline, signed
 new work, journal rollover, one process crash/restart, common-height hash comparison and durable
-replay of all four application stores. This new case is pending actual execution. Even a pass
+replay of all four application stores. The earlier published-fixture case passed CI at revision 797acbd; the current retention
+admission and live-old-chain extensions require their own execution. Even a pass
 will qualify successor accounting on four local CometBFT processes, not physical host replacement,
 old-validator retirement, independent organizations or the complete G4/G6 migration path.
 
@@ -129,5 +130,27 @@ adjustment of prepared legacy records. It does not create new executable tasks o
 funding through ordinary ticket settlement.
 
 The [legacy retention adapter](legacy-retention.md) pins an authenticated snapshot and reviewed
-history references. Its storage checks are separate from authenticating complete history or
-establishing physical replica independence.
+history references. It also authenticates ordered history by replay between independent roots. Physical replica
+independence and continuous deployment custody remain separate requirements.
+
+
+## Live-old-chain qualification case
+
+The inherited four-node case has two required variants: the frozen published capture and a live
+legacy laboratory. The live variant first performs actual generation, independent gVisor checks,
+registration and reuse on four old CometBFT nodes. It then leaves an unreported leased attempt
+to expire, revokes a capability and its dependents, and revokes all old worker credentials. A new
+worker request must be rejected before stopping every owned old application/consensus process.
+
+Only after process termination does the case read the four durable histories. Each replay must
+reach the same independently observed committed AppHash. That preserved root and the old
+administrators' actual laboratory keys are used for successor approval; the new validator keys
+and chain are separate. All four successor nodes reopen their own retained copies, preserve old
+charges and unknown obligations, execute new signed accounting, restart one node and compare
+replay. Releasing one retention pin must inhibit that node's dispatch watchdog.
+
+The case is registered but its current live variant has not yet been executed. It does not claim
+four separate host environments, independently managed organizations, physical signer transfer,
+external-effect cancellation or protection from an administrator restarting the retired chain.
+Production cutover still requires protected restart fencing and the four-host G6 evidence. Keep
+old and new credentials separate and recover forward after the first new commitment.

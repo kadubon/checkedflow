@@ -4549,6 +4549,10 @@
         "checkedflow-0.1.0-py3-none-any.whl": "8f8e070d7d25e9b534ac695cdb81fc818a5cd18112c3f2b7ce2c12d3054d6653",
         "checkedflow-0.1.0.tar.gz": "b5a9bb5c410d50fa355c0f5f075c9e7a4f8c02cc290a743a27eb53ac43a4b8fa"
       }
+    },
+    {
+      "id": "legacy-live-cutover-case-registered",
+      "scope": "Prior CI36306049589 at797acbd completed success across all jobs. Startup/dispatch guard commits pushed together at08ee6c6; CI36307407339 running at observation. Current integration family now requires published and live variants (31 infrastructure cases total). Live variant generates/reuses on old4nodes, preserves expired unknown, revokes capability/dependents and allworkers, rejects oldworker command, stops allowned oldprocesses, then verifies fourdurable replays against common committed AppHash before signing successor. Same-host test registration only; current live execution and full G1-G7 remain pending."
     }
   ]
 }

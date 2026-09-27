@@ -6,7 +6,6 @@ from importlib.resources import files
 from io import BytesIO
 
 import pytest
-from test_legacy_successor import source
 from test_retention import ACCESS, catalog
 
 from checkedflow.core.artifact import Reference
@@ -22,14 +21,20 @@ from checkedflow.legacy_retention import (
 from checkedflow.wire import digest, document, dumps
 
 
-def initial_checkpoint():
-    value = document(files("checkedflow").joinpath("data/legacy-v1.json").read_bytes())["initial"]
+def initial_checkpoint(capture=None):
+    capture = capture or document(files("checkedflow").joinpath("data/legacy-v1.json").read_bytes())
+    value = capture["initial"]
     return Checkpoint(value["chain"], value["height"], digest(value))
 
 
-def fixture(tmp_path):
-    raw, trusted = source()
-    capture = document(files("checkedflow").joinpath("data/legacy-v1.json").read_bytes())
+def fixture(tmp_path, capture=None):
+    capture = capture or document(files("checkedflow").joinpath("data/legacy-v1.json").read_bytes())
+    raw = dumps(capture["final_state"])
+    trusted = Checkpoint(
+        capture["final_state"]["chain"],
+        capture["final_state"]["height"],
+        capture["final_state_hash"],
+    )
     archive = dumps({"initial": capture["initial"], "blocks": capture["blocks"]})
     store = catalog(tmp_path)
     ref = Reference(
@@ -45,9 +50,11 @@ def fixture(tmp_path):
     return raw, trusted, store, ref
 
 
-def local_configuration(tmp_path):
-    raw, trusted, store, ref = fixture(tmp_path)
-    retained = preserve(raw, trusted, (ref,), store, access=ACCESS, initial=initial_checkpoint())
+def local_configuration(tmp_path, capture=None):
+    raw, trusted, store, ref = fixture(tmp_path, capture)
+    retained = preserve(
+        raw, trusted, (ref,), store, access=ACCESS, initial=initial_checkpoint(capture)
+    )
     config = {
         "version": "checkedflow/legacy-retention-local/v1",
         "catalog": "retention.sqlite",
@@ -56,7 +63,7 @@ def local_configuration(tmp_path):
         "scope": store.scope,
         "principal": ACCESS.principal,
         "floor": store.revision(access=ACCESS),
-        "initial": asdict(initial_checkpoint()),
+        "initial": asdict(initial_checkpoint(capture)),
         "retained": retained.record(),
         "policy": {
             "retention_blocks": 2,

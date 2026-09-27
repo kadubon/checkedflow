@@ -1725,3 +1725,12 @@ new fault mutants passed. Static and isolated distribution checks passed; the pu
 found no issues in 947 files/members. The installed component build predates that final test-only
 import edit. The four-node fixture covers live retained observations and pin-release inhibition;
 its execution on this revision, full migration and final G1-G7 remain outstanding.
+
+
+CI run 36306049589 completed successfully for revision 797acbd, including the then-required
+infrastructure gate and six Windows/Linux Python matrices. This does not qualify subsequent
+retention startup/dispatch changes. Those changes were pushed together at 08ee6c6. The current
+qualification suite additionally requires a live-old-chain migration variant: generation/reuse,
+unknown lease, capability/worker revocation, confirmed old-process shutdown and independent
+four-store replay before successor approval. Its execution is pending; the required infrastructure
+case count is now 31. No original G1-G7 status is promoted by registering the test.

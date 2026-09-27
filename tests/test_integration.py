@@ -432,7 +432,10 @@ def test_repository_patch_independent_observation(infrastructure, source, expect
 
 @pytest.mark.integration
 @pytest.mark.qualification
-def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructure, tmp_path):
+@pytest.mark.parametrize("legacy_source", ["published", "live"])
+def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(
+    infrastructure, tmp_path, legacy_source
+):
     import json
     from hashlib import sha256
     from importlib.resources import files
@@ -448,19 +451,30 @@ def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructu
     from checkedflow.succession import approve, proposal
     from checkedflow.wire import dumps
 
-    _, binary = infrastructure
+    image, binary = infrastructure
     legacy = json.loads(files("checkedflow").joinpath("data/legacy-v1.json").read_text())
+    old_keys = None
+    if legacy_source == "live":
+        from live_legacy import capture
+
+        legacy, old_keys = capture(tmp_path / "old", binary, image)
     old = legacy["final_state"]
     checkpoint = Checkpoint(old["chain"], old["height"], legacy["final_state_hash"])
     cluster = OperationalCluster(tmp_path / "inherited", binary)
     # Prepare only unused laboratory genesis files; never rewrite an active chain.
-    cluster.initial = prepare(dumps(old), checkpoint, cluster.initial, mission="m")
+    cluster.initial = prepare(
+        dumps(old), checkpoint, cluster.initial, mission="m" if old_keys is None else "reuse"
+    )
     cluster.configuration = Configuration(cluster.initial, cluster.configuration.validators)
     plan = proposal(dumps(old), checkpoint, cluster.initial, cluster.configuration.validators)
     approvals = []
     for index in range(3):
         org = f"org{index}"
-        old_key = Ed25519PrivateKey.from_private_bytes(sha256(org.encode()).digest())
+        old_key = (
+            Ed25519PrivateKey.from_private_bytes(sha256(org.encode()).digest())
+            if old_keys is None
+            else old_keys[org]
+        )
         approvals.append(approve(plan, "old", org, org, old_key))
         approvals.append(approve(plan, "new", org, org, cluster.keys[(org, 1)]))
     cluster.succession_paths = tuple(
@@ -469,7 +483,7 @@ def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructu
     from test_legacy_retention import local_configuration
 
     retention_rows = tuple(
-        local_configuration(cluster.directory / f"node{index}") for index in range(4)
+        local_configuration(cluster.directory / f"node{index}", legacy) for index in range(4)
     )
     cluster.retention_paths = tuple(row[0] for row in retention_rows)
     for path, value in zip(
