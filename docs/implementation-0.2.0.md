@@ -1021,3 +1021,46 @@ fault mutants. A discovery audit then found its Agent Card omitted the standard 
 scheme. The follow-up declares mTLS and Bearer together as one AND requirement for CLI TLS listeners,
 with an explicit SDK declaration flag and actual HTTPS discovery regression. Plain local cards keep
 their prior Bearer-only declaration. This follow-up needs its own source/installed checks.
+
+### Complete-source Git binding for draft effects
+
+TLS discovery source `2ec99174aa7108059f8bffe932925c5bf37f6315` passed 795 source tests,
+all coverage gates and all 73 fault mutants. Its [CI run 36286140113](https://github.com/kadubon/checkedflow/actions/runs/36286140113)
+passed every component job. The downloaded installed-wheel report was independently checked:
+25 required infrastructure cases passed with zero skipped, failed or errored cases. Its wheel is
+`b79aeaf9286f0cbca6264b39395ba41f50ddc69287dae92b1d1b659e20932c95`; its sdist is
+`858117c4e7ec78968c14dea1c1b516ba94c0869820958008e30aba6b79ce3675`.
+These results precede the Git binding increment below and are not full G1-G7 qualification.
+
+The new `dispatch_patch` and `reconcile_patch` methods validate the complete immutable source,
+patch permission and contract bindings, reconstruct Git object identities, and compare the base
+commit tree before invoking the existing provider. The staged head must still have the exact
+result tree and single approved parent. Retained receipts cannot bypass source/patch checks.
+The lower-level provider API remains metadata-only. Current consensus authority, staging writes,
+exclusive executor ownership, recovery and compensation still require operational integration.
+
+Sixteen focused source cases cover the byte bindings and actual Git plumbing comparisons.
+Portable vectors include directory ordering, empty files, nested paths, Unicode and CRLF bytes.
+The installed smoke initially exposed a Windows locale-dependent vector read; explicit UTF-8
+fixes the test harness. An initial full run passed 810 tests, but coverage was invalidated by a
+concurrent source documentation edit; that run is not a passing full gate. A fresh full run with
+fixed source and isolated wheel/sdist installation is required and recorded separately.
+
+The Git-binding development wheel
+`70e3bffddd7bd7922c37bfbf06d8d0db44c68e90a2002ebda67d9aece0a03d8d` and sdist
+`77b2ed33d7f9b8250749fc3f60941fade42fe254ca71de0e26a03dae6d8ee90e` passed isolated
+installation after the explicit UTF-8 harness correction. The same wheel was installed outside
+the checkout, compared byte-for-byte, and used for an authorized real disposable GitHub smoke.
+Complete README source and a comment-only Python patch matched the actual Git trees. Creation,
+repeat receipt lookup, read reconciliation and operator cleanup passed. The owned draft was
+closed without merging, its unchanged owned branch removed, and Actions remained disabled.
+No candidate code was executed and no checker acceptance or consensus authority was claimed.
+Current package files equal that tested wheel. The source check passed 811 tests in 178.58 seconds
+with three Windows descriptor skips and 22 infrastructure tests selected separately. Both the
+Git encoder and draft provider achieved 100% statement/branch coverage; all coverage gates passed.
+The selected fault-injection run remains separate. Publication stays denied pending original G1-G7.
+
+The completed fixed-source check exited successfully: all 75 selected invariant-breaking mutants
+were killed, including removed base-tree and result-tree binding checks. Final static checks and
+the 765-member source/distribution pattern scan passed with zero findings. This is component
+validation, not an independent penetration test or complete operational release qualification.

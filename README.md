@@ -39,7 +39,7 @@ guides; complete generation orchestration and operational deployment are still u
 | Where are callback credentials kept? | [Callback custody](docs/callback-secrets.md); encrypted private journal and separately provisioned keys |
 | How are evidence and bounded records retained? | [S3 storage](docs/s3-storage.md), [retention](docs/retention-backup.md), [settled-work retirement](docs/work-archive.md) |
 | How is application state restored? | [Application history recovery](docs/application-backup.md); validator ownership needs separate recovery |
-| Can it open a pull request automatically? | [Draft provider](docs/github-drafts.md); disabled by default and not yet integrated with complete effect authority |
+| Can it open a pull request automatically? | [Draft provider](docs/github-drafts.md) can check staged commits against exact source/patch bytes; disabled by default and not yet integrated with complete effect authority |
 | What has actually been tested? | [Implementation ledger](docs/implementation-0.2.0.md), [four-VM observations](docs/vm-laboratory-2026-09-26.md) |
 
 ## The concepts in one minute

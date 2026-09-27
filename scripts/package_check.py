@@ -47,6 +47,7 @@ REQUIRED = [
     "checkedflow/data/retention-backup-vector.json",
     "checkedflow/data/github-draft-plan.schema.json",
     "checkedflow/data/github-draft-vector.json",
+    "checkedflow/data/git-tree-vectors.json",
     "checkedflow/data/key-command.schema.json",
     "checkedflow/data/budget-command.schema.json",
     "checkedflow/data/task-command.schema.json",
@@ -353,6 +354,14 @@ from checkedflow.core.values import Failure
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import importlib.resources as resources, json
+from checkedflow.git_tree import tree_id
+from checkedflow.domains.repository_patch import Tree
+git_vectors = json.loads(
+    resources.files("checkedflow").joinpath("data/git-tree-vectors.json").read_text(encoding="utf-8")
+)
+for case in git_vectors["cases"]:
+    tree = Tree(tuple((item["path"], item["utf8"].encode()) for item in case["files"]))
+    assert tree_id(tree) == case["git_tree"]
 vector = json.loads(
     resources.files("checkedflow").joinpath("data/github-draft-vector.json").read_text()
 )

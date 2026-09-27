@@ -40,10 +40,28 @@ all PR states for the owned head branch, including human-changed bases. An exist
 match actor, both repository IDs, branches, commits, title, body, open state and draft status.
 Multiple, closed, changed or foreign objects prevent a new POST.
 
-The Git tree comparison is not independent reconstruction of the approved patch. The owning
-executor must verify that the staged Git objects actually encode the checked immutable source and
-patch before supplying these bindings. Repository staging and that domain integration remain
-unfinished. The direct provider API must not be advertised as an approved-patch-to-PR workflow.
+Use `dispatch_patch(plan, base, patch_bytes, contract)` to independently reconstruct these bindings.
+It checks the contract's explicit draft permission, repository, base commit, patch digest and result
+digest, then applies the bounded patch in memory. `checkedflow.git_tree.tree_id` encodes every
+file as a Git blob and every directory as a Git tree, preserving exact bytes. It compares the result
+with the plan and reads the base commit to compare its tree with the complete supplied source.
+Only then does the provider perform its normal dispatch checks. This extra binding also applies
+when a retained receipt exists. `reconcile_patch` makes the same checks before read reconciliation.
+Binding/read failures raise a typed failure without changing a retained receipt or sending a POST.
+
+The source must represent the **whole repository**, within the repository-patch size limits.
+Files use mode `100644`; directories use `40000`. Executable files, symlinks, submodules and omitted
+files cannot silently survive the comparison. No checkout, filters, line-ending conversion or
+candidate execution occurs. The encoding follows [Git object storage](https://git-scm.com/book/en/v2/Git-Internals-Git-Objects)
+and is tested against real `git hash-object` and `git mktree`. SHA-1 here is a Git compatibility
+identifier, not a replacement for the contract's SHA-256 content identities or signatures.
+Packaged [portability vectors](../src/checkedflow/data/git-tree-vectors.json) fix empty-file,
+directory ordering, nested paths, Unicode content and CRLF byte behavior for other implementations.
+
+The lower-level `dispatch(plan)` and `reconcile(plan)` remain metadata-only APIs for trusted
+executors. Neither API establishes current consensus acceptance or execution authority, and
+constructing a contract does not grant either. Runtime staging and complete effect integration
+remain unfinished; these methods are not a complete approved-patch-to-PR workflow.
 
 ## Journal and unknown outcomes
 
@@ -106,6 +124,13 @@ the original object reconciled, then the draft closed and its unchanged owned br
 The trusted [fixture script](../scripts/qualify_github_draft.py) performs staging and operator cleanup;
 those actions are not implementations of runtime staging or compensation. It uses the operator's
 existing `gh` credential; this does not qualify production credential custody or least privilege.
+
+The current fixture requires a complete one-file `README.md` baseline, stages only a fixed
+comment-only Python file and uses `dispatch_patch` / `reconcile_patch`. It refuses unexpected
+baseline contents or Git tree mismatches. The exact installed development wheel was exercised
+against this path, including retained receipts and cleanup. Its contract contains explicitly
+unexecuted fixture identifiers, not checker acceptance or consensus authority; the report records
+those limits. Never substitute this operator smoke for the governed runtime effect lifecycle.
 
 Run this script only against an explicitly authorized disposable repository with its expected
 numeric ID and disabled Actions. It creates one operation, never merges, writes only fixed inert

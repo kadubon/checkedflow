@@ -6,6 +6,7 @@ untrusted source or candidate credentials. The gh credential is used only by thi
 """
 
 import argparse
+import base64
 import hashlib
 import json
 import subprocess
@@ -15,7 +16,10 @@ from pathlib import Path
 from uuid import uuid4
 
 import checkedflow
+from checkedflow.domains.repository_patch import Contract, Tree, digest_bytes
+from checkedflow.git_tree import tree_id
 from checkedflow.github_drafts import API_VERSION, Drafts, Outcome, Plan, Token
+from checkedflow.wire import dumps
 
 
 def gh(arguments, *, payload=None):
@@ -87,7 +91,54 @@ def main():
     base_branch = repo["default_branch"]
     base = api("GET", "/git/ref/heads/" + base_branch)["object"]["sha"]
     original = api("GET", "/git/commits/" + base)
-    content = "CheckedFlow disposable provider fixture. No executable code.\n"
+    # This trusted fixture supports only the known inert one-file disposable baseline.
+    # Refuse unexpected files instead of reading arbitrary repository contents.
+    baseline = api("GET", "/git/trees/" + original["tree"]["sha"])
+    if baseline.get("truncated") or len(baseline["tree"]) != 1:
+        raise SystemExit("Fixture requires the complete one-file README baseline")
+    entry = baseline["tree"][0]
+    if (entry["path"], entry["mode"], entry["type"]) != ("README.md", "100644", "blob"):
+        raise SystemExit("Unexpected fixture baseline")
+    blob = api("GET", "/git/blobs/" + entry["sha"])
+    if blob["encoding"] != "base64" or blob["size"] > 8192:
+        raise SystemExit("Fixture baseline exceeds supported content profile")
+    source = Tree(
+        (("README.md", base64.b64decode(blob["content"].replace("\n", ""), validate=True)),)
+    )
+    if tree_id(source) != original["tree"]["sha"]:
+        raise SystemExit("Fixture base content differs from Git identity")
+    content = "# CheckedFlow disposable provider fixture. Comment only; never executed.\n"
+    patch = dumps(
+        {
+            "version": "repository-patch/v1",
+            "changes": [
+                {"path": "checkedflow_fixture.py", "before": None, "content": content},
+            ],
+        }
+    )
+    expected = Tree((*source.files, ("checkedflow_fixture.py", content.encode())))
+    # Explicit operator fixture intent, not checker evidence or consensus authorization.
+    placeholder = digest_bytes(b"not-executed-provider-binding-fixture")
+    contract = Contract(
+        args.repository,
+        base,
+        source.digest,
+        expected.digest,
+        digest_bytes(patch),
+        "python@sha256:" + "0" * 64,
+        placeholder,
+        placeholder,
+        placeholder,
+        "operator-fixture",
+        ("checkedflow_fixture.py",),
+        1,
+        8192,
+        1,
+        16777216,
+        4096,
+        1,
+        allow_draft_pr=True,
+    )
     tree = api(
         "POST",
         "/git/trees",
@@ -95,7 +146,7 @@ def main():
             "base_tree": original["tree"]["sha"],
             "tree": [
                 {
-                    "path": "checkedflow_fixture.txt",
+                    "path": "checkedflow_fixture.py",
                     "mode": "100644",
                     "type": "blob",
                     "content": content,
@@ -103,6 +154,8 @@ def main():
             ],
         },
     )["sha"]
+    if tree != tree_id(expected):
+        raise SystemExit("GitHub staged tree differs from fixture patch")
     identity = {"name": "CheckedFlow Qualification", "email": "checkedflow@example.invalid"}
     commit = api(
         "POST",
@@ -120,14 +173,14 @@ def main():
         args.repository_id,
         operation,
         hashlib.sha256(b"operator-approved-provider-smoke").hexdigest(),
-        hashlib.sha256(content.encode()).hexdigest(),
-        hashlib.sha256(tree.encode()).hexdigest(),
+        contract.patch_digest,
+        contract.result_tree,
         base_branch,
         base,
         commit,
         tree,
     )
-    # These SHA-256 fixture bindings are not actual consensus authorization or patch acceptance.
+    # Exact patch/tree bindings do not establish consensus authority or checker acceptance.
     (args.reports / "plan.json").write_text(json.dumps(selected.record(), indent=2) + "\n")
     api("POST", "/git/refs", {"ref": "refs/heads/" + selected.branch, "sha": commit})
     token = Token(gh(["auth", "token"]).decode().strip())
@@ -139,11 +192,11 @@ def main():
         args.reports / "journal.sqlite",
         enabled=True,
     )
-    result = adapter.dispatch(selected)
+    result = adapter.dispatch_patch(selected, source, patch, contract)
     if result.status != "confirmed":
         raise SystemExit("Draft outcome unknown; preserve journal and reconcile original operation")
-    observed = adapter.reconcile(selected)
-    if observed != result or adapter.dispatch(selected) != result:
+    observed = adapter.reconcile_patch(selected, source, patch, contract)
+    if observed != result or adapter.dispatch_patch(selected, source, patch, contract) != result:
         raise SystemExit("Provider observation or retained receipt differs")
     # Explicit operator cleanup, not an implemented runtime compensation state machine.
     row = api("GET", "/pulls/" + str(result.number))
@@ -155,7 +208,9 @@ def main():
     if api("GET", "/git/ref/heads/" + selected.branch)["object"]["sha"] != commit:
         raise SystemExit("Owned branch moved; branch cleanup refused")
     api("DELETE", "/git/refs/heads/" + selected.branch)
-    assert adapter.dispatch(selected) == Outcome("confirmed", result.number)
+    assert adapter.dispatch_patch(selected, source, patch, contract) == Outcome(
+        "confirmed", result.number
+    )
     report = {
         "scope": "github-draft-provider-component",
         "result": "PASS",
@@ -168,6 +223,8 @@ def main():
         "credential_profile": "operator-gh-bootstrap-not-qualified-runtime-custody",
         "candidate_execution": False,
         "consensus_authorization": False,
+        "complete_source_patch_binding": True,
+        "checker_acceptance": False,
         "release_authority": False,
         "installed_package": installed,
         "python": sys.version.split()[0],

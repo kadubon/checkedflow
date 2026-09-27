@@ -325,6 +325,22 @@ OPERATIONAL_MUTATIONS = [
         "test_preflight_refuses_changed_policy_or_content",
     ),
     (
+        "github_drafts.py",
+        "test_git_patch.py",
+        "draft_patch_content_binding",
+        "tree_id(result) == plan.git_tree",
+        "True",
+        "test_unbound_plan_rejects_before_io",
+    ),
+    (
+        "github_drafts.py",
+        "test_git_patch.py",
+        "draft_base_content_binding",
+        'obj(remote.get("tree")).get("sha") == tree_id(base)',
+        "True",
+        "test_remote_binding_failure_never_sends",
+    ),
+    (
         "retention_backup.py",
         "test_retention_backup.py",
         "backup_exact_digest",

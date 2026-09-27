@@ -1622,7 +1622,8 @@
       "text": "- Repository identity, base commit, exact approved patch and result tree.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:github-draft-provider"
+        "component:github-draft-provider",
+        "component:github-patch-byte-binding"
       ]
     },
     {
@@ -1631,7 +1632,8 @@
       "text": "- Permitted head-branch namespace and draft-only action.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:github-draft-provider"
+        "component:github-draft-provider",
+        "component:github-patch-byte-binding"
       ]
     },
     {
@@ -3653,6 +3655,27 @@
         "R8-0404"
       ],
       "scope": "Operator-provisioned HTTP/gRPC mutual TLS and startup credential snapshot, explicit secure advertisements, disabled proxy-header rewriting and actual handshake/CA replacement tests. Bearer and client policy remain required. Proxy recipe is not a qualified deployment; coordinated credential recovery and full G1-G7 remain open."
+    },
+    {
+      "id": "github-patch-byte-binding",
+      "status": "INSTALLED_TESTED",
+      "implementation": [
+        "src/checkedflow/git_tree.py",
+        "src/checkedflow/github_drafts.py"
+      ],
+      "tests": [
+        "tests/test_git_patch.py",
+        "scripts/fault_injection.py",
+        "scripts/qualify_github_draft.py"
+      ],
+      "documentation": [
+        "docs/github-drafts.md"
+      ],
+      "scope": "Pure complete-source Git tree reconstruction and bounded approved-patch binding before provider dispatch/read reconciliation, including retained receipts. Sixteen source cases include independent real Git plumbing comparisons. No checkout or candidate execution. Does not implement staging writes, current consensus effect authority, compensation or full G3 qualification. Exact wheel 70e3bffddd7bd7922c37bfbf06d8d0db44c68e90a2002ebda67d9aece0a03d8d passed installed outside-checkout real disposable GitHub draft creation, retained-receipt recheck, read reconciliation and operator cleanup. Draft 5 was closed and its unchanged owned branch removed; Actions remain disabled. No candidate execution or checker acceptance claimed.",
+      "requirements": [
+        "R9-0429",
+        "R9-0430"
+      ]
     }
   ],
   "observations": [

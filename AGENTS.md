@@ -14,6 +14,10 @@ new task/plan identity to bypass recovery. Before the 0.2.0 release, audit READM
 Docs page, this file and skills.md against actual installed-artifact behavior and G1-G7 evidence.
 Keep the publication interlock closed while any mandatory gate remains unqualified.
 
+Draft effect integration must use complete-source/patch Git tree binding, not just a caller's tree
+ID. See docs/github-drafts.md. Keep SHA-256 application identities distinct from Git SHA-1 IDs;
+never execute candidate code or checkout filters to calculate these bindings.
+
 Agent transports must use the selected version's gateway projection. Do not translate v1 signatures
 or state objects into v2 authority. Test protocol discovery, original-byte submission, unknown replies
 and current key/epoch checks through the same A2A/MCP implementations used by the CLI.

@@ -1,8 +1,9 @@
 """Privileged draft-PR provider for pre-staged, exactly bound Git commits.
 
 Plans are not authorization. Only a separate authorized executor may own this adapter, its token
-and its private journal. Consensus eligibility, staging patch bytes and supervisor freshness are
-separate integrations. No branch writes, merging, closing or automatic POST retries are provided.
+and its private journal. Byte-bound methods independently check complete source and patch trees;
+consensus eligibility, staging writes and supervisor freshness remain separate integrations.
+No branch writes, merging, closing or automatic POST retries are provided.
 """
 
 import re
@@ -25,6 +26,8 @@ from checkedflow.core.values import (
     require,
     text,
 )
+from checkedflow.domains.repository_patch import Contract, Tree, apply_patch
+from checkedflow.git_tree import tree_id
 from checkedflow.wire import document, dumps, loads, validate
 
 API_VERSION = "2026-03-10"
@@ -423,6 +426,41 @@ class Drafts:
             return self._confirmed(plan, number)
         except (Failure, OSError, sqlite3.Error):
             return Outcome("unknown")
+
+    def _patch_binding(self, plan: Plan, base: Tree, patch: bytes, contract: Contract) -> None:
+        self._enabled(plan)
+        require(contract.allow_draft_pr, "AUTHORITY", "contract excludes draft effects")
+        require(
+            plan.repository == contract.repository
+            and plan.base_commit == contract.base_commit
+            and plan.patch == contract.patch_digest
+            and plan.result == contract.result_tree,
+            "BINDING",
+            "draft plan differs from patch contract",
+        )
+        result = apply_patch(base, patch, contract)
+        require(tree_id(result) == plan.git_tree, "BINDING", "staged tree differs from patch bytes")
+        remote = obj(self._request("GET", "/git/commits/" + plan.base_commit))
+        require(
+            remote.get("sha") == plan.base_commit
+            and obj(remote.get("tree")).get("sha") == tree_id(base),
+            "BINDING",
+            "base commit differs from complete source bytes",
+        )
+
+    def dispatch_patch(self, plan: Plan, base: Tree, patch: bytes, contract: Contract) -> Outcome:
+        """Check complete source/patch bindings before dispatch, including retained receipts.
+
+        Contract construction is not consensus authority. The caller must still enforce
+        current acceptance, action authorization, fencing and supervised deadlines.
+        """
+        self._patch_binding(plan, base, patch, contract)
+        return self.dispatch(plan)
+
+    def reconcile_patch(self, plan: Plan, base: Tree, patch: bytes, contract: Contract) -> Outcome:
+        """Recheck byte bindings, then perform read-only reconciliation; never resend."""
+        self._patch_binding(plan, base, patch, contract)
+        return self.reconcile(plan)
 
     def reconcile(self, plan: Plan) -> Outcome:
         """Read the original operation; even empty provider results never authorize resending."""

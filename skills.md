@@ -123,6 +123,9 @@ and is not consensus state sync or evidence that referenced bytes are available.
 
 The [GitHub draft provider](docs/github-drafts.md) is a privileged component, disabled by default.
 Its [plan](src/checkedflow/data/github-draft-plan.schema.json) is intent metadata, not authorization.
+Use `dispatch_patch` / `reconcile_patch` with the complete immutable repository source and exact
+patch contract to verify Git tree bindings. The lower-level methods trust supplied tree metadata.
+Byte binding does not establish current consensus authority; source staging remains separate.
 Never give the token or journal to candidate code. Do not recreate a journal or use a new operation
 to retry an unknown POST. Read reconciliation cannot treat absence as permission to resend.
 The operator fixture writes to a real repository: run it only against an explicitly authorized
