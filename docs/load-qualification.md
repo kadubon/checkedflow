@@ -1,6 +1,7 @@
 # Bounded longevity measurement
 
-Status: **implementation and short-path qualification pending; not a G5 result**. The packaged
+Status: **short path passed at `d6e7b1d`; full workload and later replay-anchor qualification pending**.
+See the [recorded short-path evidence](evidence/longevity-short-20260927.json). This is not a G5 result. The packaged
 [profile](../src/checkedflow/data/load-profile.json) fixes the workload before execution. A successful
 short smoke test is not evidence that the full profile meets its limits. Do not shorten or otherwise
 modify the full profile after observing a failure; preserve that run and declare a different profile

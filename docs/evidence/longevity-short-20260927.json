@@ -1,0 +1,96 @@
+{
+  "format": "checkedflow/component-evidence/v1",
+  "scope": "Installed single-host short longevity path; not the full frozen workload or original G1-G7 release qualification. Later local replay-anchor changes are outside this tested revision.",
+  "source": "d6e7b1dcb85a7d119f9946ed095ff77324aa787a",
+  "run": "https://github.com/kadubon/checkedflow/actions/runs/36312581905",
+  "job": 108601398072,
+  "cases": 32,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "wheel": {
+    "package_members": 192,
+    "sha256": "d4749ce09102ab91a0145dbc265eb5d98c556b8e7e883062c1bb3335a790aa12"
+  },
+  "profile": {
+    "arrival_policy": "fixed phase-relative schedule; one consumer; no dropped intents",
+    "candidate_interval_ms": 1,
+    "candidates": 2,
+    "cleanup_policy": "owned processes closed in finally; outer disposable-host deadline required",
+    "cleanup_seconds": 600,
+    "control_interval_ms": 1,
+    "control_requests": 17,
+    "drain_candidate": 1,
+    "drain_cpu_seconds": 10,
+    "drain_delay_seconds": 3,
+    "funded_checks_per_candidate": 4,
+    "max_disk_bytes": 2147483648,
+    "max_receipts": 144,
+    "max_sampled_rss_bytes": 2147483648,
+    "max_seconds": 300,
+    "max_state_bytes": 4194304,
+    "modeled_budget": 10000,
+    "name": "repository-longevity-smoke-2",
+    "not_release_authority": true,
+    "novelty_claim": "none: distinct source comments preserve fixture behavior",
+    "verification_cost": 1,
+    "verification_reserve": 1000,
+    "verifiers_per_candidate": 3,
+    "version": "checkedflow/load-profile/v1"
+  },
+  "machine": {
+    "cpu_count": 4,
+    "kernel": "6.17.0-1022-azure",
+    "memory_total_kib": 16373452,
+    "image": "python@sha256:2f17fc044b579bab302c2e8054d3a686e2cb9a83de48e70534b94cd8ebbe06a9",
+    "cometbft_sha256": "6f3cacf4f746ad0424085a2202d3645d7a6d45ca43874f04b7a2db8910158bcc"
+  },
+  "file_sha256": {
+    "qualification.xml": "95707a8cc6da15def4594504b638f2cb69f22e48096c6e9f60eb9dc66bcf1707",
+    "manifest.json": "f5c99018affa1520b32a9db60901d8ea6087fb7729947f6db707bb4edd7a3c17",
+    "result.json": "70b90600cf503ef04e532140b5addf8e3b964a6574f86d4c96f0b69eb4b0a268"
+  },
+  "measurement": {
+    "cleanup_failure": null,
+    "command_latency_ns": {
+      "50": 434292763,
+      "95": 796752792,
+      "99": 864126383
+    },
+    "completed_tasks": 6,
+    "control_completed": 17,
+    "control_elapsed_ns": 13073002994,
+    "disk_bytes_per_completed_task": {
+      "denominator": 6,
+      "numerator": 8434810
+    },
+    "disk_growth_bytes": 8434810,
+    "elapsed_ns": 66001963284,
+    "empty_drain_ns": 991898088,
+    "failure": null,
+    "in_flight_drain_ns": 3960410249,
+    "not_release_authority": true,
+    "novelty_claim": "none: distinct source comments preserve fixture behavior",
+    "planned_control_intents": 17,
+    "queue_peak": 16,
+    "recovery_ns": 4347101838,
+    "remaining": [
+      "full operational G5/G6/G7 qualification"
+    ],
+    "resource_sampling": "every32controlintents; everyverifiedcandidate; sampledRSS excludes short-lived sandbox processes",
+    "retired_request": {
+      "application_rejections": 4,
+      "business_state_unchanged": true,
+      "codespace": "RETIRED_REQUEST",
+      "rpc_outcome": "OUTCOME_UNKNOWN"
+    },
+    "status": "COMPONENT_MEASURED",
+    "verified_completions": 2,
+    "verified_elapsed_ns": 36771392984,
+    "verified_latency_ns": {
+      "50": 12202153822,
+      "95": 21410891083,
+      "99": 21410891083
+    }
+  }
+}
