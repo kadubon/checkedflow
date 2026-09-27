@@ -1694,3 +1694,13 @@ forged outcomes, duplicate JSON keys and substituted roots. The portable history
 fixture validation. Protected archive digests still authenticate state-neutral historical records;
 endpoint state hashes alone do not prove their inclusion. Startup/dispatch and deployed retention
 integration remain required, and no G1-G7 gate is promoted by these component checks.
+
+
+Legacy retention handles now have a bounded portable codec and packaged JSON schema. They
+preserve ordered archive references and exact pin identity across operator recovery; decoding
+never substitutes for verification against independent roots and current storage. Twelve focused
+tests passed (71 statements and six branches fully covered), static checks passed, and isolated
+wheel/sdist installation checks passed. A publication scan found no issues in 942 files/members.
+The preceding full local suite completed with 1,123 passes, four Windows platform skips and all
+117 fault mutants detected; its unit collection predates the latest history/handle additions.
+These observations do not qualify final release or complete mandatory startup/dispatch wiring.

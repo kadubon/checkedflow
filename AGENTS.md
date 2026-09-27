@@ -107,3 +107,6 @@ a missing pin. History coverage needs independent replay authentication. See doc
 Retained history replay requires independent genesis and final checkpoints and operator-authenticated
 archive digests. Endpoint state equality alone does not authenticate state-neutral rejected records.
 Use the legacy-history schema; see docs/legacy-retention.md.
+
+Persist legacy handles with the legacy-retained schema; decoding does not authenticate storage.
+Always verify the existing pin and independently protected roots before use. See docs/legacy-retention.md.

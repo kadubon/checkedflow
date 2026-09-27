@@ -39,14 +39,14 @@
     {
       "id": "Rpreamble-0012",
       "source_line": 12,
-      "text": "The owner wants the previously discussed **“1.0 Stable” operational scope**, but the **only authorized final package version is `0.2.0`, with Git tag `v0.2.0`**. Do not publish 0.3, 0.4, 1.0, or silently select another version. Milestones are implementation checkpoints, not separate public releases.",
+      "text": "The owner wants the previously discussed **\u201c1.0 Stable\u201d operational scope**, but the **only authorized final package version is `0.2.0`, with Git tag `v0.2.0`**. Do not publish 0.3, 0.4, 1.0, or silently select another version. Milestones are implementation checkpoints, not separate public releases.",
       "status": "NOT_STARTED",
       "evidence": []
     },
     {
       "id": "Rpreamble-0014",
       "source_line": 14,
-      "text": "“Stable” is an acceptance target for a **specific documented deployment and workload profile**, not a label to apply merely because the implementation is large or the tests are green. Do not claim universal production readiness, formal verification of the whole system, independent organizational operation, or proven AI acceleration.",
+      "text": "\u201cStable\u201d is an acceptance target for a **specific documented deployment and workload profile**, not a label to apply merely because the implementation is large or the tests are green. Do not claim universal production readiness, formal verification of the whole system, independent organizational operation, or proven AI acceleration.",
       "status": "NOT_STARTED",
       "evidence": []
     },
@@ -209,7 +209,7 @@
     {
       "id": "R1-0064",
       "source_line": 64,
-      "text": "- Package version: 0.1.0; Python 3.12–3.14 documented.",
+      "text": "- Package version: 0.1.0; Python 3.12\u20133.14 documented.",
       "status": "NOT_STARTED",
       "evidence": []
     },
@@ -503,7 +503,7 @@
     {
       "id": "R2-0127",
       "source_line": 127,
-      "text": "Do not introduce a “single-node production” fallback and preserve a three-of-four assurance claim. Do not silently downgrade operational execution to ordinary Docker or a host subprocess when gVisor is unavailable.",
+      "text": "Do not introduce a \u201csingle-node production\u201d fallback and preserve a three-of-four assurance claim. Do not silently downgrade operational execution to ordinary Docker or a host subprocess when gVisor is unavailable.",
       "status": "NOT_STARTED",
       "evidence": []
     },
@@ -646,7 +646,7 @@
     {
       "id": "R4-0175",
       "source_line": 175,
-      "text": "Implement **`repository-patch/v1`** as a restricted Python project profile, not “arbitrary repository execution.”",
+      "text": "Implement **`repository-patch/v1`** as a restricted Python project profile, not \u201carbitrary repository execution.\u201d",
       "status": "IN_PROGRESS",
       "evidence": [
         "component:patch-admission-primitives"
@@ -876,7 +876,7 @@
     {
       "id": "R4-0224",
       "source_line": 224,
-      "text": "Do not trust candidate-supplied JUnit, stdout containing “PASS,” or a success Boolean as the authoritative verdict. Document residual shared-checker risks. Do not claim secret hidden tests when the candidate can inspect the wrapper or inputs.",
+      "text": "Do not trust candidate-supplied JUnit, stdout containing \u201cPASS,\u201d or a success Boolean as the authoritative verdict. Document residual shared-checker risks. Do not claim secret hidden tests when the candidate can inspect the wrapper or inputs.",
       "status": "IN_PROGRESS",
       "evidence": [
         "component:contract-bound-repository-observer"
@@ -955,7 +955,7 @@
     {
       "id": "R5-0247",
       "source_line": 247,
-      "text": "Use provider-neutral interfaces. Select and pin any external service only after checking its current license, supported distribution, and compatibility. Do not invent a dependency or assume every “S3-compatible” backend has identical consistency semantics.",
+      "text": "Use provider-neutral interfaces. Select and pin any external service only after checking its current license, supported distribution, and compatibility. Do not invent a dependency or assume every \u201cS3-compatible\u201d backend has identical consistency semantics.",
       "status": "IN_PROGRESS",
       "evidence": [
         "component:verified-s3-artifact-store"
@@ -1012,7 +1012,7 @@
     {
       "id": "R5-0263",
       "source_line": 263,
-      "text": "Test removal, corruption, stale replicas, and service outage after initial acceptance. Do not return “usable” solely because an old hash exists in committed state.",
+      "text": "Test removal, corruption, stale replicas, and service outage after initial acceptance. Do not return \u201cusable\u201d solely because an old hash exists in committed state.",
       "status": "IN_PROGRESS",
       "evidence": [
         "component:exact-repository-reuse-preparation",
@@ -1191,7 +1191,7 @@
     {
       "id": "R6-0308",
       "source_line": 308,
-      "text": "Support a bounded deterministic longevity test that crosses the old limits—for example, more than 4,096 accepted identities and more than 64 total artifacts over the lifecycle—without claiming any particular production throughput. Small artifact sizes and batch generation should keep this affordable. Record the test dimensions before running it.",
+      "text": "Support a bounded deterministic longevity test that crosses the old limits\u2014for example, more than 4,096 accepted identities and more than 64 total artifacts over the lifecycle\u2014without claiming any particular production throughput. Small artifact sizes and batch generation should keep this affordable. Record the test dimensions before running it.",
       "status": "NOT_STARTED",
       "evidence": []
     },
@@ -1427,7 +1427,7 @@
     {
       "id": "R8-0372",
       "source_line": 372,
-      "text": "Do not let a bearer token substitute for signed command authority. Do not give gateways or candidate code administrative signing keys. Keep each organization’s actual ownership boundary explicit.",
+      "text": "Do not let a bearer token substitute for signed command authority. Do not give gateways or candidate code administrative signing keys. Keep each organization\u2019s actual ownership boundary explicit.",
       "status": "NOT_STARTED",
       "evidence": []
     },
@@ -1709,7 +1709,7 @@
     {
       "id": "R9-0439",
       "source_line": 439,
-      "text": "Creating a draft PR or pushing its branch can trigger destination CI. “Draft” does not make candidate code harmless. Before enabling this adapter, require an operator-reviewed destination policy that prevents candidate-controlled code from receiving repository secrets or privileged CI credentials. Protect `.github/`, build/test control files, and the allowed patch scope.",
+      "text": "Creating a draft PR or pushing its branch can trigger destination CI. \u201cDraft\u201d does not make candidate code harmless. Before enabling this adapter, require an operator-reviewed destination policy that prevents candidate-controlled code from receiving repository secrets or privileged CI credentials. Protect `.github/`, build/test control files, and the allowed patch scope.",
       "status": "IN_PROGRESS",
       "evidence": [
         "component:github-draft-provider",
@@ -2136,7 +2136,7 @@
     {
       "id": "R13-0549",
       "source_line": 549,
-      "text": "Run real S3-compatible storage and real supported signer-service tests in disposable infrastructure. Exercise corruption, partial upload, availability, scope, and rotation—not just happy paths.",
+      "text": "Run real S3-compatible storage and real supported signer-service tests in disposable infrastructure. Exercise corruption, partial upload, availability, scope, and rotation\u2014not just happy paths.",
       "status": "NOT_STARTED",
       "evidence": []
     },
@@ -2404,7 +2404,7 @@
     {
       "id": "R15-0639",
       "source_line": 639,
-      "text": "- Common incident and recovery procedures, including “do not do this” examples.",
+      "text": "- Common incident and recovery procedures, including \u201cdo not do this\u201d examples.",
       "status": "NOT_STARTED",
       "evidence": []
     },
@@ -2558,14 +2558,14 @@
     {
       "id": "R16-0680",
       "source_line": 680,
-      "text": "Store final run reports as CI/release evidence artifacts, not by editing the packaged source after qualification. If packaged content changes, rebuild and requalify. Avoid circular/self-referential “this artifact contains its own final hash” records.",
+      "text": "Store final run reports as CI/release evidence artifacts, not by editing the packaged source after qualification. If packaged content changes, rebuild and requalify. Avoid circular/self-referential \u201cthis artifact contains its own final hash\u201d records.",
       "status": "NOT_STARTED",
       "evidence": []
     },
     {
       "id": "R16-0682",
       "source_line": 682,
-      "text": "The final gate must check completeness of M0–M8 requirements and G1–G7 evidence, required approvals, tag/version alignment, distribution contents, compatibility fixtures, vulnerability/leakage checks, and declared operational-profile qualification.",
+      "text": "The final gate must check completeness of M0\u2013M8 requirements and G1\u2013G7 evidence, required approvals, tag/version alignment, distribution contents, compatibility fixtures, vulnerability/leakage checks, and declared operational-profile qualification.",
       "status": "NOT_STARTED",
       "evidence": []
     },
@@ -2747,7 +2747,7 @@
     {
       "id": "R17-0720",
       "source_line": 720,
-      "text": "15. A concise next-action list only for genuine blockers—not a claim that required work is complete when it is not.",
+      "text": "15. A concise next-action list only for genuine blockers\u2014not a claim that required work is complete when it is not.",
       "status": "NOT_STARTED",
       "evidence": []
     },
@@ -2831,7 +2831,7 @@
     {
       "id": "R17-0735",
       "source_line": 735,
-      "text": "Do not compress them into “all done.”",
+      "text": "Do not compress them into \u201call done.\u201d",
       "status": "NOT_STARTED",
       "evidence": []
     },
@@ -4525,6 +4525,14 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36303952537",
       "conclusion": "failure",
       "scope": "Windows3.14 unit job108577303324 failed benign invalid-observation fixture with NOT_READY after real watchdog time exceeded10seconds;1109passed1failed4skipped26deselected. Production freshness bound is unchanged. Supervisor unit fixture now uses an explicit clock plus a deadline-expiry rejection regression;50supervisor/schedulercasespassed8.98sec. Exact-source CI remains required."
+    },
+    {
+      "id": "legacy-retained-handle-local-checks",
+      "scope": "Full local check completed with 1123 passed,4 Windows platform skips,27 infrastructure deselections and all117 mutants detected. Its unit collection predates the latest history/handle changes and is not exact-final-source qualification. Subsequent retained-handle tests:12passed33.68sec,71statements6branches100percent; static check exit0; isolated wheel/sdist install checks exit0; publication scan942members0findings. Mandatory startup/dispatch wiring and originalG1-G7 remain incomplete.",
+      "artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "9b40d4eadf457d26d36ed088a673433573aad1a1df520ec488be58b0e157f3e5",
+        "checkedflow-0.1.0.tar.gz": "a10c332f5143b4131e50975c1a83ca1c9e41b8a27850e9367835d15ae76e4bbf"
+      }
     }
   ]
 }

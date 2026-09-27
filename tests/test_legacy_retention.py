@@ -12,7 +12,7 @@ from test_retention import ACCESS, catalog
 from checkedflow.core.artifact import Reference
 from checkedflow.core.values import Failure
 from checkedflow.legacy_inventory import Checkpoint
-from checkedflow.legacy_retention import authenticate_history, preserve, verify
+from checkedflow.legacy_retention import authenticate_history, decode_retained, preserve, verify
 from checkedflow.wire import digest, document, dumps
 
 
@@ -37,6 +37,43 @@ def fixture(tmp_path):
     )
     store.put(ref, BytesIO(archive), access=ACCESS)
     return raw, trusted, store, ref
+
+
+def test_portable_recovery_handle_requires_live_verification(tmp_path):
+    from jsonschema import Draft202012Validator
+
+    raw, trusted, store, ref = fixture(tmp_path)
+    retained = preserve(raw, trusted, (ref,), store, access=ACCESS, initial=initial_checkpoint())
+    encoded = dumps(retained.record())
+    schema = document(
+        files("checkedflow").joinpath("data/legacy-retained.schema.json").read_bytes()
+    )
+    Draft202012Validator(schema).validate(retained.record())
+    assert decode_retained(encoded) == retained
+    store.release(retained.pin, access=ACCESS)
+    # A syntactically valid recovery handle cannot recreate a released root.
+    with pytest.raises(Failure, match="BINDING"):
+        verify(
+            decode_retained(encoded), trusted, store, access=ACCESS, initial=initial_checkpoint()
+        )
+    for changed in (
+        {**retained.record(), "version": "unknown"},
+        {**retained.record(), "extra": None},
+        {**retained.record(), "history": []},
+        replace(retained, history=(ref, ref)).record(),
+        replace(retained, history=(replace(ref, scope="foreign"),)).record(),
+        replace(retained, history=(replace(ref, manifest="0" * 64),)).record(),
+        replace(retained, history=(replace(ref, kind="snapshot"),)).record(),
+        replace(retained, snapshot=replace(retained.snapshot, kind="archive")).record(),
+        replace(retained, pin=replace(retained.pin, scope="foreign")).record(),
+        replace(retained, pin=replace(retained.pin, identity="other")).record(),
+        {**retained.record(), "pin": {**retained.record()["pin"], "sequence": True}},
+    ):
+        with pytest.raises(Failure):
+            decode_retained(dumps(changed))
+    for malformed in (b" " * 131073, b'{"version":0,"version":1}'):
+        with pytest.raises(Failure):
+            decode_retained(malformed)
 
 
 def test_pin_retains_snapshot_and_history_across_reopen_and_time(tmp_path):

@@ -77,3 +77,20 @@ inclusion of rejected transactions or other state-neutral records. The retained 
 binds the reviewed archive digest set; `verify` checks that same set before replay. The standalone
 replay helper assumes its reference list has equivalent independent provenance and does not
 verify CometBFT block-commit proofs. Do not derive that trust from a submitted archive itself.
+
+
+## Persisting the recovery handle
+
+Serialize `retained.record()` with `checkedflow.wire.dumps`; restore it with
+`legacy_retention.decode_retained`. The `legacy-retained` schema defines the portable JSON
+shape. The decoder also checks checkpoint/scope binding and distinct snapshot/history digests.
+It accepts at most 128 KiB, one snapshot and 127 ordered history references. Duplicate JSON
+keys, unknown versions and boolean sequence numbers are rejected.
+
+Keep this handle with the operator's protected recovery inventory. It contains references and
+pin identity, not storage paths, credentials, independent checkpoints or permission grants.
+Decoding succeeds even if storage has subsequently been removed or its pin released. Always
+call `verify` against the independently configured catalog, current access policy, trusted genesis
+and final checkpoint before using it. Verification never recreates missing pins. Updating the
+handle alone cannot authorize a new archive set. Mandatory startup/dispatch wiring remains
+unfinished; this persistence contract is a prerequisite, not that deployment integration.

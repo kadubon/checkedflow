@@ -9,8 +9,8 @@ from hashlib import sha256
 from io import BytesIO
 
 from checkedflow.artifact_io import Access
-from checkedflow.core.artifact import Reference
-from checkedflow.core.values import array, fields, integer, obj, require
+from checkedflow.core.artifact import Reference, reference
+from checkedflow.core.values import Object, array, fields, integer, obj, require, text
 from checkedflow.legacy_inventory import Checkpoint, inspect_snapshot
 from checkedflow.recovery import replay_blocks
 from checkedflow.retention import Pin, RetentionStore
@@ -23,6 +23,58 @@ class Retained:
     snapshot: Reference
     history: tuple[Reference, ...]
     pin: Pin
+
+    def record(self) -> Object:
+        """Portable recovery handle, never an authorization or trust anchor."""
+        return {
+            "version": "checkedflow/legacy-retained/v1",
+            "snapshot": self.snapshot.record(),
+            "history": [ref.record() for ref in self.history],
+            "pin": {
+                "scope": self.pin.scope,
+                "identity": self.pin.identity,
+                "sequence": self.pin.sequence,
+                "principal": self.pin.principal,
+            },
+        }
+
+
+def decode_retained(raw: bytes) -> Retained:
+    """Decode a bounded handle; callers must separately verify roots and live storage."""
+    require(len(raw) <= 131072, "LIMIT", "legacy retention handle byte ceiling")
+    value = document(raw)
+    fields(value, "version snapshot history pin")
+    require(value["version"] == "checkedflow/legacy-retained/v1", "VERSION", "retention handle")
+    snapshot = reference(obj(value["snapshot"]))
+    history = tuple(reference(obj(row)) for row in array(value["history"], limit=127))
+    pin = obj(value["pin"])
+    fields(pin, "scope identity sequence principal")
+    result = Retained(
+        snapshot,
+        history,
+        Pin(
+            text(pin["scope"]),
+            text(pin["identity"]),
+            integer(pin["sequence"]),
+            text(pin["principal"]),
+        ),
+    )
+    require(
+        bool(history)
+        and snapshot.kind == "snapshot"
+        and result.pin.scope == snapshot.scope
+        and result.pin.identity == "legacy-" + snapshot.manifest
+        and len({ref.digest for ref in (snapshot, *history)}) == 1 + len(history)
+        and all(
+            ref.kind == "archive"
+            and ref.scope == snapshot.scope
+            and ref.manifest == snapshot.manifest
+            for ref in history
+        ),
+        "BINDING",
+        "consistent distinct legacy references required",
+    )
+    return result
 
 
 def authenticate_history(
