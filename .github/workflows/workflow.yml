@@ -32,6 +32,8 @@ jobs:
       - run: uv build
       - run: uv run twine check dist/*.whl dist/*.tar.gz
       - run: uv run python scripts/package_check.py
+      - run: uv run python scripts/fetch_promtool.py --directory .tools/promtool
+      - run: uv run python scripts/monitoring_check.py --promtool .tools/promtool/promtool
       - run: uv run python scripts/security_audit.py --dist dist
       - run: mkdir -p reports
       - run: uv export --frozen --all-extras --no-dev --no-emit-project --output-file reports/runtime-requirements.txt

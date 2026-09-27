@@ -116,3 +116,7 @@ managed-signer/sandbox probe correctness, multi-host availability or achieved SL
 Local worker/effect/service invocations can opt into [bounded operation logs and optional traces](telemetry.md).
 These observations are lossy diagnostics, not committed events, task acceptance or execution authority.
 No outbound exporter is enabled by default.
+
+Use the [monitoring templates and response runbook](monitoring-runbook.md) for packaged alert rules,
+dashboard queries, explicit SLI denominators and recovery targets. Templates and targets are not
+proof of an installed monitoring service or achieved availability.

@@ -71,3 +71,7 @@ claim a proxy template or source handshake test proves installed multi-host depl
 Telemetry must not change original operation returns or exceptions. Keep exporters outside consensus and
 protected work. Never turn local step observations into committed event counts or recoverable authority.
 Do not log raw exceptions, candidate text, tokens or arbitrary trace parents. See docs/telemetry.md.
+
+Monitoring rule changes require actual pinned promtool evaluation, including pending/firing/recovery
+and healthy-boundary cases. Missing metrics are not zero. Preserve explicit limits on quorum,
+credential and evidence diagnoses; examples and recovery targets are not achieved SLOs.

@@ -1,0 +1,108 @@
+groups:
+- name: checkedflow-operational
+  interval: 30s
+  rules:
+  - alert: CheckedFlowScrapeFailed
+    expr: up{job="checkedflow"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      component: checkedflow
+    annotations:
+      summary: Monitoring cannot read an expected service.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#scrape
+  - alert: CheckedFlowTargetSetMissing
+    expr: absent(up{job="checkedflow"})
+    for: 2m
+    labels:
+      severity: critical
+      component: checkedflow
+    annotations:
+      summary: No CheckedFlow scrape targets are present.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#scrape
+  - alert: CheckedFlowObservationMissing
+    expr: up{job="checkedflow"} == 1 unless on(job, instance) checkedflow_node_readable{job="checkedflow"}
+    for: 2m
+    labels:
+      severity: critical
+      component: checkedflow
+    annotations:
+      summary: A responding target omitted its observation contract.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#scrape
+  - alert: CheckedFlowNodeUnreadable
+    expr: checkedflow_node_readable{job="checkedflow"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      component: checkedflow
+    annotations:
+      summary: The service cannot read its scoped own-node state.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#node-progress
+  - alert: CheckedFlowNodeNotFresh
+    expr: checkedflow_dependency_node_fresh_ready{job="checkedflow"} == 0 and on(job,
+      instance) checkedflow_mission_running{job="checkedflow"} == 1
+    for: 2m
+    labels:
+      severity: critical
+      component: checkedflow
+    annotations:
+      summary: A running mission has no fresh progressing node observation.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#node-progress
+  - alert: CheckedFlowHeadroomLow
+    expr: min by(job, instance) ({__name__=~"checkedflow_(ordinary_request|task|candidate|effect)_slots_available",job="checkedflow"})
+      < 8
+    for: 2m
+    labels:
+      severity: warning
+      component: checkedflow
+    annotations:
+      summary: An ordinary active-state capacity has fewer than eight slots.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#headroom
+  - alert: CheckedFlowAdministrativeHeadroomLow
+    expr: checkedflow_administrative_request_slots_available{job="checkedflow"} <
+      3 or checkedflow_administrative_request_bytes_available{job="checkedflow"} <
+      4096
+    for: 2m
+    labels:
+      severity: critical
+      component: checkedflow
+    annotations:
+      summary: Administrative recovery capacity is low.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#headroom
+  - alert: CheckedFlowUnresolvedEffectAge
+    expr: checkedflow_unresolved_effects_oldest_blocks{job="checkedflow"} > 100
+    for: 2m
+    labels:
+      severity: warning
+      component: checkedflow
+    annotations:
+      summary: An unresolved effect is older than one hundred committed blocks.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#unresolved-effects
+  - alert: CheckedFlowRequiredBackupUnavailable
+    expr: checkedflow_dependency_backup_ready{job="checkedflow"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      component: checkedflow
+    annotations:
+      summary: A required backup probe did not pass.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#backup
+  - alert: CheckedFlowSigningUnavailable
+    expr: checkedflow_dependency_signer_ready{job="checkedflow"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      component: checkedflow
+    annotations:
+      summary: A required signing dependency did not pass.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#signing
+  - alert: CheckedFlowReservedEvidenceUnavailable
+    expr: checkedflow_budget_reserved_units{job="checkedflow"} > 0 and on(job, instance)
+      checkedflow_dependency_storage_ready{job="checkedflow"} == 0
+    for: 2m
+    labels:
+      severity: critical
+      component: checkedflow
+    annotations:
+      summary: Reserved work exists while required storage is unavailable.
+      runbook_url: https://github.com/kadubon/checkedflow/blob/main/docs/monitoring-runbook.md#evidence

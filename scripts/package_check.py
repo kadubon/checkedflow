@@ -58,6 +58,10 @@ REQUIRED = [
     "checkedflow/data/artifact-availability.schema.json",
     "checkedflow/data/service-observation.schema.json",
     "checkedflow/data/operation-observation.schema.json",
+    "checkedflow/data/monitoring/alerts.yml",
+    "checkedflow/data/monitoring/alert-tests.yml",
+    "checkedflow/data/monitoring/prometheus.yml.example",
+    "checkedflow/data/monitoring/dashboard.json",
     "checkedflow/data/github-effect-intent.schema.json",
     "checkedflow/data/effect-flow-vector.json",
     "checkedflow/data/operational-configuration.schema.json",
@@ -79,6 +83,12 @@ from pathlib import Path
 origin = Path(checkedflow.__file__).resolve().relative_to(Path(sys.prefix).resolve())
 assert "site-packages" in origin.parts
 print("Installed import origin:", origin.as_posix())
+for name, filename in (("alerts", "alerts.yml"), ("alert-tests", "alert-tests.yml"),
+                       ("scrape", "prometheus.yml.example"), ("dashboard", "dashboard.json")):
+    result = subprocess.run([sys.executable, "-I", "-m", "checkedflow.cli", "monitoring", name],
+                            check=True, capture_output=True, timeout=15)
+    resource = r.files("checkedflow").joinpath("data", "monitoring", filename)
+    assert result.stdout == resource.read_bytes()
 roles = subprocess.run([sys.executable, "-I", "-m", "checkedflow.cli", "schema", "access-roles"],
                        check=True, capture_output=True, timeout=15)
 assert json.loads(roles.stdout)["roles"]["submit"] == [
@@ -495,6 +505,9 @@ def main() -> None:
         for name in REQUIRED:
             if name not in names:
                 raise SystemExit(f"wheel missing: {name}")
+        for name in REQUIRED:
+            if "/monitoring/" in name and archive.read(name) != (ROOT / "src" / name).read_bytes():
+                raise SystemExit("Monitoring wheel resource differs from checked source")
         if not any(name.endswith("/licenses/LICENSE") for name in names):
             raise SystemExit("wheel missing license")
         if any(Path(name).suffix == ".key" or name.endswith(".sqlite3") for name in names):

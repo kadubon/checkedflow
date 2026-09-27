@@ -36,6 +36,8 @@ def main(argv: list[str] | None = None) -> int:
     backup_arguments(commands.add_parser("application-backup"))
     for name in ("generator", "example"):
         commands.add_parser(name)
+    monitoring = commands.add_parser("monitoring")
+    monitoring.add_argument("name", choices=["alerts", "alert-tests", "scrape", "dashboard"])
     resource = commands.add_parser("schema")
     resource.add_argument(
         "name",
@@ -166,6 +168,16 @@ def main(argv: list[str] | None = None) -> int:
                 "effect-reconciliation": "effect-reconciliation.schema.json",
             }[args.name]
             sys.stdout.buffer.write(files("checkedflow").joinpath("data", filename).read_bytes())
+        elif args.action == "monitoring":
+            filename = {
+                "alerts": "alerts.yml",
+                "alert-tests": "alert-tests.yml",
+                "scrape": "prometheus.yml.example",
+                "dashboard": "dashboard.json",
+            }[args.name]
+            sys.stdout.buffer.write(
+                files("checkedflow").joinpath("data", "monitoring", filename).read_bytes()
+            )
         elif args.action in {"generator", "example"}:
             value: Object = (
                 document(sys.stdin.buffer.read(1048577))

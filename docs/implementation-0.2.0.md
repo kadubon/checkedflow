@@ -1456,7 +1456,7 @@ all 74 statements and ten measured branches in the focused run. The preceding co
 monitor and telemetry regression selection passed 94 cases before the final schema case was added.
 The full local suite passed 1,055 tests in 370.52 seconds, with three Windows descriptor skips
 and 24 separately selected infrastructure cases. All authoritative coverage gates passed. The
-expanded 104-mutant gate is running.
+expanded fault gate completed successfully: all 104 selected mutants were killed.
 
 Development wheel `d6286b7bcae7f23c7bf9735379073103d0f477d821d10ba66fac37016ce224d0`
 and sdist `388f66aeb30a57cb5fa8b96ee376d387cf53cee34403ffa66770ad90e62a96bd`
@@ -1473,3 +1473,44 @@ this partial positive result does not qualify its distribution. Its wheel is
 `a70f68ea9db0f4e6c05d908eadaf5bef868024727f70fe4ca6b1d5fcb6a35804`.
 The newer storage-readiness source73bcab0 requires CI36298085129; neither run covers the subsequent
 local-operation telemetry extension.
+
+
+## Monitoring rules and response runbook
+
+The [monitoring runbook](monitoring-runbook.md) maps eleven packaged Prometheus alerts to diagnosis
+and recovery actions. All rules and explicit pending/firing/recovery fixtures passed the actual
+checksum-pinned promtool 3.15.0, including healthy boundaries and combined administrative limits.
+The example authenticated scrape configuration passed syntax validation, and eight Classic Grafana
+panel expressions passed the real PromQL parser. This does not validate provisioned certificates,
+a live dashboard rendering or notification delivery. No service/listener was installed or started.
+
+The templates use existing observations without inventing metrics for full quorum diagnosis,
+precise credential expiry or every unbacked reservation. Missing target inventory, physical storage,
+complete role probes and deployment qualification remain unfinished. The runbook states explicit
+SLI denominators, operating intervals, recovery conditions and illustrative unachieved RPO/RTO and
+availability targets. Packaging and full static/installed checks are in progress for this increment.
+
+
+The template checks include 15 time-series scenarios and 46 explicit alert assertions. The actual
+promtool also parsed all eight dashboard expressions and the authenticated scrape syntax. The
+fetcher's cached checksum/extraction path passed against the pinned binary. The first query-parser
+invocation required promtool's explicit experimental formatting flag; the corrected invocation
+passed without enabling any server-side experimental feature or starting a listener.
+
+Development wheel `282c60aa0b42e712c65d0dd62751cecaf0456491465222da3c95d4b4de926f2b` and
+sdist `d74b834883744f4088ccb53da0633997c3203565ea8adfc113d22d0c75206b41` passed isolated
+installation and all four template-export CLI commands. All 179 package members match source;
+881 scanned source/distribution members had no pattern findings. Subsequent documentation updates
+are not represented as a final release artifact. The full local suite passed 1,055 tests in
+363.36 seconds, with three Windows descriptor skips and 24 separately selected infrastructure
+cases. Static and authoritative coverage gates passed; the 104-mutant gate is running.
+
+The preceding source `73bcab00c41c2528140ae0ab2dc7dbe5e379bd6d` completed every required job in
+[CI36298085129](https://github.com/kadubon/checkedflow/actions/runs/36298085129), including both
+corrected S3 fixtures, six OS/Python combinations, Vault and all 27 installed infrastructure cases.
+The downloaded report independently passed the required gate. Its wheel is
+`f7a5a5455241f3b3081ff8d70589047fea73a7646149e73ca072475c1417c924`, unchanged from the preceding
+monitoring source because only the fixture/docs changed; its new sdist is
+`d3597edf839c81eaf1d3bbdc6b78a841040bd5bd1560ed964fdccb9722812234`.
+It does not qualify the later telemetry or monitoring-template extensions. The older failed S3
+report remains failed, and original G1-G7 remains unqualified.

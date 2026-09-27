@@ -1982,15 +1982,19 @@
       "id": "R11-0500",
       "source_line": 500,
       "text": "Supply a small dashboard/alert configuration and runbook mapping, not just metric names. Include alerts for no quorum, unsafe state headroom, unbacked reservations, unresolved-effect age, missing backup, and expired credentials.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:monitoring-rules-and-runbook"
+      ]
     },
     {
       "id": "R11-0502",
       "source_line": 502,
       "text": "Document SLI definitions, denominators, operating envelope, RPO/RTO targets, recovery conditions, and error-budget actions. Publish only measured outcomes; targets are not achieved SLOs, contractual SLAs, or long-duration reliability evidence.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:monitoring-rules-and-runbook"
+      ]
     },
     {
       "id": "R12-0508",
@@ -4005,6 +4009,29 @@
         "R11-0498"
       ],
       "scope": "Finite opt-in local invocation queue, original exception/return preservation, fixed secret-free JSON records and explicit root OpenTelemetry spans. Nineteen source and installed-wheel cases passed, including real SDK in-memory export. Full local1055 tests and coverage gates passed;104-mutant gate running. Wheel/sdist isolated smoke passed,175 package files identical to source,863 scanned members without pattern findings. Local observations are not authoritative event counts. Complete exporter supervision, deadlines, collector provisioning, complete instrumentation and R11/G1-G7 remain unfinished."
+    },
+    {
+      "id": "monitoring-rules-and-runbook",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/data/monitoring/alerts.yml",
+        "src/checkedflow/data/monitoring/alert-tests.yml",
+        "src/checkedflow/data/monitoring/prometheus.yml.example",
+        "src/checkedflow/data/monitoring/dashboard.json",
+        "src/checkedflow/cli.py"
+      ],
+      "tests": [
+        "scripts/monitoring_check.py",
+        "scripts/package_check.py"
+      ],
+      "documentation": [
+        "docs/monitoring-runbook.md"
+      ],
+      "requirements": [
+        "R11-0500",
+        "R11-0502"
+      ],
+      "scope": "Eleven actual promtool3.15.0 rules, explicit pending/firing/recovery and healthy thresholds, authenticated scrape syntax and eight parsed Classic Grafana queries. Packaged template CLI does not provision probes, credentials or collectors. Runbook defines measurement denominators, time bases, response actions and unachieved lab targets. Live dashboard rendering, inventory drift, physical storage, exact expiry/unbacked reservation diagnosis and final deployment/G1-G7 remain incomplete."
     }
   ],
   "observations": [
@@ -4217,6 +4244,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36297746913",
       "conclusion": "failure",
       "scope": "Both real S3 jobs failed initial replica publication with UNAVAILABLE. Run remains unqualified regardless of other jobs. The fixture now requires its existing verified data-plane read before replica checks; no write retries, weaker threshold or timeout increase. Unchanged local run did not reproduce CI failure. Full source1036 and102mutants passed, not a substitute for the failed installed service jobs."
+    },
+    {
+      "source": "73bcab00c41c2528140ae0ab2dc7dbe5e379bd6d",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36298085129",
+      "conclusion": "success",
+      "scope": "All required jobs passed, including six OS/Python jobs, both corrected S3 services, Vault and27 installed infrastructure cases. Downloaded report independently accepted. Wheel f7a5a5455241f3b3081ff8d70589047fea73a7646149e73ca072475c1417c924; sdist d3597edf839c81eaf1d3bbdc6b78a841040bd5bd1560ed964fdccb9722812234. Predates telemetry/templates; not final G1-G7. Earlier S3 failure remains failed."
     }
   ]
 }

@@ -25,7 +25,7 @@ the historical validation record is not evidence that a new change passed.
 | [validation-status.md](docs/validation-status.md) | Observed checks and remaining qualification limits |
 
 Run `checkedflow --help` for process commands. Read-only commands are `--version`, `schema`,
-`example`, `validate`, `state` and `replay`; `generator` emits source but does not execute it.
+`example`, `monitoring`, `validate`, `state` and `replay`; `generator` emits source but does not execute it.
 `keygen` and `sign` write local files. `abci` persists committed node state. `worker` performs
 one authorized attempt through its own node and gVisor. `demo` creates laboratory keys, nodes,
 stores and containers in a new directory. It makes no GitHub or PyPI changes.
@@ -227,3 +227,7 @@ current-state gauges do not count a replayed event again.
 Local worker/effect/service invocations can opt into [bounded operation logs and optional traces](docs/telemetry.md).
 These observations are lossy diagnostics, not committed events, task acceptance or execution authority.
 No outbound exporter is enabled by default.
+
+Use the [monitoring templates and response runbook](docs/monitoring-runbook.md) for packaged alert rules,
+dashboard queries, explicit SLI denominators and recovery targets. Templates and targets are not
+proof of an installed monitoring service or achieved availability.
