@@ -150,3 +150,8 @@ execution. Provision missing images using the approved digest before rerunning q
 Back up keys separately from data, retain consensus history and test restoration. Do not clone
 a validator signing state into two active nodes. A complete governance-key rotation or membership
 change requires a new protocol/deployment; it is not implemented by v1.
+
+Inherited v2 genesis requires [succession startup admission](succession-approval.md#startup-admission)
+on every ABCI service start. Retain the independently provisioned old checkpoint, full snapshot
+and both administrations' approval manifest with the protected initial configuration. This check
+is separate from old-dispatch shutdown and exclusive validator custody.

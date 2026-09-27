@@ -1337,7 +1337,8 @@
       "evidence": [
         "component:legacy-successor-accounting",
         "component:succession-approval",
-        "component:succession-approval-custody"
+        "component:succession-approval-custody",
+        "component:succession-startup-admission"
       ]
     },
     {
@@ -4151,6 +4152,32 @@
       "installed_development_artifacts": {
         "checkedflow-0.1.0-py3-none-any.whl": "910bbbcdc80014907c47b8537bf2b799c8061e31b8069fbea0d93bfc0c545303",
         "checkedflow-0.1.0.tar.gz": "ead142e92e03add9b6d4d13ef9d1495de43604429e116f7dcb08ac1794de9ed1"
+      }
+    },
+    {
+      "id": "succession-startup-admission",
+      "status": "SOURCE_TESTED",
+      "requirements": [
+        "R7-0351"
+      ],
+      "implementation": [
+        "src/checkedflow/distributed/operational_application.py",
+        "src/checkedflow/distributed/operational_cluster.py",
+        "src/checkedflow/succession.py"
+      ],
+      "tests": [
+        "tests/test_succession_startup.py",
+        "tests/test_operational_abci.py",
+        "tests/test_integration.py"
+      ],
+      "documentation": [
+        "docs/succession-approval.md",
+        "docs/operations.md"
+      ],
+      "scope": "Inherited v2 service startup verifies independently anchored old snapshot and both approval quorums before database creation/listening, repeated on restart. Partial input sets and fresh genesis with succession inputs rejected. Six focused source tests passed. Existing required four-node inherited-accounting case now supplies actual approvals; its revised execution is pending. This is not physical cutover, cross-host custody, inherited reconciliation or final G1-G7. Combined23 focused tests passed2.16sec; approval module90statements6branches100%. Static checks passed. Isolated wheel/sdist installed admission smoke passed; distribution scan916members0findings. These development artifacts predate later documentation; exact source CI remains required.",
+      "installed_development_artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "84e588d0e6de4ea5e4e5dcb5172760634bc6c2dcba540963d34c7df0f09c4b27",
+        "checkedflow-0.1.0.tar.gz": "fd6e2d0763852ab431f6dfb775d941a79a11b6054c38df2c72ad2594422496cd"
       }
     }
   ],

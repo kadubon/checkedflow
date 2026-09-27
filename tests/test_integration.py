@@ -434,7 +434,10 @@ def test_repository_patch_independent_observation(infrastructure, source, expect
 @pytest.mark.qualification
 def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructure, tmp_path):
     import json
+    from hashlib import sha256
     from importlib.resources import files
+
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
     from checkedflow.distributed.operational_application import Configuration
     from checkedflow.distributed.operational_cluster import Cluster as OperationalCluster
@@ -442,6 +445,7 @@ def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructu
     from checkedflow.legacy_successor import prepare
     from checkedflow.operational_runtime import Runtime
     from checkedflow.operational_storage import Store
+    from checkedflow.succession import approve, proposal
     from checkedflow.wire import dumps
 
     _, binary = infrastructure
@@ -452,6 +456,30 @@ def test_v2_inherited_accounting_commits_and_recovers_on_four_nodes(infrastructu
     # Prepare only unused laboratory genesis files; never rewrite an active chain.
     cluster.initial = prepare(dumps(old), checkpoint, cluster.initial, mission="m")
     cluster.configuration = Configuration(cluster.initial, cluster.configuration.validators)
+    plan = proposal(dumps(old), checkpoint, cluster.initial, cluster.configuration.validators)
+    approvals = []
+    for index in range(3):
+        org = f"org{index}"
+        old_key = Ed25519PrivateKey.from_private_bytes(sha256(org.encode()).digest())
+        approvals.append(approve(plan, "old", org, org, old_key))
+        approvals.append(approve(plan, "new", org, org, cluster.keys[(org, 1)]))
+    cluster.succession_paths = tuple(
+        cluster.directory / name for name in ("approval.json", "legacy.json", "checkpoint.json")
+    )
+    for path, value in zip(
+        cluster.succession_paths,
+        (
+            {"plan": plan, "approvals": approvals},
+            old,
+            {
+                "chain": checkpoint.chain,
+                "height": checkpoint.height,
+                "state_hash": checkpoint.state_hash,
+            },
+        ),
+        strict=True,
+    ):
+        path.write_bytes(dumps(value))
     encoded = cluster.configuration.encode()
     for name in ("operational.json", "genesis.json"):
         (cluster.directory / name).write_bytes(dumps(encoded))

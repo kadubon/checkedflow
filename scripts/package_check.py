@@ -447,6 +447,27 @@ vector = json.loads(
     resources.files("checkedflow").joinpath("data/github-draft-vector.json").read_text()
 )
 from checkedflow.wire import dumps
+from checkedflow.distributed.operational_application import Configuration, serve
+from checkedflow.operational_codec import decode as decode_control
+from checkedflow.succession import Succession, authorize_startup
+from checkedflow.legacy_inventory import Checkpoint
+startup = json.loads(resources.files("checkedflow").joinpath(
+    "data/succession-vector.json").read_text())
+legacy = json.loads(resources.files("checkedflow").joinpath("data/legacy-v1.json").read_text())
+configuration = Configuration(decode_control(dumps(startup["successor"])),
+    tuple(tuple(pair) for pair in startup["validators"]))
+evidence = Succession(dumps(startup["manifest"]), dumps(legacy["final_state"]),
+    Checkpoint(**startup["checkpoint"]))
+authorize_startup(configuration.initial, configuration.validators, evidence)
+with TemporaryDirectory() as directory:
+    database = Path(directory) / "unapproved.sqlite"
+    try:
+        serve(database, configuration, "127.0.0.1:26658")
+    except Failure as error:
+        assert error.code == "BINDING"
+    else:
+        raise AssertionError("unapproved inherited startup accepted")
+    assert not database.exists()
 assert Dispatcher.__module__ == "checkedflow.effect_dispatch"
 assert EffectSupervisor.__module__ == "checkedflow.effect_supervisor"
 policy_schema = json.loads(

@@ -44,6 +44,14 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "succession.py",
+        "test_succession_startup.py",
+        "inherited_startup_requires_approval",
+        "inherited == (succession is not None)",
+        "True",
+        "test_startup_requires_exact_approval_before_database_or_socket",
+    ),
+    (
         "succession_journal.py",
         "test_succession_journal.py",
         "succession_rejects_competing_approval",

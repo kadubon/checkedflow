@@ -246,3 +246,7 @@ approval alone does not authorize startup, resolve liabilities or permit signing
 Persist succession approval claims before signing and move the journal with signer custody.
 Never delete or roll back a conflicting claim; see docs/succession-approval.md. Local SQLite
 exclusion does not prove cross-host signer ownership or authorize successor activation.
+
+Inherited ABCI startup must verify succession evidence before creating state or listeners.
+Never derive the trusted checkpoint solely from the submitted manifest; retain independent
+operator provenance. See docs/succession-approval.md#startup-admission.

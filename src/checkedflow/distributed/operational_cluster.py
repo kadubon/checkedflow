@@ -25,6 +25,7 @@ class Cluster:
     def __init__(self, directory: Path, cometbft: str, *, base_port: int = 29650) -> None:
         self.processes = Processes(directory, cometbft, base_port=base_port)
         self.directory = self.processes.directory
+        self.succession_paths: tuple[Path, Path, Path] | None = None
         self.keys: dict[tuple[str, int], Ed25519PrivateKey] = {}
         credentials = []
         validators = []
@@ -85,6 +86,18 @@ class Cluster:
                 str(self.directory / f"node{index}" / "operational.sqlite"),
                 "--address",
                 f"127.0.0.1:{self.processes.port(index, 2)}",
+                *(
+                    [
+                        "--succession-manifest",
+                        str(self.succession_paths[0]),
+                        "--legacy-snapshot",
+                        str(self.succession_paths[1]),
+                        "--legacy-checkpoint",
+                        str(self.succession_paths[2]),
+                    ]
+                    if self.succession_paths is not None
+                    else []
+                ),
             ],
         )
         self.processes.start_node(index, application=False)

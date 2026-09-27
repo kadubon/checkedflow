@@ -87,3 +87,37 @@ No automatic conflicting-plan reset is provided.
 Source tests cover competing connections and actual process termination inside the signer,
 then reopen the same journal and verify a conflicting plan is rejected. These observations
 establish local durable exclusion, not cross-host fencing or a qualified migration deployment.
+
+
+## Startup admission
+
+The v2 ABCI service refuses inherited genesis unless all three operator-provisioned files are
+provided. Use the existing configuration, database and loopback address arguments together with:
+
+```sh
+python -m checkedflow.distributed.operational_application \
+  --configuration operator/operational.json --database node/operational.sqlite \
+  --address 127.0.0.1:26658 \
+  --succession-manifest operator/approval.json \
+  --legacy-snapshot operator/legacy.json \
+  --legacy-checkpoint operator/checkpoint.json
+```
+
+The checkpoint file is exactly `{ "chain": "old-chain", "height": 123,
+"state_hash": "<64 lowercase hexadecimal characters>" }`. Provision it from the authenticated
+old full node through an independent operator channel. Copying checkpoint fields from the
+submitted manifest does not establish trust. The snapshot and manifest remain subject to
+signature, accounting, state-hash and validator binding checks. CLI reads are bounded to 2 KiB
+for the checkpoint, 16 KiB for the manifest and 4 MiB for the snapshot.
+
+Every restart repeats verification against the configured initial state before opening the
+application database or listening socket. A fresh, non-inherited genesis rejects succession
+inputs instead of silently ignoring them. Keep these files and the initial configuration in
+protected recovery storage. They are not candidate-controlled inputs and contain no private keys.
+
+Python embedders call `serve(..., succession=Succession(manifest, legacy, trusted_checkpoint))`.
+The lower-level `Application` class is a consensus adapter, not a deployment admission service;
+embedders that construct it directly must enforce equivalent startup admission. Neither path
+stops the old deployment or demonstrates exclusive physical ownership of validator keys. Complete
+those maintenance-window controls before enabling dispatch. The four-node laboratory case is configured to exercise
+approved startup/restart but remains a single-operator test, not G6 qualification.

@@ -33,6 +33,31 @@ class Approved:
     new_organizations: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class Succession:
+    """Approval evidence plus an independently provisioned old checkpoint."""
+
+    manifest: bytes
+    legacy: bytes
+    trusted: Checkpoint
+
+
+def authorize_startup(
+    initial: State, validators: tuple[tuple[str, str], ...], succession: Succession | None
+) -> None:
+    """Verify inherited genesis before a deployment creates state or listeners."""
+    inherited = initial.budget.inheritance is not None
+    require(inherited == (succession is not None), "BINDING", "successor approval required exactly")
+    if succession is not None:
+        verify(
+            succession.manifest,
+            legacy=succession.legacy,
+            trusted=succession.trusted,
+            successor=initial,
+            validators=validators,
+        )
+
+
 def _inputs(
     legacy: bytes,
     trusted: Checkpoint,

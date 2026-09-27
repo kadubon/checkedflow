@@ -1601,3 +1601,13 @@ The preceding approval check finished with 1097 unit passes and all 110 selected
 detected. Its unit collection preceded the final numeric-alias regression, which separately
 passed the 17-test focused suite. Neither observation substitutes for exact final-source CI;
 the journal component's full check remains running.
+
+
+Inherited ABCI service startup now checks both approval quorums against independently provided
+old checkpoint, complete snapshot, configured initial state and validator keys before creating
+state or a listener. Restarts repeat this check. The pure approval module remains independent
+of gRPC. The combined 23 focused tests passed, covering all 90 statements and six branches of
+that module. Static checks and installed wheel/sdist startup-admission smoke passed; scanning
+916 distribution members found no patterns. The existing four-node inherited-accounting case
+now supplies approval inputs; the revised case has not yet run. Physical shutdown, custody and
+inherited-obligation reconciliation remain mandatory; startup approval does not complete them.

@@ -10,12 +10,14 @@ import grpc
 
 from checkedflow import __version__
 from checkedflow.core.operational import State
-from checkedflow.core.values import Failure, Object, array, fields, obj, require, text
+from checkedflow.core.values import Failure, Object, array, fields, integer, obj, require, text
 from checkedflow.distributed.proto.generated.tendermint.abci import types_pb2 as pb
 from checkedflow.distributed.proto.generated.tendermint.abci import types_pb2_grpc as rpc
+from checkedflow.legacy_inventory import Checkpoint
 from checkedflow.operational_codec import decode, encode, state_bytes
 from checkedflow.operational_runtime import Runtime
 from checkedflow.operational_storage import MAX_BLOCK_BYTES, MAX_TRANSACTIONS, Store, _inputs
+from checkedflow.succession import Succession, authorize_startup
 from checkedflow.wire import document, dumps
 
 
@@ -291,7 +293,15 @@ class Application(rpc.ABCIServicer):  # type: ignore[misc]
         return pb.ResponseApplySnapshotChunk(result=pb.ResponseApplySnapshotChunk.ABORT)
 
 
-def serve(database: Path, configuration: Configuration, address: str) -> None:
+def serve(
+    database: Path,
+    configuration: Configuration,
+    address: str,
+    *,
+    succession: Succession | None = None,
+) -> None:
+    # Authenticate migration before creating a database or listening socket, on every restart.
+    authorize_startup(configuration.initial, configuration.validators, succession)
     host, separator, port = address.partition(":")
     require(
         host == "127.0.0.1"
@@ -320,13 +330,41 @@ def serve(database: Path, configuration: Configuration, address: str) -> None:
         server.stop(grace=2)
 
 
+def _read_bounded(path: Path, limit: int) -> bytes:
+    with path.open("rb") as stream:
+        raw = stream.read(limit + 1)
+    require(len(raw) <= limit, "LIMIT", "succession file byte ceiling")
+    return raw
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--database", type=Path, required=True)
     parser.add_argument("--configuration", type=Path, required=True)
     parser.add_argument("--address", required=True)
+    parser.add_argument("--succession-manifest", type=Path)
+    parser.add_argument("--legacy-snapshot", type=Path)
+    parser.add_argument("--legacy-checkpoint", type=Path)
     args = parser.parse_args()
-    serve(args.database, Configuration.decode(args.configuration.read_bytes()), args.address)
+    paths = (args.succession_manifest, args.legacy_snapshot, args.legacy_checkpoint)
+    require(all(paths) or not any(paths), "BINDING", "all succession input paths required")
+    succession = None
+    if all(paths):
+        anchor = document(_read_bounded(args.legacy_checkpoint, 2048))
+        fields(anchor, "chain height state_hash")
+        succession = Succession(
+            _read_bounded(args.succession_manifest, 16384),
+            _read_bounded(args.legacy_snapshot, 4 * 1048576),
+            Checkpoint(
+                text(anchor["chain"]), integer(anchor["height"]), text(anchor["state_hash"])
+            ),
+        )
+    serve(
+        args.database,
+        Configuration.decode(args.configuration.read_bytes()),
+        args.address,
+        succession=succession,
+    )
 
 
 if __name__ == "__main__":
