@@ -26,8 +26,9 @@ the validator directory unavailable to candidates and gateway/worker accounts.
 
 The lock only coordinates processes using the same inode on this host. It cannot prevent a
 copied private key on another host, an operator bypassing the wrapper, or old signing state
-being restored. Tests exercise real Linux descriptor exclusion with a child process; they do
-not establish that an installed CometBFT deployment or a cross-host handoff is qualified.
+being restored. Tests exercise real Linux descriptor exclusion and a four-node CometBFT process cluster.
+They verify conflict rejection, continued three-node progress and preserved signing state on
+restart. They do not establish installed systemd operation or cross-host custody.
 
 ## Compatible binary upgrade
 

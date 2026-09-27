@@ -1637,3 +1637,12 @@ holding the lock and a competitor rejected until the child exits. The maintenanc
 compatible rolling upgrades, incompatible succession and source-fenced node replacement.
 These local observations do not prove installed CometBFT locking, remote custody, anti-rollback
 or G6. Those live procedures remain to be exercised before release.
+
+
+The custody source test now ran against pinned CometBFT in WSL Linux: all three template/lock
+cases passed in 21.75 seconds. A wrapped duplicate was rejected, three validators continued
+committing while the fourth stopped, and restart retained the private key and nondecreasing
+signing state with matching common-height application hashes. The first local attempt failed
+for missing distributed extras; the corrected explicit-extra run passed. This remains one
+host with four processes, not installed systemd or four-host G6 qualification. The installed
+infrastructure gate now requires 29 cases. R7-0355 and R8-0384 correctly remain IN_PROGRESS.
