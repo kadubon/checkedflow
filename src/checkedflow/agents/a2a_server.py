@@ -162,6 +162,7 @@ def application(
     artifacts: Reader | None = None,
     grpc_tls: MutualTLS | None = None,
     grpc_advertised_url: str = "",
+    advertise_mtls: bool = False,
 ) -> Guard:
     require(artifacts is None or artifacts.policy is policy, "ACCESS", "artifact policy differs")
     authentication = Authentication(token, oauth)
@@ -177,7 +178,8 @@ def application(
         if grpc_url and grpc_tls is not None
         else grpc_url
     )
-    agent_card = card(url, grpc_interface)
+    require(not advertise_mtls or url.startswith("https://"), "TLS", "HTTPS advertisement required")
+    agent_card = card(url, grpc_interface, mutual_tls=advertise_mtls)
     journal = Journal(gateway, journal_path, keyring=callback_keys)
     handler = Handler(
         gateway, journal=journal, agent_card=agent_card, push=Push(push_hosts), policy=policy
@@ -276,5 +278,6 @@ def serve(
         artifacts=artifacts,
         grpc_tls=tls,
         grpc_advertised_url=grpc_advertised_url,
+        advertise_mtls=tls is not None,
     )
     asyncio.run(uvicorn.Server(http_config(app, host, port, tls)).serve())

@@ -1,5 +1,7 @@
 # Mutual TLS and proxy boundaries
 
+This page describes the unreleased 0.2 development implementation; the operational profile is not yet qualified.
+
 Mutual TLS checks both ends of a connection using operator-provisioned certificates. It protects
 transport and admits a connection; it does **not** assign mission roles or authorize a command.
 CheckedFlow still requires a Bearer identity, its current [client policy](client-access.md), and the
@@ -29,7 +31,8 @@ external TLS terminator may have its own protected key mechanism.
 
 HTTP uses TLS 1.2 or later and requires verified client certificates. When A2A also enables its gRPC
 listener, the **same startup snapshot** supplies its certificate, key and required client CA. HTTPS
-URLs appear in the A2A card for secure listeners. There is no switch from configured TLS to plaintext
+URLs appear in the A2A card for secure listeners. The CLI also declares the standard mTLS security
+scheme together with Bearer in one requirement (both are required, not alternatives). There is no switch from configured TLS to plaintext
 after a certificate error. Omitting all TLS arguments retains the local development plaintext mode;
 that mode is not an authenticated cross-host deployment.
 
@@ -37,6 +40,8 @@ The SDK boundary is explicit: `MutualTLS(certificate, key, client_ca)` creates t
 `http_config(app, host, port, tls)` supplies the Uvicorn settings used by both CLI servers. Passing
 `grpc_tls=` to `create_app` secures its auxiliary gRPC listener only. An ASGI application alone cannot
 encrypt its HTTP socket: run it with the shared HTTP configuration or a properly configured server.
+For SDK-hosted A2A, explicitly set `advertise_mtls=True` only when the HTTP listener actually requires
+client certificates. A discovery declaration cannot configure the hosting server.
 
 ## Reverse proxies
 

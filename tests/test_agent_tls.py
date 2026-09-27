@@ -23,7 +23,7 @@ from test_agent_access import grant, save
 from test_agents import TOKEN
 from test_operational_gateway import Node
 
-from checkedflow.agents.a2a import create_app
+from checkedflow.agents.a2a import card, create_app
 from checkedflow.agents.access import Policy
 from checkedflow.agents.mcp import create_http_app
 from checkedflow.agents.tls import MutualTLS, advertised, http_config, pem
@@ -230,11 +230,18 @@ def test_actual_grpc_requires_certificate_token_and_current_grant(certificates):
             policy=policy,
             grpc_url=address,
             grpc_tls=tls,
+            advertise_mtls=True,
         )
         async with secured(app, tls) as url:
             async with httpx.AsyncClient(verify=client_context(root), trust_env=False) as http:
-                card = (await http.get(url + "/.well-known/agent-card.json")).json()
-                assert card["supportedInterfaces"][-1]["url"] == "https://" + address
+                discovery = (await http.get(url + "/.well-known/agent-card.json")).json()
+                assert discovery["supportedInterfaces"][-1]["url"] == "https://" + address
+                assert "mtlsSecurityScheme" in discovery["securitySchemes"]["clientCertificate"]
+                assert set(discovery["securityRequirements"][0]["schemes"]) == {
+                    "operatorBearer",
+                    "clientCertificate",
+                }
+                assert len(discovery["securityRequirements"]) == 1
             metadata = (("authorization", "Bearer " + TOKEN), ("a2a-version", "1.0"))
             for client in (None, "foreign", "expired", "client"):
                 credentials = grpc.ssl_channel_credentials(
@@ -448,3 +455,20 @@ def test_advertised_proxy_url_is_explicit_and_bounded(url):
         advertised(url, rpc=True)
     assert advertised("https://agent.example:8443/rpc", rpc=True)
     assert advertised("https://agent.example:8444", rpc=False)
+
+
+def test_mtls_advertisement_is_explicit_and_does_not_change_plain_local_card():
+    default = card("http://127.0.0.1/rpc")
+    assert set(default.security_schemes) == {"operatorBearer"}
+    protected = card("https://agent.example/rpc", mutual_tls=True)
+    assert (
+        protected.security_schemes["clientCertificate"].WhichOneof("scheme")
+        == "mtls_security_scheme"
+    )
+    assert set(protected.security_requirements[0].schemes) == {
+        "operatorBearer",
+        "clientCertificate",
+    }
+    assert len(protected.security_requirements) == 1
+    with pytest.raises(Failure, match="TLS"):
+        create_app(Node().gateway(), "http://127.0.0.1/rpc", TOKEN, advertise_mtls=True)

@@ -60,7 +60,7 @@ def errors() -> Iterator[None]:
         raise InvalidParamsError(message="Invalid input") from exc
 
 
-def card(url: str, grpc_url: str = "") -> pb.AgentCard:
+def card(url: str, grpc_url: str = "", *, mutual_tls: bool = False) -> pb.AgentCard:
     interfaces = [
         {"url": url, "protocolBinding": "JSONRPC", "protocolVersion": "1.0"},
         {
@@ -71,7 +71,7 @@ def card(url: str, grpc_url: str = "") -> pb.AgentCard:
     ]
     if grpc_url:
         interfaces.append({"url": grpc_url, "protocolBinding": "GRPC", "protocolVersion": "1.0"})
-    return ParseDict(
+    result = ParseDict(
         {
             "name": "CheckedFlow",
             "version": __version__,
@@ -107,6 +107,11 @@ def card(url: str, grpc_url: str = "") -> pb.AgentCard:
         },
         pb.AgentCard(),
     )
+
+    if mutual_tls:
+        result.security_schemes["clientCertificate"].mtls_security_scheme.SetInParent()
+        result.security_requirements[0].schemes["clientCertificate"].SetInParent()
+    return result
 
 
 def task_projection(identity: str, value: Object) -> pb.Task:
@@ -659,6 +664,7 @@ def create_app(
     artifacts: Reader | None = None,
     grpc_tls: MutualTLS | None = None,
     grpc_advertised_url: str = "",
+    advertise_mtls: bool = False,
 ) -> ASGIApp:
     from checkedflow.agents.a2a_server import application
 
@@ -675,6 +681,7 @@ def create_app(
         artifacts=artifacts,
         grpc_tls=grpc_tls,
         grpc_advertised_url=grpc_advertised_url,
+        advertise_mtls=advertise_mtls,
     )
 
 

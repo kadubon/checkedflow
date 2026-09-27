@@ -1013,3 +1013,11 @@ Five named real transport cases extend installed-wheel infrastructure qualificat
 cases; old 20-case reports cannot qualify this increment. Exact installed results and full-source/
 mutation results remain pending. No G1-G7 gate is promoted; coordinated credential retirement,
 proxy/multi-host deployment and original operational requirements remain incomplete.
+
+
+The initial TLS source `c587e8fd63f08cc9990ec0b8f8c35aeda0f1745a` passed 794 source tests
+(three platform skips, 22 separate infrastructure cases), all coverage gates and all 73 selected
+fault mutants. A discovery audit then found its Agent Card omitted the standard mTLS security
+scheme. The follow-up declares mTLS and Bearer together as one AND requirement for CLI TLS listeners,
+with an explicit SDK declaration flag and actual HTTPS discovery regression. Plain local cards keep
+their prior Bearer-only declaration. This follow-up needs its own source/installed checks.
