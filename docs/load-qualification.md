@@ -14,7 +14,8 @@ for any subsequent experiment.
 - Process 65 byte-distinct invoice patches at 30-second intervals in the next phase. A comment
   distinguishes each source tree; their intended behavior is identical. No novelty or capability
   increase is claimed. Three organizational verifier identities execute each patch through actual
-  gVisor and attest to independently observed fixture outputs before acceptance is counted.
+  gVisor and attest to independently observed fixture outputs before acceptance is counted. Four
+  organizational checks are funded at admission; the unused fourth check is cancelled and refunded.
 - Preserve ordinary/governance journal headroom through explicit pause/rollover/resume. Revoke
   and retire each completed candidate and its settled funding; retain every history root and verify
   the actual four SQLite journals and archive objects after shutdown.
@@ -82,3 +83,13 @@ The required infrastructure suite includes `test_installed_longevity_path_smoke`
 named profile, 17 control intents and two candidates. It exercises rollover, actual patch checking,
 retirement, replay and report creation without pretending to cross the long-profile thresholds.
 The full `longevity` marker is opt-in and is excluded from ordinary unit/infrastructure runs.
+
+## Preserved failed short run
+
+[CI run 36310773279](https://github.com/kadubon/checkedflow/actions/runs/36310773279)
+passed 31 infrastructure cases and failed the new short workload at artifact admission. The original
+runner funded only three checks; the protocol requires four funded organizational checks and three
+passing observations. No candidate was accepted. Its manifest and partial measurements remain in
+the qualification artifact. Profile `repository-longevity-2` explicitly funds four checks, executes three,
+and cancels/refunds the unused fourth check. Neither the original full profile nor the revised full
+profile has been measured. This correction does not weaken the admission contract.

@@ -1,6 +1,6 @@
 {
   "version": "checkedflow/load-profile/v1",
-  "name": "repository-longevity-1",
+  "name": "repository-longevity-2",
   "control_requests": 4097,
   "control_interval_ms": 500,
   "candidates": 65,
@@ -21,5 +21,6 @@
   "novelty_claim": "none: distinct source comments preserve fixture behavior",
   "arrival_policy": "fixed phase-relative schedule; one consumer; no dropped intents",
   "cleanup_policy": "owned processes closed in finally; outer disposable-host deadline required",
-  "not_release_authority": true
+  "not_release_authority": true,
+  "funded_checks_per_candidate": 4
 }

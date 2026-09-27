@@ -217,7 +217,7 @@ def test_installed_longevity_path_smoke(infrastructure, tmp_path):
     """A separately named short path check; never a measurement of the frozen full workload."""
     plan = document(files("checkedflow").joinpath("data/load-profile.json").read_bytes())
     plan.update(
-        name="repository-longevity-smoke",
+        name="repository-longevity-smoke-2",
         control_requests=17,
         candidates=2,
         control_interval_ms=1,
@@ -346,7 +346,7 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
             ):
                 publish(kind, body)
             checks, tickets = [], []
-            for verifier in range(plan["verifiers_per_candidate"]):
+            for verifier in range(plan["funded_checks_per_candidate"]):
                 ticket = measurement.send(
                     "budget.reserve",
                     {"phase": "verify", "ceiling": plan["verification_cost"], "target": target},
@@ -373,7 +373,7 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
                     "checks": checks,
                 },
             )["request"]
-            for verifier, task in enumerate(checks):
+            for verifier, task in enumerate(checks[: plan["verifiers_per_candidate"]]):
                 actor = f"v{verifier}"
                 measurement.send("task.lease", {"task": task}, actor=actor, node=verifier)
                 measurement.send(
@@ -425,6 +425,8 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
                 {"latency_ns": time.monotonic_ns() - began, "artifact": contract.result_tree}
             )
             verified_elapsed_ns = time.monotonic_ns() - phase_start
+            for task in checks[plan["verifiers_per_candidate"] :]:
+                measurement.send("task.cancel", {"task": task})
             measurement.sample()
             measurement.send("artifact.revoke", {"candidate": candidate})
             measurement.raw("mission.pause", {})
