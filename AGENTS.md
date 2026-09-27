@@ -17,3 +17,7 @@ Keep the publication interlock closed while any mandatory gate remains unqualifi
 Agent transports must use the selected version's gateway projection. Do not translate v1 signatures
 or state objects into v2 authority. Test protocol discovery, original-byte submission, unknown replies
 and current key/epoch checks through the same A2A/MCP implementations used by the CLI.
+
+Callback credentials must stay sealed in persistent journals and absent from transport responses.
+Never add plaintext fallback, auto-generated persistent deployment keys or silent legacy migration.
+Preserve delivery state during explicit key rotation and test real process-exit windows.

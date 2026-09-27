@@ -57,7 +57,9 @@ One gateway admits one mission's full visibility. It has no per-record or per-cl
 that mission. Use distinct credentials/processes for separate visibility boundaries. Reverse
 proxies/TLS, external OAuth issuers and real webhook receivers require deployment qualification.
 Protect the journal directory and sidecars with OS permissions, especially Windows ACLs; push
-credentials are stored there. An HTTP token permits inspection and callback configuration but
+configurations are encrypted there with an independently supplied operator keyring. API responses
+omit callback tokens and authentication credentials. See [key custody and rotation](callback-secrets.md);
+this does not encrypt task history or replace file permissions. An HTTP token permits inspection and callback configuration but
 never grants transaction-signing authority.
 
 Runtime and transport bounds constrain resource use, but they are not general denial-of-service

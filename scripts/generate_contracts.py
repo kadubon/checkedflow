@@ -311,6 +311,12 @@ def artifacts() -> dict[str, dict[str, object]]:
                 "push": "allowlisted HTTPS; public DNS pinning; three attempts then reconfigure",
                 "tenant": "empty or the configured mission; no cross-mission routing",
                 "cancellation": "uncertain task; metadata.envelopeJson: signed abandonment",
+                "callback_secrets": {
+                    "storage": "AES-256-GCM; operator keyring required for persistent callbacks",
+                    "responses": "token and authentication.credentials omitted",
+                    "rotation": "explicit atomic Journal.rewrap; stop other writers",
+                    "schema": "callback-keyring.schema.json",
+                },
             },
             "mcp": {
                 "version": "2026-07-28",

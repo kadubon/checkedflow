@@ -83,3 +83,13 @@ core and common authentication/serialization modules. All vectors and schemas sh
 See [validation status](validation-status.md) for actual runs and [security](security.md) for the
 scope of the security audit. Protocol interoperability never substitutes for signature authority,
 consensus finality or verification under a declared task contract.
+
+
+## Callback configuration confidentiality
+
+Callback create/get/list responses retain public configuration fields but omit notification tokens
+and authentication credentials. Persistent configuration requires a separate operator keyring and
+uses authenticated encryption; missing keys or legacy plaintext rows fail closed. The callback
+scheme field follows A2A 1.0 `AuthenticationInfo.scheme`, with case-insensitive Bearer support.
+See [callback custody](callback-secrets.md) for rotation, crash recovery and compatibility limits.
+These tests establish storage/response behavior, not cross-client authorization or mTLS deployment.

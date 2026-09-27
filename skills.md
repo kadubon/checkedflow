@@ -164,3 +164,9 @@ For [v2 agent transports](docs/operational-agents.md), select `--protocol v2` ex
 the selected profile/schema. Keep original signed bytes and distinguish current candidate acceptance
 from task completion. Missing receipts remain unknown; no automatic transport retry, signing,
 admin admission or unknown-work cancellation is provided. Native v2 data is not a translated v1 state.
+
+For [callback secret custody](docs/callback-secrets.md), supply a separate private keyring for persistent
+A2A notifications. Export its structural schema with `checkedflow schema callback-keyring`; the active
+key must also exist in the key map. Preserve delivery counters during explicit `Journal.rewrap`, stop
+other writers first, and retain backup decryption keys. Never silently accept old plaintext rows.
+API configuration responses redact secrets; internal delivery still uses the original credentials.

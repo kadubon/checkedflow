@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "agents/secrets.py",
+        "test_callback_secrets.py",
+        "callback_credentials_response_redaction",
+        'authentication.pop("credentials", None)',
+        "pass",
+        "test_create_get_list_responses_are_redacted_but_dispatch_has_credentials",
+    ),
+    (
+        "agents/journal.py",
+        "test_callback_secrets.py",
+        "callback_scope_authenticated_data",
+        '"task": task,',
+        '"task": "",',
+        "test_rows_cannot_be_swapped_between_configurations_or_journals",
+    ),
+    (
         "agents/operational_gateway.py",
         "test_operational_gateway.py",
         "gateway_current_signature_and_epoch",

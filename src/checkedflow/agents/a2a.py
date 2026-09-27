@@ -25,6 +25,7 @@ from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY as MAX_BODY
 from checkedflow.agents.journal import Journal
 from checkedflow.agents.push import Push
+from checkedflow.agents.secrets import Keyring, public_configuration
 from checkedflow.core.values import Failure, Object, fields, obj, require, text
 from checkedflow.wire import digest, dumps
 
@@ -463,7 +464,7 @@ class Handler(RequestHandler):
         value = obj(MessageToDict(config))
         self.push.validate(value)
         self.journal.put_config(config.task_id, config.id, value)
-        return config
+        return ParseDict(public_configuration(value), pb.TaskPushNotificationConfig())
 
     async def on_create_task_push_notification_config(
         self, params: pb.TaskPushNotificationConfig, context: ServerCallContext
@@ -483,7 +484,7 @@ class Handler(RequestHandler):
                 v for v in self.journal.configurations(params.task_id) if v.get("id") == params.id
             ]
             require(bool(matches), "NOT_FOUND", "push configuration not found")
-            return ParseDict(matches[0], pb.TaskPushNotificationConfig())
+            return ParseDict(public_configuration(matches[0]), pb.TaskPushNotificationConfig())
 
     async def on_list_task_push_notification_configs(
         self, params: pb.ListTaskPushNotificationConfigsRequest, context: ServerCallContext
@@ -501,13 +502,13 @@ class Handler(RequestHandler):
             size = params.page_size or 50
             binding: Object = {
                 "task": params.task_id,
-                "revision": digest({"values": list(values)}),
+                "revision": self.journal.configuration_revision(params.task_id),
                 "size": size,
             }
             offset = self.page_offset(params.page_token, binding, len(values))
             return pb.ListTaskPushNotificationConfigsResponse(
                 configs=[
-                    ParseDict(v, pb.TaskPushNotificationConfig())
+                    ParseDict(public_configuration(v), pb.TaskPushNotificationConfig())
                     for v in values[offset : offset + size]
                 ],
                 next_page_token=self.next_page(binding, offset, size, len(values)),
@@ -563,11 +564,18 @@ def create_app(
     journal_path: Path | None = None,
     push_hosts: tuple[str, ...] = (),
     grpc_url: str = "",
+    callback_keys: Keyring | None = None,
 ) -> ASGIApp:
     from checkedflow.agents.a2a_server import application
 
     return application(
-        gateway, url, token, journal_path=journal_path, push_hosts=push_hosts, grpc_url=grpc_url
+        gateway,
+        url,
+        token,
+        journal_path=journal_path,
+        push_hosts=push_hosts,
+        grpc_url=grpc_url,
+        callback_keys=callback_keys,
     )
 
 
@@ -580,6 +588,7 @@ def serve(
     journal_path: Path,
     push_hosts: tuple[str, ...] = (),
     grpc_port: int = 0,
+    callback_keys: Keyring | None = None,
 ) -> None:
     from checkedflow.agents.a2a_server import serve as run
 
@@ -591,4 +600,5 @@ def serve(
         journal_path=journal_path,
         push_hosts=push_hosts,
         grpc_port=grpc_port,
+        callback_keys=callback_keys,
     )

@@ -21,6 +21,7 @@ REQUIRED = [
     "checkedflow/data/agent-request.schema.json",
     "checkedflow/data/agent-vectors.json",
     "checkedflow/data/agents.json",
+    "checkedflow/data/callback-keyring.schema.json",
     "checkedflow/data/commands.json",
     "checkedflow/data/vectors.json",
     "checkedflow/data/legacy-v1.json",

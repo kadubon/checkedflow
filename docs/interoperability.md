@@ -53,7 +53,8 @@ in a URL or in a tracked configuration file. Then start:
 
 ```sh
 checkedflow a2a --rpc http://127.0.0.1:26657 --chain my-chain --mission array-mission \
-  --journal ./private/agent.sqlite --grpc-port 8081 --push-host callbacks.example.org
+  --journal ./private/agent.sqlite --callback-key-file ./private/callback-keys.json \
+  --grpc-port 8081 --push-host callbacks.example.org
 ```
 
 | Endpoint | Purpose |
@@ -157,7 +158,7 @@ transport token. Inspect and reconcile external effects before preparing that en
 Create/get/list/delete notification configurations through the four standard operations, or
 attach a configuration when sending `operation=task`. Configurations survive restart. Delivery
 posts the current task to the callback as `{"task": ...}`. A configured token becomes
-`X-A2A-Notification-Token`; an optional `authentication.schemes=["Bearer"]` credential is sent
+`X-A2A-Notification-Token`; an optional `authentication.scheme="Bearer"` (case insensitive) credential is sent
 only to that callback. Use a dedicated callback credential.
 
 Callbacks require `--push-host` operator approval, HTTPS port 443, public-only DNS answers, a
@@ -170,8 +171,9 @@ accepts but before local acknowledgment; receivers must deduplicate task/status 
 notification delivery, never execution retry.
 
 Keep the journal and SQLite sidecars in a private directory. Protect it with OS ACLs on Windows;
-POSIX mode bits alone do not establish Windows access control. It contains callback credentials
-and cursor authentication material. Run one process per journal. `GetExtendedAgentCard` requires
+POSIX mode bits alone do not establish Windows access control. It contains sealed callback configurations and cursor authentication material.
+Keep the encryption keyring separately protected; callback tokens and credentials are omitted
+from API responses. See [callback custody and recovery](callback-secrets.md). Run one process per journal. `GetExtendedAgentCard` requires
 authentication and includes the configured mission description.
 
 ## MCP service

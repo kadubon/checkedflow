@@ -8,8 +8,10 @@ import threading
 import time
 from collections.abc import Callable
 from pathlib import Path
+from typing import cast
 
 from checkedflow.agents.gateway import AgentGateway as Gateway
+from checkedflow.agents.secrets import Keyring
 from checkedflow.core.values import Object, array, obj, require
 from checkedflow.wire import digest, document, dumps
 
@@ -18,15 +20,23 @@ class Journal:
     """One mission, one gateway process. Persist monotonic observation times and push state."""
 
     def __init__(
-        self, gateway: Gateway, path: Path | None = None, *, clock: Callable[[], int] = time.time_ns
+        self,
+        gateway: Gateway,
+        path: Path | None = None,
+        *,
+        clock: Callable[[], int] = time.time_ns,
+        keyring: Keyring | None = None,
     ) -> None:
         self.gateway, self.clock = gateway, clock
+        self.keyring = keyring if path is not None else keyring or Keyring.ephemeral()
         self.lock = threading.RLock()
         if path is not None:
             path.parent.mkdir(parents=True, exist_ok=True)
         self.db = sqlite3.connect(str(path) if path else ":memory:", check_same_thread=False)
         try:
             self._initialize(path)
+            for task, identity, value in self.db.execute("SELECT task,id,value FROM notifications"):
+                self._open(str(task), str(identity), bytes(value))
         except BaseException:
             self.db.close()
             raise
@@ -136,14 +146,15 @@ class Journal:
     def configurations(self, task: str) -> list[Object]:
         with self.lock:
             return [
-                document(row[0])
+                self._open(task, str(row[0]), bytes(row[1]))
                 for row in self.db.execute(
-                    "SELECT value FROM notifications WHERE task=? ORDER BY id", (task,)
+                    "SELECT id,value FROM notifications WHERE task=? ORDER BY id", (task,)
                 )
             ]
 
     def put_config(self, task: str, identity: str, value: Object) -> None:
         with self.lock, self.db:
+            sealed = self._keyring().seal(value, self._binding(task, identity))
             count = self.db.execute("SELECT COUNT(*) FROM notifications").fetchone()[0]
             exists = self.db.execute(
                 "SELECT 1 FROM notifications WHERE task=? AND id=?", (task, identity)
@@ -151,7 +162,7 @@ class Journal:
             require(count < 256 or exists, "LIMIT", "push configuration limit")
             self.db.execute(
                 "INSERT OR REPLACE INTO notifications(task,id,value) VALUES(?,?,?)",
-                (task, identity, dumps(value)),
+                (task, identity, sealed),
             )
 
     def delete_config(self, task: str, identity: str) -> None:
@@ -164,7 +175,7 @@ class Journal:
     def pending(self) -> list[tuple[str, str, Object, str, int]]:
         with self.lock:
             return [
-                (str(t), str(i), document(v), str(f), int(a))
+                (str(t), str(i), self._open(str(t), str(i), bytes(v)), str(f), int(a))
                 for t, i, v, f, a in self.db.execute(
                     "SELECT n.task,n.id,n.value,o.fingerprint,n.attempts FROM notifications n "
                     "JOIN observations o ON o.id=n.task WHERE n.delivered != o.fingerprint"
@@ -175,15 +186,65 @@ class Journal:
         self, task: str, identity: str, configuration: Object, fingerprint: str, success: bool
     ) -> None:
         with self.lock, self.db:
+            row = self.db.execute(
+                "SELECT value FROM notifications WHERE task=? AND id=?", (task, identity)
+            ).fetchone()
+            if row is None or self._open(task, identity, bytes(row[0])) != configuration:
+                return
             if success:
                 self.db.execute(
                     "UPDATE notifications SET delivered=?,attempts=0 "
                     "WHERE task=? AND id=? AND value=?",
-                    (fingerprint, task, identity, dumps(configuration)),
+                    (fingerprint, task, identity, row[0]),
                 )
             else:
                 self.db.execute(
                     "UPDATE notifications SET attempts=attempts+1 "
                     "WHERE task=? AND id=? AND value=?",
-                    (task, identity, dumps(configuration)),
+                    (task, identity, row[0]),
                 )
+
+    def _keyring(self) -> Keyring:
+        require(self.keyring is not None, "SECRET_KEY", "persistent callbacks require a keyring")
+        return cast(Keyring, self.keyring)
+
+    def _binding(self, task: str, identity: str) -> bytes:
+        return dumps(
+            {
+                "domain": "checkedflow/callback/v1",
+                "journal": self.setting("binding"),
+                "instance": self.setting("cursor_key"),
+                "task": task,
+                "configuration": identity,
+            }
+        )
+
+    def _open(self, task: str, identity: str, value: bytes) -> Object:
+        return self._keyring().open(value, self._binding(task, identity))
+
+    def configuration_revision(self, task: str) -> str:
+        with self.lock:
+            values = [
+                bytes(row[0]).hex()
+                for row in self.db.execute(
+                    "SELECT value FROM notifications WHERE task=? ORDER BY id", (task,)
+                )
+            ]
+            return digest({"sealed_values": [value for value in values]})
+
+    def rewrap(self, keyring: Keyring) -> int:
+        """Authenticate all old rows and atomically reseal without resetting delivery state."""
+        with self.lock, self.db:
+            self.db.execute("BEGIN IMMEDIATE")
+            rows = self.db.execute("SELECT task,id,value FROM notifications").fetchall()
+            require(len(rows) <= 256, "LIMIT", "callback count limit")
+            for task, identity, raw in rows:
+                value = self._open(str(task), str(identity), bytes(raw))
+                sealed = keyring.seal(value, self._binding(str(task), str(identity)))
+                self.db.execute(
+                    "UPDATE notifications SET value=? WHERE task=? AND id=?",
+                    (sealed, task, identity),
+                )
+            self.db.commit()
+            self.keyring = keyring
+        return len(rows)

@@ -56,7 +56,8 @@ current reusability. Archived task observations may remain in that history.
 
 The v2 A2A journal binds its version and the initial application identity roots. It cannot open a
 v1 journal or a same-named chain with different identity roots. Callback configuration still has
-its existing private-storage and recovery requirements; it is not reconstructible from consensus.
+its own [encrypted storage and recovery requirements](callback-secrets.md); it is not reconstructible
+from consensus. Persistent callbacks require an operator-owned keyring.
 
 ## Qualification and outstanding security work
 
@@ -67,7 +68,7 @@ now routes worker commands through MCP to actual CometBFT and inspects the resul
 projection. Only a successful run of that exact wheel qualifies this added path.
 
 This increment does not complete the uniform operational security profile: equivalent per-client
-authorization for all endpoints, callback-secret custody, mTLS deployment, archived-record policy
+authorization for all endpoints, coordinated callback-key backup/recovery, mTLS deployment, archived-record policy
 and coordinated gateway recovery still require implementation/qualification against the frozen
 0.2.0 specification. Existing bearer/OAuth support must not be described as satisfying those wider
 requirements. Full G1-G7 remain incomplete and publication stays disabled.

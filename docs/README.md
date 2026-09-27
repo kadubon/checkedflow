@@ -35,6 +35,7 @@ Read [concepts](concepts.md) first to understand the vocabulary, then follow the
 | [Worker supervision](worker-supervision.md) | How do durable commands, one bounded invocation and conservative interruption recovery connect? |
 | [Worker scheduling](worker-scheduling.md) | How do call limits, deadlines and emergency stop survive process restarts? |
 | [Operational agent transports](operational-agents.md) | How do A2A and MCP expose native v2 records and preserve original signed bytes? |
+| [Callback credential custody](callback-secrets.md) | How are callback secrets encrypted, redacted, rotated and recovered? |
 | [Sandbox recovery](sandbox-recovery.md) | How are owned containers recovered after a worker is killed, and what remains uncertain? |
 | [Settled-work retirement](work-archive.md) | How can completed records leave active state without resetting costs or unresolved obligations? |
 | [Work tasks](work-tasks.md) | How do approved tickets, worker leases, fences and uncertain outcomes connect? |

@@ -50,6 +50,7 @@ def main(argv: list[str] | None = None) -> int:
             "agents",
             "agent-request",
             "agent-vectors",
+            "callback-keyring",
         ],
     )
     keys = commands.add_parser("keygen")
@@ -86,6 +87,7 @@ def main(argv: list[str] | None = None) -> int:
         agent.add_argument("--port", type=int, default=8080 if transport == "a2a" else 8082)
         agent.add_argument("--token-env", default="CHECKEDFLOW_AGENT_TOKEN")
         if transport == "a2a":
+            agent.add_argument("--callback-key-file", help="private operator callback keyring JSON")
             agent.add_argument("--journal", required=True, help="private SQLite transport journal")
             agent.add_argument(
                 "--push-host",
@@ -123,6 +125,7 @@ def main(argv: list[str] | None = None) -> int:
                 "agents": "agents.json",
                 "agent-request": "agent-request.schema.json",
                 "agent-vectors": "agent-vectors.json",
+                "callback-keyring": "callback-keyring.schema.json",
             }[args.name]
             sys.stdout.buffer.write(files("checkedflow").joinpath("data", filename).read_bytes())
         elif args.action in {"generator", "example"}:
@@ -196,6 +199,7 @@ def main(argv: list[str] | None = None) -> int:
             gateway.state()
             if args.action == "a2a":
                 from checkedflow.agents.a2a import serve as serve_a2a
+                from checkedflow.agents.secrets import Keyring
 
                 serve_a2a(
                     gateway,
@@ -205,6 +209,11 @@ def main(argv: list[str] | None = None) -> int:
                     journal_path=Path(args.journal),
                     push_hosts=tuple(args.push_host),
                     grpc_port=args.grpc_port,
+                    callback_keys=(
+                        Keyring.load(Path(args.callback_key_file))
+                        if args.callback_key_file
+                        else None
+                    ),
                 )
             else:
                 from checkedflow.agents.mcp import create_server

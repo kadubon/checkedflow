@@ -23,6 +23,7 @@ from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY, Guard
 from checkedflow.agents.journal import Journal
 from checkedflow.agents.push import Push
+from checkedflow.agents.secrets import Keyring
 from checkedflow.core.values import require
 
 
@@ -76,9 +77,10 @@ def application(
     journal_path: Path | None = None,
     push_hosts: tuple[str, ...] = (),
     grpc_url: str = "",
+    callback_keys: Keyring | None = None,
 ) -> Guard:
     agent_card = card(url, grpc_url)
-    journal = Journal(gateway, journal_path)
+    journal = Journal(gateway, journal_path, keyring=callback_keys)
     handler = Handler(gateway, journal=journal, agent_card=agent_card, push=Push(push_hosts))
 
     @asynccontextmanager
@@ -123,6 +125,7 @@ def serve(
     journal_path: Path,
     push_hosts: tuple[str, ...] = (),
     grpc_port: int = 0,
+    callback_keys: Keyring | None = None,
 ) -> None:
     require(ipaddress.ip_address(host).is_loopback, "ADDRESS", "bind a numeric loopback address")
     require(
@@ -138,6 +141,7 @@ def serve(
         journal_path=journal_path,
         push_hosts=push_hosts,
         grpc_url=f"{address}:{grpc_port}" if grpc_port else "",
+        callback_keys=callback_keys,
     )
     asyncio.run(
         uvicorn.Server(

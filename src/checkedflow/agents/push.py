@@ -29,8 +29,11 @@ class Push:
             "callback must use an operator-allowlisted HTTPS host on port 443",
         )
         auth = obj(configuration.get("authentication", {}))
+        scheme = auth.get("scheme", "")
         require(
-            auth.get("schemes", []) in ([], ["Bearer"]),
+            set(auth) <= {"scheme", "credentials"}
+            and isinstance(scheme, str)
+            and (not auth or scheme.lower() == "bearer"),
             "PUSH_AUTH",
             "Bearer authentication supported",
         )

@@ -873,3 +873,38 @@ path requires a new exact-source infrastructure run; the scheduler CI above does
 Docs, README, AGENTS.md and skills.md describe both the API and its unfinished boundaries.
 Equivalent per-client authorization, callback-secret custody, archived-record policy, mTLS,
 coordinated gateway recovery and full G1-G7 remain incomplete. No release gate is promoted.
+
+
+The native v2 gateway source `e160b76978f4c6e6e1f041b292fa24a75df26e93` passed
+[CI 36280787064](https://github.com/kadubon/checkedflow/actions/runs/36280787064), including all
+20 installed-wheel infrastructure cases (291.859 seconds, no skips/errors/failures), six platform
+jobs, Vault and both object-store jobs. Local checks passed 697 tests, three platform skips and
+61 selected mutants. Wheel SHA-256 is `be99bb39e75f3140b9dcb94b3b4169d3db4d0f068ddfd39005462dce40d5a230`;
+sdist is `60739c3757bfa50309d00c5b8805a16f2f0a001a468e66fb527640406bc89284`.
+The 709-member publication-pattern scan found no matches. These artifacts retain development
+0.1.0 metadata and cannot overwrite the public release.
+
+## Callback secret custody
+
+Persistent A2A callback configurations now require an operator-supplied bounded keyring. AES-256-GCM
+binds each encrypted row to its journal, mission, task and configuration identity. Configuration
+responses omit tokens and authentication credentials. Delivery uses the decrypted original internally;
+no plaintext fallback or automatically generated persistent key is allowed. Explicit rotation changes
+all rows atomically and preserves delivery counters. Legacy plaintext rows require a deliberate
+migration decision; old backups and SQLite remnants are not silently erased.
+
+The A2A authentication contract uses singular `scheme`, with case-insensitive Bearer support.
+Targeted tests include actual protobuf response redaction, row substitution, incorrect keys,
+ciphertext tampering, restart, failed rotation and actual process exit during rotation. The combined
+agent suite passed 108 cases with 100% statement/branch coverage for the secret and journal modules.
+Full source and installed-artifact checks for this increment remain pending. See
+[callback storage and recovery](callback-secrets.md) for operator steps and the packaged schema.
+This partially addresses R8-0406; per-client ownership, equivalent endpoint authorization,
+coordinated key recovery and the full release gates remain open.
+
+
+Local callback source validation passed 717 tests (142.94 seconds), with three Windows-only
+filesystem skips and 22 infrastructure cases separated from this suite. An additional packaged
+keyring-schema boundary case was then added and all 21 callback cases passed. Static checks,
+coverage thresholds and the publication-pattern scan passed. Mutation and exact installed-wheel
+results are recorded separately when complete; these component results do not close G1-G7.

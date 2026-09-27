@@ -586,15 +586,32 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
         async def a2a_observe():
             from google.protobuf.json_format import MessageToDict
 
-            handler = Handler(agent_gateway)
+            from checkedflow.agents.journal import Journal
+            from checkedflow.agents.secrets import Keyring
+
+            keys = Keyring.ephemeral()
+            journal_path = tmp_path / "agent-observations.sqlite"
+            handler = Handler(
+                agent_gateway, journal=Journal(agent_gateway, journal_path, keyring=keys)
+            )
             try:
                 await handler.refresh()
                 projected = handler.project(task)
                 assert projected.id == task and len(projected.artifacts) == 1
                 part = MessageToDict(projected.artifacts[0].parts[0])
                 assert "not_implied" in part["data"]["receiptJson"]
+                # Exercise installed-byte custody without contacting any external callback.
+                configuration = {"id": "fixture", "token": "installed-fixture-secret"}
+                handler.journal.put_config(task, "fixture", configuration)
+                stored = handler.journal.db.execute("SELECT value FROM notifications").fetchone()[0]
+                assert b"installed-fixture-secret" not in stored
             finally:
                 handler.journal.close()
+            restored = Journal(agent_gateway, journal_path, keyring=keys)
+            try:
+                assert restored.configurations(task) == [configuration]
+            finally:
+                restored.close()
 
         asyncio.run(a2a_observe())
         raw = executed[0].evidence

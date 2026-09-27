@@ -1551,7 +1551,8 @@
       "text": "Enforce equivalent policy at A2A, MCP, artifact download, pagination, notifications, and callbacks. Test cross-mission and cross-client denial. Protect callback credentials at rest and redact them from responses/logs.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:v2-agent-projections"
+        "component:v2-agent-projections",
+        "component:callback-secret-custody"
       ]
     },
     {
@@ -3570,6 +3571,31 @@
         "R8-0406"
       ],
       "scope": "Shared A2A/MCP transport implementations with explicit v1/v2 selection, native v2 mission snapshots, original-byte admission and committed-receipt checks; existing v1 behavior retained. Per-client equivalent authorization, callback credential custody, archived-record policy and full mTLS/deployment/recovery qualification remain incomplete. No G1-G7 promotion."
+    },
+    {
+      "id": "callback-secret-custody",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/agents/secrets.py",
+        "src/checkedflow/agents/journal.py",
+        "src/checkedflow/agents/push.py",
+        "src/checkedflow/agents/a2a.py"
+      ],
+      "tests": [
+        "tests/test_callback_secrets.py",
+        "tests/test_agent_protocols.py",
+        "tests/test_integration.py"
+      ],
+      "documentation": [
+        "docs/callback-secrets.md"
+      ],
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ],
+      "requirements": [
+        "R8-0406"
+      ],
+      "scope": "Bounded operator keyring, authenticated encrypted callback rows, redacted API responses, atomic explicit rotation preserving delivery counters, legacy plaintext denial and correct A2A scheme field. Whole-journal rollback protection, coordinated backup recovery, per-client ownership and equivalent endpoint authorization remain incomplete."
     }
   ],
   "observations": [
@@ -3710,6 +3736,12 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36279970168",
       "conclusion": "success",
       "scope": "Finite scheduler increment: all component jobs, six OS/Python jobs and20 installed-wheel infrastructure cases passed (318.797s, zero skips/errors/failures). Local681passed/3platformskips/59mutants. Predates v2 agent gateway changes; no full G1-G7 qualification."
+    },
+    {
+      "source": "e160b76978f4c6e6e1f041b292fa24a75df26e93",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36280787064",
+      "conclusion": "success",
+      "scope": "Native v2 agent increment passed all component jobs and 20 installed-wheel infrastructure cases (291.859 seconds; zero skips/errors/failures). Predates callback encryption; not full G1-G7 qualification."
     }
   ]
 }
