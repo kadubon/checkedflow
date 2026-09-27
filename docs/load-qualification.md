@@ -57,6 +57,16 @@ gVisor or CometBFT fails with `CHECKEDFLOW_REQUIRE_INFRA=1`; a skipped run does 
 Keep the test harness at the same reviewed source revision as the artifact. The original manifest
 is retained even if a later stage fails. Preserve failed and incomplete runs.
 
+## Bounded disposable CI execution
+
+The existing workflow has an explicit `longevity` boolean input, disabled by default. A manual
+run with `longevity=true` and `publish=false` first builds the distributions and passes the ordinary
+infrastructure qualification. The longevity job installs that same wheel on a fresh Linux runner,
+provisions the pinned runtimes and runs the immutable profile. Its external job timeout is 110
+minutes, including provisioning, the 90-minute workload, 10-minute cleanup and artifact upload.
+Reports upload even on failure. An absent or incomplete report is not a passing result. This
+single-host run does not replace four-environment operational qualification or open publication.
+
 ## Reading the records
 
 `manifest.json` contains the pre-run identity and machine envelope. `result.json` distinguishes
@@ -70,6 +80,10 @@ not zero. `control_completed / control_elapsed_ns` and
 by one billion for per-second rates. Recovery time includes the declared interruption/progress
 barriers. Disk growth covers the whole test directory, including consensus history and control
 work; dividing it by verified completions is an amortized experiment cost, not a marginal task size.
+
+`completed_tasks` counts successfully committed task-finish requests, including work whose candidate
+was not subsequently accepted. `disk_bytes_per_completed_task` keeps an exact numerator and
+denominator and is null when no task completed; it includes shared consensus/storage costs.
 
 Resource snapshots occur every 32 control intents and after each accepted candidate. RSS covers
 the controller and live owned node processes, excluding short-lived sandbox processes; it is a

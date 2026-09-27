@@ -6,6 +6,11 @@ on:
   pull_request:
   workflow_dispatch:
     inputs:
+      longevity:
+        description: Run the frozen long-duration workload after infrastructure qualification
+        required: true
+        type: boolean
+        default: false
       publish:
         description: Publish the tested artifacts from the selected version tag
         required: true
@@ -110,6 +115,46 @@ jobs:
         with:
           name: qualification
           path: reports/
+
+  longevity:
+    if: github.event_name == 'workflow_dispatch' && inputs.longevity
+    needs: [build, qualification]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 110
+    env:
+      CHECKEDFLOW_REQUIRE_INFRA: '1'
+      CHECKEDFLOW_LOAD_REPORT: reports/longevity
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: '1.25.0'
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: '0.11.28'
+      - run: uv sync --frozen --all-extras --group dev
+      - run: uv run python scripts/provision_ci.py
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: distributions
+          path: dist/
+      - run: uv pip install --reinstall --no-deps dist/*.whl
+      - name: Bind the exact wheel
+        run: |
+          uv run --no-sync python - <<'PY'
+          import os
+          from pathlib import Path
+          wheel, = Path("dist").glob("*.whl")
+          with Path(os.environ["GITHUB_ENV"]).open("a") as output:
+              output.write(f"CHECKEDFLOW_LOAD_WHEEL={wheel.resolve()}\n")
+          PY
+      - run: uv run --no-sync pytest tests/test_longevity.py -m longevity --junitxml=reports/longevity.xml -q
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: longevity
+          path: reports/
+          if-no-files-found: error
 
   managed-signer:
     needs: build

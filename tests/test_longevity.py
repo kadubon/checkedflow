@@ -489,6 +489,8 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
         finally:
             signal.alarm(0)
             signal.signal(signal.SIGALRM, previous)
+        completed_tasks = sum(row["kind"] == "task.finish" for row in measurement.commands)
+        disk_growth = measurement.disk_bytes() - measurement.disk_baseline
         summary = {
             "status": "COMPONENT_MEASURED" if success else "FAILED",
             "failure": failure,
@@ -506,7 +508,13 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
             "empty_drain_ns": drain_ns,
             "in_flight_drain_ns": in_flight_drain_ns,
             "queue_peak": max((row["queued_intents"] for row in measurement.arrivals), default=0),
-            "disk_growth_bytes": measurement.disk_bytes() - measurement.disk_baseline,
+            "disk_growth_bytes": disk_growth,
+            "completed_tasks": completed_tasks,
+            "disk_bytes_per_completed_task": (
+                {"numerator": disk_growth, "denominator": completed_tasks}
+                if completed_tasks
+                else None
+            ),
             "novelty_claim": plan["novelty_claim"],
             "resource_sampling": (
                 "every32controlintents; everyverifiedcandidate; "
