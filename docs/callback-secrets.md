@@ -10,7 +10,8 @@ This uses AES-256-GCM with a fresh random 96-bit nonce and the library's full au
 Associated data binds the journal's chain/mission identity and instance, task ID and configuration
 ID. Moving encrypted bytes to a different row or journal fails authentication. See
 [cryptography's authenticated-encryption contract](https://cryptography.io/en/latest/hazmat/primitives/aead/#cryptography.hazmat.primitives.ciphers.aead.AESGCM).
-Encryption is outside consensus and does not establish callback ownership or transport authorization.
+Encryption is outside consensus. [Client access policy](client-access.md) separately establishes
+callback ownership and transport authorization when explicitly enabled.
 
 ## Provisioning
 
@@ -73,8 +74,8 @@ ciphertext/AAD changes, malformed/oversized inputs, atomic rotation and actual p
 rotation. The installed-wheel v2 infrastructure case also stores and reopens a sealed fixture without
 contacting an external callback. Exact-source qualification is required for that added path.
 
-Cross-client callback ownership, uniform OAuth policy, mTLS, controlled backup restoration and the
-remaining G1-G7 requirements are not proved by storage encryption. This change fixes credential
+Client ownership and OAuth policy have separate [implementation and tests](client-access.md).
+mTLS, controlled backup restoration and remaining G1-G7 requirements are not proved by encryption. This change fixes credential
 storage/echo behavior; it does not qualify the complete 0.2.0 operational release.
 
 The packaged structural contract is available through `checkedflow schema callback-keyring`.

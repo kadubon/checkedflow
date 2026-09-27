@@ -53,8 +53,10 @@ virtual environments, downloaded tools, raw reports and local caches are exclude
 
 ## Deployment limits
 
-One gateway admits one mission's full visibility. It has no per-record or per-client ACL within
-that mission. Use distinct credentials/processes for separate visibility boundaries. Reverse
+One gateway admits one mission's visibility. V1 retains single-operator access; the v2 CLI requires
+[client policy](client-access.md) for mission roles, signed-actor bindings and callback ownership.
+Inspection grants still expose the shared mission, without per-record secrecy. Use separate deployments
+for confidential compartments. Reverse
 proxies/TLS, external OAuth issuers and real webhook receivers require deployment qualification.
 Protect the journal directory and sidecars with OS permissions, especially Windows ACLs; push
 configurations are encrypted there with an independently supplied operator keyring. API responses

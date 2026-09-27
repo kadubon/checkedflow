@@ -53,3 +53,5 @@ For agents, [skills.md](../skills.md) provides the reading order, machine contra
 commands. Schemas describe structural contracts; transition rules also impose semantic invariants.
 Tests and historical reports are evidence about a particular implementation, not a replacement for
 those contracts. Read the limitation beside a research or validation claim before reusing it.
+
+- [Client access](client-access.md): mission/client roles, verified identities, callback ownership and live revocation.

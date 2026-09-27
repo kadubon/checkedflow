@@ -44,6 +44,38 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "agents/access.py",
+        "test_agent_access.py",
+        "client_role_enforcement",
+        'role in array(grant["roles"])',
+        "True",
+        "test_identity_roles_actor_scope_and_live_revocation",
+    ),
+    (
+        "agents/access.py",
+        "test_agent_access.py",
+        "client_signed_actor_binding",
+        'not actor or actor in array(grant["actors"])',
+        "True",
+        "test_identity_roles_actor_scope_and_live_revocation",
+    ),
+    (
+        "agents/a2a.py",
+        "test_agent_access.py",
+        "callback_client_ownership",
+        'return Principal.restore(obj(value["_principal"])).identity == owner.identity',
+        "return True",
+        "test_a2a_callback_ownership_and_client_bound_pagination",
+    ),
+    (
+        "agents/http.py",
+        "test_agent_access.py",
+        "stream_egress_revocation",
+        "                        await anyio.to_thread.run_sync(self.policy.check, principal)",
+        "                        pass",
+        "test_http_rechecks_policy_before_each_stream_chunk",
+    ),
+    (
         "agents/a2a.py",
         "test_callback_secrets.py",
         "callback_page_snapshot_revision",

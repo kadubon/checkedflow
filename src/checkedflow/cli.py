@@ -11,7 +11,7 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from checkedflow import __version__
 from checkedflow.contracts import check
-from checkedflow.core.values import JSON, Failure, Object
+from checkedflow.core.values import JSON, Failure, Object, require
 from checkedflow.identity import public_key, sign
 from checkedflow.recovery import read_blocks, replay_blocks
 from checkedflow.serialization import decode, encode
@@ -51,6 +51,9 @@ def main(argv: list[str] | None = None) -> int:
             "agent-request",
             "agent-vectors",
             "callback-keyring",
+            "access-policy",
+            "access-roles",
+            "access-vectors",
         ],
     )
     keys = commands.add_parser("keygen")
@@ -86,6 +89,12 @@ def main(argv: list[str] | None = None) -> int:
         agent.add_argument("--host", default="127.0.0.1")
         agent.add_argument("--port", type=int, default=8080 if transport == "a2a" else 8082)
         agent.add_argument("--token-env", default="CHECKEDFLOW_AGENT_TOKEN")
+        agent.add_argument(
+            "--access-policy", help="private operator mission/client grants; required for v2"
+        )
+        agent.add_argument("--oauth-issuer", default="")
+        agent.add_argument("--oauth-audience", default="")
+        agent.add_argument("--oauth-jwks", default="", help="operator-managed public JWKS file")
         if transport == "a2a":
             agent.add_argument("--callback-key-file", help="private operator callback keyring JSON")
             agent.add_argument("--journal", required=True, help="private SQLite transport journal")
@@ -100,9 +109,6 @@ def main(argv: list[str] | None = None) -> int:
             )
         else:
             agent.add_argument("--transport", choices=["stdio", "http", "sse"], default="stdio")
-            agent.add_argument("--oauth-issuer", default="")
-            agent.add_argument("--oauth-audience", default="")
-            agent.add_argument("--oauth-jwks", default="", help="operator-managed public JWKS file")
     demo = commands.add_parser("demo")
     demo.add_argument("--directory", required=True)
     demo.add_argument("--image", required=True, help="local Python OCI image with sha256 digest")
@@ -126,6 +132,9 @@ def main(argv: list[str] | None = None) -> int:
                 "agent-request": "agent-request.schema.json",
                 "agent-vectors": "agent-vectors.json",
                 "callback-keyring": "callback-keyring.schema.json",
+                "access-policy": "access-policy.schema.json",
+                "access-roles": "access-roles.json",
+                "access-vectors": "access-vectors.json",
             }[args.name]
             sys.stdout.buffer.write(files("checkedflow").joinpath("data", filename).read_bytes())
         elif args.action in {"generator", "example"}:
@@ -183,16 +192,46 @@ def main(argv: list[str] | None = None) -> int:
 
                 emit(Worker(client, args.identity, key(args.key), args.chain).once())
         elif args.action in {"a2a", "mcp"}:
+            from checkedflow.agents.access import Policy
             from checkedflow.agents.gateway import AgentGateway, Gateway
+            from checkedflow.agents.oauth import OAuth
             from checkedflow.distributed.client import Client
 
+            require(
+                args.protocol != "v2" or bool(args.access_policy),
+                "ACCESS",
+                "v2 requires --access-policy",
+            )
+            require(
+                not args.access_policy or args.protocol == "v2",
+                "ACCESS",
+                "client policy requires v2",
+            )
+            policy = (
+                Policy(Path(args.access_policy), args.chain, args.mission)
+                if args.access_policy
+                else None
+            )
+            require(
+                bool(args.oauth_issuer) == bool(args.oauth_audience) == bool(args.oauth_jwks),
+                "AUTH",
+                "supply all OAuth settings",
+            )
+            oauth = (
+                OAuth(args.oauth_issuer, args.oauth_audience, Path(args.oauth_jwks))
+                if args.oauth_issuer
+                else None
+            )
             gateway: AgentGateway
             if args.protocol == "v2":
                 from checkedflow.agents.operational_gateway import Gateway as OperationalGateway
                 from checkedflow.distributed.operational_client import Client as OperationalClient
 
                 gateway = OperationalGateway(
-                    OperationalClient(args.rpc, chain=args.chain), args.chain, args.mission
+                    OperationalClient(args.rpc, chain=args.chain),
+                    args.chain,
+                    args.mission,
+                    administration=policy is not None,
                 )
             else:
                 gateway = Gateway(Client(args.rpc), args.chain, args.mission)
@@ -209,6 +248,8 @@ def main(argv: list[str] | None = None) -> int:
                     journal_path=Path(args.journal),
                     push_hosts=tuple(args.push_host),
                     grpc_port=args.grpc_port,
+                    policy=policy,
+                    oauth=oauth,
                     callback_keys=(
                         Keyring.load(Path(args.callback_key_file))
                         if args.callback_key_file
@@ -219,7 +260,12 @@ def main(argv: list[str] | None = None) -> int:
                 from checkedflow.agents.mcp import create_server
 
                 if args.transport == "stdio":
-                    create_server(gateway).run(transport="stdio")
+                    require(
+                        oauth is None,
+                        "AUTH",
+                        "OAuth is an HTTP transport; stdio uses process ownership",
+                    )
+                    create_server(gateway, policy=policy).run(transport="stdio")
                 else:
                     from checkedflow.agents.mcp import serve as serve_mcp
 
@@ -232,6 +278,7 @@ def main(argv: list[str] | None = None) -> int:
                         oauth_issuer=args.oauth_issuer,
                         oauth_audience=args.oauth_audience,
                         oauth_jwks=args.oauth_jwks,
+                        policy=policy,
                     )
         elif args.action == "demo":
             from checkedflow.distributed.demo import demonstrate

@@ -1552,7 +1552,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:v2-agent-projections",
-        "component:callback-secret-custody"
+        "component:callback-secret-custody",
+        "component:mission-client-access"
       ]
     },
     {
@@ -3596,6 +3597,32 @@
         "R8-0406"
       ],
       "scope": "Bounded operator keyring, authenticated encrypted callback rows, redacted API responses, atomic explicit rotation preserving delivery counters, legacy plaintext denial and correct A2A scheme field. Whole-journal rollback protection, coordinated backup recovery, per-client ownership and equivalent endpoint authorization remain incomplete."
+    },
+    {
+      "id": "mission-client-access",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/agents/access.py",
+        "src/checkedflow/agents/authentication.py",
+        "src/checkedflow/agents/http.py",
+        "src/checkedflow/agents/a2a.py",
+        "src/checkedflow/agents/a2a_server.py",
+        "src/checkedflow/agents/mcp.py"
+      ],
+      "tests": [
+        "tests/test_agent_access.py",
+        "tests/test_integration.py"
+      ],
+      "documentation": [
+        "docs/client-access.md"
+      ],
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ],
+      "requirements": [
+        "R8-0406"
+      ],
+      "scope": "Shared protected-file mission/client roles and signed actor bindings across A2A/MCP, OAuth identity and live egress checks, callback ownership and bounded delegation. V2 CLI policy mandatory. Unified artifact download/archive policy, mTLS and coordinated recovery remain open."
     }
   ],
   "observations": [
@@ -3742,6 +3769,18 @@
       "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36280787064",
       "conclusion": "success",
       "scope": "Native v2 agent increment passed all component jobs and 20 installed-wheel infrastructure cases (291.859 seconds; zero skips/errors/failures). Predates callback encryption; not full G1-G7 qualification."
+    },
+    {
+      "source": "837c873b34cfed2c237a78b1d4a786c701858176",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36281959531",
+      "conclusion": "failure",
+      "scope": "One qualification fixture failed when asynchronous removal raced Docker list-then-inspect. Unknown remained fail-closed. No qualification claimed; later fixture change retries uncertain reads within its original deadline and still requires confirmed absence."
+    },
+    {
+      "source": "551cccab8f82e1f386f7b499056c61bf13ebea53",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36282190089",
+      "conclusion": "success",
+      "scope": "Callback encryption and atomic pagination snapshot: all component jobs and 20 installed-wheel infrastructure cases passed. Predates mission/client policy and read-reconciliation fixture correction. Not G1-G7 completion."
     }
   ]
 }

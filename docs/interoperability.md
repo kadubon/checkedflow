@@ -6,7 +6,7 @@ for one chain and one mission, through an operator-owned validating node. They h
 keys, execute no received code and cannot change the authority rules.
 
 The default application contract remains `checkedflow/v1`. Development deployments may select
-`--protocol v2` on either CLI server; read [operational agent transports](operational-agents.md)
+`--protocol v2` with `--access-policy PRIVATE_POLICY` on either CLI server; read [operational agent transports](operational-agents.md)
 for native v2 records, command restrictions and outstanding security qualification. The connected
 server's profile/schema resources identify its selected contract. `checkedflow schema agents`
 continues to export the published v1 profile.
@@ -40,8 +40,9 @@ Bootstrap the four organizations, workers, verifier and mission as described in
 your own node and that its chain and mission match the gateway arguments. A remote RPC service
 selected by an arbitrary client is not a trusted backend. Gateways do not bootstrap a mission.
 
-Use separate gateway processes and credentials for separate missions. All callers admitted to
-one gateway can inspect that mission, including source and evidence. A client still needs the
+Use separate gateway processes and credentials for separate missions. V2 requires
+[client policy](client-access.md); clients granted inspection can see the shared mission, including
+source and evidence. V1 retains its published single-operator boundary. A client still needs the
 appropriate registered signatures to mutate it. The public Agent Card contains interface
 descriptions; it does not contain mission records or callback credentials.
 

@@ -915,3 +915,35 @@ They now come from one locked SQLite snapshot. A deterministic interleaving regr
 configuration during page projection and verifies that the cursor describes the returned values,
 then rejects continuation against the changed state. This closes a pagination race introduced by
 the ciphertext-revision change; its source and installed-artifact checks require the follow-up commit.
+
+
+The callback snapshot source `551cccab8f82e1f386f7b499056c61bf13ebea53` passed
+[CI 36282190089](https://github.com/kadubon/checkedflow/actions/runs/36282190089), including all
+20 installed-wheel infrastructure cases, all six OS/Python jobs, Vault and both object stores.
+Wheel SHA-256 is `e8e9a1edd4e2173bec3862813f59a6d710cd31e138a4553694fe46145a2d1dc4`;
+sdist is `e58536669ec310bb828607e2d5aefd64d5734a9ef324b3081a1c59d7d86f020e`.
+Its source suite passed 719 cases, three platform skips and all 64 selected mutants were detected.
+These results do not qualify subsequent client-policy changes.
+
+The preceding CI 36281959531 failed one sandbox recovery fixture: asynchronous container deletion
+raced Docker's list-then-inspect read. The subsequent policy increment corrects that fixture to
+retain an uncertain observation and reread within its existing deadline, still requiring both
+confirmed absence and journal retirement. Persistent unknown results still fail qualification.
+No production cleanup failure is reinterpreted as success.
+
+## Mission and client access
+
+A shared protected-file policy now binds verified issuer/client/subject, chain/mission, explicit
+roles and signed actor IDs. The v2 CLI requires it. A2A JSON-RPC/HTTP+JSON/gRPC and MCP operations
+use the same decisions, including egress rechecks, callback ownership and client-bound cursors.
+Administrative submission is explicit and still needs current three-organization signatures.
+The ordinary direct SDK gateway retains its worker/verifier-only default. OAuth identity includes
+the verified issuer; tokens cannot assert roles through message metadata.
+
+The [client access guide](client-access.md), packaged schema/role mapping/decision vectors, README,
+AGENTS.md and skills.md explain configuration and limits. Tests use actual loopback services and
+protocol clients, including denied cross-client callbacks, role/actor changes, stream revocation,
+subscription filtering and dispatch rechecks after DNS. The installed v2 CometBFT worker case now
+uses the policy-enabled MCP server. Full exact-source qualification for this increment is pending.
+R8-0406 remains in progress: unified artifact-download/archive authorization, mTLS deployment and
+coordinated recovery are not completed by transport policy. No G1-G7 release gate is promoted.

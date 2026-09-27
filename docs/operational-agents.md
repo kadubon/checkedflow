@@ -6,13 +6,14 @@ behind the `AgentGateway` interface, which provides scoped observations, command
 receipt confirmation. Protocol SDKs do not interpret the internal consensus state classes.
 
 ```console
-checkedflow mcp --protocol v2 --rpc http://127.0.0.1:26657 --chain CHAIN --mission MISSION
-checkedflow a2a --protocol v2 --rpc http://127.0.0.1:26657 --chain CHAIN --mission MISSION --journal PRIVATE_JOURNAL
+checkedflow mcp --protocol v2 --rpc http://127.0.0.1:26657 --chain CHAIN --mission MISSION --access-policy PRIVATE_POLICY
+checkedflow a2a --protocol v2 --rpc http://127.0.0.1:26657 --chain CHAIN --mission MISSION --access-policy PRIVATE_POLICY --journal PRIVATE_JOURNAL
 ```
 
 MCP defaults to stdio with process-owner access. For HTTP deployments, use the existing
 [interoperability](interoperability.md) and [security](security.md) configuration. A2A requires its
-operator bearer token through the configured environment variable. These examples do not supply
+operator bearer token through the configured environment variable, or explicit OAuth settings.
+The v2 CLI also requires [client policy](client-access.md); stdio uses the local process-owner grant. These examples do not supply
 signing keys, start a validator, expose a public listener or enable external effects.
 
 ## Signed commands and authority
@@ -25,9 +26,9 @@ The gateway returns a commit acknowledgment only after observing the exact comma
 committed request journal. An HTTP/RPC success alone is insufficient. A missing receipt, lost reply,
 or unavailable post-send read returns `OUTCOME_UNKNOWN`, without automatic retransmission.
 
-Only `task.lease`, `task.start`, `task.heartbeat`, `task.finish`, `artifact.attest` and
-`artifact.withdraw` are exposed. Budgeting, task admission, key changes and other administrative
-operations stay outside this gateway. A bearer/OAuth token grants transport access, not a signing
+The ordinary SDK gateway exposes only worker/verifier commands. The v2 CLI additionally enables
+already-signed administrative commands behind explicit [client roles and actor bindings](client-access.md).
+Budgeting, admission, revocation and operations still require current committed administrative quorum. A bearer/OAuth token grants transport access, not a signing
 role or permission to execute. Repeated commands still undergo current signature and admission
 checks; an archived epoch or revoked key cannot use a cached acknowledgment to bypass them.
 
@@ -67,8 +68,7 @@ official MCP client. Existing v1 protocol tests remain. The installed-wheel v2 i
 now routes worker commands through MCP to actual CometBFT and inspects the resulting A2A evidence
 projection. Only a successful run of that exact wheel qualifies this added path.
 
-This increment does not complete the uniform operational security profile: equivalent per-client
-authorization for all endpoints, coordinated callback-key backup/recovery, mTLS deployment, archived-record policy
+This increment does not complete the uniform operational security profile: authenticated artifact-download and archived-record authorization, coordinated callback-key backup/recovery, mTLS deployment, archived-record policy
 and coordinated gateway recovery still require implementation/qualification against the frozen
-0.2.0 specification. Existing bearer/OAuth support must not be described as satisfying those wider
+0.2.0 specification. The implemented [client policy](client-access.md) must not be described as satisfying those wider
 requirements. Full G1-G7 remain incomplete and publication stays disabled.

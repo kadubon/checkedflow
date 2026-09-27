@@ -1,18 +1,22 @@
 """Official MCP SDK boundary. Stdio grants mission visibility, never signing authority."""
 
 import ipaddress
-from collections.abc import AsyncIterator
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import Literal
+from typing import Any, Literal
 
 import anyio
 import uvicorn
 from mcp.server import MCPServer
 from mcp.server.auth.provider import TokenVerifier
+from mcp.server.auth.routes import build_resource_metadata_url
 from mcp.server.auth.settings import AuthSettings
+from mcp.server.context import CallNext, HandlerResult, ServerRequestContext
 from mcp.server.subscriptions import InMemorySubscriptionBus, ResourceUpdated
 from mcp.server.transport_security import TransportSecuritySettings
+from mcp.shared.exceptions import MCPError
+from mcp.shared.subscriptions import ServerEvent
 from mcp.types import (
     CallToolResult,
     Completion,
@@ -25,10 +29,12 @@ from mcp.types import (
 )
 
 from checkedflow import __version__
+from checkedflow.agents.access import LOCAL, Policy, Principal
+from checkedflow.agents.authentication import Authentication, oauth_principal
 from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY, Guard
 from checkedflow.agents.oauth import OAuth
-from checkedflow.core.values import Failure, Object, obj, require
+from checkedflow.core.values import Failure, Object, obj, require, text
 from checkedflow.wire import digest, dumps
 
 
@@ -45,8 +51,30 @@ def create_server(
     *,
     auth: AuthSettings | None = None,
     token_verifier: TokenVerifier | None = None,
+    policy: Policy | None = None,
+    principal: Callable[[], Principal | None] = lambda: LOCAL,
 ) -> MCPServer[None]:
-    bus = InMemorySubscriptionBus()
+    require(
+        policy is None or (policy.chain == gateway.chain and policy.mission == gateway.mission),
+        "ACCESS",
+        "policy must match gateway",
+    )
+
+    class ScopedBus(InMemorySubscriptionBus):
+        def subscribe(self, listener: Callable[[ServerEvent], None]) -> Callable[[], None]:
+            owner = principal()
+
+            def authorized(event: ServerEvent) -> None:
+                if policy is not None:
+                    try:
+                        policy.check(owner)
+                    except Failure:
+                        return
+                listener(event)
+
+            return super().subscribe(authorized)
+
+    bus = ScopedBus()
 
     async def monitor() -> None:
         previous: dict[str, str] = {}
@@ -90,6 +118,30 @@ def create_server(
         auth=auth,
         token_verifier=token_verifier,
     )
+
+    if policy is not None:
+
+        async def authorize(
+            ctx: ServerRequestContext[Any, Any], call_next: CallNext
+        ) -> HandlerResult:
+            owner = principal()
+            try:
+                policy.check(owner)
+                if ctx.method == "tools/call":
+                    params = obj(dict(ctx.params or {}))
+                    if params.get("name") == "checkedflow_submit":
+                        arguments = obj(params.get("arguments"))
+                        command = gateway.command(
+                            text(arguments.get("envelope_json"), limit=1048576)
+                        )
+                        policy.command(owner, command)
+                value = await call_next(ctx)
+                policy.check(owner)
+                return value
+            except Failure as exc:
+                raise MCPError(-32001, "Client access denied") from exc
+
+        server.middleware.append(authorize)
 
     @server.tool(
         name="checkedflow_inspect",
@@ -200,13 +252,20 @@ def create_http_app(
     host: str = "127.0.0.1",
     transport: Literal["http", "sse"] = "http",
     oauth: OAuth | None = None,
+    policy: Policy | None = None,
 ) -> Guard:
     require(ipaddress.ip_address(host).is_loopback, "ADDRESS", "bind a numeric loopback address")
     address = f"[{host}]" if ":" in host else host
     security = TransportSecuritySettings(
         allowed_hosts=[address, address + ":*"], allowed_origins=[]
     )
-    server = create_server(gateway, auth=oauth.settings if oauth else None, token_verifier=oauth)
+    server = create_server(
+        gateway,
+        auth=oauth.settings if oauth else None,
+        token_verifier=oauth,
+        policy=policy,
+        principal=oauth_principal if oauth else lambda: LOCAL,
+    )
     app = (
         server.streamable_http_app(
             host=host,
@@ -218,7 +277,19 @@ def create_http_app(
         if transport == "http"
         else server.sse_app(host=host, max_request_body_size=MAX_BODY, transport_security=security)
     )
-    return Guard(app, None if oauth else token, public=())
+    resource_url = oauth.settings.resource_server_url if oauth else None
+    metadata = build_resource_metadata_url(resource_url) if resource_url else None
+    authentication = Authentication(token, oauth) if policy is not None else None
+    return Guard(
+        app,
+        None if oauth or policy is not None else token,
+        public=(metadata.path or "/",) if metadata else (),
+        challenge=f'Bearer resource_metadata="{metadata}", scope="checkedflow"'
+        if metadata
+        else "Bearer",
+        authenticate=authentication.verify if authentication else None,
+        policy=policy,
+    )
 
 
 def serve(
@@ -231,6 +302,7 @@ def serve(
     oauth_issuer: str = "",
     oauth_audience: str = "",
     oauth_jwks: str = "",
+    policy: Policy | None = None,
 ) -> None:
     require(1 <= port <= 65535, "ADDRESS", "invalid port")
     oauth = OAuth(oauth_issuer, oauth_audience, Path(oauth_jwks)) if oauth_issuer else None
@@ -240,7 +312,7 @@ def serve(
         "supply all OAuth settings",
     )
     uvicorn.run(
-        create_http_app(gateway, token, host=host, transport=transport, oauth=oauth),
+        create_http_app(gateway, token, host=host, transport=transport, oauth=oauth, policy=policy),
         host=host,
         port=port,
         access_log=False,

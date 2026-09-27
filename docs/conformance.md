@@ -93,3 +93,7 @@ uses authenticated encryption; missing keys or legacy plaintext rows fail closed
 scheme field follows A2A 1.0 `AuthenticationInfo.scheme`, with case-insensitive Bearer support.
 See [callback custody](callback-secrets.md) for rotation, crash recovery and compatibility limits.
 These tests establish storage/response behavior, not cross-client authorization or mTLS deployment.
+
+Operational v2 [client access](client-access.md) adds the same role/actor policy to A2A bindings and
+MCP operations, with explicit callback ownership and egress revocation checks. The v2 CLI requires
+a policy file. Download authorization, mTLS and coordinated recovery remain separate open gates.

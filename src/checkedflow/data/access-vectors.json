@@ -1,0 +1,103 @@
+{
+  "profile": "checkedflow/access-vectors/v1",
+  "policy": {
+    "profile": "checkedflow/access-policy/v1",
+    "grants": [
+      {
+        "issuer": "checkedflow:local",
+        "client": "operator",
+        "subject": "operator",
+        "chain": "example-chain",
+        "mission": "example-mission",
+        "roles": [
+          "inspect",
+          "submit"
+        ],
+        "actors": [
+          "worker"
+        ]
+      }
+    ]
+  },
+  "chain": "example-chain",
+  "mission": "example-mission",
+  "cases": [
+    {
+      "principal": {
+        "issuer": "checkedflow:local",
+        "client": "operator",
+        "subject": "operator",
+        "expires": 0
+      },
+      "role": "inspect",
+      "actor": "",
+      "result": "ALLOW"
+    },
+    {
+      "principal": {
+        "issuer": "checkedflow:local",
+        "client": "operator",
+        "subject": "operator",
+        "expires": 0
+      },
+      "role": "submit",
+      "actor": "worker",
+      "result": "ALLOW"
+    },
+    {
+      "principal": {
+        "issuer": "checkedflow:local",
+        "client": "operator",
+        "subject": "operator",
+        "expires": 0
+      },
+      "role": "approve",
+      "actor": "worker",
+      "result": "ACCESS"
+    },
+    {
+      "principal": {
+        "issuer": "checkedflow:local",
+        "client": "operator",
+        "subject": "operator",
+        "expires": 0
+      },
+      "role": "submit",
+      "actor": "other",
+      "result": "ACCESS"
+    },
+    {
+      "principal": {
+        "issuer": "checkedflow:local",
+        "client": "other",
+        "subject": "operator",
+        "expires": 0
+      },
+      "role": "inspect",
+      "actor": "",
+      "result": "ACCESS"
+    },
+    {
+      "principal": {
+        "issuer": "other",
+        "client": "operator",
+        "subject": "operator",
+        "expires": 0
+      },
+      "role": "inspect",
+      "actor": "",
+      "result": "ACCESS"
+    },
+    {
+      "principal": {
+        "issuer": "checkedflow:local",
+        "client": "operator",
+        "subject": "other",
+        "expires": 0
+      },
+      "role": "inspect",
+      "actor": "",
+      "result": "ACCESS"
+    }
+  ]
+}

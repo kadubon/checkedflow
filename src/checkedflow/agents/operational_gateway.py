@@ -3,6 +3,7 @@
 from importlib.resources import files
 from typing import Protocol
 
+from checkedflow.agents.access import COMMAND_ROLES
 from checkedflow.agents.gateway import profile
 from checkedflow.core.key_registry import roots
 from checkedflow.core.operational import State, genesis
@@ -21,14 +22,19 @@ class Backend(Protocol):
 
 
 class Gateway:
-    """No signer, administrative commands, automatic retransmission or code execution.
+    """No signer, automatic retransmission or code execution. Administration is explicit.
 
     Reads expose native v2 fields. A2A completion is a work receipt, not artifact acceptance.
     The configured backend must be the operator's validating node; this is not a light client.
     """
 
-    def __init__(self, backend: Backend, chain: str, mission: str) -> None:
+    def __init__(
+        self, backend: Backend, chain: str, mission: str, *, administration: bool = False
+    ) -> None:
         self.backend = backend
+        self.allowed_commands = (
+            frozenset(COMMAND_ROLES) if administration else WORKER_COMMANDS | VERIFIER_COMMANDS
+        )
         self.chain, self.mission = text(chain, limit=128), text(mission, limit=80)
 
     def state(self) -> State:
@@ -136,7 +142,7 @@ class Gateway:
         identity = text(command["id"])
         require(not message_id or message_id == identity, "ID", "message ID must equal command ID")
         require(
-            command["kind"] in WORKER_COMMANDS | VERIFIER_COMMANDS,
+            command["kind"] in self.allowed_commands,
             "SCOPE",
             "administration unavailable through agent transports",
         )
@@ -179,7 +185,14 @@ class Gateway:
         value = profile()
         value["profile"], value["command_protocol"] = "checkedflow-agents/v2", "checkedflow/v2"
         value["signed_transport"] = "original UTF-8 JSON bytes; no v1 translation"
-        value["submit_kinds"] = list(sorted(WORKER_COMMANDS | VERIFIER_COMMANDS))
+        value["submit_kinds"] = list(sorted(self.allowed_commands))
+        value["client_policy"] = {
+            "schema": "access-policy.schema.json",
+            "roles": "access-roles.json",
+            "vectors": "access-vectors.json",
+            "cli": "required for v2",
+            "identity": "verified issuer, client_id and subject; local process owner for stdio",
+        }
         value["native_records"] = (
             "v2 task, candidate and budget fields; no synthetic residual graph"
         )

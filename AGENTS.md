@@ -21,3 +21,8 @@ and current key/epoch checks through the same A2A/MCP implementations used by th
 Callback credentials must stay sealed in persistent journals and absent from transport responses.
 Never add plaintext fallback, auto-generated persistent deployment keys or silent legacy migration.
 Preserve delivery state during explicit key rotation and test real process-exit windows.
+
+Use the packaged access-roles contract for every client command decision. Never trust role claims in
+messages or lose issuer/client/subject binding. Recheck policy at egress and callback dispatch; preserve
+expired/revoked callback records for explicit reconciliation. Administrative transport grants still need
+current quorum signatures. V2 CLI deployments require an explicit protected access-policy file.

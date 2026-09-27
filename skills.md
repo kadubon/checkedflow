@@ -163,10 +163,17 @@ catalogue with actual installed-artifact behavior. Component CI cannot substitut
 For [v2 agent transports](docs/operational-agents.md), select `--protocol v2` explicitly and inspect
 the selected profile/schema. Keep original signed bytes and distinguish current candidate acceptance
 from task completion. Missing receipts remain unknown; no automatic transport retry, signing,
-admin admission or unknown-work cancellation is provided. Native v2 data is not a translated v1 state.
+unknown-work cancellation is provided. Administrative submission additionally requires the explicit
+v2 client policy and current quorum signatures. Native v2 data is not a translated v1 state.
 
 For [callback secret custody](docs/callback-secrets.md), supply a separate private keyring for persistent
 A2A notifications. Export its structural schema with `checkedflow schema callback-keyring`; the active
 key must also exist in the key map. Preserve delivery counters during explicit `Journal.rewrap`, stop
 other writers first, and retain backup decryption keys. Never silently accept old plaintext rows.
 API configuration responses redact secrets; internal delivery still uses the original credentials.
+
+For [client authorization](docs/client-access.md), provision `--access-policy` before starting a v2
+server. Use `checkedflow schema access-policy`, `access-roles` and `access-vectors` as the portable
+contracts. Bind OAuth issuer/client/subject and signed actor IDs explicitly; request metadata cannot
+assert roles. Removing a JWT verification key does not revoke an existing callback delegation: withdraw
+its policy grant or delete its owned configuration. Keep unresolved delivery records during migration.

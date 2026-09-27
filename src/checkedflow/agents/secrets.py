@@ -79,6 +79,7 @@ def public_configuration(value: Object) -> Object:
     """Do not echo callback bearer credentials or notification tokens to a transport client."""
     result = dict(value)
     result.pop("token", None)
+    result.pop("_principal", None)
     if "authentication" in result:
         authentication = dict(obj(result["authentication"]))
         authentication.pop("credentials", None)

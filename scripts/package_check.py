@@ -22,6 +22,9 @@ REQUIRED = [
     "checkedflow/data/agent-vectors.json",
     "checkedflow/data/agents.json",
     "checkedflow/data/callback-keyring.schema.json",
+    "checkedflow/data/access-policy.schema.json",
+    "checkedflow/data/access-roles.json",
+    "checkedflow/data/access-vectors.json",
     "checkedflow/data/commands.json",
     "checkedflow/data/vectors.json",
     "checkedflow/data/legacy-v1.json",
@@ -66,6 +69,10 @@ from pathlib import Path
 origin = Path(checkedflow.__file__).resolve().relative_to(Path(sys.prefix).resolve())
 assert "site-packages" in origin.parts
 print("Installed import origin:", origin.as_posix())
+roles = subprocess.run([sys.executable, "-I", "-m", "checkedflow.cli", "schema", "access-roles"],
+                       check=True, capture_output=True, timeout=15)
+assert json.loads(roles.stdout)["roles"]["submit"] == [
+    "task.lease", "task.start", "task.heartbeat", "task.finish"]
 subprocess.run([sys.executable, "-I", "-m", "checkedflow.sandbox_recovery", "--help"],
                check=True, capture_output=True, timeout=15)
 from checkedflow.dispatch_watchdog import Watchdog

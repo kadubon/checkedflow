@@ -117,7 +117,12 @@ GVisorRunner(sys.argv[1], limits=Limits(seconds=8)).run(
             worker.wait(timeout=10)
             assert worker.returncode == (39 if phase == "created" else -9)
             while True:
-                absent = engine.inspect(container) is None
+                try:
+                    absent = engine.inspect(container) is None
+                except Failure as exc:
+                    # Removal can race Docker's list-then-inspect read. Unknown is not absence.
+                    assert exc.code == "CLEANUP_UNKNOWN"
+                    absent = False
                 with sqlite3.connect(directory / "sandbox.sqlite") as db:
                     retired = db.execute("SELECT COUNT(*) FROM containers").fetchone()[0] == 0
                 if absent and retired:
@@ -505,6 +510,32 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
         from checkedflow.agents.operational_gateway import Gateway as OperationalGateway
 
         agent_gateway = OperationalGateway(own, cluster.initial.chain, cluster.initial.mission)
+        from checkedflow.agents.access import LOCAL
+        from checkedflow.agents.access import Policy as ClientPolicy
+        from checkedflow.wire import dumps
+
+        client_policy_path = tmp_path / "client-policy.json"
+        client_policy_path.write_bytes(
+            dumps(
+                {
+                    "profile": "checkedflow/access-policy/v1",
+                    "grants": [
+                        {
+                            "issuer": LOCAL.issuer,
+                            "client": LOCAL.client,
+                            "subject": LOCAL.subject,
+                            "chain": cluster.initial.chain,
+                            "mission": cluster.initial.mission,
+                            "roles": ["inspect", "submit"],
+                            "actors": [worker],
+                        }
+                    ],
+                }
+            )
+        )
+        client_policy = ClientPolicy(
+            client_policy_path, cluster.initial.chain, cluster.initial.mission
+        )
         access = Access(worker, frozenset({"repository"}), frozenset({"read", "write"}))
         artifacts = LocalStore(tmp_path / "evidence.sqlite")
         executor = RepositoryExecutor(base, patch, contract, cases)
@@ -516,7 +547,7 @@ def test_v2_consensus_patch_execution_and_crash_recovery(infrastructure, tmp_pat
             from checkedflow.agents.mcp import create_server
 
             async def through_mcp():
-                async with MCPClient(create_server(agent_gateway)) as client:
+                async with MCPClient(create_server(agent_gateway, policy=client_policy)) as client:
                     response = await client.call_tool(
                         "checkedflow_submit", {"envelope_json": raw.decode("utf-8")}
                     )
