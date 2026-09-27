@@ -1742,3 +1742,11 @@ operational profile. These document deliverables exist; they do not prove deploy
 The shared mission/client permission requirement now links to the actual packaged access-role
 contract and existing implementation/tests. Requirement tracking and operational access remain
 IN_PROGRESS; no runtime gate was promoted by correcting document metadata.
+
+
+The installed infrastructure job at 08ee6c6 passed all 30 then-required cases without skips,
+including retained inherited startup, restart and dispatch inhibition (28.332 seconds for that
+case). The downloaded report also passed the historical required-case checker from that source.
+[Component evidence](evidence/retention-admission-20260927.json) records its source and report
+hash. The OS/Python workflow remained active at observation; the later live-old-chain variant
+and original final G1-G7 are not established by this component result.

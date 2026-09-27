@@ -154,3 +154,8 @@ four separate host environments, independently managed organizations, physical s
 external-effect cancellation or protection from an administrator restarting the retired chain.
 Production cutover still requires protected restart fencing and the four-host G6 evidence. Keep
 old and new credentials separate and recover forward after the first new commitment.
+
+
+The published-fixture variant including retained startup and dispatch checks passed the installed
+CI infrastructure suite at 08ee6c6: [report evidence](evidence/retention-admission-20260927.json).
+The later live-old-chain variant remains pending and must pass independently.

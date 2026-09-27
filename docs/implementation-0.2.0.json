@@ -4571,6 +4571,13 @@
     {
       "id": "requirement-ledger-document-audit",
       "scope": "Corrected five stale NOT_STARTED entries after reading the actual implementation document, milestone/dependency table, machine ledger validator, explicitly unqualified operational profile and shared mission access-role contract. R1-0092/0093/0094 are IMPLEMENTED for the requested document artifacts; R1-0096 and R8-0402 are IN_PROGRESS. This does not promote runtime/deployment evidence or any original G1-G7 gate."
+    },
+    {
+      "id": "retention-admission-installed-infrastructure",
+      "scope": "CI36307407339 qualification job108586789812 completed success at08ee6c6. Downloaded JUnit report:30executed,0failures,0errors,0skips; independently accepted by the historical gate from08ee6c6. Inherited-accounting case28.332seconds. Overall matrix workflow still running at observation. Later live migration variant and final G1-G7 remain unqualified.",
+      "evidence": [
+        "docs/evidence/retention-admission-20260927.json"
+      ]
     }
   ]
 }
