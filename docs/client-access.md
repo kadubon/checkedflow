@@ -120,6 +120,7 @@ Inspection grants expose the shared mission; this is not per-record secrecy amon
 Validators replicate the application state and remain part of the trust group. Artifact-store access
 uses its separate `Access` contract. The optional [download service](artifact-download.md) now applies
 this policy to explicitly catalogued current or archived bytes, with before/after-read checks. Automatic
-archive publication and trusted historical query integration remain open. mTLS/proxy deployment,
-coordinated policy/key recovery, migration and full
+archive publication and trusted historical query integration remain open. [Mutual TLS](agent-tls.md)
+adds connection authentication; end-to-end proxy deployment qualification, coordinated policy/key
+recovery, migration and full
 G1-G7 evidence remain unfinished. Do not present this implementation as universal production readiness.

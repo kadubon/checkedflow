@@ -81,3 +81,10 @@ Both HTTP services can expose `/artifacts/<digest>` under their existing authent
 policy. MCP additionally provides `checkedflow_read_artifact` when configured. Supply a private
 publication catalog and existing local store; no digest implies permission. See
 [authorized downloads](artifact-download.md) for byte bounds, revocation and archive trust limits.
+
+## Transport protection
+
+Use [mutual TLS](agent-tls.md) for certificate-authenticated HTTP/gRPC listeners. Certificate
+possession never replaces Bearer identity, client policy or command signatures. Both CLI HTTP
+servers ignore forwarded headers. Explicit proxy advertisements require HTTPS and TLS configuration;
+proxy deployment and multi-host qualification remain operator-profile requirements.

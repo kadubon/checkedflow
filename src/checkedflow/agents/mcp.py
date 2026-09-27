@@ -1,5 +1,6 @@
 """Official MCP SDK boundary. Stdio grants mission visibility, never signing authority."""
 
+import asyncio
 import ipaddress
 from base64 import b64encode
 from collections.abc import AsyncIterator, Callable
@@ -36,6 +37,7 @@ from checkedflow.agents.download import Downloads, Reader
 from checkedflow.agents.gateway import AgentGateway as Gateway
 from checkedflow.agents.http import MAX_BODY, Guard
 from checkedflow.agents.oauth import OAuth
+from checkedflow.agents.tls import MutualTLS, http_config
 from checkedflow.core.values import Failure, Object, obj, require, text
 from checkedflow.wire import digest, dumps
 
@@ -328,6 +330,7 @@ def serve(
     oauth_jwks: str = "",
     policy: Policy | None = None,
     artifacts: Reader | None = None,
+    tls: MutualTLS | None = None,
 ) -> None:
     require(1 <= port <= 65535, "ADDRESS", "invalid port")
     oauth = OAuth(oauth_issuer, oauth_audience, Path(oauth_jwks)) if oauth_issuer else None
@@ -336,18 +339,13 @@ def serve(
         "AUTH",
         "supply all OAuth settings",
     )
-    uvicorn.run(
-        create_http_app(
-            gateway,
-            token,
-            host=host,
-            transport=transport,
-            oauth=oauth,
-            policy=policy,
-            artifacts=artifacts,
-        ),
+    app = create_http_app(
+        gateway,
+        token,
         host=host,
-        port=port,
-        access_log=False,
-        limit_concurrency=128,
+        transport=transport,
+        oauth=oauth,
+        policy=policy,
+        artifacts=artifacts,
     )
+    asyncio.run(uvicorn.Server(http_config(app, host, port, tls)).serve())

@@ -96,4 +96,7 @@ These tests establish storage/response behavior, not cross-client authorization 
 
 Operational v2 [client access](client-access.md) adds the same role/actor policy to A2A bindings and
 MCP operations, with explicit callback ownership and egress revocation checks. The v2 CLI requires
-a policy file. Download authorization, mTLS and coordinated recovery remain separate open gates.
+a policy file. [Artifact downloads](artifact-download.md) use an explicit publication catalog and
+that same policy. [TLS tests](../tests/test_agent_tls.py) cover actual HTTP/gRPC handshakes,
+certificate retirement and independent Bearer checks; five cases also gate the installed wheel.
+Coordinated recovery and complete proxy/multi-host deployment remain open operational gates.

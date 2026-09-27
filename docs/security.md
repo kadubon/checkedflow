@@ -56,8 +56,9 @@ virtual environments, downloaded tools, raw reports and local caches are exclude
 One gateway admits one mission's visibility. V1 retains single-operator access; the v2 CLI requires
 [client policy](client-access.md) for mission roles, signed-actor bindings and callback ownership.
 Inspection grants still expose the shared mission, without per-record secrecy. Use separate deployments
-for confidential compartments. Reverse
-proxies/TLS, external OAuth issuers and real webhook receivers require deployment qualification.
+for confidential compartments. Optional [mutual TLS](agent-tls.md) requires client certificates for
+HTTP/gRPC and disables proxy-header authority. Its certificates never confer mission roles. Proxy
+installation, external OAuth issuers and real webhook receivers require deployment qualification.
 Protect the journal directory and sidecars with OS permissions, especially Windows ACLs; push
 configurations are encrypted there with an independently supplied operator keyring. API responses
 omit callback tokens and authentication credentials. See [key custody and rotation](callback-secrets.md);

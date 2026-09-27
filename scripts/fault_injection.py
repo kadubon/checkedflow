@@ -44,6 +44,30 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "agents/tls.py",
+        "test_agent_tls.py",
+        "grpc_client_certificate_required",
+        "require_client_auth=True",
+        "require_client_auth=False",
+        "test_actual_grpc_requires_certificate_token_and_current_grant",
+    ),
+    (
+        "agents/tls.py",
+        "test_agent_tls.py",
+        "tls_client_certificate_required",
+        "context.verify_mode = ssl.CERT_REQUIRED",
+        "context.verify_mode = ssl.CERT_NONE",
+        "test_http_mtls_does_not_replace_bearer_or_client_policy",
+    ),
+    (
+        "agents/tls.py",
+        "test_agent_tls.py",
+        "forwarded_headers_not_authority",
+        "proxy_headers=False",
+        "proxy_headers=True",
+        "test_forwarded_headers_cannot_override_transport",
+    ),
+    (
         "agents/download.py",
         "test_agent_download.py",
         "publication_reference_recheck",

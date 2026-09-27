@@ -984,3 +984,32 @@ skips, failures or errors. Wheel SHA-256 is
 `cde1ea9966ca006f393f76c365241940ebd746ec65b8e42ed94f633e585a3865`.
 These development artifacts retain 0.1.0 metadata and must not overwrite the published 0.1.0.
 They do not qualify subsequent publication-catalog changes.
+
+
+Artifact-publication source `15aa65ef41a2ec91c145ed325c3a13cc44ff6f97` passed
+[CI 36284800536](https://github.com/kadubon/checkedflow/actions/runs/36284800536), including all
+six OS/Python jobs, managed signing, both object stores and 20 installed-wheel infrastructure cases.
+Its local source suite passed 767 tests, three platform skips and all 70 selected mutants. Download
+coverage was 100%; 748 source/distribution members had no publication-pattern findings. Wheel
+SHA-256 is `174b1edcb44fcf5a7c30ed5f38682e320025eb2032a15582aa87776d31f70808`; sdist is
+`db0928e0f01309999635423b430c136dbf37fe2bbc94521568ade6a5711b3ae3`. These results precede TLS changes.
+
+## Mutual TLS transport protection
+
+The CLI now accepts an operator-provisioned server certificate/key and client CA together. HTTP
+and A2A gRPC require valid client certificates when configured; their startup snapshot is separate
+from Bearer identity and mission policy. Forwarded-header rewriting is explicitly disabled. Secure
+advertised proxy URLs are operator configuration, never request metadata. No listener is exposed
+beyond the existing loopback defaults. The proxy recipe requires separate deployment qualification.
+
+Twenty-four dedicated source cases passed, including real HTTP/gRPC handshakes, missing/foreign/
+expired certificates, wrong server trust, retained Bearer checks, current grant withdrawal, CA
+replacement, startup races, CLI rejection and proxy-header spoofing. The TLS boundary has 100%
+statement coverage (no measured branch arcs). The initial handshake fixture failed because CA and
+leaf subjects were identical; distinct subjects and standards-compliant key-usage/identifier
+extensions corrected the fixture. No production TLS verification was weakened.
+
+Five named real transport cases extend installed-wheel infrastructure qualification to 25 required
+cases; old 20-case reports cannot qualify this increment. Exact installed results and full-source/
+mutation results remain pending. No G1-G7 gate is promoted; coordinated credential retirement,
+proxy/multi-host deployment and original operational requirements remain incomplete.

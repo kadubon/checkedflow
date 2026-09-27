@@ -182,3 +182,8 @@ Artifact downloads require a protected mission publication catalog as well as cu
 See [authorized downloads](docs/artifact-download.md) and `checkedflow schema artifact-publication`.
 Never turn a client-supplied digest/reference or an unverified state pointer into publication authority.
 Keep catalogs outside candidate workspaces. Archive downloads do not establish trusted replay roots.
+
+For [agent TLS](docs/agent-tls.md), provision certificate/key/client-CA files independently of signing
+and callback keys. Never infer roles from certificates or forwarded headers. Keep loopback defaults,
+require all TLS settings together, and drain/restart all listeners to retire a CA snapshot. Do not
+claim a proxy template or source handshake test proves installed multi-host deployment qualification.

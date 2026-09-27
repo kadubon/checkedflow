@@ -1542,8 +1542,10 @@
       "id": "R8-0404",
       "source_line": 404,
       "text": "Use the existing OAuth resource-server support where possible, with issuer, audience, expiry, required scope, and key-rotation handling. No new authorization-server implementation is required. Add secure proxy/mTLS deployment support and explicit bearer-secret handling.",
-      "status": "NOT_STARTED",
-      "evidence": []
+      "status": "IN_PROGRESS",
+      "evidence": [
+        "component:agent-mutual-tls"
+      ]
     },
     {
       "id": "R8-0406",
@@ -3625,7 +3627,32 @@
       "requirements": [
         "R8-0406"
       ],
-      "scope": "Shared protected-file mission/client roles and signed actors across A2A/MCP, OAuth identity, egress checks, callback ownership and bounded delegation. Explicit artifact publication catalog applies the same policy to HTTP and MCP byte reads, including archived bytes; no automatic archive publication or trusted historical query. V2 CLI policy mandatory. mTLS and coordinated recovery remain open."
+      "scope": "Shared protected-file mission/client roles and signed actors across A2A/MCP, OAuth identity, egress checks, callback ownership and bounded delegation. Explicit artifact publication catalog applies the same policy to HTTP and MCP byte reads, including archived bytes; no automatic archive publication or trusted historical query. V2 CLI policy mandatory. Transport deployment qualification and coordinated recovery remain open; see agent-mutual-tls."
+    },
+    {
+      "id": "agent-mutual-tls",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/agents/tls.py",
+        "src/checkedflow/agents/a2a_server.py",
+        "src/checkedflow/agents/mcp.py",
+        "src/checkedflow/cli.py"
+      ],
+      "tests": [
+        "tests/test_agent_tls.py",
+        "scripts/qualification_gate.py"
+      ],
+      "documentation": [
+        "docs/agent-tls.md",
+        "deploy/agent-proxy.conf.example"
+      ],
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ],
+      "requirements": [
+        "R8-0404"
+      ],
+      "scope": "Operator-provisioned HTTP/gRPC mutual TLS and startup credential snapshot, explicit secure advertisements, disabled proxy-header rewriting and actual handshake/CA replacement tests. Bearer and client policy remain required. Proxy recipe is not a qualified deployment; coordinated credential recovery and full G1-G7 remain open."
     }
   ],
   "observations": [

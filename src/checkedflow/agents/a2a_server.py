@@ -33,6 +33,7 @@ from checkedflow.agents.journal import Journal
 from checkedflow.agents.oauth import OAuth
 from checkedflow.agents.push import Push
 from checkedflow.agents.secrets import Keyring
+from checkedflow.agents.tls import MutualTLS, advertised, http_config
 from checkedflow.core.values import Failure, require
 
 
@@ -159,10 +160,24 @@ def application(
     policy: Policy | None = None,
     oauth: OAuth | None = None,
     artifacts: Reader | None = None,
+    grpc_tls: MutualTLS | None = None,
+    grpc_advertised_url: str = "",
 ) -> Guard:
     require(artifacts is None or artifacts.policy is policy, "ACCESS", "artifact policy differs")
     authentication = Authentication(token, oauth)
-    agent_card = card(url, grpc_url)
+    require(
+        not grpc_advertised_url or (bool(grpc_url) and grpc_tls is not None),
+        "TLS",
+        "secure gRPC required",
+    )
+    grpc_interface = (
+        advertised(grpc_advertised_url, rpc=False)
+        if grpc_advertised_url
+        else f"https://{grpc_url}"
+        if grpc_url and grpc_tls is not None
+        else grpc_url
+    )
+    agent_card = card(url, grpc_interface)
     journal = Journal(gateway, journal_path, keyring=callback_keys)
     handler = Handler(
         gateway, journal=journal, agent_card=agent_card, push=Push(push_hosts), policy=policy
@@ -184,7 +199,12 @@ def application(
                 add_A2AServiceServicer_to_server(
                     GrpcHandler(handler, context_builder=GrpcContext(authentication)), server
                 )  # type: ignore[no-untyped-call]
-                require(server.add_insecure_port(grpc_url) != 0, "ADDRESS", "gRPC bind failed")
+                bound = (
+                    server.add_secure_port(grpc_url, grpc_tls.grpc_credentials())
+                    if grpc_tls is not None
+                    else server.add_insecure_port(grpc_url)
+                )
+                require(bound != 0, "ADDRESS", "gRPC bind failed")
                 await server.start()
             async with anyio.create_task_group() as group:
                 group.start_soon(handler.monitor)
@@ -226,6 +246,9 @@ def serve(
     policy: Policy | None = None,
     oauth: OAuth | None = None,
     artifacts: Reader | None = None,
+    tls: MutualTLS | None = None,
+    advertised_url: str = "",
+    grpc_advertised_url: str = "",
 ) -> None:
     require(ipaddress.ip_address(host).is_loopback, "ADDRESS", "bind a numeric loopback address")
     require(
@@ -234,9 +257,15 @@ def serve(
         "invalid or conflicting port",
     )
     address = f"[{host}]" if ":" in host else host
+    require(not advertised_url or tls is not None, "TLS", "proxy deployment requires mutual TLS")
+    url = (
+        advertised(advertised_url, rpc=True)
+        if advertised_url
+        else f"{'https' if tls else 'http'}://{address}:{port}/rpc"
+    )
     app = application(
         gateway,
-        f"http://{address}:{port}/rpc",
+        url,
         token,
         journal_path=journal_path,
         push_hosts=push_hosts,
@@ -245,9 +274,7 @@ def serve(
         policy=policy,
         oauth=oauth,
         artifacts=artifacts,
+        grpc_tls=tls,
+        grpc_advertised_url=grpc_advertised_url,
     )
-    asyncio.run(
-        uvicorn.Server(
-            uvicorn.Config(app, host=host, port=port, access_log=False, limit_concurrency=128)
-        ).serve()
-    )
+    asyncio.run(uvicorn.Server(http_config(app, host, port, tls)).serve())

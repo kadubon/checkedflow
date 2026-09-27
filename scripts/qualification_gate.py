@@ -5,6 +5,10 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 REQUIRED = {
+    "test_http_mtls_does_not_replace_bearer_or_client_policy": 2,
+    "test_actual_grpc_requires_certificate_token_and_current_grant": 1,
+    "test_forwarded_headers_cannot_override_transport": 1,
+    "test_client_ca_replacement_requires_new_listener_and_rejects_retired_ca": 1,
     "test_systemd_restarts_recovery_after_worker_and_service_sigkill": 1,
     "test_independent_reaper_survives_worker_process_death": 2,
     "test_actual_generation_registration_reuse_and_next_generation": 1,

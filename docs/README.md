@@ -57,3 +57,5 @@ those contracts. Read the limitation beside a research or validation claim befor
 - [Client access](client-access.md): mission/client roles, verified identities, callback ownership and live revocation.
 
 - [Authorized downloads](artifact-download.md): shared A2A/MCP policy for explicitly published current and archived bytes.
+
+- [Agent TLS](agent-tls.md): mutual TLS, explicit proxy advertisements and credential retirement.

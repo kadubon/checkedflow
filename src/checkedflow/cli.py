@@ -95,10 +95,17 @@ def main(argv: list[str] | None = None) -> int:
         )
         agent.add_argument("--artifact-catalog", help="protected mission publication catalog")
         agent.add_argument("--artifact-store", help="private local artifact database")
+        agent.add_argument("--tls-cert-file", help="operator-provisioned server certificate chain")
+        agent.add_argument("--tls-key-file", help="private server TLS key")
+        agent.add_argument("--tls-client-ca", help="CA bundle required for client certificates")
         agent.add_argument("--oauth-issuer", default="")
         agent.add_argument("--oauth-audience", default="")
         agent.add_argument("--oauth-jwks", default="", help="operator-managed public JWKS file")
         if transport == "a2a":
+            agent.add_argument("--advertised-url", default="", help="explicit HTTPS proxy /rpc URL")
+            agent.add_argument(
+                "--grpc-advertised-url", default="", help="explicit HTTPS gRPC proxy URL"
+            )
             agent.add_argument("--callback-key-file", help="private operator callback keyring JSON")
             agent.add_argument("--journal", required=True, help="private SQLite transport journal")
             agent.add_argument(
@@ -244,6 +251,25 @@ def main(argv: list[str] | None = None) -> int:
                     artifacts = Reader(
                         LocalStore(Path(args.artifact_store)), Path(args.artifact_catalog), policy
                     )
+            from checkedflow.agents.tls import MutualTLS
+
+            require(
+                bool(args.tls_cert_file) == bool(args.tls_key_file) == bool(args.tls_client_ca),
+                "TLS",
+                "supply certificate, key and client CA together",
+            )
+            require(
+                not args.tls_cert_file or args.action != "mcp" or args.transport != "stdio",
+                "TLS",
+                "stdio uses process ownership, not TLS",
+            )
+            tls = (
+                MutualTLS(
+                    Path(args.tls_cert_file), Path(args.tls_key_file), Path(args.tls_client_ca)
+                )
+                if args.tls_cert_file
+                else None
+            )
             gateway: AgentGateway
             if args.protocol == "v2":
                 from checkedflow.agents.operational_gateway import Gateway as OperationalGateway
@@ -272,6 +298,9 @@ def main(argv: list[str] | None = None) -> int:
                     grpc_port=args.grpc_port,
                     policy=policy,
                     artifacts=artifacts,
+                    tls=tls,
+                    advertised_url=args.advertised_url,
+                    grpc_advertised_url=args.grpc_advertised_url,
                     oauth=oauth,
                     callback_keys=(
                         Keyring.load(Path(args.callback_key_file))
@@ -305,6 +334,7 @@ def main(argv: list[str] | None = None) -> int:
                         oauth_jwks=args.oauth_jwks,
                         policy=policy,
                         artifacts=artifacts,
+                        tls=tls,
                     )
         elif args.action == "demo":
             from checkedflow.distributed.demo import demonstrate

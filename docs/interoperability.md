@@ -217,8 +217,9 @@ checkedflow mcp --rpc http://127.0.0.1:26657 --chain my-chain --mission array-mi
   --oauth-audience https://gateway.example.org/mcp --oauth-jwks ./private/public-jwks.json
 ```
 
-The TLS proxy must preserve the external resource identity and bearer header. CLI binding remains
-loopback. The SDK exposes OAuth Protected Resource Metadata and requires scope `checkedflow`.
+The TLS proxy must preserve the external resource identity and bearer header. See
+[mutual TLS and explicit advertisements](agent-tls.md) for direct certificate authentication and
+the proxy boundary. CLI binding remains loopback; forwarded headers cannot confer identity. The SDK exposes OAuth Protected Resource Metadata and requires scope `checkedflow`.
 Tokens require `iss`, `aud`, integer `exp`, `sub` and `client_id`; signatures use an installed
 public key with unique `kid` and `alg` RS256, ES256 or EdDSA. The exact issuer and audience must
 match configuration. Keys are reread to permit operator-controlled rotation; token-supplied

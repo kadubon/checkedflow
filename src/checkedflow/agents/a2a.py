@@ -30,6 +30,7 @@ from checkedflow.agents.journal import Journal
 from checkedflow.agents.oauth import OAuth
 from checkedflow.agents.push import Push
 from checkedflow.agents.secrets import Keyring, public_configuration
+from checkedflow.agents.tls import MutualTLS
 from checkedflow.core.values import Failure, Object, fields, obj, require, text
 from checkedflow.wire import digest, dumps
 
@@ -656,6 +657,8 @@ def create_app(
     policy: Policy | None = None,
     oauth: OAuth | None = None,
     artifacts: Reader | None = None,
+    grpc_tls: MutualTLS | None = None,
+    grpc_advertised_url: str = "",
 ) -> ASGIApp:
     from checkedflow.agents.a2a_server import application
 
@@ -670,6 +673,8 @@ def create_app(
         policy=policy,
         oauth=oauth,
         artifacts=artifacts,
+        grpc_tls=grpc_tls,
+        grpc_advertised_url=grpc_advertised_url,
     )
 
 
@@ -686,6 +691,9 @@ def serve(
     policy: Policy | None = None,
     oauth: OAuth | None = None,
     artifacts: Reader | None = None,
+    tls: MutualTLS | None = None,
+    advertised_url: str = "",
+    grpc_advertised_url: str = "",
 ) -> None:
     from checkedflow.agents.a2a_server import serve as run
 
@@ -701,4 +709,7 @@ def serve(
         policy=policy,
         oauth=oauth,
         artifacts=artifacts,
+        tls=tls,
+        advertised_url=advertised_url,
+        grpc_advertised_url=grpc_advertised_url,
     )
