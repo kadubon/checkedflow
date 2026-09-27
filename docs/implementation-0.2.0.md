@@ -1116,3 +1116,31 @@ That focused regression passed, and the completed rerun killed all 78 selected m
 live re-reservation, unresolved resume and quorum-intent binding. No production validation was
 weakened to make the mutation gate pass. Final static checks and package/source equality checks
 also passed. Hosted 26-case and full operational qualification remain separate pending evidence.
+
+### Installed reservation qualification and final provider check
+
+The qualification job for source `d7a0d73a1e03bc5b04e0d4a352fd79afe0afb5c8`
+completed all 26 required installed-wheel cases without failures, errors or skips. Its downloaded
+JUnit report passed the independent qualification gate. This includes the four-node reservation
+expiry, recovery, reconciliation and candidate-withdrawal case. Its provider observation remains
+a signed fixture; it does not establish real GitHub execution or G1-G7 completion.
+The built wheel digest is `9eaf74a677f9cc19c5501e090762c612a6c1e7ad4d324edbbaa582b31d040474`;
+the sdist digest is `e40f83fef4c2682ba082663c4391084c11bf0ea2f046188afc5ee555120760a5`.
+These artifacts precede the following provider change.
+
+The provider now accepts a trusted final `before_send` check after remote preflight and durable
+claim persistence, and rechecks its local enabled flag before creating a draft. Callback rejection
+or failure prevents POST while retaining the unknown claim. A later caller cannot bypass that
+decision by omitting the callback. The source regressions cover all four rejection classes,
+successful ordering, existing observations, local disable, unexpected exceptions and forwarding
+through complete-source patch binding. Maintained supervision, policy loading, staging,
+compensation and complete operational qualification remain separate unfinished requirements.
+
+The final-send increment passed the complete local check: 854 tests, three Windows descriptor
+skips and 23 separately selected infrastructure cases; all static/coverage gates passed and
+all 80 selected fault mutants were detected. Its wheel
+`146f6bcbc812d47635ddae6911ee68c823004bd950f2d7198c828e8b780f3d9e` and sdist
+`ddbf3b20b7ff016277ea37819492f2af8cc7f49640b29d54003b38a58a4daf4c` passed
+isolated installation. Publication pattern scanning covered 788 source/distribution members
+without findings. The preceding source's CI36289212339 finished successfully across all jobs,
+including Windows/Linux Python 3.12–3.14. That CI predates this hook and does not qualify it.

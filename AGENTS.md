@@ -17,6 +17,8 @@ Keep the publication interlock closed while any mandatory gate remains unqualifi
 Draft effect integration must use complete-source/patch Git tree binding, not just a caller's tree
 ID. See docs/github-drafts.md. Keep SHA-256 application identities distinct from Git SHA-1 IDs;
 never execute candidate code or checkout filters to calculate these bindings.
+Operational provider callers must use the final `before_send` check after remote preflight.
+Do not remove a durable claim when that check rejects or crashes; it still prohibits retry.
 
 V2 effect reservations retain full modeled cost once a send becomes possible. Never reset a
 reservation, clear unknowns, release attached funding or mint a fresh intent to retry a provider

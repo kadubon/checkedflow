@@ -160,6 +160,78 @@ def test_confirmed_dispatch_is_durable_and_idempotent(fixture):
         reopened.dispatch(replace(plan(), patch="e" * 64))
 
 
+@pytest.mark.parametrize("failure", ["STOPPED", "NOT_READY", "AUTHORITY", "POLICY"])
+def test_final_guard_rejects_without_post_or_retry(fixture, failure):
+    adapter, remote = fixture
+    calls = []
+
+    def reject(selected):
+        calls.append(selected)
+        assert remote.requests[-1].url.path.endswith("/pulls")
+        assert remote.posts == 0
+        # Read a second connection: the unknown claim must already be durable.
+        with adapter._db() as db:
+            assert adapter._prior(db, selected) == Outcome("unknown")
+        raise Failure(failure, "fixture authority lost during provider reads")
+
+    assert adapter.dispatch(plan(), before_send=reject) == Outcome("unknown")
+    assert calls == [plan()]
+    reopened = Drafts(adapter.repository, 42, "owner", adapter.token, adapter.journal, enabled=True)
+    assert reopened.dispatch(plan()) == Outcome("unknown")
+    assert reopened.reconcile(plan()) == Outcome("unknown")
+    assert remote.posts == 0
+
+
+def test_final_guard_success_precedes_only_post(fixture):
+    adapter, remote = fixture
+    calls = []
+
+    def approve(selected):
+        calls.append(selected)
+        assert remote.requests[-1].url.path.endswith("/pulls")
+        assert remote.posts == 0
+
+    assert adapter.dispatch(plan(), before_send=approve) == Outcome("confirmed", 7)
+    assert calls == [plan()] and remote.posts == 1
+    assert adapter.dispatch(plan(), before_send=approve) == Outcome("confirmed", 7)
+    assert calls == [plan()] and remote.posts == 1
+
+
+def test_final_guard_existing_observation_does_not_grant_new_send(fixture):
+    adapter, remote = fixture
+    remote.rows = [pull()]
+
+    def reject(selected):
+        pytest.fail("read observation must not request new-send authority")
+
+    assert adapter.dispatch(plan(), before_send=reject) == Outcome("confirmed", 7)
+    assert remote.posts == 0
+
+
+def test_final_guard_local_disable_is_rechecked(fixture):
+    adapter, remote = fixture
+
+    def disable(selected):
+        adapter.enabled = False
+
+    assert adapter.dispatch(plan(), before_send=disable) == Outcome("unknown")
+    adapter.enabled = True
+    assert adapter.dispatch(plan()) == Outcome("unknown")
+    assert remote.posts == 0
+
+
+def test_final_guard_unexpected_exception_preserves_claim(fixture):
+    adapter, remote = fixture
+
+    def crash(selected):
+        raise RuntimeError("fixture supervisor failure")
+
+    with pytest.raises(RuntimeError):
+        adapter.dispatch(plan(), before_send=crash)
+    assert adapter.dispatch(plan()) == Outcome("unknown")
+    assert remote.posts == 0
+
+
 @pytest.mark.parametrize("when", ["before", "after"])
 def test_lost_reply_never_causes_post_retry(fixture, when):
     adapter, remote = fixture

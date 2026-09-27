@@ -92,6 +92,28 @@ it is not automatically pruned and needs operator disk budgeting.
 
 ## Transport and credentials
 
+### Final local dispatch check
+
+Both `dispatch` and `dispatch_patch` accept the keyword `before_send`, a trusted
+executor callback taking the exact `Plan`. It must return only when current authority,
+policy, artifacts and own-node freshness permit that plan. Raise `Failure` to inhibit
+sending. The callback runs after all provider reads and after the unknown claim has
+committed, directly before a new POST. The provider rechecks its local enable flag after
+the callback. Keep the callback bounded and outside candidate-controlled code.
+
+This addresses a specific race: a supervisor may approve a plan, then lose quorum or
+receive a stop while provider preflight performs network reads. Checking only at entry
+would miss that change. A failed final check leaves a durable unknown claim and performs
+no POST. Repeating the operation cannot bypass the failed check by omitting the callback.
+Unexpected callback exceptions propagate while preserving that same claim. An existing
+exact remote object or a retained receipt is a historical observation; neither invokes
+the new-send callback or creates a second object.
+
+The optional callback preserves the low-level provider API. Omitting it does not implement
+operational supervision. This hook does not itself load protected policy, poll a validating
+node, cancel an in-flight HTTP request, or make the local check atomic with remote consensus.
+The maintained full executor and its G3 crash/recovery qualification remain required.
+
 Requests go only to `https://api.github.com`, using the explicit token supplied by the executor.
 The adapter does not discover ambient credentials, follow redirects, use environment proxies,
 accept arbitrary endpoints or fetch URLs from responses. It pins REST API version `2026-03-10`,

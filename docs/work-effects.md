@@ -77,6 +77,12 @@ immediately before sending. The [nonce coordinator](worker-supervision.md) accep
 commands and retains original bytes across uncertain submissions. The provider's separate private
 journal must also survive crashes; consensus reservation alone is not remote exactly-once delivery.
 
+The provider's `before_send(plan)` hook runs after its final remote lookup and durable local
+claim. A trusted executor can use it to repeat the current reservation, policy and watchdog
+checks before a new POST. Rejection preserves the unknown claim, so later callers cannot
+silently retry without supervision. The hook is an integration boundary, not an implemented
+full executor; see [its exact ordering and limitations](github-drafts.md#final-local-dispatch-check).
+
 ## Persistence, bounds and remaining integration
 
 Effects are part of the atomic v2 state and block replay. Empty effect collections are omitted from

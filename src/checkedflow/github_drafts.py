@@ -8,7 +8,7 @@ No branch writes, merging, closing or automatic POST retries are provided.
 
 import re
 import sqlite3
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
@@ -388,8 +388,14 @@ class Drafts:
             )
         return Outcome("confirmed", number)
 
-    def dispatch(self, plan: Plan) -> Outcome:
-        """At most one POST per retained operation claim; returned confirmation is historical."""
+    def dispatch(self, plan: Plan, *, before_send: Callable[[Plan], None] | None = None) -> Outcome:
+        """At most one POST per retained claim; confirmations are historical.
+
+        A supervisor may supply a final authority/freshness check. It runs after provider
+        reads and the durable claim, immediately before a new POST. Any raised exception
+        prevents sending and retains the claim; it never grants a retry. This local check
+        cannot atomically lock remote consensus or cancel a request already in flight.
+        """
         self._enabled(plan)
         with self._db() as db:
             prior = self._prior(db, plan)
@@ -408,6 +414,10 @@ class Drafts:
         # The claim commits before the POST. A crash here is deliberately indistinguishable from
         # a lost successful reply. Only read reconciliation can establish a matching remote object.
         try:
+            if not existing:
+                if before_send is not None:
+                    before_send(plan)
+                self._enabled(plan)
             number = existing or self._match(
                 plan,
                 self._request(
@@ -448,14 +458,22 @@ class Drafts:
             "base commit differs from complete source bytes",
         )
 
-    def dispatch_patch(self, plan: Plan, base: Tree, patch: bytes, contract: Contract) -> Outcome:
+    def dispatch_patch(
+        self,
+        plan: Plan,
+        base: Tree,
+        patch: bytes,
+        contract: Contract,
+        *,
+        before_send: Callable[[Plan], None] | None = None,
+    ) -> Outcome:
         """Check complete source/patch bindings before dispatch, including retained receipts.
 
         Contract construction is not consensus authority. The caller must still enforce
         current acceptance, action authorization, fencing and supervised deadlines.
         """
         self._patch_binding(plan, base, patch, contract)
-        return self.dispatch(plan)
+        return self.dispatch(plan, before_send=before_send)
 
     def reconcile_patch(self, plan: Plan, base: Tree, patch: bytes, contract: Contract) -> Outcome:
         """Recheck byte bindings, then perform read-only reconciliation; never resend."""

@@ -44,6 +44,22 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "github_drafts.py",
+        "test_github_drafts.py",
+        "effect_send_time_guard",
+        "before_send(plan)",
+        "pass",
+        "test_final_guard_rejects_without_post_or_retry",
+    ),
+    (
+        "github_drafts.py",
+        "test_github_drafts.py",
+        "effect_send_time_disable",
+        "                self._enabled(plan)",
+        "                pass",
+        "test_final_guard_local_disable_is_rechecked",
+    ),
+    (
         "core/work_effects.py",
         "test_work_effects.py",
         "effect_never_resends_unknown",

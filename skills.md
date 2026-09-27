@@ -130,6 +130,8 @@ The [v2 effect commands](docs/work-effects.md) govern intent, reservation and re
 Inspect `checkedflow schema effect-command` and `checkedflow schema github-effect-intent`.
 Use current own-node state with `reserved_plan`; its output is snapshot-bound and still requires
 send-time freshness, policy and artifact checks. Never treat unknown absence as retry permission.
+Use the provider's `before_send` callback to repeat those checks after remote preflight; an entry
+check alone is insufficient. A rejected callback retains the unknown claim and forbids retries.
 Never give the token or journal to candidate code. Do not recreate a journal or use a new operation
 to retry an unknown POST. Read reconciliation cannot treat absence as permission to resend.
 The operator fixture writes to a real repository: run it only against an explicitly authorized

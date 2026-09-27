@@ -128,6 +128,23 @@ def test_bound_dispatch_and_read_reconciliation(bound):
     assert remote.posts == 1
 
 
+def test_byte_bound_dispatch_forwards_final_guard(bound):
+    adapter, remote, selected, base, raw, contract = bound
+    calls = []
+
+    def reject(actual):
+        calls.append(actual)
+        assert remote.requests[-1].url.path.endswith("/pulls")
+        raise Failure("STOPPED", "fixture emergency stop")
+
+    assert adapter.dispatch_patch(selected, base, raw, contract, before_send=reject) == Outcome(
+        "unknown"
+    )
+    assert calls == [selected] and remote.posts == 0
+    assert adapter.dispatch_patch(selected, base, raw, contract) == Outcome("unknown")
+    assert remote.posts == 0
+
+
 @pytest.mark.parametrize(
     "field,value",
     [
