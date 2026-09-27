@@ -191,7 +191,7 @@ def render(inventory: bytes, configuration: bytes, consensus_genesis: bytes) -> 
             f"{peer['node_id']}@{peer['address']}:26656" for peer in nodes if peer != node
         )
         toml = f'''version = "0.40.0"
-proxy_app = "tcp://127.0.0.1:26658"
+proxy_app = "passthrough:///127.0.0.1:26658"
 abci = "grpc"
 moniker = "{folder}"
 genesis_file = "{etc}/genesis.json"

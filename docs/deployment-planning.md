@@ -107,6 +107,8 @@ The validator requires the application service and pre-existing key/signing-stat
 
 RPC and ABCI bind only to IPv4 loopback. P2P binds to the declared private address, configures only
 the other three persistent node IDs and disables peer exchange and dynamic outbound discovery.
+ABCI uses the gRPC `passthrough:///127.0.0.1:26658` resolver target. The socket transport's
+`tcp://` target must not be substituted: the native gRPC client can remain waiting for its echo.
 The mempool transaction ceiling is 1 MiB, matching CheckedFlow's wire contract. The RPC request
 body ceiling is 2 MiB so the base64-encoded transaction and JSON envelope fit at that boundary.
 The unit additionally declares a default-deny IP policy with only loopback and the four inventory

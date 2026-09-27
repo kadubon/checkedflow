@@ -1,0 +1,49 @@
+{
+  "version": "checkedflow/qualification-observation/v1",
+  "status": "FAILED",
+  "release_authority": false,
+  "source": "d6e7b1dcb85a7d119f9946ed095ff77324aa787a",
+  "workflow": "https://github.com/kadubon/checkedflow/actions/runs/36312581905",
+  "job": 108603196667,
+  "scope": "Frozen repository-longevity-2 on a single hosted Linux runner; not four-host qualification.",
+  "result": {
+    "cleanup_failure": null,
+    "command_latency_ns": {
+      "50": 402798590,
+      "95": 715960267,
+      "99": 1392421432
+    },
+    "completed_tasks": 24,
+    "control_completed": 4097,
+    "control_elapsed_ns": 2729216879814,
+    "disk_bytes_per_completed_task": {
+      "denominator": 24,
+      "numerator": 365972817
+    },
+    "disk_growth_bytes": 365972817,
+    "elapsed_ns": 2961243382888,
+    "empty_drain_ns": null,
+    "failure": "AssertionError",
+    "in_flight_drain_ns": null,
+    "not_release_authority": true,
+    "novelty_claim": "none: distinct source comments preserve fixture behavior",
+    "planned_control_intents": 4097,
+    "queue_peak": 1017,
+    "recovery_ns": 8462137149,
+    "remaining": [
+      "full operational G5/G6/G7 qualification"
+    ],
+    "resource_sampling": "every32controlintents; everyverifiedcandidate; sampledRSS excludes short-lived sandbox processes",
+    "retired_request": null,
+    "status": "FAILED",
+    "verified_completions": 7,
+    "verified_elapsed_ns": 190584862061,
+    "verified_latency_ns": {
+      "50": 11043938748,
+      "95": 12897531714,
+      "99": 12897531714
+    }
+  },
+  "report_sha256": "5f3081e9d291ebe6aab5668c3fcf67d3dc07d98be439c15457523db2c683e262",
+  "next_action": "Retain failure. Add a node-zero committed-height observation barrier after each verifier-node attestation; the failure report does not by itself prove lag was the cause. Re-execute the unchanged workload; no acceptance or resource threshold is relaxed."
+}

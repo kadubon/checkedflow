@@ -4676,6 +4676,12 @@
       "evidence": [
         "docs/evidence/live-legacy-cutover-20260927.json"
       ]
+    },
+    {
+      "source": "d6e7b1dcb85a7d119f9946ed095ff77324aa787a",
+      "workflow_run": "https://github.com/kadubon/checkedflow/actions/runs/36312581905",
+      "conclusion": "failure",
+      "scope": "Full frozen profile2:4097 control requests,7 accepted candidates,24 completed tasks; failed on pending acceptance. Cleanup succeeded. Evidence:docs/evidence/longevity-full-failure-20260927.json. A verifier-to-reader commit barrier is added locally; unchanged-profile rerun remains required."
     }
   ]
 }

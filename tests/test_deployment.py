@@ -89,7 +89,7 @@ def test_deterministic_plan_binds_nodes_without_keys_or_public_management(tmp_pa
     for index, node in enumerate(values[0]["nodes"]):
         config = tomllib.loads(output[f"node{index}/config.toml"].decode())
         assert config["abci"] == "grpc"
-        assert config["proxy_app"] == "tcp://127.0.0.1:26658"
+        assert config["proxy_app"] == "passthrough:///127.0.0.1:26658"
         assert config["rpc"]["laddr"] == "tcp://127.0.0.1:26657"
         # RPC base64 expansion must fit even when the application byte ceiling is reached.
         from checkedflow.wire import MAX_TRANSACTION_BYTES

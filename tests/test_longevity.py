@@ -461,12 +461,15 @@ def run_workload(plan, infrastructure, tmp_path, wheel, report):
                         == "finished"
                     )
                     measurement.send("mission.resume", {})
-                measurement.send(
+                attestation = measurement.send(
                     "artifact.attest",
                     {"candidate": candidate, "task": task, "evidence": evidence, "verdict": "pass"},
                     actor=actor,
                     node=verifier,
                 )
+                # Submission waits for the verifier's node. Node zero may still be behind;
+                # observe the committed attestation before checking quorum or issuing cleanup.
+                cluster.wait_height(int(str(attestation["receipt"]["height"])), nodes=(0,))
             state = cluster.client().state()
             selected = next(item for item in state.candidates if item.identity == candidate)
             assert acceptance_status(selected, state.credentials, state.height) == "accepted"
