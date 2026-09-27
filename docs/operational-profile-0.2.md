@@ -57,3 +57,7 @@ dispatch; artifact outage/corruption; exhausted state headroom; snapshot substit
 of validator signing state; quorum loss and mixed-version deployment. Required cases are in the
 [specification](specification-0.2.0.md); implementation evidence belongs in the
 [ledger](implementation-0.2.0.json), with actual gate results stored separately.
+
+A [bounded longevity runner](load-qualification.md) now defines separate control and verified-work
+measurement phases. Its short CI path and full profile require actual execution; no G5 result is
+claimed by the profile or report format.

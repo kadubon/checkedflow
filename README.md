@@ -286,3 +286,6 @@ Worker/effect supervisors also revalidate retention through their watchdog befor
 An installed single-host trial covers old-node shutdown and successor recovery; see the
 [recorded migration result](docs/evidence/live-legacy-cutover-20260927.json).
 Final multi-host qualification remains unfinished.
+
+The [longevity measurement guide](docs/load-qualification.md) distinguishes control-admission
+latency from verified patch completion and documents the fixed, not-yet-qualified workload.

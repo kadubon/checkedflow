@@ -34,6 +34,7 @@ REQUIRED = [
     "checkedflow/data/legacy-history.schema.json",
     "checkedflow/data/legacy-retained.schema.json",
     "checkedflow/data/legacy-retention-local.schema.json",
+    "checkedflow/data/load-profile.json",
     "checkedflow/data/succession-vector.json",
     "checkedflow/data/operational-envelope.schema.json",
     "checkedflow/data/operational-state.schema.json",

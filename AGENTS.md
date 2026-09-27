@@ -120,3 +120,6 @@ extend freshness or block emergency stop; never reuse a returned state as a futu
 For live legacy cutover evidence, retain worker/capability revocation, confirmed old-process stop,
 four-store replay and the independently observed checkpoint. Do not treat a published fixture or
 a single-host trial as four-host custody qualification. See docs/legacy-migration.md.
+
+Keep load-profile.json fixed before measurement. Preserve failed manifests and separate the short
+longevity smoke from the full workload; neither alone qualifies G5. See docs/load-qualification.md.

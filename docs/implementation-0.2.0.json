@@ -4324,6 +4324,23 @@
         "R7-0353"
       ],
       "scope": "Installed development artifacts, single-host CI. Published capture and live old four-node generation/reuse, expired unknown, capability/worker revocation, process shutdown, four-history replay, successor approval, four new nodes, crash/restart and retention-loss dispatch inhibition. Not four separate Linux environments, physical signer transfer, an in-flight external effect cancellation, full lifecycle/upgrade qualification or final G1-G7. Overall OS/Python workflow was still running at observation."
+    },
+    {
+      "id": "bounded-longevity-harness",
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "src/checkedflow/data/load-profile.json"
+      ],
+      "tests": [
+        "tests/test_longevity.py",
+        "tests/test_load_measurements.py"
+      ],
+      "documentation": [
+        "docs/load-qualification.md"
+      ],
+      "evidence": [],
+      "requirements": [],
+      "scope": "Frozen 4097-control/65-candidate profile and separately named short installed-wheel qualification path. Static checks and two measurement helper tests passed; actual short path and full profile not yet executed. No G5/G6/G7 or release qualification claim."
     }
   ],
   "observations": [

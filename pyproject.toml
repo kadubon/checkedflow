@@ -72,7 +72,7 @@ follow_imports = "skip"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers"
-markers = ["integration: requires real CometBFT nodes", "sandbox: requires Linux and gVisor", "qualification: full distributed and sandbox acceptance", "signer: requires a real pinned disposable Vault process", "object_store: requires a real pinned disposable S3 process"]
+markers = ["longevity: opt-in frozen long-running workload", "integration: requires real CometBFT nodes", "sandbox: requires Linux and gVisor", "qualification: full distributed and sandbox acceptance", "signer: requires a real pinned disposable Vault process", "object_store: requires a real pinned disposable S3 process"]
 
 [tool.coverage.run]
 branch = true

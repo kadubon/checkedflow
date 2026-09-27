@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 REQUIRED = {
+    "test_installed_longevity_path_smoke": 1,
     "test_systemd_comet_custody_stop_and_conflict": 1,
     "test_actual_comet_validator_lock_and_signing_state_restart": 1,
     "test_v2_inherited_accounting_commits_and_recovers_on_four_nodes": 2,
