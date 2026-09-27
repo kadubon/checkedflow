@@ -4796,5 +4796,15 @@
         "checkedflow-0.1.0.tar.gz": "81833c78329f9ef45e0ad7e24410fbc21c0dca09588a7293e814f4d57dc831e3"
       }
     }
-  ]
+  ],
+  "release_scope_override": {
+    "date": "2026-09-28",
+    "authority": "Explicit owner request for early release and PyPI publication with minimal validation",
+    "version": "0.2.0",
+    "profile": "experimental",
+    "documentation": "docs/release-0.2.0.md",
+    "full_operational_profile_qualified": false,
+    "required": "All existing required tagged-workflow jobs, exact tested wheel/sdist and release identity verification",
+    "deferred": "Full original G1-G7 operational profile; no unexecuted test is promoted to PASS"
+  }
 }

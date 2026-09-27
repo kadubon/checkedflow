@@ -210,10 +210,10 @@ jobs:
 
   publish:
     needs: [build, checks, qualification, managed-signer, object-storage]
-    # Development interlock: existing component jobs do not implement the full 0.2 G1-G7 gates.
-    # Replace this literal denial only with exact-artifact operational evidence verification.
+    # Owner-authorized experimental 0.2.0 scope; full operational G1-G7 is not claimed.
+    # Publish only artifacts built and checked by all required jobs in this run.
     if: >-
-      false && github.event_name == 'workflow_dispatch' && inputs.publish &&
+      github.event_name == 'workflow_dispatch' && inputs.publish &&
       github.repository == 'kadubon/checkedflow' && startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-24.04
     environment:

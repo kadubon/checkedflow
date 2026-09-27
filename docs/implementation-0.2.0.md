@@ -1,6 +1,9 @@
 # CheckedFlow 0.2.0 implementation record
 
-Status: **IN PROGRESS; NOT RELEASE READY**. Package 0.1.0 remains the published baseline.
+Status: **FULL OPERATIONAL PROFILE INCOMPLETE; EXPERIMENTAL RELEASE AUTHORIZED**.
+The owner narrowed publication scope on 2026-09-28; see [release scope](release-0.2.0.md).
+The entries below are chronological evidence, including historical publication interlocks.
+They do not assert that unexecuted G1–G7 tests passed.
 The only release authorized by this effort is 0.2.0 / `v0.2.0`.
 
 ## Legacy inventory and successor-accounting increments

@@ -190,7 +190,7 @@ with TemporaryDirectory(prefix="checkedflow-installed-history-cli-") as temporar
         "--source", str(directory / "history.jsonl"),
         "--checkpoint", str(directory / "checkpoint.json"),
         "--current-height", "2", "--destination", str(directory / "restored")]) == 0
-assert checkedflow.__version__ == "0.1.0"
+assert checkedflow.__version__ == "0.2.0"
 v = json.loads(r.files("checkedflow").joinpath("data/vectors.json").read_text())
 for row in v["canonical"]:
     assert dumps(loads(row["input"])).hex() == row["canonical_hex"]

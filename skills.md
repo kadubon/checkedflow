@@ -1,3 +1,9 @@
+<!-- Current release scope overrides historical full-profile release instructions below. -->
+The owner authorized early experimental 0.2.0 publication on 2026-09-28 with minimal validation.
+Follow [release scope](docs/release-0.2.0.md). Keep runtime safeguards and existing required CI
+checks; never relabel deferred G1–G7 operational qualification as passed. Historical full-profile
+publication interlocks below do not prohibit this explicitly authorized narrower release.
+
 # CheckedFlow agent operating guide
 
 Use this repository to inspect signed work, develop adapters, run bounded formation experiments

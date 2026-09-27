@@ -18,7 +18,8 @@ Version **0.1.0** is an experimental reference implementation. Its complete demo
 31 finite inputs and actual generated Python. See the [audit against the original plan](docs/audit.md) and
 [executed validation record](docs/validation-status.md) for the current scope.
 
-The **0.2.0 development branch is not release-qualified**. Its separate v2 path handles bounded
+**0.2.0 is an experimental release, not a qualified production deployment.** See the
+[release scope and limitations](docs/release-0.2.0.md). Its separate v2 path handles bounded
 repository-patch work. For example, a worker runs a proposed invoice calculation fix in gVisor;
 the trusted observer compares declared inputs and expected outputs outside the candidate process.
 V2 funds checks for all four organizations and requires at least three passing observations.
