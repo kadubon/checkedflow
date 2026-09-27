@@ -1588,3 +1588,16 @@ boolean aliases. Seventeen focused tests passed with complete statement and bran
 of the approval module. See [the approval contract](succession-approval.md) for portable bytes,
 review responsibilities and limits. Physical shutdown, signer custody, conflicting-plan
 prevention and governed activation remain mandatory unfinished work. No release gate is promoted.
+
+
+The next component pins an explicitly reviewed succession plan in a protected SQLite journal
+before invoking the signer. Concurrent connections and an actual process exit inside signing
+retain the claim; a competing plan cannot invoke the signer. Five focused tests passed with
+complete coverage of 46 statements and four branches. Static checks and isolated wheel/sdist
+sign/reopen smoke passed; distribution scanning found no patterns across 914 members. This
+local control does not establish cross-host custody or resist restoring an older journal.
+
+The preceding approval check finished with 1097 unit passes and all 110 selected mutations
+detected. Its unit collection preceded the final numeric-alias regression, which separately
+passed the 17-test focused suite. Neither observation substitutes for exact final-source CI;
+the journal component's full check remains running.

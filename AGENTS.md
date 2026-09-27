@@ -85,3 +85,7 @@ Pristine successor preparation is not proof of old-node shutdown or administrato
 Succession approval requires separate old and new three-organization quorums against independently
 protected expected roots and validators. Never treat signatures as physical custody or expose
 approval signing to candidates. See docs/succession-approval.md.
+
+Persist succession approval claims before signing and move the journal with signer custody.
+Never delete or roll back a conflicting claim; see docs/succession-approval.md. Local SQLite
+exclusion does not prove cross-host signer ownership or authorize successor activation.

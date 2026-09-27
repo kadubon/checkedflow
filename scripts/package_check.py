@@ -220,6 +220,21 @@ approval = verify_succession(dumps(approval_vector["manifest"]), legacy=dumps(ol
     successor=decode_control(dumps(approval_vector["successor"])),
     validators=tuple(tuple(pair) for pair in approval_vector["validators"]))
 assert approval.plan_hash == approval_vector["plan_hash"]
+from checkedflow.succession_journal import ApprovalJournal
+import tempfile
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+plan = approval_vector["manifest"]["plan"]
+with tempfile.TemporaryDirectory() as approval_directory:
+    approval_path = Path(approval_directory) / "approval.db"
+    binding = dict(chain=plan["old"]["chain"], mission=plan["old"]["mission"],
+        side="new", organization="a", identity="a")
+    journal = ApprovalJournal(approval_path, **binding, create=True)
+    test_signer = Ed25519PrivateKey.from_private_bytes(bytes(32))
+    first = journal.sign(plan, test_signer)
+    journal.close()
+    journal = ApprovalJournal(approval_path, **binding)
+    assert journal.sign(plan, test_signer) == first
+    journal.close()
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from checkedflow.operational_identity import Credential, authenticate, sign_command
 keys = {(name, 1): Ed25519PrivateKey.generate() for name in ("a", "b", "c", "d")}

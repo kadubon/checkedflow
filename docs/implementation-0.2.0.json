@@ -1336,7 +1336,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:legacy-successor-accounting",
-        "component:succession-approval"
+        "component:succession-approval",
+        "component:succession-approval-custody"
       ]
     },
     {
@@ -4127,6 +4128,29 @@
       "installed_development_artifacts": {
         "checkedflow-0.1.0-py3-none-any.whl": "55c6f1d726c0e98260ccab8354902f2771ba022364b34469aed7f5bf2adcad51",
         "checkedflow-0.1.0.tar.gz": "ae5f355e831f02b25b8e6ff9d45ac27672211e69a3e467e1561898912f0b2671"
+      }
+    },
+    {
+      "id": "succession-approval-custody",
+      "status": "SOURCE_TESTED",
+      "requirements": [
+        "R7-0351"
+      ],
+      "implementation": [
+        "src/checkedflow/succession_journal.py"
+      ],
+      "tests": [
+        "tests/test_succession_journal.py",
+        "scripts/package_check.py",
+        "scripts/fault_injection.py"
+      ],
+      "documentation": [
+        "docs/succession-approval.md"
+      ],
+      "scope": "Local durable plan pinning precedes signer calls. Five tests passed, including actual process exit and concurrent connections, with all46 statements and4 branches covered. Same-plan re-signing allowed; competing plan rejected. No claim of cross-host exclusive signer custody, rollback resistance, physical stop, governed activation or final G1-G7. Static checks and isolated wheel/sdist installed reopen/sign smoke passed. Full exact-source qualification remains pending.",
+      "installed_development_artifacts": {
+        "checkedflow-0.1.0-py3-none-any.whl": "910bbbcdc80014907c47b8537bf2b799c8061e31b8069fbea0d93bfc0c545303",
+        "checkedflow-0.1.0.tar.gz": "ead142e92e03add9b6d4d13ef9d1495de43604429e116f7dcb08ac1794de9ed1"
       }
     }
   ],

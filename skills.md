@@ -242,3 +242,7 @@ retention or validator ownership. Old commands and results do not acquire v2 aut
 [Succession approvals](docs/succession-approval.md) use `checkedflow schema succession` and a
 packaged signed vector. Verify against independent old/new inputs. Both quorums are mandatory;
 approval alone does not authorize startup, resolve liabilities or permit signing conflicting plans.
+
+Persist succession approval claims before signing and move the journal with signer custody.
+Never delete or roll back a conflicting claim; see docs/succession-approval.md. Local SQLite
+exclusion does not prove cross-host signer ownership or authorize successor activation.

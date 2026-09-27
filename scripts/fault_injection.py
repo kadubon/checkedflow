@@ -44,6 +44,14 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "succession_journal.py",
+        "test_succession_journal.py",
+        "succession_rejects_competing_approval",
+        "rows[0][0] in (None, encoded)",
+        "True",
+        "test_reopen_preserves_plan_and_rejects_competitor",
+    ),
+    (
         "succession.py",
         "test_succession.py",
         "succession_requires_both_quorums",

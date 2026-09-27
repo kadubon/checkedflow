@@ -4,7 +4,7 @@
 checkpoint, prepared new state and configured validator keys. Verification requires three
 distinct old organizations **and** three distinct new organizations. One side's quorum cannot
 replace the other. These approvals do not establish that old dispatch stopped, that a signer
-has exclusive ownership, or that operators approved no conflicting plan. Those custody and
+has exclusive ownership, or that all signing hosts share a non-rollbackable approval record. Those custody and
 activation controls remain unfinished and mandatory before operational release.
 
 ## Review, sign, verify
@@ -60,3 +60,30 @@ Tests use the immutable published-0.1.0 fixture, real Ed25519 signatures and a p
 They check independent quorums, role substitution, validator/state tampering, duplicate votes,
 invalid extra signatures, bounds and the portable vector. They do not prove physical shutdown,
 exclusive cross-host signer custody, non-equivocation, managed-signing deployment or G4/G6.
+
+## Durable approval custody
+
+`checkedflow.succession_journal.ApprovalJournal` protects one old chain/mission and one
+administrator identity. Provision it once with `create=True`, then reopen the same protected
+path with the same `chain`, `mission`, `side`, `organization` and `identity`. Exclusive creation
+rejects existing files; ordinary reopen never creates a missing database. Partial initialization,
+missing identity rows and foreign tables require recovery instead of silent initialization.
+
+After independently reviewing the `proposal(...)` output, call `journal.sign(plan, signer)`.
+The adapter commits the canonical plan with SQLite FULL durability before calling the signer.
+A competing plan is rejected before signing, including one with a different old checkpoint.
+Concurrent connections share the same exclusion. A signer exception or process death retains
+the claim. The identical plan may be signed again; this does not authorize execution or cutover.
+Close the connection with `journal.close()` when finished.
+
+The journal contains no private key and does not independently approve a proposal. Keep it in
+protected operator storage beside signer custody, outside candidate workspaces. Never delete,
+reinitialize, restore an older copy, or create another journal to bypass a conflict. A single
+SQLite file does not prevent a second host with a copied key from signing: cross-host ownership,
+backup rollback protection and signer policy must enforce that separately. Direct `approve(...)`
+remains a low-level primitive for implementations with an equivalent protected signing policy.
+No automatic conflicting-plan reset is provided.
+
+Source tests cover competing connections and actual process termination inside the signer,
+then reopen the same journal and verify a conflicting plan is rejected. These observations
+establish local durable exclusion, not cross-host fencing or a qualified migration deployment.
