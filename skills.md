@@ -260,3 +260,7 @@ See docs/legacy-reconciliation.md.
 
 Legacy retention verification must check an existing pin and fresh bytes; never silently recreate
 a missing pin. History coverage needs independent replay authentication. See docs/legacy-retention.md.
+
+Retained history replay requires independent genesis and final checkpoints and operator-authenticated
+archive digests. Endpoint state equality alone does not authenticate state-neutral rejected records.
+Use the legacy-history schema; see docs/legacy-retention.md.

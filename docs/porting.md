@@ -115,3 +115,7 @@ re-evaluate old lease deadlines. Preparation is separate from authorized cutover
 Succession approvals use a separate signing domain and independently trusted inputs. Reproduce
 [the approval contract](succession-approval.md) and packaged `succession-vector.json`, including
 canonical-byte plan comparison: host-language equality must not equate booleans with integers.
+
+The `legacy-history` schema defines bounded ordered chunks with original v1 state and signed
+transaction bytes. Reproduce recorded outcomes and contiguous heights against independent
+start/end checkpoints; retain independently authenticated archive digests for state-neutral records.

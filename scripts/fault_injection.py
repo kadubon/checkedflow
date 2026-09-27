@@ -44,6 +44,14 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "legacy_retention.py",
+        "test_legacy_retention.py",
+        "legacy_history_must_reach_final_root",
+        "current == final",
+        "True",
+        "test_ordered_chunks_replay_exact_history_and_reject_reordering",
+    ),
+    (
         "retention.py",
         "test_legacy_retention.py",
         "legacy_retention_requires_existing_pin",

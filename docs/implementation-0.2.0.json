@@ -4260,7 +4260,8 @@
       ],
       "implementation": [
         "src/checkedflow/legacy_retention.py",
-        "src/checkedflow/retention.py"
+        "src/checkedflow/retention.py",
+        "src/checkedflow/data/legacy-history.schema.json"
       ],
       "tests": [
         "tests/test_legacy_retention.py",
@@ -4271,10 +4272,10 @@
       "documentation": [
         "docs/legacy-retention.md"
       ],
-      "scope": "Authenticated snapshot and reviewed archive references are read and pinned as a persistent replay root. Verification requires existing identity/sequence/owner/exactset and fresh byte-verified objects; never repins on missingroot.19focusedtests2.80sec passed; adapter34statements4branches100%. Does not establish complete history coverage, independent replicas, startup/dispatch integration or finalG1-G7. Duplicate-history verification guard passed3focusedtests0.87sec; correctedwheel/sdist isolated installed pin/verify smoke passed. Earlierdevelopmentbuildpredatesguard and laterdocsareoutsideartifactscope.116throotidentitymutant added, pendingcurrentfullcheck.",
+      "scope": "Authenticated snapshot and reviewed archive references are read and pinned as a persistent replay root. Verification requires existing identity/sequence/owner/exactset and fresh byte-verified objects; never repins on missingroot.19focusedtests2.80sec passed; adapter34statements4branches100%. Does not establish complete history coverage, independent replicas, startup/dispatch integration or finalG1-G7. Duplicate-history verification guard passed3focusedtests0.87sec; correctedwheel/sdist isolated installed pin/verify smoke passed. Earlierdevelopmentbuildpredatesguard and laterdocsareoutsideartifactscope.116throotidentitymutant added, pendingcurrentfullcheck. Subsequent bounded history replay now requires independent genesis/final checkpoints, contiguous orderedchunks and exact recordedoutcomes.11focusedtests29.88sec pass,57statements6branches100%; portable schema fixture validation passed. Archive digests remain independently protected inputs: endpoint state equality cannot authenticate state-neutral rejectedrecords. Fullsource/install qualificationpending. Updated wheel/sdist isolated installed history-replay smoke passed; later docs outside development artifact scope.117th finalroot mutation added, full gate pending.",
       "installed_development_artifacts": {
-        "checkedflow-0.1.0-py3-none-any.whl": "755ea8c0ace2a318c6960294b2d74dd7f68d1067769238070825aa1c632abba6",
-        "checkedflow-0.1.0.tar.gz": "b1e038d91663eaec3151492d37b7c1b628bf0f47cbedabe0ecc8729f188a64ce"
+        "checkedflow-0.1.0-py3-none-any.whl": "cf0f75cdeb315ff9f79a11c1b4d959f0669a3f2516acbce1eda77b5f21a68537",
+        "checkedflow-0.1.0.tar.gz": "e8b970842d60711de4bb076ba542d554ca6bb8de78534d23b9a75f287e1fdf18"
       }
     }
   ],

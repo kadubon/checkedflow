@@ -31,6 +31,7 @@ REQUIRED = [
     "checkedflow/data/legacy-v1.json",
     "checkedflow/data/legacy-successor-vector.json",
     "checkedflow/data/succession.schema.json",
+    "checkedflow/data/legacy-history.schema.json",
     "checkedflow/data/succession-vector.json",
     "checkedflow/data/operational-envelope.schema.json",
     "checkedflow/data/operational-state.schema.json",
@@ -222,6 +223,7 @@ approval = verify_succession(dumps(approval_vector["manifest"]), legacy=dumps(ol
     validators=tuple(tuple(pair) for pair in approval_vector["validators"]))
 assert approval.plan_hash == approval_vector["plan_hash"]
 from checkedflow.legacy_retention import preserve as retain_legacy, verify as verify_legacy_pin
+from checkedflow.wire import digest
 from checkedflow.retention import RetentionStore
 from checkedflow.artifacts import LocalStore
 from checkedflow.artifact_io import Access
@@ -240,8 +242,9 @@ with tempfile.TemporaryDirectory() as legacy_directory:
     ref = Reference("sha256", sha256(history).hexdigest(), len(history), "application/json",
         "archive", "mission", anchor.state_hash)
     catalog.put(ref, BytesIO(history), access=policy)
-    retained = retain_legacy(dumps(old), anchor, (ref,), catalog, access=policy)
-    verify_legacy_pin(retained, anchor, catalog, access=policy)
+    start = Checkpoint(legacy["initial"]["chain"], 0, digest(legacy["initial"]))
+    retained = retain_legacy(dumps(old), anchor, (ref,), catalog, access=policy, initial=start)
+    verify_legacy_pin(retained, anchor, catalog, access=policy, initial=start)
 from checkedflow.succession_journal import ApprovalJournal
 import tempfile
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey

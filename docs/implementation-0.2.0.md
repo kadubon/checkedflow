@@ -1685,3 +1685,12 @@ sequence, owner, exact references and stored bytes; it does not silently recreat
 Nineteen focused retention tests passed; a subsequent duplicate-reference guard passed its three
 focused adapter cases. Complete signed-history coverage, startup/dispatch integration and physical
 replica independence remain separate required work; storage success does not establish them.
+
+
+Retention now replays ordered signed-history chunks under the old interpreter from independently
+provisioned genesis to the exact final checkpoint. Eleven tests passed with full statement/branch
+coverage of the 57-statement, six-branch adapter, including reordered/truncated/extra chunks,
+forged outcomes, duplicate JSON keys and substituted roots. The portable history schema passed
+fixture validation. Protected archive digests still authenticate state-neutral historical records;
+endpoint state hashes alone do not prove their inclusion. Startup/dispatch and deployed retention
+integration remain required, and no G1-G7 gate is promoted by these component checks.

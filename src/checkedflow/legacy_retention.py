@@ -1,7 +1,7 @@
-"""Pin authenticated legacy snapshot and operator-verified history archive references.
+"""Authenticate legacy replay between independent roots and pin its stored evidence.
 
-Storage availability is an observation, not consensus or proof of archive completeness.
-The protected operator must authenticate history coverage independently before cutover.
+Storage availability is a current observation, not consensus or future availability.
+The operator must independently provision both genesis and final checkpoints.
 """
 
 from dataclasses import dataclass
@@ -10,9 +10,12 @@ from io import BytesIO
 
 from checkedflow.artifact_io import Access
 from checkedflow.core.artifact import Reference
-from checkedflow.core.values import require
+from checkedflow.core.values import array, fields, integer, obj, require
 from checkedflow.legacy_inventory import Checkpoint, inspect_snapshot
+from checkedflow.recovery import replay_blocks
 from checkedflow.retention import Pin, RetentionStore
+from checkedflow.serialization import decode
+from checkedflow.wire import document, dumps
 
 
 @dataclass(frozen=True)
@@ -22,6 +25,41 @@ class Retained:
     pin: Pin
 
 
+def authenticate_history(
+    history: tuple[Reference, ...],
+    initial: Checkpoint,
+    final: Checkpoint,
+    store: RetentionStore,
+    *,
+    access: Access,
+) -> None:
+    """Replay bounded ordered chunks from independently trusted genesis to final root."""
+    integer(initial.height)
+    integer(final.height, low=1)
+    require(
+        initial.chain == final.chain and initial.height == 0,
+        "CHECKPOINT",
+        "trusted genesis required",
+    )
+    require(0 < len(history) <= 127, "LIMIT", "bounded history archive set required")
+    current = initial
+    for ref in history:
+        require(
+            ref.kind == "archive" and ref.manifest == final.state_hash,
+            "BINDING",
+            "history checkpoint differs",
+        )
+        chunk = document(store.get(ref, access=access), string_limit=2097152)
+        fields(chunk, "initial blocks")
+        start = inspect_snapshot(dumps(obj(chunk["initial"])), current)
+        blocks = array(chunk["blocks"], limit=4096)
+        require(bool(blocks), "REPLAY", "empty history chunk")
+        runtime = replay_blocks(decode(document(start.snapshot)), (obj(block) for block in blocks))
+        current = Checkpoint(runtime.state.chain, runtime.state.height, runtime.state_hash)
+        require(current.height <= final.height, "CHECKPOINT", "history exceeds final checkpoint")
+    require(current == final, "CHECKPOINT", "history does not reach trusted final checkpoint")
+
+
 def preserve(
     raw: bytes,
     trusted: Checkpoint,
@@ -29,6 +67,7 @@ def preserve(
     store: RetentionStore,
     *,
     access: Access,
+    initial: Checkpoint,
 ) -> Retained:
     """Authenticate the snapshot, read history bytes, then pin the whole bounded set."""
     inventory = inspect_snapshot(raw, trusted)
@@ -45,6 +84,7 @@ def preserve(
             "history must bind the legacy checkpoint and retention scope",
         )
         store.get(ref, access=access)
+    authenticate_history(history, initial, trusted, store, access=access)
     snapshot = Reference(
         "sha256",
         sha256(inventory.snapshot).hexdigest(),
@@ -62,12 +102,17 @@ def preserve(
         "legacy-" + trusted.state_hash, (snapshot, *history), category="replay", access=access
     )
     retained = Retained(snapshot, history, pin)
-    verify(retained, trusted, store, access=access)
+    verify(retained, trusted, store, access=access, initial=initial)
     return retained
 
 
 def verify(
-    retained: Retained, trusted: Checkpoint, store: RetentionStore, *, access: Access
+    retained: Retained,
+    trusted: Checkpoint,
+    store: RetentionStore,
+    *,
+    access: Access,
+    initial: Checkpoint,
 ) -> None:
     """Check retained bytes and an existing durable pin; never silently repin."""
     require(
@@ -91,3 +136,4 @@ def verify(
         )
     store.verify_pin(retained.pin, (retained.snapshot, *retained.history), access=access)
     inspect_snapshot(store.get(retained.snapshot, access=access), trusted)
+    authenticate_history(retained.history, initial, trusted, store, access=access)
