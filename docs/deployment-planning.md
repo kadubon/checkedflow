@@ -1,10 +1,11 @@
-# Reviewable four-node deployment plans
+# Deployment planning and local node services
 
 `checkedflow deployment-plan` generates configuration and service files for four pre-provisioned
 Linux nodes. It does not connect to hosts, create accounts or keys, install software, start services,
 change a firewall, or move validator signing state. This is the offline planning part of the operational
-deployment path. Managed apply/start/status/drain/stop/restore and full multi-host qualification
-remain unfinished; generated files are not evidence of a deployed or qualified service.
+deployment path. The separate `deployment-service` command operates already provisioned local
+services. Managed installation, work draining, complete recovery orchestration and full multi-host
+qualification remain unfinished; generated files alone do not prove a qualified deployment.
 
 ## Inputs and trust
 
@@ -146,6 +147,61 @@ separates a later unit-tested ancestry guard from that installed result. It is c
 not final-artifact release qualification.
 
 ## Service and network requirements
+
+### Explicit local start, status and stop
+
+After independently reviewing the plan and provisioning the host, use the reviewed interpreter:
+
+```sh
+sudo /opt/checkedflow/runtime/bin/python -I -m checkedflow.cli deployment-service \
+  --directory /etc/checkedflow/review --expected-plan APPROVED_PLAN_SHA256 \
+  --node node0 --action status
+
+sudo /opt/checkedflow/runtime/bin/python -I -m checkedflow.cli deployment-service \
+  --directory /etc/checkedflow/review --expected-plan APPROVED_PLAN_SHA256 \
+  --node node0 --action start --wheel /opt/checkedflow/checkedflow-0.1.0-py3-none-any.whl
+
+sudo /opt/checkedflow/runtime/bin/python -I -m checkedflow.cli deployment-service \
+  --directory /etc/checkedflow/review --expected-plan APPROVED_PLAN_SHA256 \
+  --node node0 --action stop
+```
+
+The operator's explicit `start` invocation requests the action. A stored preflight result never
+authorizes it. Before invoking it, complete the independent custody and confinement checks in this
+guide. The command repeats current preflight checks, derives the public identities from existing
+local native keys, compares them to the reviewed validator/P2P identities, and requires existing
+native signing state. It neither generates nor exports private keys and never resets signing state.
+The systemd validator retains its exclusive custody lock while running.
+
+`START_REQUESTED` means systemd accepted a nonblocking start request, including the required ABCI
+service. It does not mean the process is healthy, caught up or participating in quorum. The returned
+service observation precedes the request; call `status` and verify actual committed progress and
+common-height hashes separately. Every result keeps consensus `NOT_CHECKED` with a reason.
+
+`stop` requests normal systemd shutdown of the validator and ABCI units. It observes inactive units,
+zero main PIDs and empty or removed cgroup-v2 groups, then verifies the retained key identities and
+signing-state file before returning `STOPPED`. It does not force-kill a stuck process. The observation
+loop has a 90-second deadline; each native inspection additionally has a 15-second timeout. A lost
+request reply, stuck process, populated group or unverified signing state returns `OUTCOME_UNKNOWN`.
+Inspect current status and preserve the original home; do not delete a lock or reinitialize to retry.
+
+Stopping does not require a wheel or execute a potentially damaged CometBFT binary. It still requires
+the approved plan and matching loaded unit definitions. A changed or foreign service definition is
+not an approved automated stop target; use the operator's separate incident containment procedure.
+These commands operate only the named local ABCI/validator services. They do not drain mission work,
+stop independent workers, prove that no external signer copy exists, or authorize key relocation.
+Use governed mission draining before planned work-service maintenance and the separate
+[custody procedure](validator-custody.md) before transferring or replacing a validator.
+
+`checkedflow schema deployment-service` is the machine-readable observation contract. Status is
+read-only; start/stop change service state only. No command installs units, enables boot startup,
+changes firewall rules, rolls back a database, or performs automatic artifact repair.
+
+An [installed four-VM lifecycle run](evidence/deployment-service-20260927.json) exercised these
+commands: start all four nodes, observe services, stop one node while the other three advance,
+restart it, compare common-height hashes, then stop all nodes and preserve signing state. Every
+CLI result was checked against the packaged schema. The evidence binds the exact wheel and runtime
+source files; it does not qualify work draining, cross-host key relocation or the complete release.
 
 The units use separate non-root accounts `cf-<name>-app` and `cf-<name>-val`, a read-only system
 view, explicit writable directories and a restrictive umask. The validator runs under its persistent

@@ -101,5 +101,6 @@ prepares conserved successor accounting. It does not activate a node or retire t
 - [Longevity measurement](load-qualification.md): declared workloads, failed runs, short-path checks
   and separately gated long-duration execution. Development results do not authorize a release.
 
-- [Deployment planning](deployment-planning.md): four-node public configuration and supervised-service
-  review files; live preflight and managed application remain separate required work.
+- [Deployment planning and node services](deployment-planning.md): reviewed configuration, installed
+  host inspection and explicit local start/status/stop. Managed installation and full qualification
+  remain separate required work.

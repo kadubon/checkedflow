@@ -48,6 +48,15 @@ def main(argv: list[str] | None = None) -> int:
     )
     for option in ("directory", "expected-plan", "wheel", "node"):
         preflight.add_argument("--" + option, required=True)
+    service = commands.add_parser(
+        "deployment-service", help="explicit local approved-node lifecycle"
+    )
+    for option in ("directory", "expected-plan", "node"):
+        service.add_argument("--" + option, required=True)
+    service.add_argument("--wheel", help="approved wheel, required only for start")
+    service.add_argument(
+        "--action", dest="service_action", choices=["status", "start", "stop"], required=True
+    )
     for name in ("generator", "example"):
         commands.add_parser(name)
     monitoring = commands.add_parser("monitoring")
@@ -81,6 +90,7 @@ def main(argv: list[str] | None = None) -> int:
             "deployment-inventory",
             "deployment-verification",
             "deployment-preflight",
+            "deployment-service",
             "effect-command",
             "github-effect-intent",
             "effect-policy",
@@ -189,6 +199,18 @@ def main(argv: list[str] | None = None) -> int:
             from checkedflow.distributed.deployment_preflight import inspect
 
             emit(inspect(Path(args.directory), args.expected_plan, Path(args.wheel), args.node))
+        elif args.action == "deployment-service":
+            from checkedflow.distributed.deployment_service import operate
+
+            emit(
+                operate(
+                    Path(args.directory),
+                    args.expected_plan,
+                    Path(args.wheel) if args.wheel else None,
+                    args.node,
+                    args.service_action,
+                )
+            )
         elif args.action == "schema":
             filename = {
                 "envelope": "envelope.schema.json",
@@ -213,6 +235,7 @@ def main(argv: list[str] | None = None) -> int:
                 "deployment-inventory": "deployment-inventory.schema.json",
                 "deployment-verification": "deployment-verification.schema.json",
                 "deployment-preflight": "deployment-preflight.schema.json",
+                "deployment-service": "deployment-service.schema.json",
                 "access-policy": "access-policy.schema.json",
                 "access-roles": "access-roles.json",
                 "access-vectors": "access-vectors.json",

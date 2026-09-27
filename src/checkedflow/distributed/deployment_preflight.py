@@ -204,7 +204,31 @@ def inspect(directory: Path, expected_plan: str, wheel: Path, node: str) -> Obje
         "VERSION",
         "native CometBFT protocol versions differ",
     )
-    services: Object = {}
+    services = service_status(name)
+    return {
+        "version": "checkedflow/deployment-preflight/v1",
+        "status": "HOST_FILES_VERIFIED",
+        "plan_sha256": verified["plan_sha256"],
+        "wheel_sha256": verified["wheel_sha256"],
+        "node": node,
+        "installed_package_members": count,
+        "cometbft_version": text(version.get("cometbft"), limit=80),
+        "cometbft_module_version": COMET_MODULE[1],
+        "services": services,
+        "hosts_changed": False,
+        "startup_authorized": False,
+        "remaining": [
+            "network confinement",
+            "validator custody",
+            "candidate isolation",
+            "live quorum and recovery",
+        ],
+    }
+
+
+def service_status(name: str) -> Object:
+    """Observe only the reviewed loaded units; callers must first bind the deployment name."""
+    result: Object = {}
     for role in ("abci", "validator"):
         unit = f"checkedflow-{name}-{role}.service"
         values = command(
@@ -226,25 +250,7 @@ def inspect(directory: Path, expected_plan: str, wheel: Path, node: str) -> Obje
             "SERVICE",
             "loaded service differs from reviewed unit",
         )
-        services[role] = {
+        result[role] = {
             key: properties[key] for key in ("LoadState", "ActiveState", "SubState", "MainPID")
         }
-    return {
-        "version": "checkedflow/deployment-preflight/v1",
-        "status": "HOST_FILES_VERIFIED",
-        "plan_sha256": verified["plan_sha256"],
-        "wheel_sha256": verified["wheel_sha256"],
-        "node": node,
-        "installed_package_members": count,
-        "cometbft_version": text(version.get("cometbft"), limit=80),
-        "cometbft_module_version": COMET_MODULE[1],
-        "services": services,
-        "hosts_changed": False,
-        "startup_authorized": False,
-        "remaining": [
-            "network confinement",
-            "validator custody",
-            "candidate isolation",
-            "live quorum and recovery",
-        ],
-    }
+    return result

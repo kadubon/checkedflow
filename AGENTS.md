@@ -145,3 +145,8 @@ host. It never repairs permissions or starts services. Preserve reported version
 from pinned Go module identity: the upstream v0.40.0 source reports a 0.39.0 display constant.
 Require approved binary hashes and module/protocol checks; never infer source provenance from
 the version string alone. HOST_FILES_VERIFIED is not startup authority or complete host qualification.
+
+deployment-service is an explicit local operator action against independently approved units.
+START_REQUESTED is not readiness. STOPPED requires inactive units, no main PID, empty cgroups and
+retained signing material. Preserve OUTCOME_UNKNOWN; never force-kill, delete custody locks or
+reset signing state to obtain a passing result. Mission draining and cross-host custody stay separate.

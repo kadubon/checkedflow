@@ -301,3 +301,7 @@ complete lifecycle and confinement qualification remain required before release.
 Python interpreter. See `checkedflow schema deployment-preflight` for its observation contract.
 It checks installed files and loaded units, never changes host state, and never authorizes startup.
 Keep native display versions, pinned module identity and independently reviewed provenance separate.
+
+`deployment-service --action start|status|stop` operates already provisioned local node units.
+Use the `deployment-service` schema to distinguish accepted requests, observed state and confirmed
+stops. It does not establish consensus readiness, drain work or authorize moving signing material.

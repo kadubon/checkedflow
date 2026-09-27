@@ -2055,7 +2055,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:offline-deployment-plan",
-        "component:native-deployment-preflight"
+        "component:native-deployment-preflight",
+        "component:local-node-service-lifecycle"
       ]
     },
     {
@@ -2073,7 +2074,8 @@
       "evidence": [
         "component:application-history-backup",
         "component:offline-deployment-plan",
-        "component:native-deployment-preflight"
+        "component:native-deployment-preflight",
+        "component:local-node-service-lifecycle"
       ]
     },
     {
@@ -2083,7 +2085,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:offline-deployment-plan",
-        "component:native-deployment-preflight"
+        "component:native-deployment-preflight",
+        "component:local-node-service-lifecycle"
       ]
     },
     {
@@ -2093,7 +2096,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:offline-deployment-plan",
-        "component:native-deployment-preflight"
+        "component:native-deployment-preflight",
+        "component:local-node-service-lifecycle"
       ]
     },
     {
@@ -4402,7 +4406,8 @@
         "docs/deployment-planning.md"
       ],
       "evidence": [
-        "docs/evidence/deployment-preflight-20260927.json"
+        "docs/evidence/deployment-preflight-20260927.json",
+        "docs/evidence/deployment-service-20260927.json"
       ],
       "requirements": [
         "R12-0511",
@@ -4410,7 +4415,35 @@
         "R12-0517",
         "R12-0519"
       ],
-      "scope": "Read-only root/isolated Linux CLI verifies approved bundle, installed package and host configuration bytes, operator path ownership/modes, executable access, pinned Go module/version/checksum and protocol versions, and loaded unit identity without overrides.29 source cases pass. Installed predecessor ran on4 approved VM kernels; exact wheel hash and remaining checks are recorded in evidence. Additional ancestor-search guard is unit-tested only. No startup authority, maintained apply/lifecycle completion, adversarial confinement or G6 claim."
+      "scope": "Read-only root/isolated Linux CLI verifies approved bundle, installed package and host configuration bytes, operator path ownership/modes, executable access, pinned Go module/version/checksum and protocol versions, and loaded unit identity without overrides.29 source cases pass. Installed predecessor ran on4 approved VM kernels; exact wheel hash and remaining checks are recorded in evidence. Additional ancestor-search guard is unit-tested only. No startup authority, maintained apply/lifecycle completion, adversarial confinement or G6 claim. Subsequent installed lifecycle experiment covers the ancestor guard and refactored loaded-unit observer; exact runtime members and wheel are bound in docs/evidence/deployment-service-20260927.json."
+    },
+    {
+      "id": "local-node-service-lifecycle",
+      "status": "IN_PROGRESS",
+      "implementation": [
+        "src/checkedflow/distributed/deployment_service.py",
+        "src/checkedflow/distributed/deployment_preflight.py",
+        "src/checkedflow/cli.py",
+        "src/checkedflow/data/deployment-service.schema.json"
+      ],
+      "tests": [
+        "tests/test_deployment_service.py",
+        "tests/test_deployment_preflight.py"
+      ],
+      "documentation": [
+        "docs/deployment-planning.md",
+        "docs/validator-custody.md"
+      ],
+      "evidence": [
+        "docs/evidence/deployment-service-20260927.json"
+      ],
+      "requirements": [
+        "R12-0511",
+        "R12-0515",
+        "R12-0517",
+        "R12-0519"
+      ],
+      "scope": "Explicit root isolated local start/status/stop against independently approved units. Start repeats native preflight and local key identity/state checks; stop permits an unavailable runtime but requires approved loaded units, inactive main processes, empty cgroups and retained signing state. Unknown outcomes remain unknown; no force kill/reset/automatic repair. Installed CLI exercised4VMstart,3nodeprogresswith1stopped,node restart/commonhash recovery and final stop;200package members/node byte-compared. Private SSH/provisioning remains outside maintained interface. No complete managed apply/work drain/custody/upgrade or G6/G7 claim."
     }
   ],
   "observations": [
