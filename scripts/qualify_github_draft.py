@@ -17,6 +17,7 @@ from uuid import uuid4
 
 import checkedflow
 from checkedflow.domains.repository_patch import Contract, Tree, digest_bytes
+from checkedflow.git_staging import staging_commit
 from checkedflow.git_tree import tree_id
 from checkedflow.github_drafts import API_VERSION, Drafts, Outcome, Plan, Token
 from checkedflow.wire import dumps
@@ -139,35 +140,8 @@ def main():
         1,
         allow_draft_pr=True,
     )
-    tree = api(
-        "POST",
-        "/git/trees",
-        {
-            "base_tree": original["tree"]["sha"],
-            "tree": [
-                {
-                    "path": "checkedflow_fixture.py",
-                    "mode": "100644",
-                    "type": "blob",
-                    "content": content,
-                },
-            ],
-        },
-    )["sha"]
-    if tree != tree_id(expected):
-        raise SystemExit("GitHub staged tree differs from fixture patch")
-    identity = {"name": "CheckedFlow Qualification", "email": "checkedflow@example.invalid"}
-    commit = api(
-        "POST",
-        "/git/commits",
-        {
-            "message": "CheckedFlow disposable provider fixture",
-            "tree": tree,
-            "parents": [base],
-            "author": identity,
-            "committer": identity,
-        },
-    )["sha"]
+    tree = tree_id(expected)
+    commit, _ = staging_commit(contract, expected)
     selected = Plan(
         args.repository,
         args.repository_id,
@@ -182,7 +156,6 @@ def main():
     )
     # Exact patch/tree bindings do not establish consensus authority or checker acceptance.
     (args.reports / "plan.json").write_text(json.dumps(selected.record(), indent=2) + "\n")
-    api("POST", "/git/refs", {"ref": "refs/heads/" + selected.branch, "sha": commit})
     token = Token(gh(["auth", "token"]).decode().strip())
     adapter = Drafts(
         args.repository,
@@ -192,7 +165,15 @@ def main():
         args.reports / "journal.sqlite",
         enabled=True,
     )
-    result = adapter.dispatch_patch(selected, source, patch, contract)
+
+    def before_send(plan):
+        if plan != selected:
+            raise SystemExit("Fixture staging arguments changed")
+        # This is explicit operator fixture approval only, never a consensus credential.
+
+    result = adapter.stage_and_dispatch_patch(
+        selected, source, patch, contract, before_send=before_send
+    )
     if result.status != "confirmed":
         raise SystemExit("Draft outcome unknown; preserve journal and reconcile original operation")
     observed = adapter.reconcile_patch(selected, source, patch, contract)
@@ -224,6 +205,7 @@ def main():
         "candidate_execution": False,
         "consensus_authorization": False,
         "complete_source_patch_binding": True,
+        "deterministic_staging": True,
         "checker_acceptance": False,
         "release_authority": False,
         "installed_package": installed,

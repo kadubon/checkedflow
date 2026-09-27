@@ -3,7 +3,8 @@
 Plans are not authorization. Only a separate authorized executor may own this adapter, its token
 and its private journal. Byte-bound methods independently check complete source and patch trees;
 consensus eligibility, staging writes and supervisor freshness remain separate integrations.
-No branch writes, merging, closing or automatic POST retries are provided.
+Optional staging only creates an operation-specific branch; no existing reference is updated.
+No merging, closing, branch deletion or automatic POST retries are provided.
 """
 
 import re
@@ -27,6 +28,7 @@ from checkedflow.core.values import (
     text,
 )
 from checkedflow.domains.repository_patch import Contract, Tree, apply_patch
+from checkedflow.git_staging import staging_commit
 from checkedflow.git_tree import tree_id
 from checkedflow.wire import document, dumps, loads, validate
 
@@ -328,6 +330,25 @@ class Drafts:
         return self._match(plan, rows[0]) if rows else 0
 
     def _preflight(self, plan: Plan) -> None:
+        self._destination(plan)
+        remote = obj(obj(self._request("GET", "/git/ref/heads/" + plan.branch)).get("object"))
+        require(
+            remote.get("type") == "commit" and remote.get("sha") == plan.head_commit,
+            "CONFLICT",
+            "branch moved away from approved commit",
+        )
+        remote_commit = obj(self._request("GET", "/git/commits/" + plan.head_commit))
+        parents = array(remote_commit.get("parents"), limit=1)
+        require(
+            remote_commit.get("sha") == plan.head_commit
+            and obj(remote_commit.get("tree")).get("sha") == plan.git_tree
+            and len(parents) == 1
+            and obj(parents[0]).get("sha") == plan.base_commit,
+            "BINDING",
+            "staged commit tree or parent differs",
+        )
+
+    def _destination(self, plan: Plan) -> None:
         repo = obj(self._request("GET", ""))
         require(
             integer(repo.get("id"), low=1) == self.repository_id
@@ -342,25 +363,11 @@ class Drafts:
             "POLICY",
             "profile requires disabled destination Actions",
         )
-        for branch, commit in (
-            (plan.base_branch, plan.base_commit),
-            (plan.branch, plan.head_commit),
-        ):
-            remote = obj(obj(self._request("GET", "/git/ref/heads/" + branch)).get("object"))
-            require(
-                remote.get("type") == "commit" and remote.get("sha") == commit,
-                "CONFLICT",
-                "branch moved away from approved commit",
-            )
-        remote_commit = obj(self._request("GET", "/git/commits/" + plan.head_commit))
-        parents = array(remote_commit.get("parents"), limit=1)
+        remote = obj(obj(self._request("GET", "/git/ref/heads/" + plan.base_branch)).get("object"))
         require(
-            remote_commit.get("sha") == plan.head_commit
-            and obj(remote_commit.get("tree")).get("sha") == plan.git_tree
-            and len(parents) == 1
-            and obj(parents[0]).get("sha") == plan.base_commit,
-            "BINDING",
-            "staged commit tree or parent differs",
+            remote.get("type") == "commit" and remote.get("sha") == plan.base_commit,
+            "CONFLICT",
+            "branch moved away from approved commit",
         )
 
     @staticmethod
@@ -484,6 +491,92 @@ class Drafts:
         self._enabled(plan)
         self._patch_binding(plan, base, patch, contract)
         return self.reconcile(plan)
+
+    def stage_and_dispatch_patch(
+        self,
+        plan: Plan,
+        base: Tree,
+        patch: bytes,
+        contract: Contract,
+        *,
+        before_send: Callable[[Plan], None],
+    ) -> Outcome:
+        """Claim once, stage the approved deterministic head, then open its draft.
+
+        At most four POST requests occur on a first invocation: tree, commit, new reference,
+        draft. Rejection or uncertainty after the claim prevents every subsequent write.
+        A later invocation returns the retained outcome; it never resumes a partial sequence.
+        The required trusted callback rechecks current authority before each possible write.
+        """
+        self._enabled(plan)
+        result = apply_patch(base, patch, contract)
+        head, commit = staging_commit(contract, result)
+        require(
+            head == plan.head_commit, "BINDING", "head differs from deterministic staging profile"
+        )
+        self._patch_binding(plan, base, patch, contract)
+        with self._db() as db:
+            prior = self._prior(db, plan)
+            if prior is not None:
+                return prior
+        self._destination(plan)
+        existing = self._existing(plan)
+        if existing:
+            self._preflight(plan)
+        with self._db() as db:
+            prior = self._prior(db, plan)
+            if prior is not None:
+                return prior
+            db.execute(
+                "INSERT INTO operations VALUES(?,?,'unknown',0)",
+                (plan.operation, dumps(plan.record())),
+            )
+        try:
+            if existing:
+                return self._confirmed(plan, existing)
+
+            def post(suffix: str, payload: Object) -> Object:
+                self._destination(plan)
+                before_send(plan)
+                self._enabled(plan)
+                return obj(self._request("POST", suffix, payload=payload))
+
+            entries: list[JSON] = [
+                {"path": path, "mode": "100644", "type": "blob", "content": content.decode("utf-8")}
+                for path, content in result.files
+            ]
+            tree = post("/git/trees", {"tree": entries})
+            require(tree.get("sha") == plan.git_tree, "BINDING", "created tree differs")
+            created = post("/git/commits", commit)
+            require(created.get("sha") == plan.head_commit, "BINDING", "created commit differs")
+            reference = "refs/heads/" + plan.branch
+            created = post("/git/refs", {"ref": reference, "sha": plan.head_commit})
+            require(
+                created.get("ref") == reference
+                and obj(created.get("object")).get("type") == "commit"
+                and obj(created.get("object")).get("sha") == plan.head_commit,
+                "BINDING",
+                "created reference differs",
+            )
+            self._preflight(plan)
+            existing = self._existing(plan)
+            number = existing or self._match(
+                plan,
+                post(
+                    "/pulls",
+                    {
+                        "title": plan.title,
+                        "body": plan.body,
+                        "head": plan.branch,
+                        "base": plan.base_branch,
+                        "draft": True,
+                        "maintainer_can_modify": False,
+                    },
+                ),
+            )
+            return self._confirmed(plan, number)
+        except (Failure, OSError, sqlite3.Error):
+            return Outcome("unknown")
 
     def inspect_patch(self, plan: Plan, base: Tree, patch: bytes, contract: Contract) -> Outcome:
         """Read exact remote identity without enabling dispatch or changing the local journal.

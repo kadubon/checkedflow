@@ -120,19 +120,20 @@ class Supervisor:
             "effect belongs to another executor revision",
         )
         require(len(inputs.evidence) <= 12, "LIMIT", "effect evidence inventory bound")
-        return dumps(
-            {
-                "operation": effect.operation,
-                "authorization": effect.authorization,
-                "executor": effect.executor,
-                "revision": effect.revision,
-                "intent": intent.record(),
-                "base": inputs.base.record(),
-                "patch": inputs.patch.record(),
-                "inventory": inputs.inventory.record(),
-                "evidence": [ref.record() for ref in inputs.evidence],
-            }
-        )
+        binding: Object = {
+            "operation": effect.operation,
+            "authorization": effect.authorization,
+            "executor": effect.executor,
+            "revision": effect.revision,
+            "intent": intent.record(),
+            "base": inputs.base.record(),
+            "patch": inputs.patch.record(),
+            "inventory": inputs.inventory.record(),
+            "evidence": [ref.record() for ref in inputs.evidence],
+        }
+        if self.dispatcher.staging:
+            binding["staging"] = True
+        return dumps(binding)
 
     @staticmethod
     def _request(state: State, effect: Effect, kind: str) -> str:
@@ -256,6 +257,7 @@ class Supervisor:
                     self.dispatcher.provider,
                     self.coordinator.actor,
                     self.coordinator.revision,
+                    staging=self.dispatcher.staging,
                 )
                 require(policy == effect.policy, "POLICY", "approved policy differs")
                 require(self.dispatcher.provider.enabled, "DISABLED", "provider disabled")

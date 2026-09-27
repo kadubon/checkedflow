@@ -17,9 +17,9 @@ from checkedflow.worker_submission import Coordinator
 
 
 class Executor:
-    def __init__(self, path, monkeypatch, *, reserve=False, state=None):
+    def __init__(self, path, monkeypatch, *, reserve=False, state=None, staging=False):
         self.path = path
-        self.f = fixture(path, monkeypatch, reserve=reserve)
+        self.f = fixture(path, monkeypatch, reserve=reserve, staging=staging)
         if state is not None:
             from checkedflow.operational_codec import decode
             from checkedflow.operational_runtime import Runtime

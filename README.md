@@ -39,7 +39,7 @@ guides; complete generation orchestration and operational deployment are still u
 | Where are callback credentials kept? | [Callback custody](docs/callback-secrets.md); encrypted private journal and separately provisioned keys |
 | How are evidence and bounded records retained? | [S3 storage](docs/s3-storage.md), [retention](docs/retention-backup.md), [settled-work retirement](docs/work-archive.md) |
 | How is application state restored? | [Application history recovery](docs/application-backup.md); validator ownership needs separate recovery |
-| Can it open a pull request automatically? | [Effect supervision](docs/effect-supervision.md) connects approval, current checks, one draft operation and signed reporting; disabled by default, with staging and complete deployment recovery still incomplete |
+| Can it open a pull request automatically? | [Effect supervision](docs/effect-supervision.md) connects approval, current checks, one draft operation and signed reporting; disabled by default, with optional [policy-approved staging](docs/git-staging.md); complete deployment recovery remains unfinished |
 | What if an external request loses its reply? | [V2 effect records](docs/work-effects.md) keep the original reservation, full modeled charge and unknown result; governed reconciliation cannot authorize a second send |
 | How can operators investigate an uncertain PR? | [Read-only reconciliation](docs/effect-reconciliation.md) publishes exact observations for three-organization review without enabling dispatch |
 | What if local recovery records are damaged? | [Submission recovery](docs/worker-supervision.md) rejects missing identity records; preserve journals and reconcile original commands instead of starting again |

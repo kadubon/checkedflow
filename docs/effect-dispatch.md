@@ -1,7 +1,7 @@
 # Supervised dispatch of approved drafts
 
 Status: development SDK component. It connects an existing v2 reservation to the draft provider;
-it is not yet the full unattended executor, staging, compensation or G3-qualified workflow.
+optional [Git staging](git-staging.md) requires a v2 policy. Compensation and G3 qualification remain unfinished.
 
 ## Problem and boundary
 
@@ -77,7 +77,7 @@ and report through the [nonce coordinator](worker-supervision.md). The
 [durable supervisor](effect-supervision.md) now performs ordinary reservation, one invocation,
 evidence publication and signed reporting with conservative local crash recovery. It must use governed read
 reconciliation when the result or reporting window is uncertain. Least-privilege production
-token custody, staging writes, compensation, retirement
+token custody, compensation, retirement
 and separate-host failure qualification remain unfinished. Source fixtures use signed state and
 actual SQLite artifacts with fixed provider responses; they do not claim a live GitHub gate.
 

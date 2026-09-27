@@ -1,6 +1,6 @@
 """Supervised dispatch of an already committed, single-use effect reservation.
 
-This module neither stages Git objects nor grants new authority. Operators provide a
+Optional staging requires a separately approved v2 policy. Operators provide a
 protected policy, scoped artifact store, own-node watchdog and exclusive provider journal.
 It does not reconcile unknowns or submit reports on the executor's behalf.
 """
@@ -37,6 +37,8 @@ class Policy:
         provider: Drafts,
         executor: str,
         revision: int,
+        *,
+        staging: bool = False,
     ) -> str:
         try:
             with self.path.open("rb") as source:
@@ -45,12 +47,23 @@ class Policy:
             raise Failure("POLICY", "protected effect policy unavailable") from None
         require(len(raw) <= 16384, "LIMIT", "effect policy byte ceiling")
         record = document(raw)
+        require(type(staging) is bool, "SHAPE", "explicit staging mode")
+        profile = text(record.get("profile"))
+        require(
+            profile in {"checkedflow/effect-policy/v1", "checkedflow/effect-policy/v2"},
+            "VERSION",
+            "effect policy",
+        )
+        stage = profile == "checkedflow/effect-policy/v2"
         fields(
             record,
             "profile chain mission repository repository_id actor "
-            "executor revision enabled intents",
+            "executor revision enabled intents" + (" staging" if stage else ""),
         )
-        require(record["profile"] == "checkedflow/effect-policy/v1", "VERSION", "effect policy")
+        require(not stage or type(record["staging"]) is bool, "SHAPE", "staging policy flag")
+        require(
+            not staging or (stage and record["staging"] is True), "POLICY", "staging not approved"
+        )
         require(record["enabled"] is True, "DISABLED", "effect policy disabled")
         allowed = names(record["intents"], limit=64)
         for identity in allowed:
@@ -92,18 +105,23 @@ class Dispatcher:
         *,
         executor: str,
         revision: int,
+        staging: bool = False,
     ) -> None:
         self.provider, self.watchdog, self.policy = provider, watchdog, policy
         self.store, self.access = store, access
         self.executor = text(executor, limit=80)
         self.revision = integer(revision, low=1)
+        require(type(staging) is bool, "SHAPE", "explicit staging mode")
+        self.staging = staging
 
     def _checked(
         self, effect: str, intent: Intent, contract: Contract, inputs: Inputs
     ) -> tuple[Plan, Tree, bytes]:
         self.watchdog.poll()
         state = self.watchdog.current()
-        policy = self.policy.authorize(state, intent, self.provider, self.executor, self.revision)
+        policy = self.policy.authorize(
+            state, intent, self.provider, self.executor, self.revision, staging=self.staging
+        )
 
         def resolve(current: State) -> Plan:
             return reserved_plan(
@@ -136,7 +154,9 @@ class Dispatcher:
             "candidate evidence changed during artifact reads",
         )
         require(
-            self.policy.authorize(current, intent, self.provider, self.executor, self.revision)
+            self.policy.authorize(
+                current, intent, self.provider, self.executor, self.revision, staging=self.staging
+            )
             == policy,
             "POLICY",
             "operator policy changed during artifact reads",
@@ -157,4 +177,7 @@ class Dispatcher:
                 "final dispatch arguments changed",
             )
 
-        return self.provider.dispatch_patch(plan, base, patch, contract, before_send=before_send)
+        method = (
+            self.provider.stage_and_dispatch_patch if self.staging else self.provider.dispatch_patch
+        )
+        return method(plan, base, patch, contract, before_send=before_send)

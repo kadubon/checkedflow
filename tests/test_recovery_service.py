@@ -116,7 +116,14 @@ def test_systemd_restarts_recovery_after_worker_and_service_sigkill(
             assert restarts >= 1
 
             def removed():
-                absent = engine.inspect(container) is None
+                try:
+                    absent = engine.inspect(container) is None
+                except Failure as error:
+                    if error.code != "CLEANUP_UNKNOWN":
+                        raise
+                    # The reaper can remove the ID between Docker's list and inspect.
+                    # An unknown read is not absence; require a later successful query.
+                    return False
                 with sqlite3.connect(recovery.path) as db:
                     empty = db.execute("SELECT COUNT(*) FROM containers").fetchone()[0] == 0
                 return absent and empty

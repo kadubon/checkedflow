@@ -30,6 +30,9 @@ claim means unknown, never permission to call the dispatcher again. Verify publi
 bytes before reporting, and use governed reconciliation when the reporting window has closed.
 Use effect_reconciliation.Reconciler for historical GET-only inspection. Its unsigned proposal
 needs current administrative review and quorum signatures; absence never permits another send.
+Optional staging requires explicit v2 policy approval and a deterministic planned head. Recheck
+authority before each of its at most four writes. Never resume a partially claimed staging sequence
+or update an existing reference. See docs/git-staging.md; unknown partial objects remain obligations.
 
 V2 effect reservations retain full modeled cost once a send becomes possible. Never reset a
 reservation, clear unknowns, release attached funding or mint a fresh intent to retry a provider

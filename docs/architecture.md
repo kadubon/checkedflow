@@ -112,3 +112,7 @@ The [historical reconciler](effect-reconciliation.md) performs GET-only inspecti
 approved policy and publishes unsigned proposals for quorum review. It does not use dispatch
 readiness or renew execution authority. Staging, compensation, retirement and coordinated cross-host
 recovery remain incomplete; live-provider qualification is still required for the complete path.
+
+The optional [staging adapter](git-staging.md) computes a deterministic Git head before approval
+and creates the tree, commit, new reference and draft under one durable claim. Its four-write
+ceiling and repeated current-authority checks belong to the executor boundary, not consensus.

@@ -1299,3 +1299,46 @@ authoritative coverage gates passed. The new reconciler covered all 61 statement
 measured branch arcs. All 94 selected fault mutants were killed, including original-policy binding,
 verified publication and preservation of the original provider object. Final infrastructure
 qualification must execute the extended case against this source's own distribution.
+
+## Approved Git staging and recovery polling
+
+The staging component now computes the exact head before intent approval, requires an explicit
+v2 policy, and performs at most four provider writes under one durable claim. Each write repeats
+current authority checks. It creates a new operation reference; it never updates existing references
+or resumes a partial sequence. The supervisor binds this mode in its retained operation record.
+See [Git staging](git-staging.md) for policy, serialization and interruption semantics.
+
+Thirty source tests and the same 30 installed-wheel tests passed, including ambiguity at each write,
+revocation before each write, strict policy flags, existing references and restart behavior.
+The installed GitHub component smoke also passed against the authorized disposable repository:
+the provider's commit ID matched the planned deterministic ID, the draft was created and inspected,
+then explicitly closed unmerged and its unchanged owned branch removed. Follow-up reads confirmed
+only the original default branch remained and Actions stayed disabled. This used an operator
+credential and an inert fixture, not checker acceptance or live consensus authorization; it is not G3.
+
+Development wheel `330e066f0d19d45f7088b3668cbce8cc862f30b25672557253dfdf6a436518aa`
+and sdist `90732107a6cdbc4990159b70f609a47fa68c5359b1384d10d1c3ef67dd6e5521`
+passed isolated package smoke. A source/distribution scan checked 830 members with zero pattern
+findings. Later documentation updates are not part of that development build.
+
+The preceding reconciliation source's [CI36294398572](https://github.com/kadubon/checkedflow/actions/runs/36294398572)
+failed infrastructure qualification. The extended consensus reconciliation case passed, but the
+systemd recovery case encountered `CLEANUP_UNKNOWN` when the independently running reaper could
+remove a container between Docker list and inspect. The downloaded report was independently
+rejected by the 27-case gate. All six OS/Python checks, storage and managed-signer jobs passed;
+they do not override the infrastructure failure. That run's wheel
+`91d029c703b84ecc182591bfde0c3b2c27de59121a5019982cf6d2345ab3f6f9` and sdist
+`43786bd69cb81737823bdc16a4bbea2f1aa48c1bb8da403f4d384cf2a16267bf`
+are not qualified release artifacts.
+
+The corrected polling fixture retains unknown as a failed observation and requires a later
+successful absence query plus an empty recovery journal, within the original deadline. It does
+not suppress other error codes or turn daemon failure into absence. The same required infrastructure
+case now needs a new actual run. The supervised-effect case is also extended through all four staging
+writes before lost report recovery and historical reconciliation; its provider remains a protocol
+fixture. The local suite passed 999 tests in 364.24 seconds, with three Windows descriptor
+skips and 24 separately selected infrastructure cases. Static and authoritative coverage gates
+passed: provider statements 99.60 percent and branches 96.15 percent, dispatcher/supervisor
+100 percent, and all 12 staging statements covered (no measured branch arcs). The 97 selected
+fault mutants and new infrastructure run remain pending for this increment.
+Compensation, retirement, deployment/credential lifecycle and the original G1-G7 remain unfinished.

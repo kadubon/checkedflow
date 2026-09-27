@@ -86,3 +86,8 @@ approved policy as well as the plan; a caller-selected provider actor is insuffi
 unknown lookup results and prior positive object identity. Publish and verify evidence before
 returning the unsigned administrative proposal. A proposal is not a signed envelope, and historical
 reads do not require or confer dispatch readiness. Current quorum admission remains a separate step.
+
+For optional [Git staging](git-staging.md), reproduce the exact synthetic commit metadata,
+UTF-8 message including its final LF, single parent and complete Git tree. Independently compare
+the planned SHA-1 with Git and the provider. Preserve the v1 policy default, explicit v2 staging
+permission, at most four writes and the prohibition on resuming an interrupted sequence.

@@ -1,6 +1,6 @@
 # Durable effect supervision
 
-Status: development SDK orchestration. Real provider credential custody, governed staging,
+Status: development SDK orchestration. Real provider credential custody,
 cross-host recovery, compensation and complete G1–G7 qualification remain unfinished.
 
 ## Why a saved provider receipt is not enough
@@ -96,6 +96,6 @@ The added installed infrastructure case uses real four-node CometBFT, four indep
 checks, SQLite evidence, current policy and a lost committed report reply. Its provider is a fixed
 protocol fixture, not GitHub. The required infrastructure gate includes that named case; an older
 26-case report cannot qualify it. Complete G3 also needs the authorized live-provider path and
-remaining staging/compensation recovery semantics. Historical inspection and unsigned
+remaining multi-host staging and compensation recovery qualification. Historical inspection and unsigned
 [reconciliation proposals](effect-reconciliation.md) are a separate operator SDK path; they do not
 reuse the supervisor's execution permission or automatically submit an administrative command.

@@ -1634,7 +1634,8 @@
       "evidence": [
         "component:github-draft-provider",
         "component:github-patch-byte-binding",
-        "component:governed-effect-reservations"
+        "component:governed-effect-reservations",
+        "component:governed-git-staging"
       ]
     },
     {
@@ -1644,7 +1645,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:github-draft-provider",
-        "component:github-patch-byte-binding"
+        "component:github-patch-byte-binding",
+        "component:governed-git-staging"
       ]
     },
     {
@@ -1666,7 +1668,8 @@
         "component:governed-effect-reservations",
         "component:effect-final-send-check",
         "component:supervised-effect-dispatch",
-        "component:durable-effect-supervision"
+        "component:durable-effect-supervision",
+        "component:governed-git-staging"
       ]
     },
     {
@@ -1683,7 +1686,8 @@
       "status": "IN_PROGRESS",
       "evidence": [
         "component:github-draft-provider",
-        "component:supervised-effect-dispatch"
+        "component:supervised-effect-dispatch",
+        "component:governed-git-staging"
       ]
     },
     {
@@ -1701,7 +1705,8 @@
       "evidence": [
         "component:github-draft-provider",
         "component:durable-effect-supervision",
-        "component:historical-effect-reconciliation"
+        "component:historical-effect-reconciliation",
+        "component:governed-git-staging"
       ]
     },
     {
@@ -1713,7 +1718,8 @@
         "component:github-draft-provider",
         "component:governed-effect-reservations",
         "component:durable-effect-supervision",
-        "component:historical-effect-reconciliation"
+        "component:historical-effect-reconciliation",
+        "component:governed-git-staging"
       ]
     },
     {
@@ -1725,7 +1731,8 @@
         "component:github-draft-provider",
         "component:governed-effect-reservations",
         "component:durable-effect-supervision",
-        "component:historical-effect-reconciliation"
+        "component:historical-effect-reconciliation",
+        "component:governed-git-staging"
       ]
     },
     {
@@ -1741,7 +1748,8 @@
       "text": "Test against a local protocol-faithful fake server for exhaustive failure paths and, separately, an explicitly authorized disposable real repository for the supported external-provider claim. If no disposable target is authorized, keep the live gate blocked and the feature disabled; do not substitute a mock PASS for it.",
       "status": "IN_PROGRESS",
       "evidence": [
-        "component:github-draft-provider"
+        "component:github-draft-provider",
+        "component:governed-git-staging"
       ]
     },
     {
@@ -3861,6 +3869,39 @@
         "R10-0465"
       ],
       "scope": "Bounded historical GET-only provider inspection while dispatch is disabled; exact original reservation/contract/source bindings; scoped observation publication/readback; unsigned three-organization reconciliation proposal. Source tests apply actual signed administrative transitions for pause, expiry, key revocation, candidate withdrawal and unknown remote results. Does not stage, compensate, retire effects, automatically sign/submit, authenticate arbitrary remote nodes or qualify the live multi-host G3/G6 path. Requires the exact retained quorum-approved policy snapshot, including provider identity. The existing installed four-node/gVisor supervisor case is extended through pause and administrative reconciliation; new execution remains pending."
+    },
+    {
+      "id": "governed-git-staging",
+      "status": "SOURCE_TESTED",
+      "implementation": [
+        "src/checkedflow/git_staging.py",
+        "src/checkedflow/github_drafts.py",
+        "src/checkedflow/effect_dispatch.py",
+        "src/checkedflow/effect_supervisor.py",
+        "src/checkedflow/data/effect-staging-policy.schema.json"
+      ],
+      "tests": [
+        "tests/test_git_staging.py",
+        "scripts/qualify_github_draft.py",
+        "scripts/fault_injection.py"
+      ],
+      "documentation": [
+        "docs/git-staging.md"
+      ],
+      "requirements": [
+        "R9-0429",
+        "R9-0430",
+        "R9-0433",
+        "R9-0439",
+        "R9-0445",
+        "R9-0447",
+        "R9-0449",
+        "R9-0453"
+      ],
+      "scope": "Explicit approved v2 policy and deterministic head; at most four writes under one durable claim, authority rechecked before each. Interrupted sequences never resume and existing references are not updated. Thirty source fixtures and the same thirty installed-wheel cases passed. Installed real disposable GitHub smoke confirmed deterministic commit identity, draft creation, read reconciliation and retained receipts; operator cleanup verified unmerged closure and removal of the unchanged owned reference. This inert fixture does not exercise consensus authorization or runtime credential custody. Full source and new infrastructure gates remain pending; no full G3/G1-G7, compensation or retirement claim.",
+      "evidence": [
+        "docs/implementation-0.2.0.md"
+      ]
     }
   ],
   "observations": [

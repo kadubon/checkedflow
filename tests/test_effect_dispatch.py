@@ -15,6 +15,7 @@ from test_work_effects import Harness
 from checkedflow.core.values import Failure
 from checkedflow.dispatch_watchdog import Watchdog
 from checkedflow.effect_dispatch import Dispatcher, Policy
+from checkedflow.git_staging import staging_commit
 from checkedflow.git_tree import tree_id
 from checkedflow.github_drafts import Drafts, Outcome, Token
 from checkedflow.github_effects import Intent
@@ -22,7 +23,7 @@ from checkedflow.repository_reuse import contract_digest, decode_tree, prepare
 from checkedflow.wire import digest, dumps, loads
 
 
-def fixture(tmp_path, monkeypatch, *, reserve=True):
+def fixture(tmp_path, monkeypatch, *, reserve=True, staging=False):
     h, contract, inputs, store, access = reuse_fixture(tmp_path, harness=Harness(), draft=True)
     tree = prepare(h.runtime.state, h.candidate, contract, inputs, store, access=access).tree
     intent = Intent(
@@ -30,7 +31,7 @@ def fixture(tmp_path, monkeypatch, *, reserve=True):
         42,
         "main",
         contract.base_commit,
-        "b" * 40,
+        staging_commit(contract, tree)[0] if staging else "b" * 40,
         tree_id(tree),
         contract.result_tree,
         contract_digest(contract),
@@ -48,6 +49,8 @@ def fixture(tmp_path, monkeypatch, *, reserve=True):
         "enabled": True,
         "intents": [intent.digest],
     }
+    if staging:
+        policy_record.update(profile="checkedflow/effect-policy/v2", staging=True)
     path = tmp_path / "policy.json"
     path.write_bytes(dumps(policy_record))
     ticket, _ = h.send(
@@ -134,7 +137,14 @@ def fixture(tmp_path, monkeypatch, *, reserve=True):
     monkeypatch.setattr(provider, "_request", request)
     f.provider, f.watch = provider, watch
     f.dispatcher = Dispatcher(
-        provider, watch, Policy(path), store, access, executor="effects", revision=1
+        provider,
+        watch,
+        Policy(path),
+        store,
+        access,
+        executor="effects",
+        revision=1,
+        staging=staging,
     )
     f.run = lambda: f.dispatcher.dispatch(h.effect, intent, contract, inputs)
     return f

@@ -58,6 +58,7 @@ def main(argv: list[str] | None = None) -> int:
             "effect-command",
             "github-effect-intent",
             "effect-policy",
+            "effect-staging-policy",
             "effect-observation",
             "effect-reconciliation",
         ],
@@ -154,6 +155,7 @@ def main(argv: list[str] | None = None) -> int:
                 "effect-command": "effect-command.schema.json",
                 "github-effect-intent": "github-effect-intent.schema.json",
                 "effect-policy": "effect-policy.schema.json",
+                "effect-staging-policy": "effect-staging-policy.schema.json",
                 "effect-observation": "effect-observation.schema.json",
                 "effect-reconciliation": "effect-reconciliation.schema.json",
             }[args.name]

@@ -1224,6 +1224,7 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
     from checkedflow.domains.repository_patch import apply_patch, digest_bytes
     from checkedflow.effect_dispatch import Dispatcher, Policy
     from checkedflow.effect_supervisor import Supervisor
+    from checkedflow.git_staging import staging_commit
     from checkedflow.git_tree import tree_id
     from checkedflow.github_drafts import Drafts, Token
     from checkedflow.github_effects import Intent
@@ -1243,7 +1244,7 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
         42,
         "main",
         contract.base_commit,
-        "b" * 40,
+        staging_commit(contract, apply_patch(base, patch, contract))[0],
         tree_id(apply_patch(base, patch, contract)),
         contract.result_tree,
         target,
@@ -1311,7 +1312,8 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
                 node=index,
             )
         policy = {
-            "profile": "checkedflow/effect-policy/v1",
+            "profile": "checkedflow/effect-policy/v2",
+            "staging": True,
             "chain": cluster.initial.chain,
             "mission": "repository",
             "repository": intent.repository,
@@ -1348,6 +1350,23 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
         def provider_request(method, suffix, **kwargs):
             calls.append((method, suffix))
             if method == "POST":
+                if suffix == "/git/trees":
+                    return {"sha": intent.git_tree}
+                if suffix == "/git/commits":
+                    assert (
+                        kwargs["payload"]
+                        == staging_commit(contract, apply_patch(base, patch, contract))[1]
+                    )
+                    return {"sha": intent.head_commit}
+                if suffix == "/git/refs":
+                    assert kwargs["payload"] == {
+                        "ref": "refs/heads/" + plan.branch,
+                        "sha": intent.head_commit,
+                    }
+                    return {
+                        "ref": "refs/heads/" + plan.branch,
+                        "object": {"type": "commit", "sha": intent.head_commit},
+                    }
                 assert suffix == "/pulls" and kwargs["payload"]["draft"] is True
                 assert kwargs["payload"]["body"] == plan.body
                 return pull(plan)
@@ -1373,7 +1392,7 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
                     "parents": [{"sha": intent.base_commit}],
                 }
             assert suffix == "/pulls"
-            return [pull(plan)] if any(method == "POST" for method, _ in calls) else []
+            return [pull(plan)] if ("POST", "/pulls") in calls else []
 
         provider = Drafts(
             intent.repository,
@@ -1415,7 +1434,14 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
         cluster.wait_height(first.height + 1)
         watchdog.poll()
         dispatcher = Dispatcher(
-            provider, watchdog, Policy(path), objects, access, executor="e0", revision=1
+            provider,
+            watchdog,
+            Policy(path),
+            objects,
+            access,
+            executor="e0",
+            revision=1,
+            staging=True,
         )
         inputs = Inputs(base_ref, patch_ref, inventory_ref, tuple(refs))
         supervisor = Supervisor(tmp_path / "executor", coordinator, dispatcher)
@@ -1426,7 +1452,7 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
         supervisor = Supervisor(tmp_path / "executor", coordinator, dispatcher)
         assert supervisor.step(identity, intent, contract, inputs) == "observed"
         assert len(sent) == 2 and sent.count(original) == 1
-        assert sum(method == "POST" for method, _ in calls) == 1
+        assert sum(method == "POST" for method, _ in calls) == 4
         raw = supervisor.observation(identity)
         assert raw is not None
         row = document(raw)
@@ -1467,7 +1493,7 @@ def test_v2_supervised_effect_report_recovery_with_verified_artifacts(
             assert state.effects[0].status == "reconciled" and state.effects[0].number == 7
             assert state.effects[0].evidence == proposal.evidence.digest
             assert state.budget.spent == 50 and state.budget.reserved == 0
-        assert len(sent) == 2 and sum(method == "POST" for method, _ in calls) == 1
+        assert len(sent) == 2 and sum(method == "POST" for method, _ in calls) == 4
         assert len(cluster.common_hash()[1]) == 64
     finally:
         cluster.close()

@@ -44,6 +44,31 @@ MUTATIONS = [
 
 OPERATIONAL_MUTATIONS = [
     (
+        "effect_dispatch.py",
+        "test_git_staging.py",
+        "staging_requires_explicit_operator_policy",
+        'not staging or (stage and record["staging"] is True)',
+        "True",
+        "test_staging_requires_new_explicit_policy_before_reservation",
+    ),
+    (
+        "github_drafts.py",
+        "test_git_staging.py",
+        "staging_rechecks_every_write",
+        "                before_send(plan)\n"
+        "                self._enabled(plan)\n                return obj",
+        "                self._enabled(plan)\n                return obj",
+        "test_every_write_rechecks_current_consensus_before_sending",
+    ),
+    (
+        "github_drafts.py",
+        "test_git_staging.py",
+        "staging_binds_planned_commit",
+        "head == plan.head_commit",
+        "True",
+        "test_different_planned_head_is_rejected_before_any_provider_access",
+    ),
+    (
         "effect_reconciliation.py",
         "test_effect_reconciliation.py",
         "reconciliation_binds_original_provider_policy",

@@ -125,7 +125,7 @@ The [GitHub draft provider](docs/github-drafts.md) is a privileged component, di
 Its [plan](src/checkedflow/data/github-draft-plan.schema.json) is intent metadata, not authorization.
 Use `dispatch_patch` / `reconcile_patch` with the complete immutable repository source and exact
 patch contract to verify Git tree bindings. The lower-level methods trust supplied tree metadata.
-Byte binding does not establish current consensus authority; source staging remains separate.
+Byte binding does not establish current consensus authority; source staging requires the separately approved v2 policy.
 The [v2 effect commands](docs/work-effects.md) govern intent, reservation and reconciliation.
 Inspect `checkedflow schema effect-command` and `checkedflow schema github-effect-intent`.
 Use current own-node state with `reserved_plan`; its output is snapshot-bound and still requires
@@ -147,7 +147,7 @@ and an unsigned effect.reconcile proposal, including while dispatch is disabled.
 approval; administrators must review current identity and sign through the normal quorum path.
 Inspect `checkedflow schema effect-reconciliation`. Keep unknowns when branches or PR content differ.
 The operator fixture writes to a real repository: run it only against an explicitly authorized
-disposable target. Its staging/cleanup are not a completed runtime effect or compensation workflow.
+disposable target. Its staging uses the adapter; operator cleanup does not qualify runtime compensation.
 
 For [dispatch freshness](docs/dispatch-watchdog.md), use `Client.live_state` with `Watchdog` on an
 approved own node. `poll()` only observes; `current()` also requires recent height progress.
@@ -212,3 +212,6 @@ For [agent TLS](docs/agent-tls.md), provision certificate/key/client-CA files in
 and callback keys. Never infer roles from certificates or forwarded headers. Keep loopback defaults,
 require all TLS settings together, and drain/restart all listeners to retire a CA snapshot. Do not
 claim a proxy template or source handshake test proves installed multi-host deployment qualification.
+
+Approved draft staging is documented in [Git staging](docs/git-staging.md).
+It requires explicit v2 operator policy; partial writes never authorize a retry.

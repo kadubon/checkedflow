@@ -14,8 +14,9 @@ passed its declared checks.
 draft from an **already staged exact Git commit** in one fixed repository. Install development
 builds with the `effects` extra to include HTTPX. The base SDK does not acquire that dependency.
 
-The adapter does not stage patch bytes, create or update branches, merge, close PRs, execute code,
-or interpret consensus approvals. The caller must be a separate trusted effect executor. Keep
+Optional [approved staging](git-staging.md) also creates the exact tree, commit and a new owned
+reference before opening the draft. It never updates existing references, merges, closes PRs,
+executes code or interprets consensus approvals. The caller must be a separate trusted effect executor. Keep
 its credential and private journal away from candidates, ordinary workers, verifiers and gateways.
 Constructing or decoding a plan does not prove authority to send it.
 The [v2 effect state machine](work-effects.md) now supplies governed reservations and a strict
@@ -65,7 +66,7 @@ directory ordering, nested paths, Unicode content and CRLF byte behavior for oth
 
 The lower-level `dispatch(plan)` and `reconcile(plan)` remain metadata-only APIs for trusted
 executors. Neither API establishes current consensus acceptance or execution authority, and
-constructing a contract does not grant either. Runtime staging and complete effect integration
+constructing a contract does not grant either. Complete effect integration
 remain unfinished; these methods are not a complete approved-patch-to-PR workflow.
 
 ## Journal and unknown outcomes
@@ -149,7 +150,7 @@ The explicitly authorized real disposable repository was exercised separately: a
 file was staged, an actual draft opened, the same operation repeated without creating a second PR,
 the original object reconciled, then the draft closed and its unchanged owned branch removed.
 The trusted [fixture script](../scripts/qualify_github_draft.py) performs staging and operator cleanup;
-those actions are not implementations of runtime staging or compensation. It uses the operator's
+staging now calls the runtime adapter, while cleanup is explicit operator action, not runtime compensation. It uses the operator's
 existing `gh` credential; this does not qualify production credential custody or least privilege.
 
 The current fixture requires a complete one-file `README.md` baseline, stages only a fixed
@@ -170,7 +171,7 @@ provider credentials.
 ## Remaining operational integration
 
 Consensus effect states, funded reservations, current dispatch checks and durable ordinary reporting
-are implemented as development components. Required work still includes exact patch-to-Git staging,
+are implemented as development components. Required work still includes complete staging deployment qualification,
 production credential custody, coordinated cross-host journal recovery and compensation.
 [Historical reconciliation](effect-reconciliation.md) now publishes exact GET-only observations
 for quorum review; its full live-provider qualification remains outstanding. A provider

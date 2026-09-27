@@ -110,7 +110,7 @@ death, automatic expiry, catch-up, administrative reconciliation and common hash
 observation is explicitly a signed fixture, not a real GitHub result. Installed qualification must
 execute this named case; a previous report lacking it cannot qualify this increment.
 
-Still required for the complete effect lifecycle: governed staging and live reconciliation qualification;
+Still required for the complete effect lifecycle: full staged-effect deployment and live reconciliation qualification;
 production credential custody and cross-host executor recovery; exact-identity compensation
 and retirement; complete crash-window
 and multi-host qualification. Do not enable publication from these component checks alone.
